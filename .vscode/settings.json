@@ -69,5 +69,7 @@
     },
     "dotnet.defaultSolution": "Diploma_master_degree.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false,
-    "dotrush.roslyn.projectOrSolutionFiles": []
+    "dotrush.roslyn.projectOrSolutionFiles": [
+        "/home/dmytro/Documents/ChNU/Master/Diploma/Unity/Diploma_master_degree/Diploma_master_degree.slnx"
+    ]
 }
