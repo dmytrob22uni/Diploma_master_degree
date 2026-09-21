@@ -6,7 +6,7 @@ using Coursework_Master_Degree.ScriptableObjects.UserInterface.Items.Types;
 
 namespace Coursework_Master_Degree.ScriptableObjects.UserInterface.Items
 {
-    [CreateAssetMenu(fileName = "User_interface_node_SO", menuName = "User Interface Network/User Interface Node")]
+    [CreateAssetMenu(fileName = "User_interface_node_SO", menuName = "User Interface Network/User Interface Node", order = 0)]
     public class UserInterfaceNodeSO : ScriptableObject
     {
         public UserInterfaceNodeType UserInterfaceNodeType;
@@ -17,6 +17,6 @@ namespace Coursework_Master_Degree.ScriptableObjects.UserInterface.Items
 
         public bool IsScrollablePickType() { return UserInterfaceNodeType == UserInterfaceNodeType.ScrollablePick; }
         [ShowIf("IsScrollablePickType"), Expandable]
-        public List<ItemsListSO> ItemsListSOs;
+        public List<ItemMetasListSO> ItemMetasList;
     }
 }

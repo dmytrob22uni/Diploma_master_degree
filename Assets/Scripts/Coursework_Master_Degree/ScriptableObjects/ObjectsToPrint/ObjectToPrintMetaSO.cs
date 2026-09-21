@@ -3,8 +3,8 @@ using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint.Types;
 
 namespace Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint
 {
-    [CreateAssetMenu(fileName = "object_to_print_SO", menuName = "Game Items/Object To Print SO")]
-    public class ObjectToPrintSO : ScriptableObject
+    [CreateAssetMenu(fileName = "object_to_print_meta_SO", menuName = "Game Items/Object To Print Meta SO", order = 2)]
+    public class ObjectToPrintMetaSO : ScriptableObject
     {
         public string Id;
 

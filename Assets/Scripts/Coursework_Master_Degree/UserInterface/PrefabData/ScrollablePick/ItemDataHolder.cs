@@ -14,7 +14,7 @@ namespace Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick
 
         [EnableIf("NotEnabled")]
         [Tooltip("Set via script")]
-        public ItemSO ItemSO;
+        public ItemMetaSO ItemMetaData;
 
         public Image IconImage;
         public TextMeshProUGUI NameText;

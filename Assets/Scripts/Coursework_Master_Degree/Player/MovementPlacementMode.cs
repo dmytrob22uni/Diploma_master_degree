@@ -54,11 +54,13 @@ namespace Coursework_Master_Degree.Player
         private InputAction _lookInputAction;
         private InputAction _crouchInputAction;
         private InputAction _placeItemInputAction;
+        private InputAction _rotateItemInputAction;
 
         private Vector2 _moveValue;
         private Vector2 _lookValue;
         private float _crouchValue;
         private float _placeItemValue;
+        private float _rotateItemValue;
 
         private Vector3 _crouchScale;
         private Vector3 _regularScale;
@@ -111,6 +113,7 @@ namespace Coursework_Master_Degree.Player
             _lookInputAction = inputActionMap.FindAction("look", true);
             _crouchInputAction = inputActionMap.FindAction("crouch", true);
             _placeItemInputAction = inputActionMap.FindAction("place_item", true);
+            _rotateItemInputAction = inputActionMap.FindAction("rotate_item", true);
         }
 
         private void HideCursor()
@@ -141,12 +144,13 @@ namespace Coursework_Master_Degree.Player
         {
             _moveValue = _moveInputAction.ReadValue<Vector2>();
             _lookValue = _lookInputAction.ReadValue<Vector2>();
-            _crouchInputAction.started += 
+            _crouchInputAction.started +=
                 (context) =>
                 {
                     _crouchValue = _crouchInputAction.ReadValue<float>();
                 };
-            // _placeItemValue = _placeItemInputAction.ReadValue<float>();
+            _placeItemValue = _placeItemInputAction.ReadValue<float>();
+            _rotateItemValue = _rotateItemInputAction.ReadValue<float>();
 
             CalculateLook();
 
@@ -191,12 +195,12 @@ namespace Coursework_Master_Degree.Player
                 _crouchTimePassed += Time.deltaTime / CrouchTransitionDuration;
                 _crouchTimePassed = Mathf.Clamp01(_crouchTimePassed);
 
-                PlayerRigidbody.transform.localScale = 
+                PlayerRigidbody.transform.localScale =
                     Vector3.Lerp(
                         _scaleFrom,
                         _scaleTo,
                         _crouchTimePassed);
-                
+
                 if (Mathf.Approximately(
                     PlayerRigidbody.transform.localScale.y,
                     _scaleTo.y))

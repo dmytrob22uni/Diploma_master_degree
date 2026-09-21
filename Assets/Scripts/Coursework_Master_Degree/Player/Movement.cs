@@ -52,6 +52,7 @@ namespace Coursework_Master_Degree.Player
         private InputAction _lookInputAction;
         private InputAction _crouchInputAction;
         private InputAction _zoomLookInputAction;
+        private InputAction _pickItemInputAction;
 
         private Vector2 _moveValue;
         private float _speedUpValue;
@@ -59,6 +60,7 @@ namespace Coursework_Master_Degree.Player
         private Vector2 _lookValue;
         private float _crouchValue;
         private float _zoomLookValue;
+        private float _pickItemValue;
 
         private float _currentLookSpeed;
 
@@ -117,6 +119,7 @@ namespace Coursework_Master_Degree.Player
             _lookInputAction = inputActionMap.FindAction("look", true);
             _zoomLookInputAction = inputActionMap.FindAction("zoom_look", true);
             _crouchInputAction = inputActionMap.FindAction("crouch", true);
+            _pickItemInputAction = inputActionMap.FindAction("pick_item", true);
         }
 
         private void HideCursor()
@@ -135,6 +138,7 @@ namespace Coursework_Master_Degree.Player
             _lookInputAction.Enable();
             _zoomLookInputAction.Enable();
             _crouchInputAction.Enable();
+            _pickItemInputAction.Enable();
         }
 
         void OnDisable()
@@ -145,6 +149,7 @@ namespace Coursework_Master_Degree.Player
             _lookInputAction.Disable();
             _zoomLookInputAction.Disable();
             _crouchInputAction.Disable();
+            _pickItemInputAction.Disable();
         }
 
         void Update()
@@ -153,16 +158,17 @@ namespace Coursework_Master_Degree.Player
             _speedUpValue = _speedUpInputAction.ReadValue<float>();
             _slowDownValue = _slowDownInputAction.ReadValue<float>();
             _lookValue = _lookInputAction.ReadValue<Vector2>();
-            _zoomLookInputAction.started += 
+            _zoomLookInputAction.started +=
                 (context) =>
                 {
                     _zoomLookValue = _zoomLookInputAction.ReadValue<float>();
                 };
-            _crouchInputAction.started += 
+            _crouchInputAction.started +=
                 (context) =>
                 {
                     _crouchValue = _crouchInputAction.ReadValue<float>();
                 };
+            _pickItemValue = _pickItemInputAction.ReadValue<float>();
 
             CalculateLook();
 
@@ -212,12 +218,12 @@ namespace Coursework_Master_Degree.Player
                 _zoomLookTimePassed += Time.deltaTime / ZoomLookTransitionDuration;
                 _zoomLookTimePassed = Mathf.Clamp01(_zoomLookTimePassed);
 
-                EyesCamera.fieldOfView = 
+                EyesCamera.fieldOfView =
                     Mathf.Lerp(
                         _zoomLookFrom,
                         _zoomLookTo,
                         _zoomLookTimePassed);
-                
+
                 if (Mathf.Approximately(
                     EyesCamera.fieldOfView,
                     _zoomLookTo))
@@ -257,12 +263,12 @@ namespace Coursework_Master_Degree.Player
                 _crouchTimePassed += Time.deltaTime / CrouchTransitionDuration;
                 _crouchTimePassed = Mathf.Clamp01(_crouchTimePassed);
 
-                PlayerRigidbody.transform.localScale = 
+                PlayerRigidbody.transform.localScale =
                     Vector3.Lerp(
                         _scaleFrom,
                         _scaleTo,
                         _crouchTimePassed);
-                
+
                 if (Mathf.Approximately(
                     PlayerRigidbody.transform.localScale.y,
                     _scaleTo.y))

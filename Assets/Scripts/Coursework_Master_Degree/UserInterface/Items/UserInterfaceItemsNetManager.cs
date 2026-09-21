@@ -7,7 +7,6 @@ using Coursework_Master_Degree.UserInterface.PrefabData.RegularPick;
 using Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick;
 using Coursework_Master_Degree.UserInterface.Items.ScrollablePick;
 using Coursework_Master_Degree.ScriptableObjects.Items;
-using Coursework_Master_Degree.Items.Placement;
 
 namespace Coursework_Master_Degree.UserInterface.Items
 {
@@ -27,9 +26,9 @@ namespace Coursework_Master_Degree.UserInterface.Items
         public GameObject Row;
         public GameObject Item;
 
-        [Header("Placement")]
-        public NewItemPlacementManager NewItemPlacementManager;
-        public NewItemPlacementInputManager NewItemPlacementInputManager;
+        // [Header("Placement")]
+        // public NewItemPlacementManager NewItemPlacementManager;
+        // public NewItemPlacementInputManager NewItemPlacementInputManager;
 
         private GameObject _coreItemPickCanvasGameObjects;
         public GameObject CoreItemPickCanvasGameObjects {
@@ -178,7 +177,7 @@ namespace Coursework_Master_Degree.UserInterface.Items
             GameObject pickerContentGameObject = itemScrollablePickCanvasDataHolder.ContentGameObject;
 
             // loop to create rows
-            int numberOfRows = userInterfaceNodeSO.ItemsListSOs.Count;
+            int numberOfRows = userInterfaceNodeSO.ItemMetasList.Count;
             for (int rowIndex = 0; rowIndex < numberOfRows; rowIndex++)
             {
                 // create row
@@ -192,19 +191,19 @@ namespace Coursework_Master_Degree.UserInterface.Items
                 customRowScrollRect.ParentScrollRect = itemScrollablePickCanvasDataHolder.VerticalScrollRect;
 
                 // set header text
-                rowDataHolder.HeaderText.text = userInterfaceNodeSO.ItemsListSOs[rowIndex].ItemsListName;
+                rowDataHolder.HeaderText.text = userInterfaceNodeSO.ItemMetasList[rowIndex].ItemsListName;
 
                 // get content
                 GameObject rowContentGameObject = rowDataHolder.ContentGameObject;
 
                 // loop to create items
-                int numberOfItems = userInterfaceNodeSO.ItemsListSOs[rowIndex].ItemsList.Length;
+                int numberOfItems = userInterfaceNodeSO.ItemMetasList[rowIndex].ItemMetasList.Length;
                 for (int itemIndex = 0; itemIndex < numberOfItems; itemIndex++)
                 {
                     // make item variable to easily access its data
                     // and
                     // capture item to avoid closure-capture-in-a-lood issue for row/item indexes used inside lambda
-                    ItemSO itemSO = userInterfaceNodeSO.ItemsListSOs[rowIndex].ItemsList[itemIndex];
+                    ItemMetaSO itemMetaData = userInterfaceNodeSO.ItemMetasList[rowIndex].ItemMetasList[itemIndex];
 
                     // create item
                     GameObject itemGameObject = Instantiate(Item, rowContentGameObject.transform);
@@ -212,7 +211,7 @@ namespace Coursework_Master_Degree.UserInterface.Items
                     ItemDataHolder itemDataHolder = itemGameObject.GetComponent<ItemDataHolder>();
 
                     // set item so
-                    itemDataHolder.ItemSO = itemSO;
+                    itemDataHolder.ItemMetaData = itemMetaData;
 
                     // set description header text field
                     itemDataHolder.DescriptionHeaderText = itemScrollablePickCanvasDataHolder.DescriptionHeaderText;
@@ -222,15 +221,15 @@ namespace Coursework_Master_Degree.UserInterface.Items
                     // set description text data of the first item of the first row
                     if (rowIndex == 0 && itemIndex == 0)
                     {
-                        string name = itemSO.Name;
-                        string description = itemSO.Description;
+                        string name = itemMetaData.Name;
+                        string description = itemMetaData.Description;
 
                         itemDataHolder.DescriptionHeaderText.text = name;
                         itemDataHolder.DescriptionBodyText.text = description;
                     }
 
                     // get item image and create sprite out of it
-                    Texture2D itemImage = itemSO.Icon;
+                    Texture2D itemImage = itemMetaData.Icon;
                     Sprite itemImageSprite = Sprite.Create(
                         itemImage,
                         new Rect(0, 0, itemImage.width, itemImage.height),
@@ -239,23 +238,23 @@ namespace Coursework_Master_Degree.UserInterface.Items
                     // set item image
                     itemDataHolder.IconImage.sprite = itemImageSprite;
                     // get item name text
-                    string itemName = itemSO.Name;
+                    string itemName = itemMetaData.Name;
                     // set item name text
                     itemDataHolder.NameText.text = itemName;
                     // get item price text
-                    float itemPrice = itemSO.Price;
+                    float itemPrice = itemMetaData.Price;
                     // set item price text
                     itemDataHolder.PriceText.text = itemPrice + " $";
 
                     // subscribe to pointer enter action
                     ItemHoverManager itemHoverManager = itemGameObject.GetComponent<ItemHoverManager>();
-                    itemHoverManager.OnPointerEnterAction += 
+                    itemHoverManager.OnPointerEnterAction +=
                         () =>
                         {
-                            itemDataHolder.DescriptionHeaderText.text = itemSO.Name;
-                            itemDataHolder.DescriptionBodyText.text = itemSO.Description;
+                            itemDataHolder.DescriptionHeaderText.text = itemMetaData.Name;
+                            itemDataHolder.DescriptionBodyText.text = itemMetaData.Description;
                         };
-                    
+
                     Button itemButton = itemGameObject.GetComponent<Button>();
                     itemButton.onClick.AddListener(
                     () =>
@@ -267,10 +266,10 @@ namespace Coursework_Master_Degree.UserInterface.Items
                         _lastActiveItemPickCanvasGameObjectUserInterfaceNodeType = UserInterfaceNodeType.ScrollablePick;
                         _lastActiveItemPickCanvasGameObject = itemScrollablePickCanvasGameObject;
 
-                        NewItemPlacementManager.NewItemSODataToPlace = itemSO;
+                        // NewItemPlacementManager.NewItemSODataToPlace = itemSO;
 
-                        NewItemPlacementManager.enabled = true;
-                        NewItemPlacementInputManager.enabled = true;
+                        // NewItemPlacementManager.enabled = true;
+                        // NewItemPlacementInputManager.enabled = true;
                     });
                 }
             }
