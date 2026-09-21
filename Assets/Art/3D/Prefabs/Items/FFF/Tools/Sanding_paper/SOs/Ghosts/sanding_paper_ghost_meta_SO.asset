@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: sanding_paper_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 1529528821347471312, guid: d05267b088171faab929a35cba42a785, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 1529528821347471312, guid: deaa512367ea054a9a3305f01afc5ef6, type: 3}

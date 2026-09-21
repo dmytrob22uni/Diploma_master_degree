@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_enclosure_thermometer_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 2215555433162305543, guid: b2b38502bd8192afc9dee97febb8d2d9, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 2215555433162305543, guid: 652515b24af9270b5947e1147a191583, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 2215555433162305543, guid: 3e771424d10152ea69be11ba24fe9679, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 2215555433162305543, guid: 4111802605fcc061a9ee9c611f518328, type: 3}

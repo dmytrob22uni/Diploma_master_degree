@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_printer_battery_closet_adapter_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 8951657518640537077, guid: cb41b37a96cb60f73a234e51e75100f6, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 8951657518640537077, guid: 4f71d098c0971a5e79782e87e5a66622, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 8951657518640537077, guid: f669e1949e053a33fb9372bc07482dd2, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 8951657518640537077, guid: aa65f2c26170b4108b454814ec950ea8, type: 3}

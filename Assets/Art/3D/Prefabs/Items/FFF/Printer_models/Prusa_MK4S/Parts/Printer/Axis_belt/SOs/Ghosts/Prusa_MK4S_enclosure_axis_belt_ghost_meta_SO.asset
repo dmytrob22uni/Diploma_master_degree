@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_enclosure_axis_belt_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 2709728948512804140, guid: a9bbe30c46ce43f9ca9d429a83f86b7b, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 2709728948512804140, guid: 72916c2bfd0201c76aaed46074101275, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 2709728948512804140, guid: cb85e27c513daba88a648bd896dbc1ba, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 2709728948512804140, guid: fb765cf2fdbf223e1b5536414447237a, type: 3}

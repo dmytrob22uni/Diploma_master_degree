@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_printer_extruder_filament_bearing_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 6762102602121053899, guid: d47a435e278d4291db6d0b54216de146, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 6762102602121053899, guid: 643c3d95c755e5e5486cfc8abcf90eb0, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 6762102602121053899, guid: b5e657ccbb2deacc2afd03241082568e, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 6762102602121053899, guid: 12fd2b9ba270bd257a265d288c104735, type: 3}

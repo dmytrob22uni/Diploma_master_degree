@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_printer_spool_PETG_red_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 6245900780811570333, guid: b6263aa2042231e7bbf2104de0398625, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 6245900780811570333, guid: b8f0aa12f7761e1738c0b36fb245372b, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 6245900780811570333, guid: a366bf0a769390b78b1ed994cf424856, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 6245900780811570333, guid: 565a68cd04dfb4bc48c2e87f4c1fdff6, type: 3}

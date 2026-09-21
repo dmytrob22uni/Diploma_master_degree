@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_printer_extruder_thermistor_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 7230327408366948224, guid: 783ec26f6915c4147adc0da8d4e98b34, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 7230327408366948224, guid: bd05fb82b41715962a53072216b37bdf, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 7230327408366948224, guid: 71c1f65a6bae47c08b2b6ec86ac5af60, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 7230327408366948224, guid: e051ab981c8d97a21be910ec45441286, type: 3}

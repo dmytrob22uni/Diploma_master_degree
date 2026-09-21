@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_printer_spool_TPU_blue_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 6245900780811570333, guid: 818712435926c36e9a3254ddcac10c91, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 6245900780811570333, guid: 68ccad00ef44b31b0b6f7ea1afae8488, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 6245900780811570333, guid: 927654467d0ef6001bb2891fbb1a7224, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 6245900780811570333, guid: 5fbca6cfe74cb2a388c6c0727bae93e4, type: 3}

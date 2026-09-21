@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: cleaning_spray_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 6928388872659155915, guid: 1f5220bb0b6f19a47b45e234bd1e59d0, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 6928388872659155915, guid: 91ff765131dbdc70ca0c3ac5505c91d5, type: 3}

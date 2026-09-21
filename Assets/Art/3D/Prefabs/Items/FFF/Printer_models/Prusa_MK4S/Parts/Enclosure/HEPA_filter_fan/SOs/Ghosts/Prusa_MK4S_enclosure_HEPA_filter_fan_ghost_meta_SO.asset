@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_fan_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 607690325978844127, guid: 4dc4d957a00b8e3f88f958100575af04, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 607690325978844127, guid: b85693e1e3ca998f980e32fb222baacd, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 607690325978844127, guid: bbef0163ffca0402db9da7a6d9923342, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 607690325978844127, guid: 883e76269b92c923a8433b23d8aaac77, type: 3}

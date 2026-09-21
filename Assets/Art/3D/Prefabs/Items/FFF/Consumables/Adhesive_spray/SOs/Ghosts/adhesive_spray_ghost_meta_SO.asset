@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: adhesive_spray_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 8964843636197556486, guid: f1371e87e0a450ba0bc67e93f1092f5d, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 8964843636197556486, guid: 1880acbe833b266249aa1b0274a34b0b, type: 3}

@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_printer_axis_guide_bearing_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 2954334403542422607, guid: 14a2ca0c0c4935773811b587a75ced4e, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 2954334403542422607, guid: e7a649ba0f553d21aac51e1a80a537e1, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 2954334403542422607, guid: 84547e8a693af04c4ac5879c4b0b2bd6, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 2954334403542422607, guid: f129fa42c96b148dd813455f29a2a9c8, type: 3}

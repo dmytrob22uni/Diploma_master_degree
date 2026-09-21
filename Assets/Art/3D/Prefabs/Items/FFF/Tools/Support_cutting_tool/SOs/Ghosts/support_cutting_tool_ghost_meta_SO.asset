@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: support_cutting_tool_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 7955439820446562377, guid: 2398ac4151496c880916d9b95a2c39b6, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 7955439820446562377, guid: a9c60f60da9b6fb75897775d11e508a9, type: 3}

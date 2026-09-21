@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: separator_blade_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 6232608750328363069, guid: 23628e638d0708daf82cc7b674706e19, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 6232608750328363069, guid: b969373ac7b1582dda3b9aa81357dc40, type: 3}

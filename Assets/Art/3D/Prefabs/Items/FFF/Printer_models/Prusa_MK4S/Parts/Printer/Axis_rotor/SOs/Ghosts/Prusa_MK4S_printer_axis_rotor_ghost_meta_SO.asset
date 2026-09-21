@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_printer_axis_rotor_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 8246249520090528643, guid: 9e333918154c3e003ba6563a227926bd, type: 3}
-  - itemGhostType: 1
+  - ItemGhostType: 1
     ItemGhostGameObject: {fileID: 8246249520090528643, guid: 4a44e0db50d35b4cbb817edad3168b93, type: 3}
-  - itemGhostType: 2
+  - ItemGhostType: 2
+    ItemGhostGameObject: {fileID: 8246249520090528643, guid: db90e996f41b21c9d8011296342788ea, type: 3}
+  - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 8246249520090528643, guid: e84031538013e8d44807e8c030ab5ff8, type: 3}
