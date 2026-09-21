@@ -16,5 +16,5 @@ MonoBehaviour:
   PickNamesToUserInterfaceNodeSOs:
   - PickName: 
     UserInterfaceNodeSO: {fileID: 0}
-  ItemsListSOs:
+  ItemMetasList:
   - {fileID: 11400000, guid: 6a48a7bd9e68b297f8dd8867b1151713, type: 2}

@@ -10,11 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da0f80e55117c5bb7a44be77c9371ced, type: 3}
-  m_Name: tools_items_list_SO
+  m_Name: consumables_item_metas_list_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.ItemsListSO
-  ItemsListName: FFF Tools
-  ItemsList:
-  - {fileID: 11400000, guid: cc9df6d9fa9993fd2966556b2b7db313, type: 2}
-  - {fileID: 11400000, guid: 8f38a1a317d21c38da61f0adba55500e, type: 2}
-  - {fileID: 11400000, guid: 0beb3aaef93f0fb8994d41fc7fa8bd8a, type: 2}
-  - {fileID: 11400000, guid: bb5fe76a7d4cf464baebd731dc23a755, type: 2}
+  ItemsListName: FFF Consumables
+  ItemMetasList:
+  - {fileID: 11400000, guid: 07a313aaf97eb07cb87f342cf85508de, type: 2}
+  - {fileID: 11400000, guid: e0ac8b5321ed345fd9e7850cf64885f3, type: 2}
+  - {fileID: 11400000, guid: 822b086f62e97788da51631fe1a36f5a, type: 2}

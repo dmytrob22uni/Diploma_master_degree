@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da0f80e55117c5bb7a44be77c9371ced, type: 3}
-  m_Name: parts_printer_items_list_SO
+  m_Name: parts_printer_item_metas_list_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.ItemsListSO
   ItemsListName: Prusa MK4S printer parts
-  ItemsList:
+  ItemMetasList:
   - {fileID: 11400000, guid: 1d03d3af486c5814f8ed8e0adc2e8d09, type: 2}
   - {fileID: 11400000, guid: a86a32aade530a64099cedd6544f904a, type: 2}
   - {fileID: 11400000, guid: 0fd58343fbb89eae19767688b43d75aa, type: 2}

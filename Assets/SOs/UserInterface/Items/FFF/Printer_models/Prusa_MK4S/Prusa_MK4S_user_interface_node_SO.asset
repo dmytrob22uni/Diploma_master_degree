@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.UserInterface.UserInterfaceNodeSO
   UserInterfaceNodeType: 1
   PickNamesToUserInterfaceNodeSOs: []
-  ItemsListSOs:
+  ItemMetasList:
   - {fileID: 11400000, guid: 01ce425b83e9fcb6088c2d5256df024f, type: 2}
   - {fileID: 11400000, guid: 062b11f75de42790882e34c00ced1ee0, type: 2}
   - {fileID: 11400000, guid: 80a15bce13856ef529b8de154ca0fd5e, type: 2}

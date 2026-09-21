@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da0f80e55117c5bb7a44be77c9371ced, type: 3}
-  m_Name: spool_ABS_items_list_SO
+  m_Name: spool_ABS_item_metas_list_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.ItemsListSO
   ItemsListName: Prusa MK4S spool ABS
-  ItemsList:
+  ItemMetasList:
   - {fileID: 11400000, guid: 305b05fe0a1608faf93aa213c3d2ab3b, type: 2}
   - {fileID: 11400000, guid: def92af9dda97064b91a5eca65ee26ba, type: 2}
   - {fileID: 11400000, guid: a315f6f18aebaa7989bce49bb500725b, type: 2}

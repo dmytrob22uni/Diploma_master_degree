@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da0f80e55117c5bb7a44be77c9371ced, type: 3}
-  m_Name: spool_TPU_items_list_SO
+  m_Name: parts_enclosure_item_metas_list_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.ItemsListSO
-  ItemsListName: Prusa MK4S spool TPU
-  ItemsList:
-  - {fileID: 11400000, guid: 3d831d40cee68a583950dfae84d6286b, type: 2}
-  - {fileID: 11400000, guid: 99d813c1815e479889d076934c4ba732, type: 2}
-  - {fileID: 11400000, guid: 5969a8ddfa9c0ec2f97168dff3777ee9, type: 2}
-  - {fileID: 11400000, guid: 1dd3a8511ade5cab0947e2dddb2ed2de, type: 2}
-  - {fileID: 11400000, guid: 90fbadea13e40e7df8cc1c0b03c3c428, type: 2}
+  ItemsListName: Prusa MK4S enclosure parts
+  ItemMetasList:
+  - {fileID: 11400000, guid: 38702aa7a5aa94949a29a9d96acf2edb, type: 2}
+  - {fileID: 11400000, guid: 9250c56a34620b1f99490fe737c4060e, type: 2}
+  - {fileID: 11400000, guid: 5a47405be14b5addc9b5ee9362c3f003, type: 2}
+  - {fileID: 11400000, guid: 290f47244bfbc1195833528f4f68d7d6, type: 2}

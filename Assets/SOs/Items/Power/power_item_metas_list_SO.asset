@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da0f80e55117c5bb7a44be77c9371ced, type: 3}
-  m_Name: Prusa_MK4S_items_list_SO
+  m_Name: power_item_metas_list_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.ItemsListSO
-  ItemsListName: Prusa MK4S
-  ItemsList:
-  - {fileID: 11400000, guid: d2091a6c8b0e2b32ebcf7253e5f3010a, type: 2}
-  - {fileID: 11400000, guid: 7440c7af9d07d24e3bbff4760f761771, type: 2}
+  ItemsListName: Power
+  ItemMetasList:
+  - {fileID: 11400000, guid: 1aea45d841f34b8c5b08cafce147b6e7, type: 2}
+  - {fileID: 11400000, guid: 0013f9ef6e8d31d4ea3978162cb91620, type: 2}
+  - {fileID: 11400000, guid: b7ed97cbddbd780faab51e5fe110b60c, type: 2}
+  - {fileID: 11400000, guid: 8091ad85b89f32a30832860a0ad018a9, type: 2}
+  - {fileID: 11400000, guid: 37a730184b7aaba4f85d1e7d66719cb1, type: 2}
