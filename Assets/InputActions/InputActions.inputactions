@@ -13,7 +13,8 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": true,
+                    "priority": 0
                 },
                 {
                     "name": "look",
@@ -22,34 +23,8 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "zoom_look",
-                    "type": "Button",
-                    "id": "4f9402c9-a2ef-4a32-867e-751653bba2ce",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "jump",
-                    "type": "Button",
-                    "id": "0df73e77-e39d-4d8f-a229-6ee76980bca6",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "speed_up",
-                    "type": "Button",
-                    "id": "3c144b26-1229-4e07-b6b7-c85f81a69726",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true,
+                    "priority": 0
                 },
                 {
                     "name": "slow_down",
@@ -58,7 +33,8 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": false,
+                    "priority": 0
                 },
                 {
                     "name": "crouch",
@@ -67,7 +43,48 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "pick_item",
+                    "type": "Button",
+                    "id": "f2d6d7b2-2d09-4b76-b739-fcbac1202111",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "zoom_look",
+                    "type": "Button",
+                    "id": "812a3173-23e8-48b5-a4b6-6d04874a31ef",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "speed_up",
+                    "type": "Button",
+                    "id": "6fc7cd26-4a21-4eff-aff0-120a1d57b8cd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "jump",
+                    "type": "Button",
+                    "id": "3dc4ee31-42c5-4924-aefe-5dd744db955f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -128,18 +145,40 @@
                 },
                 {
                     "name": "",
-                    "id": "ea61ff93-195e-4191-9c47-060d4cc45262",
-                    "path": "<Mouse>/delta",
+                    "id": "488beba1-94ca-408f-bd6e-08c35c553fe8",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "look",
+                    "action": "pick_item",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "71babddf-f18f-45ec-bdfc-26bdd31e5ab5",
+                    "id": "a9631373-b595-43da-9f18-e2c2bac5f4b6",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "zoom_look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cb7795b-047b-4d72-8bba-9b235185aae9",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "speed_up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b7b63e2f-6463-4dd7-9c91-dea523223403",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
@@ -150,12 +189,12 @@
                 },
                 {
                     "name": "",
-                    "id": "50bfacc7-4d27-46f8-ac0d-130736c14e3d",
-                    "path": "<Keyboard>/leftShift",
+                    "id": "ea61ff93-195e-4191-9c47-060d4cc45262",
+                    "path": "<Mouse>/delta",
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "speed_up",
+                    "action": "look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -180,17 +219,6 @@
                     "action": "slow_down",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f0014f0e-7578-42fd-811e-dee4b40f0ff2",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";keyboard&mouse",
-                    "action": "zoom_look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
@@ -205,7 +233,8 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": false,
+                    "priority": 0
                 },
                 {
                     "name": "hide_any_menu_interface",
@@ -214,7 +243,8 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -286,7 +316,8 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": true,
+                    "priority": 0
                 },
                 {
                     "name": "look",
@@ -295,7 +326,8 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": true,
+                    "priority": 0
                 },
                 {
                     "name": "crouch",
@@ -304,7 +336,8 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": false,
+                    "priority": 0
                 },
                 {
                     "name": "place_item",
@@ -313,16 +346,8 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "pick_item",
-                    "type": "Button",
-                    "id": "b272ac00-1eab-4f0e-935a-085ae30bb77c",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": false,
+                    "priority": 0
                 },
                 {
                     "name": "rotate_item",
@@ -331,7 +356,8 @@
                     "expectedControlType": "Delta",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": true,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -420,17 +446,6 @@
                     "processors": "",
                     "groups": ";keyboard&mouse",
                     "action": "place_item",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a1ce4633-3741-425e-8f58-a18d70a40df4",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";keyboard&mouse",
-                    "action": "pick_item",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
