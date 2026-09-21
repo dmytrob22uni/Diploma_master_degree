@@ -6,6 +6,7 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types
     {
         Placement,
         Installation,
+        MissingPart,
         WearLevel,
     }
 }

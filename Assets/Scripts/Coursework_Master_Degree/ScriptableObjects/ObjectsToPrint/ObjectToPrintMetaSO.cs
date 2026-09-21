@@ -13,6 +13,7 @@ namespace Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint
         public string Description;
 
         public GameObject Prefab;
+
         public Texture2D Icon;
 
         public ObjectToPrintType[] ObjectToPrintTypes;

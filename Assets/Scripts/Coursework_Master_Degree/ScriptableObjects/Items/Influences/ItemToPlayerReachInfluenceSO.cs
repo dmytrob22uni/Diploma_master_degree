@@ -3,7 +3,7 @@ using NaughtyAttributes;
 
 namespace Coursework_Master_Degree.ScriptableObjects.Items.Influences
 {
-    [CreateAssetMenu(fileName = "item_to_player_reach_influence_SO", menuName = "Game Items/Influence/Item To Player Reach Influence SO", order = 2)]
+    [CreateAssetMenu(fileName = "item_to_player_reach_influence_SO", menuName = "Game Items/Influences/Item To Player Reach Influence SO", order = 2)]
     public class ItemToPlayerReachInfluenceSO : ScriptableObject
     {
         [MinValue(1.0f), MaxValue(300.0f)]

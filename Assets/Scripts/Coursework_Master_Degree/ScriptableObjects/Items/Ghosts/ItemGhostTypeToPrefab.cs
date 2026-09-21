@@ -7,7 +7,7 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items.Ghosts
     [Serializable]
     public class ItemGhostTypeToPrefab
     {
-        public ItemGhostType itemGhostType;
+        public ItemGhostType ItemGhostType;
         public GameObject ItemGhostGameObject;
     }
 }
