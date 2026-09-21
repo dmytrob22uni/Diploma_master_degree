@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b527c6486e3389f94caf7c4d37eafd, type: 3}
+  m_Name: Prusa_MK4S_printer_battery_closet_adapter_ghost_meta_SO
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
+  ItemGhostTypesToPrefabsList:
+  - itemGhostType: 0
+    ItemGhostGameObject: {fileID: 8951657518640537077, guid: cb41b37a96cb60f73a234e51e75100f6, type: 3}
+  - itemGhostType: 1
+    ItemGhostGameObject: {fileID: 8951657518640537077, guid: 4f71d098c0971a5e79782e87e5a66622, type: 3}
+  - itemGhostType: 2
+    ItemGhostGameObject: {fileID: 8951657518640537077, guid: aa65f2c26170b4108b454814ec950ea8, type: 3}

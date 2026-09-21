@@ -158,7 +158,7 @@ GameObject:
   - component: {fileID: 8649860081480370083}
   - component: {fileID: 7166169853637550477}
   - component: {fileID: 3720816692758807099}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: laptop_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,17 +221,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: d684d3fcc5323f361b726f39b9a6e1f7, type: 2}
-  MeshRenderersList:
-  - {fileID: 5134538804571361996}
-  - {fileID: 8916616775662215166}
-  - {fileID: 7138475274963174079}
-  - {fileID: 1076848054946118072}
-  CornersList:
-  - {fileID: 2022602074589246313}
-  - {fileID: 5838725596783343564}
-  - {fileID: 5244793599507685183}
-  - {fileID: 8523004764834754173}
+  ItemMetaData: {fileID: 11400000, guid: d684d3fcc5323f361b726f39b9a6e1f7, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: de6ea6ef7aa2ec281848e1bdb4f5eb1b, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 03244d0663a297565ad2b1e5967c9aaf, type: 2}
+  ItemGhostGameObject: {fileID: 0}
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &5244793599507685183
 GameObject:
   m_ObjectHideFlags: 0

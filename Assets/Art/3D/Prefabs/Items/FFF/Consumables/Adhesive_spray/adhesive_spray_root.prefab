@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 2512273517414475707}
   - component: {fileID: 7782148332928595668}
   - component: {fileID: 8594719308012852219}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: adhesive_spray_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,12 +254,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 07a313aaf97eb07cb87f342cf85508de, type: 2}
-  MeshRenderersList:
-  - {fileID: 4106216842991494692}
-  - {fileID: 6250090311021270010}
-  CornersList:
-  - {fileID: 1683301075472385999}
+  ItemMetaData: {fileID: 11400000, guid: 07a313aaf97eb07cb87f342cf85508de, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: fed3efde3c16782a986c622641dc20e0, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 64eaa34194ccece748887548d258bb93, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &7920962104862976078
 GameObject:
   m_ObjectHideFlags: 0

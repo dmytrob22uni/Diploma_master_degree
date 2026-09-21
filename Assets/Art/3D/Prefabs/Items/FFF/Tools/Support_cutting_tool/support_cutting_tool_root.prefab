@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 1255856243540412229}
   - component: {fileID: 1736638283208782988}
   - component: {fileID: 7500860421803704851}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: support_cutting_tool_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,11 +489,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: bb5fe76a7d4cf464baebd731dc23a755, type: 2}
-  MeshRenderersList:
-  - {fileID: 7623871379929538586}
-  - {fileID: 2889182603711249134}
-  - {fileID: 4210920514970211072}
-  CornersList:
-  - {fileID: 6192877154995785548}
-  - {fileID: 4102154519282922035}
+  ItemMetaData: {fileID: 11400000, guid: bb5fe76a7d4cf464baebd731dc23a755, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: b5f9da8db50f741539319e3814903306, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: df5bab7e4b47bfbdeb6e2c7ade0b4f7b, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []

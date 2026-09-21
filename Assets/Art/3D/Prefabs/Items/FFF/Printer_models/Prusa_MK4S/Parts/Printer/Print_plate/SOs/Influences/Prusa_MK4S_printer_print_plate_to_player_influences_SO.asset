@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1bf4506089f61246985945bf3209c99, type: 3}
+  m_Name: Prusa_MK4S_printer_print_plate_to_player_influences_SO
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Influences.ItemToPlayerInfluencesSO
+  ItemToPlayerMovementInfluenceData: {fileID: 11400000, guid: 01ca653dcb907ceaa90980d230480ec3, type: 2}
+  ItemToPlayerReachInfluenceData: {fileID: 11400000, guid: d554c8b797379cd3091af43433f87656, type: 2}

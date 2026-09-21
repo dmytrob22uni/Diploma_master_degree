@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5005126308404388674}
   - component: {fileID: 5873524099903523165}
   - component: {fileID: 5764692278927704993}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tablet_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,15 +74,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 9f373a59b8d0c6da698afe8c56ec1ccf, type: 2}
-  MeshRenderersList:
-  - {fileID: 7026509563830956858}
-  - {fileID: 339397929263232085}
-  CornersList:
-  - {fileID: 8184308020735749152}
-  - {fileID: 7152936129745506663}
-  - {fileID: 6925173780395188049}
-  - {fileID: 2131812054426211440}
+  ItemMetaData: {fileID: 11400000, guid: 9f373a59b8d0c6da698afe8c56ec1ccf, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: b881a1ae98b915fd3ad27089a264d4a2, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: d1a62290dd090b6fba80ce997d995bfc, type: 2}
+  ItemGhostGameObject: {fileID: 0}
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &2131812054426211440
 GameObject:
   m_ObjectHideFlags: 0

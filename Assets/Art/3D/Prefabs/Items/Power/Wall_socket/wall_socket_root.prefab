@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 1390255446451392839}
   - component: {fileID: 7661595808452568823}
   - component: {fileID: -3093199210988416119}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_socket_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -284,14 +284,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 8091ad85b89f32a30832860a0ad018a9, type: 2}
-  MeshRenderersList:
-  - {fileID: 1192043985815294597}
-  CornersList:
-  - {fileID: 3677756893033305797}
-  - {fileID: 8589170487665730960}
-  - {fileID: 7747288761315063761}
-  - {fileID: 1901724434984637742}
+  ItemMetaData: {fileID: 11400000, guid: 8091ad85b89f32a30832860a0ad018a9, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 53ca96d0859576bfe99e317642f28046, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: ef10f04a872e64ea6a4769b517cab0ba, type: 2}
+  ItemGhostGameObject: {fileID: 0}
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &7747288761315063761
 GameObject:
   m_ObjectHideFlags: 0

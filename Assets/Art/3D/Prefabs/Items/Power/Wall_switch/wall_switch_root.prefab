@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 6220556157689800914}
   - component: {fileID: 9191790682083739981}
   - component: {fileID: 2399918829132388134}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_switch_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,15 +109,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 37a730184b7aaba4f85d1e7d66719cb1, type: 2}
-  MeshRenderersList:
-  - {fileID: 2710513025558878610}
-  - {fileID: 172001317494896143}
-  CornersList:
-  - {fileID: 8711642740168543218}
-  - {fileID: 5150484287947892205}
-  - {fileID: 5293683421267855304}
-  - {fileID: 6401879075580273165}
+  ItemMetaData: {fileID: 11400000, guid: 37a730184b7aaba4f85d1e7d66719cb1, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 7e4bc6c52e9cdf3b9acc185a41553d32, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 4d3d486630cf35027b98cad641e50fc5, type: 2}
+  ItemGhostGameObject: {fileID: 0}
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &2275861879584647626
 GameObject:
   m_ObjectHideFlags: 0

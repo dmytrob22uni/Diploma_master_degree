@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 4135518511695718182}
   - component: {fileID: 1093166672918641641}
   - component: {fileID: -8420080956344736964}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Prusa_MK4S_printer_extruder_thermistor_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,8 +250,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 812e9fd244d61747cbd1d62daa485fac, type: 2}
-  MeshRenderersList:
-  - {fileID: 4962381347483443438}
-  CornersList:
-  - {fileID: 5458995432315238499}
+  ItemMetaData: {fileID: 11400000, guid: 812e9fd244d61747cbd1d62daa485fac, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: db1b76412f0db190cbb0a82a77563d37, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: c67ee14ff90f993caa3d251afeae415f, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []

@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6697994584560406233}
   - component: {fileID: 182572536880790850}
-  - component: {fileID: 474607472465534449}
-  m_Layer: 0
+  - component: {fileID: 7121830586136806167}
+  m_Layer: 15
   m_Name: tool_chest_wide_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63,8 +63,8 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!114 &474607472465534449
+  m_CollisionDetection: 1
+--- !u!114 &7121830586136806167
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,27 +75,20 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 805eb1e54c132fce49a4c1157bef7c3a, type: 2}
-  MeshRenderersList:
-  - {fileID: 785958392036304824}
-  - {fileID: 6596943295770295699}
-  - {fileID: 515723625887557707}
-  - {fileID: 6285430468767488311}
-  - {fileID: 7682942465529053342}
-  - {fileID: 4118432920821587466}
-  - {fileID: 3318486088068468841}
-  CornersList:
-  - {fileID: 9063934584562881751}
-  - {fileID: 577700518910874484}
-  - {fileID: 877659609514300993}
-  - {fileID: 4054214381767213847}
-  - {fileID: 2058655375004021718}
-  - {fileID: 3585736922821694422}
-  - {fileID: 448591079928447111}
-  - {fileID: 7762215724513035419}
-  RightGameObject: {fileID: 0}
-  WrongGameObject: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemDataHolder
+  ItemMetaData: {fileID: 11400000, guid: 805eb1e54c132fce49a4c1157bef7c3a, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 781c8d50a81a92760acb4ab5911a8d36, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: f00ca7282b90473da8a9ea9aa3aada3b, type: 2}
+  ItemGhostEmptyGameObject: {fileID: 0}
+  IsSurface: 1
+  ShelvesList:
+  - {fileID: 8045387885964895083}
+  - {fileID: 6366584183731570032}
+  - {fileID: 7571719841358612693}
+  - {fileID: 2664362458960283283}
+  - {fileID: 5924400012816536611}
+  - {fileID: 1635651345499237593}
+  - {fileID: 4635959829552247099}
 --- !u!1 &388178645530533479
 GameObject:
   m_ObjectHideFlags: 0

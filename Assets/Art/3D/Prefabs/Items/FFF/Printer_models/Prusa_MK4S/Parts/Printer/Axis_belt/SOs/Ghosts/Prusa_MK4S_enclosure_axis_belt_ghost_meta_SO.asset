@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b527c6486e3389f94caf7c4d37eafd, type: 3}
+  m_Name: Prusa_MK4S_enclosure_axis_belt_ghost_meta_SO
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
+  ItemGhostTypesToPrefabsList:
+  - itemGhostType: 0
+    ItemGhostGameObject: {fileID: 2709728948512804140, guid: a9bbe30c46ce43f9ca9d429a83f86b7b, type: 3}
+  - itemGhostType: 1
+    ItemGhostGameObject: {fileID: 2709728948512804140, guid: 72916c2bfd0201c76aaed46074101275, type: 3}
+  - itemGhostType: 2
+    ItemGhostGameObject: {fileID: 2709728948512804140, guid: fb765cf2fdbf223e1b5536414447237a, type: 3}

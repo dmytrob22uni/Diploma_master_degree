@@ -860,22 +860,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 0eb6b95f94cdc66fa88ee6ade0bcf9fc, type: 2}
-  MeshRenderersList:
-  - {fileID: 4623423542138955980}
-  - {fileID: 6858362223222624403}
-  - {fileID: 710503807406941158}
-  - {fileID: 1580208490398681387}
-  - {fileID: 1449317141007368018}
-  - {fileID: 6112829917313526102}
-  - {fileID: 4059602367200464437}
-  - {fileID: 1133241517798361992}
-  - {fileID: 9094666012568748736}
-  - {fileID: 8174253355388080933}
-  - {fileID: 6571755092065742161}
-  - {fileID: 3269946892121859550}
-  CornersList:
-  - {fileID: 8862406806671145963}
+  ItemMetaData: {fileID: 11400000, guid: 0eb6b95f94cdc66fa88ee6ade0bcf9fc, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: dd7a8bf99aa8d642988ce1f22674554b, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: fb51606247ffd5ba9b14d2341a001dcc, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &7901525906168340084
 GameObject:
   m_ObjectHideFlags: 0

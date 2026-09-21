@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6639447071503725827}
   - component: {fileID: 8308430227512288563}
   - component: {fileID: 7227267437387825724}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: sanding_paper_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,12 +74,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: cc9df6d9fa9993fd2966556b2b7db313, type: 2}
-  MeshRenderersList:
-  - {fileID: 1491708552045226056}
-  CornersList:
-  - {fileID: 4048864034028532474}
-  - {fileID: 5958895700050190175}
+  ItemMetaData: {fileID: 11400000, guid: cc9df6d9fa9993fd2966556b2b7db313, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 1c2be5568227e2072bd3d611ceaf15f7, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 3f51692a239de4f96be44c71e9ccc7fb, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &2851440989767935466
 GameObject:
   m_ObjectHideFlags: 0

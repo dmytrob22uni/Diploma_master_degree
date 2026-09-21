@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 8877227893576861014}
   - component: {fileID: 8271450306585928992}
   - component: {fileID: 7855728140370671989}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: separator_blade_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,12 +169,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 0beb3aaef93f0fb8994d41fc7fa8bd8a, type: 2}
-  MeshRenderersList:
-  - {fileID: 5042788389734033528}
-  CornersList:
-  - {fileID: 5112780931658868539}
-  - {fileID: 813832084004188826}
+  ItemMetaData: {fileID: 11400000, guid: 0beb3aaef93f0fb8994d41fc7fa8bd8a, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: c318f5e5f464c7ce6aa0e9f05043b356, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: f5e1b388631c573ef91347eebc691d99, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &8173514433839331282
 GameObject:
   m_ObjectHideFlags: 0

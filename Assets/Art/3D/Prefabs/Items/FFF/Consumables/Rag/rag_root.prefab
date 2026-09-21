@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 8088822929314396668}
   - component: {fileID: 3873578248060222138}
   - component: {fileID: 6502191297653720816}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: rag_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,11 +106,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 822b086f62e97788da51631fe1a36f5a, type: 2}
-  MeshRenderersList:
-  - {fileID: 8080279175513802986}
-  CornersList:
-  - {fileID: 4429364386898372841}
+  ItemMetaData: {fileID: 11400000, guid: 822b086f62e97788da51631fe1a36f5a, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 313fd15582ed350088535483225bf578, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 2eb88dbdb2c5c08ff9eaddb671fc726b, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &4429364386898372841
 GameObject:
   m_ObjectHideFlags: 0

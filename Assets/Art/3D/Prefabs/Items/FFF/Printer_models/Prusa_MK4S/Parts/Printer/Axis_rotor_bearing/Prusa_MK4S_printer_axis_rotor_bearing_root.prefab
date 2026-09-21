@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 1051905917795685819}
   - component: {fileID: 4946433756025394498}
   - component: {fileID: -7643020843136366649}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,11 +106,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 6301d19a97faeb1ca86ac2a6e2dc523c, type: 2}
-  MeshRenderersList:
-  - {fileID: 5375641137477546624}
-  CornersList:
-  - {fileID: 8104605979661403306}
+  ItemMetaData: {fileID: 11400000, guid: 6301d19a97faeb1ca86ac2a6e2dc523c, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 21ad48200466880028c46ee3c1920519, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 607a8b9238f121ef2bc2b6de171315f4, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &4350725037738601597
 GameObject:
   m_ObjectHideFlags: 0

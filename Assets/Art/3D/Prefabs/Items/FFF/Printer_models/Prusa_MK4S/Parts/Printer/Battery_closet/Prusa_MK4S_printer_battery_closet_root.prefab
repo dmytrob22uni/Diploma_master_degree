@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 7686369015081834432}
   - component: {fileID: 4332012899805314106}
   - component: {fileID: 6773008013522925428}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Prusa_MK4S_printer_battery_closet_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,13 +164,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 6f80c54421cd4db0fa2e96cf9714ed1d, type: 2}
-  MeshRenderersList:
-  - {fileID: 73321383980595599}
-  - {fileID: 6424873179866480278}
-  CornersList:
-  - {fileID: 1562088302690234853}
-  - {fileID: 6989248284322116203}
+  ItemMetaData: {fileID: 11400000, guid: 6f80c54421cd4db0fa2e96cf9714ed1d, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 0ea756261a88fc2de89fd29308336989, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 9a9ccf074087b7a689c051bbb0fbd323, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &1562088302690234853
 GameObject:
   m_ObjectHideFlags: 0

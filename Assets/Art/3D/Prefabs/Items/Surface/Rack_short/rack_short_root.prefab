@@ -155,8 +155,8 @@ GameObject:
   m_Component:
   - component: {fileID: 884990052240182919}
   - component: {fileID: 1039012496331251008}
-  - component: {fileID: 3730193360545013701}
-  m_Layer: 0
+  - component: {fileID: 1858026655808789479}
+  m_Layer: 15
   m_Name: rack_short_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &3730193360545013701
+--- !u!114 &1858026655808789479
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -220,17 +220,16 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 165baa8fd71016a89a28643491190e01, type: 2}
-  MeshRenderersList:
-  - {fileID: 3876897932185702567}
-  CornersList:
-  - {fileID: 5384067177856823454}
-  - {fileID: 5777605869401099638}
-  - {fileID: 9217399065781703659}
-  - {fileID: 6838143493255550906}
-  RightGameObject: {fileID: 0}
-  WrongGameObject: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemDataHolder
+  ItemMetaData: {fileID: 11400000, guid: 165baa8fd71016a89a28643491190e01, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: e04466829be7620d89597c2d62cdc1ac, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 5bc0fa31f3e068454be72ca1cc957887, type: 2}
+  ItemGhostsList: []
+  IsSurface: 1
+  ShelvesList:
+  - {fileID: 569594458476074104}
+  - {fileID: 8469390238392864718}
+  - {fileID: 4014996969794681880}
 --- !u!1 &1616641183826542805
 GameObject:
   m_ObjectHideFlags: 0

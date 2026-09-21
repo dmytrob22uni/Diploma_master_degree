@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b527c6486e3389f94caf7c4d37eafd, type: 3}
+  m_Name: Prusa_MK4S_printer_extruder_fan_ghost_meta_SO
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
+  ItemGhostTypesToPrefabsList:
+  - itemGhostType: 0
+    ItemGhostGameObject: {fileID: 933341088213266240, guid: 7155eb887bbf5aeae8fa120d407adffe, type: 3}
+  - itemGhostType: 1
+    ItemGhostGameObject: {fileID: 933341088213266240, guid: a5ef4823623afb16d95eba04c562b355, type: 3}
+  - itemGhostType: 2
+    ItemGhostGameObject: {fileID: 933341088213266240, guid: cb47c37db4ca2b7df98c6e3831c50e06, type: 3}

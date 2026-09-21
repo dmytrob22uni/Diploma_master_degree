@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b527c6486e3389f94caf7c4d37eafd, type: 3}
+  m_Name: Prusa_MK4S_printer_spool_ABS_blue_ghost_meta_SO
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
+  ItemGhostTypesToPrefabsList:
+  - itemGhostType: 0
+    ItemGhostGameObject: {fileID: 6245900780811570333, guid: 75249a5eb526a2a18aea5a00f78a9436, type: 3}
+  - itemGhostType: 1
+    ItemGhostGameObject: {fileID: 6245900780811570333, guid: dde1669cc5aca2c5a89a8ec89686c134, type: 3}
+  - itemGhostType: 2
+    ItemGhostGameObject: {fileID: 6245900780811570333, guid: 513740ccb8c2a5c7a9e52a04e1fbe7e4, type: 3}

@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 2291890189799181320}
   - component: {fileID: 6655984170084669663}
   - component: {fileID: -83257475037266394}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_trap_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,12 +169,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 5a47405be14b5addc9b5ee9362c3f003, type: 2}
-  MeshRenderersList:
-  - {fileID: 3741575896126453530}
-  CornersList:
-  - {fileID: 5150886524624974992}
-  - {fileID: 891623309689364738}
+  ItemMetaData: {fileID: 11400000, guid: 5a47405be14b5addc9b5ee9362c3f003, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: c1da1934df7d224bbbd92b1e71c2ae7f, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: e9f8b68e7ff35bb83b7ebb30d65d6598, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &8028763708786594181
 GameObject:
   m_ObjectHideFlags: 0

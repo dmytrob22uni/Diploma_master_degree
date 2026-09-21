@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4719225158679651392}
   - component: {fileID: 3923199943596066958}
   - component: {fileID: 2719771813170637753}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Prusa_MK4S_printer_print_plate_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,14 +74,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 9cc199e90796c15fb89e90fd6de7b3c3, type: 2}
-  MeshRenderersList:
-  - {fileID: 9189585722615194891}
-  CornersList:
-  - {fileID: 7143782300205233406}
-  - {fileID: 3782477859010682535}
-  - {fileID: 7899469475683557143}
-  - {fileID: 2925377017371407494}
+  ItemMetaData: {fileID: 11400000, guid: 9cc199e90796c15fb89e90fd6de7b3c3, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: a6d9b895f4453fe8a8145a1bd371ef90, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 39968e320b1f8a278bf0dda812eeb873, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &266031568309969141
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b527c6486e3389f94caf7c4d37eafd, type: 3}
+  m_Name: Prusa_MK4S_enclosure_fire_suppression_tube_ghost_meta_SO
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
+  ItemGhostTypesToPrefabsList:
+  - itemGhostType: 0
+    ItemGhostGameObject: {fileID: 1877158471484422364, guid: 266152179e689e83ebe60243a8fe3c19, type: 3}
+  - itemGhostType: 1
+    ItemGhostGameObject: {fileID: 1877158471484422364, guid: a52921de8d14f896a944aab0db734504, type: 3}
+  - itemGhostType: 2
+    ItemGhostGameObject: {fileID: 1877158471484422364, guid: c746020420f384a17a88f1369486e3aa, type: 3}

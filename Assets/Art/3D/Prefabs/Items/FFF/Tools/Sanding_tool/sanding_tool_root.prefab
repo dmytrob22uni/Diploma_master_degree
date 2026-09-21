@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7696264868052619542}
   - component: {fileID: 7624017902248050681}
   - component: {fileID: 4671896037035120890}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: sanding_tool_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,12 +74,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65ef060f83ce800899283fb73f7e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.DataHolder
-  ItemData: {fileID: 11400000, guid: 8f38a1a317d21c38da61f0adba55500e, type: 2}
-  MeshRenderersList:
-  - {fileID: 494717124563388289}
-  CornersList:
-  - {fileID: 6109589786758055310}
-  - {fileID: 5406524265928655927}
+  ItemMetaData: {fileID: 11400000, guid: 8f38a1a317d21c38da61f0adba55500e, type: 2}
+  ItemToPlayerInfluencesSO: {fileID: 11400000, guid: 4ccdeca2de8fdda1db718dd9925b82ee, type: 2}
+  ItemGhostMetaSO: {fileID: 11400000, guid: 83cb86e0a64af4b1a831d8e6414d66e9, type: 2}
+  ItemGhostTypesToInstancesList: []
+  IsSurface: 0
+  ShelvesList: []
 --- !u!1 &5406524265928655927
 GameObject:
   m_ObjectHideFlags: 0
