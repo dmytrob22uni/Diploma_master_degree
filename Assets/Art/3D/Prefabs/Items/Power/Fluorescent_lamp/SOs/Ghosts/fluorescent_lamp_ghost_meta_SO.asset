@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: fluorescent_lamp_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 2134405734583025181, guid: 4376de9fc2cdc02528c522a704bf42c0, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 2134405734583025181, guid: 4a4ba6b558572aa2db50b307c46f0a3a, type: 3}

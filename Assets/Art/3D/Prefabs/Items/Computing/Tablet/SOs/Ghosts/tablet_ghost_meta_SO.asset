@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: tablet_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 7726614033525573541, guid: dadfc739d95fa0358a1cab99ba6b8e6c, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 7726614033525573541, guid: 27a5e1c67e53b7d2792434b04abeaffd, type: 3}

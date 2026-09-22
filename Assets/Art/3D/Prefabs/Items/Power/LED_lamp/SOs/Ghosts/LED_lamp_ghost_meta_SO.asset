@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: LED_lamp_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 6039673134100702925, guid: 711da14819b0cc37bbb1fccc4173da91, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 6039673134100702925, guid: f9e0d622bff19f3bfbb22f8220824318, type: 3}

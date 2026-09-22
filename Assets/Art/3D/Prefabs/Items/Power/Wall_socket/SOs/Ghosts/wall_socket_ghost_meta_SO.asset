@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: wall_socket_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 9152715033585901355, guid: 8c7aeea4644dea6d683ca89b02ae43a7, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 9152715033585901355, guid: 87c93586baedefb6287f6640022fe898, type: 3}

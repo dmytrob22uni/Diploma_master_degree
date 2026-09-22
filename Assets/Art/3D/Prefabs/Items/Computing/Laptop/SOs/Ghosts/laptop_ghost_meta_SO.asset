@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: laptop_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types.ItemGhostSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 2852334469458924081, guid: 2e80ef776fcb2e23ba0637e1760c0b0c, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 2852334469458924081, guid: 450aca2d47a05f9458db474e6159bbf9, type: 3}

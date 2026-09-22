@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_enclosure_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 1762743641646650074, guid: 89cb25af1ff99999bb1982c125ad5aba, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 1762743641646650074, guid: 19a65843f9a0d37cab65e68a794aafb2, type: 3}

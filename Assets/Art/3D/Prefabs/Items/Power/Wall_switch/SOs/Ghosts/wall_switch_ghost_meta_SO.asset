@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: wall_switch_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 1285350060127838866, guid: c289368884dc59ac6a1a3b5490443bfb, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 1285350060127838866, guid: 29e3073d270cd3e74a1e220860fbac06, type: 3}

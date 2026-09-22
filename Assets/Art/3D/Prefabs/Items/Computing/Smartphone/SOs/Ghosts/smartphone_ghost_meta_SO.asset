@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: smartphone_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 94226953123887330, guid: 0f8697ee228fb4b2e92ac387166c4eeb, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 94226953123887330, guid: 7b9be939cf2b0255887de62195edc416, type: 3}

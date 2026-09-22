@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: tool_chest_wide_ghost_meta_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.ItemGhostMetaSO
   ItemGhostTypesToPrefabsList:
-  - itemGhostType: 0
+  - ItemGhostType: 0
     ItemGhostGameObject: {fileID: 4444806156839261285, guid: cb6a5c19fb9ef17d8b67cb07e8f87ca8, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 4444806156839261285, guid: a8e52e5822a00be6e81bb283595a1732, type: 3}

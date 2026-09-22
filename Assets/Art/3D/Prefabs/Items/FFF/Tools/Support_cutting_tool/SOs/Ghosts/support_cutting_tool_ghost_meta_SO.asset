@@ -17,3 +17,5 @@ MonoBehaviour:
     ItemGhostGameObject: {fileID: 7955439820446562377, guid: 2398ac4151496c880916d9b95a2c39b6, type: 3}
   - ItemGhostType: 3
     ItemGhostGameObject: {fileID: 7955439820446562377, guid: a9c60f60da9b6fb75897775d11e508a9, type: 3}
+  - ItemGhostType: 4
+    ItemGhostGameObject: {fileID: 7955439820446562377, guid: 3c78c7a188d3115aab14bce15c85243b, type: 3}
