@@ -7,5 +7,6 @@ namespace Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint.Ghost.Types
         Placement,
         PrinterBedPlacement,
         Quality,
+        Selling,
     }
 }

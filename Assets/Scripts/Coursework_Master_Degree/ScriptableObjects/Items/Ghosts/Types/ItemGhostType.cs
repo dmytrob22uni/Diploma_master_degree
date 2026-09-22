@@ -8,5 +8,6 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types
         Installation,
         MissingPart,
         WearLevel,
+        Selling,
     }
 }

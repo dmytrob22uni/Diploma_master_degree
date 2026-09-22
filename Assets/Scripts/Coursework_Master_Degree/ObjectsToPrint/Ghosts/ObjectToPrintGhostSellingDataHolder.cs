@@ -3,16 +3,16 @@ using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint.Ghost.Types;
 
 namespace Coursework_Master_Degree.ObjectsToPrint.Ghost
 {
-    public class ObjectToPrintGhostQualityDataHolder : ObjectToPrintGhostDataHolder
+    public class ObjectToPrintGhostSellingDataHolder : ObjectToPrintGhostDataHolder
     {
         private void OnValidate()
         {
-            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Quality;
+            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Selling;
         }
 
         private void Awake()
         {
-            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Quality;
+            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Selling;
         }
     }
 }
