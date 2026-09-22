@@ -32,6 +32,7 @@ namespace Coursework_Master_Degree.Player
         [Header("Zoom")]
         [Min(0.01f)] public float ZoomLookFieldOfView;
         [EnableIf("NotEnabled")]
+        [Tooltip("Calculated based on regular look speed and zoom look field of view")]
         [Min(0.01f)] public float ZoomLookSpeed;
         [Min(0.1f)] public float ZoomLookTransitionDuration;
 

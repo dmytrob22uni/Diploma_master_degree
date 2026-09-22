@@ -18,6 +18,7 @@ namespace Coursework_Master_Degree.ObjectsToPrint
         public ObjectToPrintGhostMetaSO ObjectToPrintGhostMetaSO;
 
         [EnableIf("NotEnabled")]
+        [Tooltip("Set via script")]
         public List<ObjectToPrintTypeToInstance> ObjectToPrintTypesToInstancesList;
     }
 }

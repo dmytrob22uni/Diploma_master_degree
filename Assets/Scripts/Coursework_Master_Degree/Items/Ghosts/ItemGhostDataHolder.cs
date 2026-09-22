@@ -15,8 +15,10 @@ namespace Coursework_Master_Degree.Items.Ghosts
         public ItemGhostMetaSO ItemGhostMetaData;
 
         [EnableIf("NotEnabled")]
+        [Tooltip("Set via script")]
         public ItemGhostType ItemGhostType;
         [EnableIf("NotEnabled")]
+        [Tooltip("Set via script")]
         public GameObject ItemInstance;
 
         public List<MeshRenderer> MeshRenderersList;

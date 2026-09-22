@@ -20,6 +20,7 @@ namespace Coursework_Master_Degree.Items
         public ItemGhostMetaSO ItemGhostMetaSO;
 
         [EnableIf("NotEnabled")]
+        [Tooltip("Set via script")]
         public List<ItemGhostTypeToInstance> ItemGhostTypesToInstancesList;
 
         public bool IsSurface = false;
