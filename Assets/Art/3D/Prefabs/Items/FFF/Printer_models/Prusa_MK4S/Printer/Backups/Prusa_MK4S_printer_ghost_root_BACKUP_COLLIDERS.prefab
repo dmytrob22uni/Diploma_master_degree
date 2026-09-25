@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2896765957494845538}
   - component: {fileID: 3233874460764958543}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -316,7 +316,7 @@ GameObject:
   - component: {fileID: 3588206184133897616}
   - component: {fileID: 2890551439625389952}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_belt_bearing
+  m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -426,7 +426,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3763022860118309277}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -737,7 +737,7 @@ GameObject:
   - component: {fileID: 9058028292310217060}
   - component: {fileID: 6668752162898638602}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -962,7 +962,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1430822611812390220}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -994,7 +994,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5704815562591122404}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_print_plate_root
+  m_Name: print_plate_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1079,7 +1079,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7246355755924779212}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_extruder_filament_heater_root
+  m_Name: extruder_filament_heater_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1111,7 +1111,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8522949392636140285}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1177,7 +1177,7 @@ GameObject:
   - component: {fileID: 6088519184314315016}
   - component: {fileID: 8439398619550098096}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_belt_bearing
+  m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1287,7 +1287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5276532276331577433}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_print_bed_thermistor_root
+  m_Name: print_bed_thermistor_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1375,7 +1375,7 @@ GameObject:
   - component: {fileID: 6505170688997075309}
   - component: {fileID: 1494154486313068524}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1485,7 +1485,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6583789401692677510}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_print_bed_root
+  m_Name: print_bed_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1658,7 +1658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7328319824034097109}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_belt_bearing_root
+  m_Name: axis_belt_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1694,7 +1694,7 @@ GameObject:
   - component: {fileID: 1484971401801539697}
   - component: {fileID: 5535241124955335207}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1804,7 +1804,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2719097096480837659}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1945,7 +1945,7 @@ GameObject:
   - component: {fileID: 818495116779894542}
   - component: {fileID: 8819755976818027752}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor
+  m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2056,7 +2056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 38092244350511122}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_belt_root
+  m_Name: axis_belt_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -2428,7 +2428,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5003547850323761690}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -2460,7 +2460,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8843437408394244221}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_battery_closet_root
+  m_Name: battery_closet_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -2495,7 +2495,7 @@ GameObject:
   - component: {fileID: 1516057805702258324}
   - component: {fileID: 1484577845754835926}
   m_Layer: 0
-  m_Name: Prusa_MK4S_battery_closet_adapter
+  m_Name: battery_closet_adapter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3102,7 +3102,7 @@ GameObject:
   - component: {fileID: 2811909665042114314}
   - component: {fileID: 5219623872139612271}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_fan_frame
+  m_Name: extruder_fan_frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3309,7 +3309,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5263021446621382526}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_root
+  m_Name: axis_rotor_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -3488,7 +3488,7 @@ GameObject:
   - component: {fileID: 7363828225685734005}
   - component: {fileID: 4063054578559045234}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_guide_bearing
+  m_Name: axis_guide_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3601,7 +3601,7 @@ GameObject:
   - component: {fileID: 1239551867510545779}
   - component: {fileID: 7210276247219315751}
   m_Layer: 0
-  m_Name: Prusa_MK4S_print_bed_thermistor
+  m_Name: print_bed_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3711,7 +3711,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9175691401078738367}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_root
+  m_Name: axis_rotor_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -3900,7 +3900,7 @@ GameObject:
   - component: {fileID: 5809994553320031802}
   - component: {fileID: 821988092203243807}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_guide_bearing
+  m_Name: axis_guide_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4012,7 +4012,7 @@ GameObject:
   - component: {fileID: 1131468294706921513}
   - component: {fileID: 7046481358532293357}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_fan_calm
+  m_Name: extruder_fan_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4100,7 +4100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7710646665928095853}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_battery_closet_adapter_root
+  m_Name: battery_closet_adapter_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -4185,7 +4185,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4732824603625359974}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_root
+  m_Name: axis_rotor_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -4217,7 +4217,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9163168888662162635}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_guide_bearing_root
+  m_Name: axis_guide_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -4249,7 +4249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4378210058334500230}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_belt_root
+  m_Name: axis_belt_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -4284,7 +4284,7 @@ GameObject:
   - component: {fileID: 7041078460616431896}
   - component: {fileID: 836804790497193636}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4397,7 +4397,7 @@ GameObject:
   - component: {fileID: 4170146903805213246}
   - component: {fileID: 5555961215531425322}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_thermistor
+  m_Name: extruder_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4509,7 +4509,7 @@ GameObject:
   - component: {fileID: 8597561066697419402}
   - component: {fileID: 5493159533894298729}
   m_Layer: 0
-  m_Name: Prusa_MK4S_battery_closet_tumbler
+  m_Name: battery_closet_tumbler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4597,7 +4597,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1199283148231913556}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_extruder_filament_bearing_root
+  m_Name: extruder_filament_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -4632,7 +4632,7 @@ GameObject:
   - component: {fileID: 7555440290234635524}
   - component: {fileID: 512983072783439354}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4745,7 +4745,7 @@ GameObject:
   - component: {fileID: 6036326557861157995}
   - component: {fileID: 3207210716355327587}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_filament_bearing
+  m_Name: filament_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4856,7 +4856,7 @@ GameObject:
   - component: {fileID: 7103936643132351128}
   - component: {fileID: 6892923954583459334}
   m_Layer: 0
-  m_Name: Prusa_MK4S_print_bed
+  m_Name: print_bed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5118,7 +5118,7 @@ GameObject:
   - component: {fileID: 2033115799708749108}
   - component: {fileID: 2070240268237753486}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_belt
+  m_Name: axis_belt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5230,7 +5230,7 @@ GameObject:
   - component: {fileID: 2843875303672000447}
   - component: {fileID: 2282599373420178851}
   m_Layer: 0
-  m_Name: Prusa_MK4S_battery_closet
+  m_Name: battery_closet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5345,7 +5345,7 @@ GameObject:
   - component: {fileID: 8570764198419676692}
   - component: {fileID: 8700316612109777732}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5458,7 +5458,7 @@ GameObject:
   - component: {fileID: 3977776646239022083}
   - component: {fileID: 6464001022250586099}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_filament_heater
+  m_Name: extruder_filament_heater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5737,7 +5737,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6630075660432281422}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_belt_bearing_root
+  m_Name: axis_belt_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -6345,7 +6345,7 @@ GameObject:
   - component: {fileID: 293779114017425643}
   - component: {fileID: 9099683763586660348}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor
+  m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6459,7 +6459,7 @@ GameObject:
   - component: {fileID: 5893985919264163456}
   - component: {fileID: 681650670124114801}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_belt_bearing
+  m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6625,7 +6625,7 @@ GameObject:
   - component: {fileID: 9023366087263419754}
   - component: {fileID: 3032206677371337927}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6797,7 +6797,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2678601608033300982}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -6922,7 +6922,7 @@ GameObject:
   - component: {fileID: 5774843689055506543}
   - component: {fileID: 2313226651721741001}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor
+  m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7086,7 +7086,7 @@ GameObject:
   m_Component:
   - component: {fileID: 209330055347582617}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_extruder_fan_root
+  m_Name: extruder_fan_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -7174,7 +7174,7 @@ GameObject:
   - component: {fileID: 5438156012767228084}
   - component: {fileID: 7184400843238569792}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_nozzle
+  m_Name: extruder_nozzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7318,7 +7318,7 @@ GameObject:
   - component: {fileID: 1702562484539291320}
   - component: {fileID: 8086063330057982442}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor_bearing
+  m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7428,7 +7428,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1672598791712928733}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -7463,7 +7463,7 @@ GameObject:
   - component: {fileID: 7090367761085163625}
   - component: {fileID: 2817598732543926463}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_belt
+  m_Name: axis_belt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7575,7 +7575,7 @@ GameObject:
   - component: {fileID: 3125076525166219800}
   - component: {fileID: 5844039092659203744}
   m_Layer: 0
-  m_Name: Prusa_MK4S_print_plate
+  m_Name: print_plate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7687,7 +7687,7 @@ GameObject:
   - component: {fileID: 3074120972847345610}
   - component: {fileID: 5116330132086287426}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_rotor
+  m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7798,7 +7798,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6267533609777569596}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_extruder_thermistor_root
+  m_Name: extruder_thermistor_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -7830,7 +7830,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4521119203558708462}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_root
+  m_Name: axis_rotor_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -7862,7 +7862,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5108698158869006189}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -7897,7 +7897,7 @@ GameObject:
   - component: {fileID: 1941999465503372439}
   - component: {fileID: 5935415039144035939}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_belt_bearing
+  m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8007,7 +8007,7 @@ GameObject:
   m_Component:
   - component: {fileID: 69750091293903133}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
+  m_Name: axis_rotor_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -8092,7 +8092,7 @@ GameObject:
   m_Component:
   - component: {fileID: 556017349688872346}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_guide_bearing_root
+  m_Name: axis_guide_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -8156,7 +8156,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1026991408360027641}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_belt_bearing_root
+  m_Name: axis_belt_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -8188,7 +8188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6207253718760174751}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_axis_belt_bearing_root
+  m_Name: axis_belt_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -8220,7 +8220,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8303010694844075726}
   m_Layer: 15
-  m_Name: Prusa_MK4S_printer_extruder_nozzle_root
+  m_Name: extruder_nozzle_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
