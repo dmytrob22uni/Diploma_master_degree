@@ -43,9 +43,8 @@ GameObject:
   - component: {fileID: 4750608082144405460}
   - component: {fileID: 643344272212904192}
   - component: {fileID: 5777934518158273154}
-  - component: {fileID: 753118196855373873}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_guide_bearing
+  m_Name: axis_guide_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124,27 +123,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &753118196855373873
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604335436420296447}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.019742787, y: 0.019742807, z: 0.06341158}
-  m_Center: {x: 0, y: 0, z: 0.000000007450581}
 --- !u!1 &2954334403542422607
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,6 +198,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 3573b44b7f5de00ed8216edd803e8c18, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 5777934518158273154}
   CornersList:

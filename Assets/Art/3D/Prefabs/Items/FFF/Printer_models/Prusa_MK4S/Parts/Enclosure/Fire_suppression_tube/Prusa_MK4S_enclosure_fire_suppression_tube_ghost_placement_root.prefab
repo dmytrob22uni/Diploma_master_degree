@@ -75,6 +75,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: bb862acc701c3cddfab275e96c50fb69, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 4749846201764649768}
   CornersList:
@@ -153,9 +155,8 @@ GameObject:
   - component: {fileID: 2671966865005546892}
   - component: {fileID: 4971262150420137334}
   - component: {fileID: 4749846201764649768}
-  - component: {fileID: 3762759018269423286}
   m_Layer: 0
-  m_Name: Prusa_MK4S_enclosure_fire_suppression_tube
+  m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -235,27 +236,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3762759018269423286
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5075646508035811025}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.50820327, y: 0.03326833, z: 0.03164022}
-  m_Center: {x: 0, y: 0, z: -0.015753867}
 --- !u!1 &7222760067802481890
 GameObject:
   m_ObjectHideFlags: 0

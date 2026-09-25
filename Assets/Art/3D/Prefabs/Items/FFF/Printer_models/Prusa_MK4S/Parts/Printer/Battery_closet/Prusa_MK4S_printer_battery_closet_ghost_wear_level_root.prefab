@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1527906157425618652}
   - component: {fileID: 6424873179866480278}
   m_Layer: 0
-  m_Name: Prusa_MK4S_battery_closet_tumbler
+  m_Name: tumbler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,7 +122,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1549515059333645659}
-  - {fileID: 6340524164254909338}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &4332012899805314106
@@ -165,40 +164,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostWearLevelDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 9a9ccf074087b7a689c051bbb0fbd323, type: 2}
+  ItemGhostType: 3
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 73321383980595599}
   - {fileID: 6424873179866480278}
---- !u!1 &1562088302690234853
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5977571320736759205}
-  m_Layer: 0
-  m_Name: corner_1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5977571320736759205
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1562088302690234853}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0526, y: 0, z: -0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6340524164254909338}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1766517755938714754
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +182,7 @@ GameObject:
   - component: {fileID: 73321383980595599}
   - component: {fileID: 1119008478942690364}
   m_Layer: 0
-  m_Name: Prusa_MK4S_battery_closet
+  m_Name: battery_closet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -314,67 +284,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.05563031, y: 0.13528106, z: 0.25508493}
   m_Center: {x: 0.000000007450581, y: 0, z: 0.000000037252903}
---- !u!1 &5872704590646253029
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6340524164254909338}
-  m_Layer: 0
-  m_Name: corners
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6340524164254909338
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5872704590646253029}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5977571320736759205}
-  - {fileID: 4921891578663231977}
-  m_Father: {fileID: 7686369015081834432}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6989248284322116203
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4921891578663231977}
-  m_Layer: 0
-  m_Name: corner_2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4921891578663231977
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6989248284322116203}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0546, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6340524164254909338}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

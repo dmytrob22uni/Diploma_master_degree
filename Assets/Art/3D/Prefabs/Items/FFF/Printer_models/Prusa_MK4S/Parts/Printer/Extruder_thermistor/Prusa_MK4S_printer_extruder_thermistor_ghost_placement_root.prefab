@@ -43,9 +43,8 @@ GameObject:
   - component: {fileID: 2563157324655717506}
   - component: {fileID: 3016941908676904317}
   - component: {fileID: 4962381347483443438}
-  - component: {fileID: 7048196449215476142}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_thermistor
+  m_Name: extruder_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124,27 +123,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7048196449215476142
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3847875785002903552}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0051190234, y: 0.005098568, z: 0.007173324}
-  m_Center: {x: 0.0043356093, y: 1.6197652e-18, z: -0.015511015}
 --- !u!1 &5458995432315238499
 GameObject:
   m_ObjectHideFlags: 0
@@ -251,6 +229,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: c67ee14ff90f993caa3d251afeae415f, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 4962381347483443438}
   CornersList:

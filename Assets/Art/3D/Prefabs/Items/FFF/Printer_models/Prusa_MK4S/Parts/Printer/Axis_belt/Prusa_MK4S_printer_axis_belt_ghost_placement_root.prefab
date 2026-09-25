@@ -75,6 +75,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: deb9d6360bae2e1159733443a4c2b343, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 4261329895489973119}
   CornersList:
@@ -186,9 +188,8 @@ GameObject:
   - component: {fileID: 3822378058675720476}
   - component: {fileID: 162325569437414657}
   - component: {fileID: 4261329895489973119}
-  - component: {fileID: 377958149108340736}
   m_Layer: 0
-  m_Name: Prusa_MK4S_axis_belt
+  m_Name: axis_belt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -266,24 +267,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &377958149108340736
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8536717043083311781}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0088055, y: 0.41363966, z: 0.016139377}
-  m_Center: {x: 0, y: 0.19889152, z: 0.0000000018626451}

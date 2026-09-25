@@ -75,6 +75,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 39968e320b1f8a278bf0dda812eeb873, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 9189585722615194891}
   CornersList:
@@ -190,9 +192,8 @@ GameObject:
   - component: {fileID: 571231055279915719}
   - component: {fileID: 2812459770325946344}
   - component: {fileID: 9189585722615194891}
-  - component: {fileID: 139412529721737747}
   m_Layer: 0
-  m_Name: Prusa_MK4S_print_plate
+  m_Name: print_plate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -270,27 +271,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &139412529721737747
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5297667207181911845}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.2563815, y: 0.22382611, z: 0.0014935884}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7143782300205233406
 GameObject:
   m_ObjectHideFlags: 0

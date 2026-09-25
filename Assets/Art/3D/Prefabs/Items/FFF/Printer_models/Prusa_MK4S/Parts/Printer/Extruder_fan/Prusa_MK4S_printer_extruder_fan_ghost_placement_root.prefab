@@ -75,6 +75,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 38930a4c28958a2159d9eb5bfa628480, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 1078068657903310012}
   - {fileID: 9208845183498474030}
@@ -123,9 +125,8 @@ GameObject:
   - component: {fileID: 5363742086909551}
   - component: {fileID: 2561284166592177271}
   - component: {fileID: 1078068657903310012}
-  - component: {fileID: 7716502635598248861}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_fan_frame
+  m_Name: extruder_fan_frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,27 +205,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7716502635598248861
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7379148568808530788}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.048605703, y: 0.016868096, z: 0.04860572}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7477801791505119396
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,7 +281,7 @@ GameObject:
   - component: {fileID: 7790209195243070599}
   - component: {fileID: 9208845183498474030}
   m_Layer: 0
-  m_Name: Prusa_MK4S_extruder_fan_calm
+  m_Name: fan_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
