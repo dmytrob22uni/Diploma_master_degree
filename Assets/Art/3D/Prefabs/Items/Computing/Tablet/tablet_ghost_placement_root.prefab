@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2143755556625686865}
   - component: {fileID: 6657551507754142477}
   - component: {fileID: 2982255244819357196}
-  - component: {fileID: 5720852668535956211}
   m_Layer: 0
   m_Name: tablet
   m_TagString: Untagged
@@ -93,27 +92,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5720852668535956211
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 799468775605694428}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.17950001, y: 0.24860007, z: 0.007000002}
-  m_Center: {x: 0, y: 0, z: 0.003500001}
 --- !u!1 &1781421533824326379
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,7 +166,7 @@ GameObject:
   - component: {fileID: 1128647569544804280}
   - component: {fileID: 6071972200294614125}
   m_Layer: 0
-  m_Name: tablet_screen
+  m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -407,6 +385,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: d1a62290dd090b6fba80ce997d995bfc, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 2982255244819357196}
   - {fileID: 6071972200294614125}

@@ -75,6 +75,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 529595523dc50df01a3b82f45f338e2f, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 8220770523440648202}
   - {fileID: 7184344761177160463}
@@ -161,7 +163,7 @@ GameObject:
   - component: {fileID: 364062143874001001}
   - component: {fileID: 7184344761177160463}
   m_Layer: 0
-  m_Name: smartphone_screen
+  m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -312,7 +314,6 @@ GameObject:
   - component: {fileID: 2825956022342132326}
   - component: {fileID: 6068933374678419892}
   - component: {fileID: 8220770523440648202}
-  - component: {fileID: 5800359066914227588}
   m_Layer: 0
   m_Name: smartphone
   m_TagString: Untagged
@@ -395,27 +396,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5800359066914227588
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7882672034996824927}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.078, y: 0.16340005, z: 0.008749996}
-  m_Center: {x: 0, y: 0, z: 0.0043750037}
 --- !u!1 &8451448776768247852
 GameObject:
   m_ObjectHideFlags: 0

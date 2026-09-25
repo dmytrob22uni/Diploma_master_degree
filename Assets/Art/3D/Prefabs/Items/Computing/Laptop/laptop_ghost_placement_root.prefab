@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3186961612101634208}
   - component: {fileID: 377367222227556624}
   m_Layer: 0
-  m_Name: laptop_lid
+  m_Name: lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -173,6 +173,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 03244d0663a297565ad2b1e5967c9aaf, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 8319775701547128110}
   - {fileID: 5943281897731626821}
@@ -257,7 +259,7 @@ GameObject:
   - component: {fileID: 6507020661258825285}
   - component: {fileID: 180122225413015129}
   m_Layer: 0
-  m_Name: laptop_screen
+  m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -409,7 +411,7 @@ GameObject:
   - component: {fileID: 3567919511197381368}
   - component: {fileID: 5943281897731626821}
   m_Layer: 0
-  m_Name: laptop_keyboard
+  m_Name: keyboard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
