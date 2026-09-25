@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 8730136991432466917}
   - component: {fileID: 3437393568699162812}
   m_Layer: 0
-  m_Name: LED_lamp_bulb
+  m_Name: bulb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,7 +132,6 @@ GameObject:
   - component: {fileID: 2121778366870126820}
   - component: {fileID: 3272368408628172061}
   - component: {fileID: 6309700437864994088}
-  - component: {fileID: 6149364340662914819}
   m_Layer: 0
   m_Name: LED_lamp
   m_TagString: Untagged
@@ -213,27 +212,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6149364340662914819
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3690972963196739891}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.059851952, y: 0.061511423, z: 0.11014035}
-  m_Center: {x: 0, y: 0.0000000018626448, z: 0.055070184}
 --- !u!1 &5985268544203487946
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,6 +319,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: e7f0f6c383c3ef93280f905243a0ebfd, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 6309700437864994088}
   - {fileID: 3437393568699162812}

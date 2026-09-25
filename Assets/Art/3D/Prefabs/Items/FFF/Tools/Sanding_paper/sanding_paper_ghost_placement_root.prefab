@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6639447071503725827}
   - component: {fileID: 8308430227512288563}
-  - component: {fileID: -6460780084751553306}
-  m_Layer: 0
+  - component: {fileID: -3299950835230681162}
+  m_Layer: 15
   m_Name: sanding_paper_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &-6460780084751553306
+--- !u!114 &-3299950835230681162
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,6 +75,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 3f51692a239de4f96be44c71e9ccc7fb, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 1491708552045226056}
   CornersList:
@@ -186,7 +188,6 @@ GameObject:
   - component: {fileID: 4020868390081089736}
   - component: {fileID: 8238675855402642660}
   - component: {fileID: 1491708552045226056}
-  - component: {fileID: 1034578425349781819}
   m_Layer: 0
   m_Name: sanding_paper
   m_TagString: Untagged
@@ -267,25 +268,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &1034578425349781819
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7191061502513851777}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4001473491194272436, guid: 91737bfb938fcdd519fa2aca6e0f1c02, type: 3}

@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 5408817634922081444}
   - component: {fileID: 2267551864427153666}
   - component: {fileID: 2889182603711249134}
-  - component: {fileID: 6995779201510029735}
   m_Layer: 0
-  m_Name: support_cutting_tool_left_part
+  m_Name: left_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92,28 +91,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6995779201510029735
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2498582205390077048}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -8482156398149016594, guid: 0708d36d31e2b4dafa1a8c3836d3ca82, type: 3}
 --- !u!1 &3631010261828389168
 GameObject:
   m_ObjectHideFlags: 0
@@ -125,9 +102,8 @@ GameObject:
   - component: {fileID: 3554364700395600720}
   - component: {fileID: 6056976257320562088}
   - component: {fileID: 4210920514970211072}
-  - component: {fileID: 4721440256390751504}
   m_Layer: 0
-  m_Name: support_cutting_tool_right_part
+  m_Name: right_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -206,28 +182,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4721440256390751504
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3631010261828389168}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3779785792481668478, guid: 0708d36d31e2b4dafa1a8c3836d3ca82, type: 3}
 --- !u!1 &4102154519282922035
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,7 +225,7 @@ GameObject:
   - component: {fileID: 4112346791044405849}
   - component: {fileID: 7623871379929538586}
   m_Layer: 0
-  m_Name: support_cutting_tool
+  m_Name: support_cutting_tool_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -490,6 +444,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: df5bab7e4b47bfbdeb6e2c7ade0b4f7b, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 7623871379929538586}
   - {fileID: 2889182603711249134}
