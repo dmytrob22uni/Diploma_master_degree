@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 7659065452635524124}
   - component: {fileID: 8440926023309679336}
   m_Layer: 0
-  m_Name: adhesive_spray_cap
+  m_Name: cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -345,6 +345,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
   ItemGhostMetaData: {fileID: 11400000, guid: 64eaa34194ccece748887548d258bb93, type: 2}
+  ItemGhostType: 0
+  ItemInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 1761307892653270833}
   - {fileID: 8440926023309679336}
