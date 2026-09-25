@@ -352,7 +352,7 @@ GameObject:
   - component: {fileID: 3211519219182004092}
   - component: {fileID: -4998241898145780294}
   m_Layer: 15
-  m_Name: Prusa_MK4S_enclosure_root
+  m_Name: Prusa_MK4S_enclosure_root_BACKUP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -420,7 +420,7 @@ MonoBehaviour:
   ItemGhostTypesToInstancesList: []
   IsSurface: 1
   ShelvesList:
-  - {fileID: 0}
+  - {fileID: 8346549400994516901}
 --- !u!1 &2272560016191019848
 GameObject:
   m_ObjectHideFlags: 0

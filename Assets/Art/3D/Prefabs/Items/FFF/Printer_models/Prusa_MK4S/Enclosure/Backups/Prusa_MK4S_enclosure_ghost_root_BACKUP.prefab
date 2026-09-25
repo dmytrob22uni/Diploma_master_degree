@@ -485,9 +485,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4001062044893418464}
-  - component: {fileID: -2004306394619153443}
   m_Layer: 15
-  m_Name: Prusa_MK4S_enclosure_ghost_placement_root
+  m_Name: Prusa_MK4S_enclosure_ghost_root_BACKUP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -510,42 +509,6 @@ Transform:
   - {fileID: 6181067432213929538}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-2004306394619153443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2958662996872005273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9e9d91119b39283d8c39edaae132964, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Ghosts.ItemGhostPlacementDataHolder
-  ItemGhostMetaData: {fileID: 11400000, guid: 02ac3b1c507d8cfb18be273ab4b378c2, type: 2}
-  ItemGhostType: 0
-  ItemInstance: {fileID: 0}
-  MeshRenderersList:
-  - {fileID: 5857541214463720092}
-  - {fileID: 5233910381531236443}
-  - {fileID: 4696601368604769150}
-  - {fileID: 7450275423097264729}
-  - {fileID: 3182968646750530122}
-  - {fileID: 8103508339200563880}
-  - {fileID: 1292805460508752128}
-  - {fileID: 4292366232082783557}
-  - {fileID: 5729826352018994852}
-  - {fileID: 1677550647248893302}
-  - {fileID: 4720653919313787288}
-  - {fileID: 6141274089422286902}
-  - {fileID: 3991334653888620617}
-  - {fileID: 7328984024365569385}
-  - {fileID: 436062887892056552}
-  CornersList:
-  - {fileID: 5802125962964861022}
-  - {fileID: 7262340303773035952}
-  - {fileID: 5516225427045084288}
-  - {fileID: 5616727046737752495}
 --- !u!1 &3215378198168954678
 GameObject:
   m_ObjectHideFlags: 0
