@@ -620,6 +620,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+--- !u!1001 &586718618
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2321595096870056498, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_Name
+      value: Prusa_MK4S_printer_root (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.27931225
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00000039324905
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.0015125
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.23755477
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.9713742
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -152.515
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
 --- !u!1001 &890048973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1211,3 +1268,4 @@ SceneRoots:
   - {fileID: 537840985}
   - {fileID: 1418762154}
   - {fileID: 1144753403}
+  - {fileID: 586718618}
