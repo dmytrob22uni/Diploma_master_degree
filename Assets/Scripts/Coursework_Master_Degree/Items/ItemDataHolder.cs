@@ -23,8 +23,17 @@ namespace Coursework_Master_Degree.Items
         [Tooltip("Set via script")]
         public List<ItemGhostTypeToInstance> ItemGhostTypesToInstancesList;
 
+        [Tooltip("Hint to search for ItemSurfaceDataHolder")]
         public bool IsSurface = false;
-        [ShowIf("IsSurface")]
-        public List<GameObject> ShelvesList;
+
+        [Tooltip("Used to expose list for storing free parts reset locations")]
+        public bool IsHaveFreeParts = false;
+
+        [ShowIf("IsHaveFreeParts")]
+        [EnableIf("IsHaveFreeParts")]
+        public List<ItemPartToLocation> ItemPartsToLocationsList;
+
+        [Tooltip("Tip to look for IWearLevel")]
+        public bool IsHaveWearLevel = false;
     }
 }
