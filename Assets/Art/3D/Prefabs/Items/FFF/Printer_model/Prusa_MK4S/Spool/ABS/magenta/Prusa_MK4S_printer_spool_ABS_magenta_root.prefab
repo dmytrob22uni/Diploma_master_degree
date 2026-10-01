@@ -125,6 +125,8 @@ GameObject:
   - component: {fileID: 6705595234148630119}
   - component: {fileID: 5458931367332923366}
   - component: {fileID: 5048549443325444598}
+  - component: {fileID: 2922964103665222922}
+  - component: {fileID: 995070283315940502}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_spool_ABS_magenta_root
   m_TagString: Untagged
@@ -192,7 +194,42 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: d2209260bd8e608d78ae5fbf882f3f77, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &2922964103665222922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6245900780811570333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cb89b76795426604923fb02edc87c00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.Spool.ItemFFFPrusaMK4SSpoolDataHolder
+  MaterialHardness: 0.6
+  MaterialAbrasiveness: 0.15
+  MaterialType: 35
+  ColorType: 42
+  Material: {fileID: 2100000, guid: 60be5ed68a0a0885fbbb0630a26ebcf1, type: 2}
+  FilamentLengthSpoolMeters: 400
+--- !u!114 &995070283315940502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6245900780811570333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 95.511536
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: 09d516c66cc46143798941ee8c3f11c7, type: 2}
 --- !u!1 &8530524046648030927
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1051905917795685819}
   - component: {fileID: 4946433756025394498}
   - component: {fileID: -7643020843136366649}
+  - component: {fileID: 956556756900355494}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_axis_rotor_bearing_root
   m_TagString: Untagged
@@ -78,7 +79,24 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 607a8b9238f121ef2bc2b6de171315f4, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &956556756900355494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3138477101525482754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 97.59077
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: ab70a86d80e54351dad174f11027b08b, type: 2}
 --- !u!1 &4350725037738601597
 GameObject:
   m_ObjectHideFlags: 0

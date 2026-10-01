@@ -190,4 +190,6 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 27623961c591ffeadbf0a4880b4e38ae, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5508456755600838416}
   - component: {fileID: 8672435584694905822}
   - component: {fileID: 2439390929404622456}
+  - component: {fileID: 5060379663469245607}
   m_Layer: 15
   m_Name: cleaning_spray_root
   m_TagString: Untagged
@@ -78,7 +79,24 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 9ee92e3701ca5a032a949eea00d46f5f, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &5060379663469245607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2996031785689252810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 90.75366
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: affa9b35ebe57c2d69b77654ba7f4d3a, type: 2}
 --- !u!1 &8311893776465317188
 GameObject:
   m_ObjectHideFlags: 0

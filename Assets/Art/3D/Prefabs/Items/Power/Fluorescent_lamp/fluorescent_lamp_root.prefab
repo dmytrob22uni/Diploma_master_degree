@@ -215,6 +215,7 @@ GameObject:
   - component: {fileID: 6844768866737157762}
   - component: {fileID: 6324942927797218444}
   - component: {fileID: 8966057160769875482}
+  - component: {fileID: 7682678747421512355}
   m_Layer: 15
   m_Name: fluorescent_lamp_root
   m_TagString: Untagged
@@ -282,4 +283,27 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 08e182cdb842d9b81afda806310d9895, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 0
+--- !u!114 &7682678747421512355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6867399859302533690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d0e76aae031acf66beb8865f63bb118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Power.ItemPowerDataHolder
+  ItemType: 46
+  IsPowered: 0
+  PlugLocationsList: []
+  EmitterMeshRenderer: {fileID: 431860236558681258}
+  IsOn: 0
+  TumblerToRotations:
+    ItemPart: {fileID: 0}
+    RotationState1: {x: 0, y: 0, z: 0}
+    RotationState2: {x: 0, y: 0, z: 0}

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5005126308404388674}
   - component: {fileID: 5873524099903523165}
   - component: {fileID: 5764692278927704993}
+  - component: {fileID: 1466784119200397208}
   m_Layer: 15
   m_Name: tablet_root
   m_TagString: Untagged
@@ -78,7 +79,25 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: d1a62290dd090b6fba80ce997d995bfc, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 0
+--- !u!114 &1466784119200397208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983131788833340573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe21e7d8eb89fca3ca83db5d9108bbbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.ItemComputingDataHolder
+  ItemType: 4
+  ScreenGameObject: {fileID: 4319533490063473903}
+  IsLidOpened: 1
+  IsTurnedOn: 0
 --- !u!1 &4319533490063473903
 GameObject:
   m_ObjectHideFlags: 0

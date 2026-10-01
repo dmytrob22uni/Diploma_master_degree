@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 5605434305148134073}
   - component: {fileID: 1095742342815595077}
   - component: {fileID: -4505011947065466877}
+  - component: {fileID: 4212623080995132811}
   m_Layer: 15
   m_Name: smartphone_root
   m_TagString: Untagged
@@ -168,7 +169,25 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 529595523dc50df01a3b82f45f338e2f, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 0
+--- !u!114 &4212623080995132811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070272445071592015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe21e7d8eb89fca3ca83db5d9108bbbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.ItemComputingDataHolder
+  ItemType: 3
+  ScreenGameObject: {fileID: 3211579692862049872}
+  IsLidOpened: 1
+  IsTurnedOn: 0
 --- !u!1 &7394219612479797985
 GameObject:
   m_ObjectHideFlags: 0

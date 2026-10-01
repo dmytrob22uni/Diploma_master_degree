@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1153875908244058811}
   - component: {fileID: 8212250045700266545}
   - component: {fileID: 7294208393474018202}
+  - component: {fileID: -3545797897952211294}
   m_Layer: 15
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_fan_root
   m_TagString: Untagged
@@ -78,7 +79,24 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: c6199361b9b5c75ba9b6c7f81e4e1382, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &-3545797897952211294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 607690325978844127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 91.08977
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: c9cc1adf88c175ced9793729a295c2e0, type: 2}
 --- !u!1 &1642885160578737580
 GameObject:
   m_ObjectHideFlags: 0

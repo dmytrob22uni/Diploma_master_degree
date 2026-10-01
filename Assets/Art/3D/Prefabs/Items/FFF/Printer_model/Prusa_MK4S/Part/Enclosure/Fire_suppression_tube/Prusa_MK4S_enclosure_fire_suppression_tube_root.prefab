@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6517386345239953101}
   - component: {fileID: 7835357693288099430}
   - component: {fileID: 7073176908875035643}
+  - component: {fileID: 4822732319339415407}
   m_Layer: 15
   m_Name: Prusa_MK4S_enclosure_fire_suppression_tube_root
   m_TagString: Untagged
@@ -78,7 +79,24 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: bb862acc701c3cddfab275e96c50fb69, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &4822732319339415407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877158471484422364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 94.660065
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: f1188c73bc377667caf4f81b52684bbc, type: 2}
 --- !u!1 &3045565610575931964
 GameObject:
   m_ObjectHideFlags: 0

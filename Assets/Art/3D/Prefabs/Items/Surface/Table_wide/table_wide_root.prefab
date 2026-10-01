@@ -247,6 +247,7 @@ GameObject:
   - component: {fileID: 8958323329686882084}
   - component: {fileID: 577341485951262486}
   - component: {fileID: 7719721468108129721}
+  - component: {fileID: 2700857666832068064}
   m_Layer: 15
   m_Name: table_wide_root
   m_TagString: Untagged
@@ -315,8 +316,25 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: aa55af066b64530479c49222f24c3409, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 1
-  ShelvesList:
-  - {fileID: 927648589399967341}
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 0
+--- !u!114 &2700857666832068064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3934736013726706887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dec493e731a39df779f5f290e5d45ac7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Surface.ItemSurfaceDataHolder
+  itemType: 54
+  ShelvesCollidersList:
+  - {fileID: 3855026097349903779}
+  ItemsOnShelvesList: []
 --- !u!1 &4863545449020516261
 GameObject:
   m_ObjectHideFlags: 0

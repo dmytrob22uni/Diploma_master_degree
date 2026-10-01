@@ -1299,6 +1299,7 @@ GameObject:
   - component: {fileID: 7689618605535600892}
   - component: {fileID: 9094138599493437641}
   - component: {fileID: 4845091765864811612}
+  - component: {fileID: 8750856359449226972}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_root
   m_TagString: Untagged
@@ -1369,7 +1370,28 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 492a77783656e9eeb8c70cc36346b9ea, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 1
+  ItemPartsToLocationsList:
+  - ItemPart: {fileID: 6480357403884674196}
+    Location: {fileID: 7864299587916021393}
+  - ItemPart: {fileID: 7143562480650182682}
+    Location: {fileID: 4439246236487937772}
+  - ItemPart: {fileID: 5284963703025210324}
+    Location: {fileID: 8171173381207736940}
+  IsHaveWearLevel: 0
+--- !u!114 &8750856359449226972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2321595096870056498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a471cd099de5620873f9cb8ab9820b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrinterModels.PrusaMK4S.Printer.ItemFFFPrusaMK4SPrinterDataHolder
+  itemFFFType: 33
 --- !u!1 &2345573220605376966
 GameObject:
   m_ObjectHideFlags: 0
@@ -3204,6 +3226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4805882310116382329}
   - component: {fileID: 2145419779849200844}
+  - component: {fileID: 4358186379803017681}
   m_Layer: 0
   m_Name: battery_closet_plug_root
   m_TagString: Untagged
@@ -3254,6 +3277,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &4358186379803017681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5284963703025210324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fb0cf562037c1f948b39534b00569c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemFreePartDataHolder
+  ItemFreePartGhostPlacementPrefab: {fileID: 8646392157543461752, guid: 742acd017312598a6bf5ed1621b6b597, type: 3}
+  ItemFreePartGhostPlacementInstance: {fileID: 0}
 --- !u!1 &5366995616868049489
 GameObject:
   m_ObjectHideFlags: 0
@@ -3912,6 +3949,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4563190648364450308}
   - component: {fileID: 7085984856059558902}
+  - component: {fileID: 1473766023292708551}
   m_Layer: 0
   m_Name: wall_socket_plug_root
   m_TagString: Untagged
@@ -3962,6 +4000,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &1473766023292708551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6480357403884674196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fb0cf562037c1f948b39534b00569c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemFreePartDataHolder
+  ItemFreePartGhostPlacementPrefab: {fileID: 8646392157543461752, guid: f00c1b4dac56408eeb99a1bbde3c8656, type: 3}
+  ItemFreePartGhostPlacementInstance: {fileID: 0}
 --- !u!1 &6490251818033085393
 GameObject:
   m_ObjectHideFlags: 0
@@ -4132,6 +4184,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3045902898988959166}
+  - component: {fileID: 2900383047465624303}
   m_Layer: 0
   m_Name: battery_closet_plug_location
   m_TagString: Untagged
@@ -4154,6 +4207,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8214306663547871714}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2900383047465624303
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6860951646724968190}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.03202195, y: 0.024498235, z: 0.010505497}
+  m_Center: {x: 0.000025792016, y: 0.009648366, z: -0.0026701817}
 --- !u!1 &6953198401338481333
 GameObject:
   m_ObjectHideFlags: 0
@@ -6241,6 +6315,11 @@ PrefabInstance:
 --- !u!4 &2822590688164881261 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4049438005437718146, guid: 8c3af6893c8f7550b9f2e84404ca9f78, type: 3}
+  m_PrefabInstance: {fileID: 2241003913231760879}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7143562480650182682 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8951657518640537077, guid: 8c3af6893c8f7550b9f2e84404ca9f78, type: 3}
   m_PrefabInstance: {fileID: 2241003913231760879}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2365129892738070281

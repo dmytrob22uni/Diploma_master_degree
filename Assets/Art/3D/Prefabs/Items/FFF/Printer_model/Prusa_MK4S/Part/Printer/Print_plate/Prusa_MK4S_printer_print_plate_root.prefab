@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4719225158679651392}
   - component: {fileID: 3923199943596066958}
   - component: {fileID: 2719771813170637753}
+  - component: {fileID: -5458089755390511375}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_print_plate_root
   m_TagString: Untagged
@@ -78,7 +79,24 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 39968e320b1f8a278bf0dda812eeb873, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &-5458089755390511375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211306764670282936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 97.074745
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: 97098b721994a6ea9a9570f8c7889862, type: 2}
 --- !u!1 &5297667207181911845
 GameObject:
   m_ObjectHideFlags: 0

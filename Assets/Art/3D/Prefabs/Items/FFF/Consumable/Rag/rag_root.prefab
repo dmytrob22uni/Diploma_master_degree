@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8088822929314396668}
   - component: {fileID: 3873578248060222138}
   - component: {fileID: 6502191297653720816}
+  - component: {fileID: 6061705283055224311}
   m_Layer: 15
   m_Name: rag_root
   m_TagString: Untagged
@@ -78,7 +79,24 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 2eb88dbdb2c5c08ff9eaddb671fc726b, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &6061705283055224311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4102967968628067578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 98.69811
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: 5ee7a02123514b367b835787884e6f65, type: 2}
 --- !u!1 &5141084405711999561
 GameObject:
   m_ObjectHideFlags: 0

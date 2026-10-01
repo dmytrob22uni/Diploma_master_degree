@@ -18,4 +18,4 @@ MonoBehaviour:
   Price: 12
   Prefab: {fileID: 6867399859302533690, guid: 1c09ae97ae93c6d78b19bbe7c0b01ec0, type: 3}
   Icon: {fileID: 2800000, guid: 9c576fe867c6e5d9d97d24aadbe416fa, type: 3}
-  ItemTypes: 0d000000
+  ItemTypes: 2c000000i

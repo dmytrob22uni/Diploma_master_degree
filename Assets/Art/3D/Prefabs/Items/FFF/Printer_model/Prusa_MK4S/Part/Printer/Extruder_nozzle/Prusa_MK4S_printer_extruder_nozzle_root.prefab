@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5844603926950214662}
   - component: {fileID: 5599702086684273047}
   - component: {fileID: 7071829914065254911}
+  - component: {fileID: -3914380257251111164}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_extruder_nozzle_root
   m_TagString: Untagged
@@ -78,7 +79,24 @@ MonoBehaviour:
   ItemGhostMetaSO: {fileID: 11400000, guid: 25187a38074998537b91240cc09b3a4b, type: 2}
   ItemGhostTypesToInstancesList: []
   IsSurface: 0
-  ShelvesList: []
+  IsHaveFreeParts: 0
+  ItemPartsToLocationsList: []
+  IsHaveWearLevel: 1
+--- !u!114 &-3914380257251111164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6526799579797417850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
+  currentCondition: 91.62468
+  isWornOut: 0
+  ItemWearLogicSO: {fileID: 11400000, guid: f5b87f1fcc491b74ca7aed432105b2af, type: 2}
 --- !u!1 &8224388427173183794
 GameObject:
   m_ObjectHideFlags: 0
