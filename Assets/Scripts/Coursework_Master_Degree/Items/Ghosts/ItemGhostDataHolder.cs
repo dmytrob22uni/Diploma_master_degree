@@ -21,6 +21,14 @@ namespace Coursework_Master_Degree.Items.Ghosts
         [Tooltip("Set via script")]
         public GameObject ItemInstance;
 
+        public bool IsPreconfiguredMaterials;
+
+        [ShowIf("IsNotPreconfiguredMaterials")]
         public List<MeshRenderer> MeshRenderersList;
+
+        public bool IsNotPreconfiguredMaterials()
+        {
+            return !IsPreconfiguredMaterials;
+        }
     }
 }
