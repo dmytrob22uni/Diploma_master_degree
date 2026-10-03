@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: shader_FFF_PrusaMK4S_background_mode_transparent_stub
+  m_Name: shader_FFF_PrusaMK4S_background_mode_originally_transparent
   m_Shader: {fileID: -6465566751694194690, guid: f4020de9f71dbc14c94a089b69baa03f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
