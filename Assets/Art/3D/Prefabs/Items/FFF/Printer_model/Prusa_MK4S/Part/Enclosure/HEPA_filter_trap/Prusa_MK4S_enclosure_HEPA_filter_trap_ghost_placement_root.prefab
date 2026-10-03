@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2403195716803512182}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2436950896420383418}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 380109912509671386}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 2291890189799181320}
   - component: {fileID: 6655984170084669663}
   - component: {fileID: 7191225673058615500}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_trap_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 7172259537316160249}
   - component: {fileID: 3911657429613431040}
   - component: {fileID: 3741575896126453530}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: HEPA_filter_trap
   m_TagString: Untagged
   m_Icon: {fileID: 0}

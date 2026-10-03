@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1904379571358985366}
   - component: {fileID: 3186961612101634208}
   - component: {fileID: 377367222227556624}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2244332738573578895}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3782407606120064815}
   - component: {fileID: 2232448480063045401}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: laptop_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8415863931519944895}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5369905662331129472}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 3206374346646388668}
   - component: {fileID: 6507020661258825285}
   - component: {fileID: 180122225413015129}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,7 +346,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6036532519674939304}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -377,7 +377,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2433925460461594034}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +410,7 @@ GameObject:
   - component: {fileID: 8893661884379579898}
   - component: {fileID: 3567919511197381368}
   - component: {fileID: 5943281897731626821}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: keyboard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -500,7 +500,7 @@ GameObject:
   - component: {fileID: 4843533876676058096}
   - component: {fileID: 8935615513929704106}
   - component: {fileID: 8319775701547128110}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: laptop
   m_TagString: Untagged
   m_Icon: {fileID: 0}

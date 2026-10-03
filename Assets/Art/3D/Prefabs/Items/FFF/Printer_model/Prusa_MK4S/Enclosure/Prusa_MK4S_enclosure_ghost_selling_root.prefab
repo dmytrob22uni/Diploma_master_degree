@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9213034257539876517}
   - component: {fileID: 4345472986547537857}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1291829975824020402}
   - component: {fileID: 1669188448773634564}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -180,7 +180,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5318803669088017590}
   - component: {fileID: 6012343219740366391}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2851833220829800004}
   - component: {fileID: 845478825319162111}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6572605824722400884}
   - component: {fileID: 1512876023780501562}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -340,7 +340,7 @@ GameObject:
   - component: {fileID: 1103278325001289200}
   - component: {fileID: 7086873887535870635}
   - component: {fileID: 5233910381531236443}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -431,7 +431,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1835344588041468764}
   - component: {fileID: 5085389011251688870}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -539,7 +539,7 @@ GameObject:
   - component: {fileID: 7377172087040347786}
   - component: {fileID: 3649346521972580223}
   - component: {fileID: 4696601368604769150}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -631,7 +631,7 @@ GameObject:
   - component: {fileID: 1725617807543409063}
   - component: {fileID: 3494512741349613620}
   - component: {fileID: 5857541214463720092}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: enclosure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -732,7 +732,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3302870535483027101}
   - component: {fileID: 1481165744154401881}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -786,7 +786,7 @@ GameObject:
   - component: {fileID: 2197927207057473061}
   - component: {fileID: 1280280107518742335}
   - component: {fileID: 7450275423097264729}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -943,7 +943,7 @@ GameObject:
   - component: {fileID: 617072641741669055}
   - component: {fileID: 6141274089422286902}
   - component: {fileID: 1300283929401764764}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1054,7 +1054,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1777397883289139398}
   - component: {fileID: 173014875321471829}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1141,7 +1141,7 @@ GameObject:
   - component: {fileID: 7374242211226531262}
   - component: {fileID: 7328984024365569385}
   - component: {fileID: 7694143888218762042}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_trap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1253,7 +1253,7 @@ GameObject:
   - component: {fileID: 9134799790661171341}
   - component: {fileID: 84772560777325700}
   - component: {fileID: 3991334653888620617}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1397,7 +1397,7 @@ GameObject:
   - component: {fileID: 7553802750732321608}
   - component: {fileID: 6543506895807629844}
   - component: {fileID: 436062887892056552}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: led_strips
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1486,7 +1486,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2070382191802157479}
   - component: {fileID: 1566077660832373810}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1573,7 +1573,7 @@ GameObject:
   - component: {fileID: 1473919832789315973}
   - component: {fileID: 1677550647248893302}
   - component: {fileID: 4786868854134033741}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1685,7 +1685,7 @@ GameObject:
   - component: {fileID: 8126632418679505488}
   - component: {fileID: 8118136519270709163}
   - component: {fileID: 4720653919313787288}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1776,7 +1776,7 @@ GameObject:
   - component: {fileID: 640799400842729223}
   - component: {fileID: 4292366232082783557}
   - component: {fileID: 3564780092278973980}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: enclosure_door_right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1887,7 +1887,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8275988624297353371}
   - component: {fileID: 6079347041006555041}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1940,7 +1940,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4884100708461306238}
   - component: {fileID: 620564532357897013}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1993,7 +1993,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2287756243542345439}
   - component: {fileID: 3748405953879805732}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2078,7 +2078,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6698805628784134087}
   - component: {fileID: 1774677700031303228}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2164,7 +2164,7 @@ GameObject:
   - component: {fileID: 7526182298615617848}
   - component: {fileID: 8791738293486863304}
   - component: {fileID: 5729826352018994852}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2257,7 +2257,7 @@ GameObject:
   - component: {fileID: 7292851213840091071}
   - component: {fileID: 7229096174073034381}
   - component: {fileID: 8103508339200563880}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: thermometer_screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2348,7 +2348,7 @@ GameObject:
   - component: {fileID: 222385161884209734}
   - component: {fileID: 1292805460508752128}
   - component: {fileID: 5655293646556981040}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: enclosure_door_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2459,7 +2459,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6059239276260335967}
   - component: {fileID: 2917158622017978169}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2566,7 +2566,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1076260729434026813}
   - component: {fileID: 6083261259932681373}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2653,7 +2653,7 @@ GameObject:
   - component: {fileID: 2130763504812552587}
   - component: {fileID: 3182968646750530122}
   - component: {fileID: 5923954531875325222}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: thermometer_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2763,7 +2763,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3099517298979031102}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: colliders
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}

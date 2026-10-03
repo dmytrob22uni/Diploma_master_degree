@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3186961612101634208}
   - component: {fileID: 377367222227556624}
   - component: {fileID: 5016106504839521220}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3782407606120064815}
   - component: {fileID: 278162089554937658}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: laptop_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 3206374346646388668}
   - component: {fileID: 6507020661258825285}
   - component: {fileID: 180122225413015129}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 8893661884379579898}
   - component: {fileID: 3567919511197381368}
   - component: {fileID: 5943281897731626821}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: keyboard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,7 +358,7 @@ GameObject:
   - component: {fileID: 8935615513929704106}
   - component: {fileID: 8319775701547128110}
   - component: {fileID: 3851667415100045100}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: laptop
   m_TagString: Untagged
   m_Icon: {fileID: 0}

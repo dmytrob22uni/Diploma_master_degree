@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2172344040689810186}
   - component: {fileID: 6078881273496778275}
   - component: {fileID: 2999859731214357085}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4253522319742285625}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 672488096850907312}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 6421322382786133876}
   - component: {fileID: 9204253507983847960}
   - component: {fileID: -1586878665535673452}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_axis_rotor_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

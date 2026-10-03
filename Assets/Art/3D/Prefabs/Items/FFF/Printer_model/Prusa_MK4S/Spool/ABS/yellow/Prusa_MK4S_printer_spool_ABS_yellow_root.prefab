@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2130685077562344091}
   - component: {fileID: 4623423542138955980}
   - component: {fileID: 2587651735099269623}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: spool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 5048549443325444598}
   - component: {fileID: 5041981378871231239}
   - component: {fileID: -7560603760881403712}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_spool_ABS_yellow_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 99.815094
+  currentCondition: 99.12036
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: a93b01d3013973ab1a4efb72992ead9b, type: 2}
 --- !u!1 &8530524046648030927
@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 4257477399249187061}
   - component: {fileID: 6274611369030084008}
   - component: {fileID: 3269946892121859550}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: filament_100
   m_TagString: Untagged
   m_Icon: {fileID: 0}

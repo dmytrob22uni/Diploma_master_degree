@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7919536883537995157}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7776258169783974887}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1166860142027814975}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 8877227893576861014}
   - component: {fileID: 8271450306585928992}
   - component: {fileID: -3677817495677059936}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: separator_blade_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 7034753191530640278}
   - component: {fileID: 510091806605568284}
   - component: {fileID: 5042788389734033528}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: separator_blade
   m_TagString: Untagged
   m_Icon: {fileID: 0}

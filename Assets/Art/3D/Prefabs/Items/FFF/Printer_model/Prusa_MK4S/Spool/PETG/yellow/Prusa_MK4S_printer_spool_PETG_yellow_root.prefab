@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5048549443325444598}
   - component: {fileID: 6277983415331730343}
   - component: {fileID: 4124662200319991351}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_spool_PETG_yellow_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 99.55664
+  currentCondition: 98.43049
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 64f3b319456637bef964d8f097a90024, type: 2}
 --- !u!1 &7642151535987951024
@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 7236778278228498380}
   - component: {fileID: 1839512997568720086}
   - component: {fileID: 3363038955864040690}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: filament_100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 7476249878677223496}
   - component: {fileID: 1461675117318868730}
   - component: {fileID: 53003636163979361}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: spool
   m_TagString: Untagged
   m_Icon: {fileID: 0}

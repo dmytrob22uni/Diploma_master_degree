@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 90.75366
+  currentCondition: 98.859085
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: affa9b35ebe57c2d69b77654ba7f4d3a, type: 2}
 --- !u!1 &8311893776465317188
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 6403148440854057101}
   - component: {fileID: 6407954305067504329}
   - component: {fileID: 7383445154117146564}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -199,7 +199,7 @@ GameObject:
   - component: {fileID: 4675989124583826095}
   - component: {fileID: 2264757782299261642}
   - component: {fileID: 5702149505483453522}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cleaning_spray
   m_TagString: Untagged
   m_Icon: {fileID: 0}

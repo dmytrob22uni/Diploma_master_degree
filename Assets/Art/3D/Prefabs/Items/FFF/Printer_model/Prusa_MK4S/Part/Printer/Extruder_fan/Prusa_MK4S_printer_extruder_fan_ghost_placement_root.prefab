@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2179562271081893665}
   - component: {fileID: 7256998384422647397}
   - component: {fileID: 3156134224383415108}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_extruder_fan_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1288703009437367012}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 5363742086909551}
   - component: {fileID: 2561284166592177271}
   - component: {fileID: 1078068657903310012}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: extruder_fan_frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3972067057538882420}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -247,7 +247,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 676986324735893594}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 3147622030484509362}
   - component: {fileID: 7790209195243070599}
   - component: {fileID: 9208845183498474030}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fan_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}

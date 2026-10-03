@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 683324583470564876}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 7176446742185924236}
   - component: {fileID: 4264907362364382546}
   - component: {fileID: 1154519239740276123}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: extruder_filament_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 3932243388753963879}
   - component: {fileID: 586615651644258029}
   - component: {fileID: -5688056504879309551}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_extruder_filament_bearing_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 30913146503539694}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}

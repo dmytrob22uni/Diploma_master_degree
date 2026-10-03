@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5196278944762447146}
   - component: {fileID: 4106216842991494692}
   - component: {fileID: 2749859428541544046}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: adhesive_spray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 93.10929
+  currentCondition: 98.34856
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 259060efb8541b92eae5674cb2a84430, type: 2}
 --- !u!1 &7920962104862976078
@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 6251106760949297546}
   - component: {fileID: 4161927037638582201}
   - component: {fileID: 6250090311021270010}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}

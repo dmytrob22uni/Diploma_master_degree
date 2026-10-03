@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8088822929314396668}
   - component: {fileID: 3873578248060222138}
   - component: {fileID: 3565799163129384783}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: rag_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4567449686569212725}
   - component: {fileID: 8080279175513802986}
   - component: {fileID: 1161190296662512850}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: rag
   m_TagString: Untagged
   m_Icon: {fileID: 0}

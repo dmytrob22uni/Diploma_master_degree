@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6042023033367282437}
   - component: {fileID: 3323538360915522387}
   - component: {fileID: 6348182867774679874}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6535810745016768331}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 2327309067529322264}
   - component: {fileID: 283564677182571086}
   - component: {fileID: 920140202804644252}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cleaning_spray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 7079432607963370882}
   - component: {fileID: 300784813611788572}
   - component: {fileID: -3383735615199000884}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cleaning_spray_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,7 +305,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2495842530961430691}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}

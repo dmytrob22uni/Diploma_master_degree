@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2291890189799181320}
   - component: {fileID: 6655984170084669663}
   - component: {fileID: 3490174424987816302}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_trap_ghost_installation_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,8 +89,7 @@ GameObject:
   - component: {fileID: 7172259537316160249}
   - component: {fileID: 3911657429613431040}
   - component: {fileID: 3741575896126453530}
-  - component: {fileID: 3128309381908371284}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: HEPA_filter_trap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,24 +169,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3128309381908371284
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8028763708786594181}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 0.14737345, y: 0.04467738, z: 0.09648645}
-  m_Center: {x: 0.12920988, y: -0.28270638, z: 0.43934596}

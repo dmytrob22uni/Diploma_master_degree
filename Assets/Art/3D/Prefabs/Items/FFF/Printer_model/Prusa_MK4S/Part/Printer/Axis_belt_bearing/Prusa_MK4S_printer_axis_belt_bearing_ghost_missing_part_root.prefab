@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 694629078327692129}
   - component: {fileID: 7814158429313088917}
   - component: {fileID: 7313981739520533022}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 1032842756230286244}
   - component: {fileID: 4387493476389133792}
   - component: {fileID: -2237202319336920745}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_axis_belt_bearing_ghost_missing_part_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

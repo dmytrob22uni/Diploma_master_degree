@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 841193417850372258}
   - component: {fileID: 2157389773233065381}
   - component: {fileID: -8449552594537426124}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: smartphone_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1526548783516621550}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5154755651413992168}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 3093979518778124933}
   - component: {fileID: 364062143874001001}
   - component: {fileID: 7184344761177160463}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,7 +250,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2826552439660195794}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,7 +281,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2077470846175594148}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -314,7 +314,7 @@ GameObject:
   - component: {fileID: 2825956022342132326}
   - component: {fileID: 6068933374678419892}
   - component: {fileID: 8220770523440648202}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: smartphone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -405,7 +405,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 999174813718158274}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}

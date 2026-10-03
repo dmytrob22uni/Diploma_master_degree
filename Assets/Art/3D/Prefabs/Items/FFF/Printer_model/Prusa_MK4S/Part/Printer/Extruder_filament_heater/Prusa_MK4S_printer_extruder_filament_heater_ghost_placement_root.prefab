@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1964830462646915073}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 7956003041976886954}
   - component: {fileID: 697922407716754136}
   - component: {fileID: 5568363235830653736}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: extruder_filament_heater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 6451301900532140921}
   - component: {fileID: 2879723483158302439}
   - component: {fileID: 6460045988827218645}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_extruder_filament_heater_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5840255343543578780}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}

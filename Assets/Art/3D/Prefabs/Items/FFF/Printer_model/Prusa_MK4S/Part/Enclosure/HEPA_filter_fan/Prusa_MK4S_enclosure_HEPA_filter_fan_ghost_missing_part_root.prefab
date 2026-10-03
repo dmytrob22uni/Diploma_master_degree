@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1153875908244058811}
   - component: {fileID: 8212250045700266545}
   - component: {fileID: 6440992833949511670}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_fan_ghost_missing_part_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 6277457057804004773}
   - component: {fileID: 2280951414087947135}
   - component: {fileID: 3949283776259492634}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: HEPA_filter_fan_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,7 +203,7 @@ GameObject:
   - component: {fileID: 8663260828594953862}
   - component: {fileID: 2207789968209766453}
   - component: {fileID: 8173033146172511133}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fan_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 625630980452097647}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 757122867905106271}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,7 +75,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1482388134804622449}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3418443037670957718}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 194273546261208610}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 531783353593240455}
   - component: {fileID: 3483420572844785153}
   - component: {fileID: -9035962465624758423}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_print_bed_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -256,7 +256,7 @@ GameObject:
   - component: {fileID: 2166092350993541307}
   - component: {fileID: 4183571543101726413}
   - component: {fileID: 4999971988266904815}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: cables_cover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,7 +346,7 @@ GameObject:
   - component: {fileID: 1747336256236765618}
   - component: {fileID: 7585699243466871943}
   - component: {fileID: 998655273263633782}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: print_bed
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6181067432213929538}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 1103278325001289200}
   - component: {fileID: 7086873887535870635}
   - component: {fileID: 5233910381531236443}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 7377172087040347786}
   - component: {fileID: 3649346521972580223}
   - component: {fileID: 4696601368604769150}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 1725617807543409063}
   - component: {fileID: 3494512741349613620}
   - component: {fileID: 5857541214463720092}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: enclosure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 2197927207057473061}
   - component: {fileID: 1280280107518742335}
   - component: {fileID: 7450275423097264729}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -525,6 +525,7 @@ MonoBehaviour:
   ItemGhostMetaData: {fileID: 11400000, guid: 02ac3b1c507d8cfb18be273ab4b378c2, type: 2}
   ItemGhostType: 0
   ItemInstance: {fileID: 0}
+  IsPreconfiguredMaterials: 0
   MeshRenderersList:
   - {fileID: 5857541214463720092}
   - {fileID: 5233910381531236443}
@@ -557,7 +558,7 @@ GameObject:
   - component: {fileID: 8970707159034785472}
   - component: {fileID: 617072641741669055}
   - component: {fileID: 6141274089422286902}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -680,7 +681,7 @@ GameObject:
   - component: {fileID: 1644259040825594647}
   - component: {fileID: 7374242211226531262}
   - component: {fileID: 7328984024365569385}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_trap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -771,7 +772,7 @@ GameObject:
   - component: {fileID: 9134799790661171341}
   - component: {fileID: 84772560777325700}
   - component: {fileID: 3991334653888620617}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -861,7 +862,7 @@ GameObject:
   - component: {fileID: 7553802750732321608}
   - component: {fileID: 6543506895807629844}
   - component: {fileID: 436062887892056552}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: led_strips
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -983,7 +984,7 @@ GameObject:
   - component: {fileID: 8131093623747675860}
   - component: {fileID: 1473919832789315973}
   - component: {fileID: 1677550647248893302}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1074,7 +1075,7 @@ GameObject:
   - component: {fileID: 8126632418679505488}
   - component: {fileID: 8118136519270709163}
   - component: {fileID: 4720653919313787288}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_fan_left_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1162,7 +1163,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5727556538517774570}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1193,7 +1194,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2919082005871385172}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1224,7 +1225,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7906605607109533395}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1257,7 +1258,7 @@ GameObject:
   - component: {fileID: 5089594729972728947}
   - component: {fileID: 640799400842729223}
   - component: {fileID: 4292366232082783557}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: enclosure_door_right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1378,7 +1379,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9133519344805370110}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1443,7 +1444,7 @@ GameObject:
   - component: {fileID: 7526182298615617848}
   - component: {fileID: 8791738293486863304}
   - component: {fileID: 5729826352018994852}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: HEPA_filter_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1536,7 +1537,7 @@ GameObject:
   - component: {fileID: 7292851213840091071}
   - component: {fileID: 7229096174073034381}
   - component: {fileID: 8103508339200563880}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: thermometer_screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1626,7 +1627,7 @@ GameObject:
   - component: {fileID: 3372005178305654678}
   - component: {fileID: 222385161884209734}
   - component: {fileID: 1292805460508752128}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: enclosure_door_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1749,7 +1750,7 @@ GameObject:
   - component: {fileID: 1607440565559748358}
   - component: {fileID: 2130763504812552587}
   - component: {fileID: 3182968646750530122}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: thermometer_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

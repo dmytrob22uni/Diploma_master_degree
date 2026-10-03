@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2333762256006625899}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8415531685497916858}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 3074000460968111063}
   - component: {fileID: 6740841999882120260}
   - component: {fileID: 8688301464321505904}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: mouse
   m_TagString: Untagged
   m_Icon: {fileID: 0}

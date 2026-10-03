@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7685143443765614221}
   - component: {fileID: 3977851521220785754}
   - component: {fileID: 6413148937076676457}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 4406177041531766107}
   - component: {fileID: 995487085216325123}
   - component: {fileID: 3164105581236438267}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: smartphone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

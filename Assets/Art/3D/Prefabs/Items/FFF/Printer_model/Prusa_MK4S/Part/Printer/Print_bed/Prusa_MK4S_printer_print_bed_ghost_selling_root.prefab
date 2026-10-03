@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4212633218523824657}
   - component: {fileID: 726108563473802653}
   - component: {fileID: 4213986832128873702}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: cables_cover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6813106248686018809}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: colliders
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5112028742701942849}
   - component: {fileID: 1175829447991502007}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: collider_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 531783353593240455}
   - component: {fileID: 3483420572844785153}
   - component: {fileID: -6178001975709911041}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_print_bed_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6388538438866824674}
   - component: {fileID: 1061127771073988054}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: collider_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -321,7 +321,7 @@ GameObject:
   - component: {fileID: 1747336256236765618}
   - component: {fileID: 7585699243466871943}
   - component: {fileID: 998655273263633782}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: print_bed
   m_TagString: Untagged
   m_Icon: {fileID: 0}

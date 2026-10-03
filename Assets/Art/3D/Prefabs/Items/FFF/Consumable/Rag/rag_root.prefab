@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 98.69811
+  currentCondition: 93.03547
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 5ee7a02123514b367b835787884e6f65, type: 2}
 --- !u!1 &5141084405711999561
@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 4567449686569212725}
   - component: {fileID: 8080279175513802986}
   - component: {fileID: 6310122210018423984}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: rag
   m_TagString: Untagged
   m_Icon: {fileID: 0}

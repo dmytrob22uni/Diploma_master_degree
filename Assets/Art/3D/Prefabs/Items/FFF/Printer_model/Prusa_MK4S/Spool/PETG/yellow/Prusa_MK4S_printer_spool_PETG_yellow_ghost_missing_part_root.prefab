@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4713833106817557214}
   - component: {fileID: 5642676704745200635}
   - component: {fileID: 1042800842721150484}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: spool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 3309527178861990176}
   - component: {fileID: 93693773029498765}
   - component: {fileID: 4058837506114403790}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: filament_100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 6705595234148630119}
   - component: {fileID: 5458931367332923366}
   - component: {fileID: 3544745875783332411}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_spool_PETG_yellow_ghost_missing_part_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

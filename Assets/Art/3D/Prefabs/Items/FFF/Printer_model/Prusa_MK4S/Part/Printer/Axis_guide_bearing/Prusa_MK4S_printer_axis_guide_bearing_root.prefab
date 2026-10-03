@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 643344272212904192}
   - component: {fileID: 5777934518158273154}
   - component: {fileID: 753118196855373873}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: axis_guide_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 5588944162363606426}
   - component: {fileID: 5067780554699239818}
   - component: {fileID: 1233996786831135776}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_axis_guide_bearing_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,6 +207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 92.40646
+  currentCondition: 96.26431
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 41cac90e38957499cb42dd7b098f8301, type: 2}

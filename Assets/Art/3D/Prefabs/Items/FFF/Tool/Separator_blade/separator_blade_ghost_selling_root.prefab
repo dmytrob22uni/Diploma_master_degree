@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8877227893576861014}
   - component: {fileID: 8271450306585928992}
   - component: {fileID: 4251272660909038266}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: separator_blade_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 510091806605568284}
   - component: {fileID: 5042788389734033528}
   - component: {fileID: 3572318981984134408}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: separator_blade
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2383873361299891722}
   - component: {fileID: 7403693038762292271}
   - component: {fileID: 7184518207258657491}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: thermometer_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: -3275557905371932531}
   - component: {fileID: -6161570642160297268}
   - component: {fileID: 5846564152076029166}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_thermometer_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 91.14981
+  currentCondition: 99.47255
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: b9bd475f54f8d591e97a5b6f96261bd1, type: 2}
 --- !u!1 &2965906779274497049
@@ -238,7 +238,7 @@ GameObject:
   - component: {fileID: 8081966782592987089}
   - component: {fileID: 1988964906298464997}
   - component: {fileID: 7022069045590513103}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2267551864427153666}
   - component: {fileID: 2889182603711249134}
   - component: {fileID: 6995779201510029735}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: left_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 6056976257320562088}
   - component: {fileID: 4210920514970211072}
   - component: {fileID: 4721440256390751504}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: right_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 7645216538797978886}
   - component: {fileID: 4112346791044405849}
   - component: {fileID: 7623871379929538586}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: support_cutting_tool_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -414,6 +414,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 93.043365
+  currentCondition: 91.04403
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 7e0d1be6e36d39d528c85456729ab381, type: 2}

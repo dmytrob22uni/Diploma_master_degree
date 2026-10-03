@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6517386345239953101}
   - component: {fileID: 7835357693288099430}
   - component: {fileID: 695467429111141555}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_fire_suppression_tube_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5701857073862849829}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7553686747952353660}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   - component: {fileID: 2671966865005546892}
   - component: {fileID: 4971262150420137334}
   - component: {fileID: 4749846201764649768}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -245,7 +245,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6354160204223202425}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}

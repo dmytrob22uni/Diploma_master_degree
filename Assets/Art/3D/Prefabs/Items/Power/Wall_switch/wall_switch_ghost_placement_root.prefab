@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 567650536119748240}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 9002548508976486734}
   - component: {fileID: 8964695933015876761}
   - component: {fileID: -5869835949011727669}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_switch_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1872083537362411879}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,7 +156,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5748233443685484818}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 5019684105494705259}
   - component: {fileID: 2316886395284509712}
   - component: {fileID: 2773831145043219698}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tumbler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 8947891164378071211}
   - component: {fileID: 3676552368332327497}
   - component: {fileID: 5689774021029030910}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_switch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -369,7 +369,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8184271619444974923}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -400,7 +400,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8420906479092259710}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}

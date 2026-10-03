@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 96.912865
+  currentCondition: 99.64808
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 8a0ebf8e161335f658a281f875afe794, type: 2}
 --- !u!1 &7191061502513851777
@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 8238675855402642660}
   - component: {fileID: 1491708552045226056}
   - component: {fileID: 1034578425349781819}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: sanding_paper
   m_TagString: Untagged
   m_Icon: {fileID: 0}

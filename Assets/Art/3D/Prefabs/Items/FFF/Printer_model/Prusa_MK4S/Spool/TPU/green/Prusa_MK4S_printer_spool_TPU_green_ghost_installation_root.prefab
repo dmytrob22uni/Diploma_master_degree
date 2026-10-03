@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7730560660028175417}
   - component: {fileID: 4525343261886117875}
   - component: {fileID: 4842155403183102348}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: filament_100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 7408566572423629179}
   - component: {fileID: 1361845747252044517}
   - component: {fileID: 92203156319173642}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: spool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 6705595234148630119}
   - component: {fileID: 5458931367332923366}
   - component: {fileID: -4931893915181213529}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_spool_TPU_green_ghost_installation_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

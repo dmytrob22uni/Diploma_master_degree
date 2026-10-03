@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3016941908676904317}
   - component: {fileID: 4962381347483443438}
   - component: {fileID: 7048196449215476142}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: extruder_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 4135518511695718182}
   - component: {fileID: 1093166672918641641}
   - component: {fileID: -3507581008735219482}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Prusa_MK4S_printer_extruder_thermistor_ghost_wear_level_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

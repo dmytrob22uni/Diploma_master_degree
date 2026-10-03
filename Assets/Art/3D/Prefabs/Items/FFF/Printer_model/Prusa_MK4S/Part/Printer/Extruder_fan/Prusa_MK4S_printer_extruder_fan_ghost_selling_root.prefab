@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2179562271081893665}
   - component: {fileID: 7256998384422647397}
   - component: {fileID: -9220316572357169487}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_extruder_fan_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 2561284166592177271}
   - component: {fileID: 1078068657903310012}
   - component: {fileID: 7716502635598248861}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: extruder_fan_frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,7 +203,7 @@ GameObject:
   - component: {fileID: 3147622030484509362}
   - component: {fileID: 7790209195243070599}
   - component: {fileID: 9208845183498474030}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fan_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}

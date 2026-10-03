@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4362269640838888177}
   - component: {fileID: 6154412080214292690}
   - component: {fileID: 133106079407417918}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_socket_plug
   m_TagString: Untagged
   m_Icon: {fileID: 0}

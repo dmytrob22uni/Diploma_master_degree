@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3016941908676904317}
   - component: {fileID: 4962381347483443438}
   - component: {fileID: 7048196449215476142}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: extruder_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 1093166672918641641}
   - component: {fileID: -8420080956344736964}
   - component: {fileID: 3560122817263848684}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_extruder_thermistor_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,6 +207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 94.67261
+  currentCondition: 90.35495
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 39b70561accce13c4b88ae293871b307, type: 2}

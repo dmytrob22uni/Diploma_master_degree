@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 6025886685987801647}
   - component: {fileID: 347036230132968045}
   - component: {fileID: 339397929263232085}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 604029391946503160}
   - component: {fileID: 7026509563830956858}
   - component: {fileID: 7236479084746599941}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tablet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

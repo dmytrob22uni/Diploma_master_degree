@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6657551507754142477}
   - component: {fileID: 2982255244819357196}
   - component: {fileID: 5720852668535956211}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tablet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 9031775543448427682}
   - component: {fileID: 1128647569544804280}
   - component: {fileID: 6071972200294614125}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 8534519194271147823}
   - component: {fileID: 9213805196771903859}
   - component: {fileID: 1237140955323732870}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tablet_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

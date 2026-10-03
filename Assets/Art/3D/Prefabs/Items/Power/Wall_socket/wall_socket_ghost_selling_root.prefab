@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7931130949512537107}
   - component: {fileID: 4098182783666000176}
   - component: {fileID: 2704760951352501643}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_socket_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 3616071886423437210}
   - component: {fileID: 3313301109372188071}
   - component: {fileID: 3355931315045676279}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_socket
   m_TagString: Untagged
   m_Icon: {fileID: 0}

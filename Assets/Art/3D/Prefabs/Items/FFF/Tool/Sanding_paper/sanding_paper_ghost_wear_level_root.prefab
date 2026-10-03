@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6639447071503725827}
   - component: {fileID: 8308430227512288563}
   - component: {fileID: 3482119439075013927}
-  m_Layer: 15
+  m_Layer: 22
   m_Name: sanding_paper_ghost_wear_level_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 8238675855402642660}
   - component: {fileID: 1491708552045226056}
   - component: {fileID: 1034578425349781819}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: sanding_paper
   m_TagString: Untagged
   m_Icon: {fileID: 0}

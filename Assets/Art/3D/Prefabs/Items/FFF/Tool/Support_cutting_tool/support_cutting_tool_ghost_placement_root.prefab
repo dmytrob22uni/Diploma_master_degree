@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5408817634922081444}
   - component: {fileID: 2267551864427153666}
   - component: {fileID: 2889182603711249134}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: left_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 3554364700395600720}
   - component: {fileID: 6056976257320562088}
   - component: {fileID: 4210920514970211072}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: right_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -191,7 +191,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7971426668725904660}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 7645216538797978886}
   - component: {fileID: 4112346791044405849}
   - component: {fileID: 7623871379929538586}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: support_cutting_tool_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -314,7 +314,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6513458877590288691}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +345,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5314327889681054658}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -380,7 +380,7 @@ GameObject:
   - component: {fileID: 1255856243540412229}
   - component: {fileID: 1736638283208782988}
   - component: {fileID: 4969154756325933623}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: support_cutting_tool_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6451892445011614851}
   - component: {fileID: 3064585073770323702}
   - component: {fileID: 6222102217177023180}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: battery_closet_adapter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7658530250254985100}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,7 +130,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2008930995650713775}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7795303976698985574}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 4049438005437718146}
   - component: {fileID: 8821779140987028657}
   - component: {fileID: -8553575574615003461}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_battery_closet_adapter_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

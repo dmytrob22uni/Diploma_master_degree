@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6042023033367282437}
   - component: {fileID: 3323538360915522387}
   - component: {fileID: 6348182867774679874}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 283564677182571086}
   - component: {fileID: 920140202804644252}
   - component: {fileID: 6037474997046579456}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cleaning_spray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 7079432607963370882}
   - component: {fileID: 300784813611788572}
   - component: {fileID: -1694430991416349678}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: cleaning_spray_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

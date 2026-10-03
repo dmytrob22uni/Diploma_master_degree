@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3064585073770323702}
   - component: {fileID: 6222102217177023180}
   - component: {fileID: 5475715178422590488}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: battery_closet_adapter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 4049438005437718146}
   - component: {fileID: 8821779140987028657}
   - component: {fileID: -1866235394330558491}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_battery_closet_adapter_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 690174716062649896}
   - component: {fileID: 5134538804571361996}
   - component: {fileID: 3286257221173581213}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: laptop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 8832285384840792049}
   - component: {fileID: 1157190848495260996}
   - component: {fileID: 8916616775662215166}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: keyboard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ GameObject:
   - component: {fileID: 1060023363896510193}
   - component: {fileID: 1490770762549183287}
   - component: {fileID: 1076848054946118072}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -406,7 +406,7 @@ GameObject:
   - component: {fileID: 2555760262895096551}
   - component: {fileID: 7138475274963174079}
   - component: {fileID: 7416869124657420796}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: lid
   m_TagString: Untagged
   m_Icon: {fileID: 0}

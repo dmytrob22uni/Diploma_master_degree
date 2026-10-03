@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7792572477798325611}
   - component: {fileID: 1527906157425618652}
   - component: {fileID: 6424873179866480278}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: tumbler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 7686369015081834432}
   - component: {fileID: 4332012899805314106}
   - component: {fileID: 5084744906213660961}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Prusa_MK4S_printer_battery_closet_ghost_wear_level_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 1892391287773669815}
   - component: {fileID: 73321383980595599}
   - component: {fileID: 1119008478942690364}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: battery_closet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

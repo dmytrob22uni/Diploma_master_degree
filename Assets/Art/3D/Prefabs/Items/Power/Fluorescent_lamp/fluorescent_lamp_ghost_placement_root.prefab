@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6404349708505073877}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 5007644913927806320}
   - component: {fileID: 1546141484714113944}
   - component: {fileID: -2156771787492830690}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fluorescent_lamp_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 5119828499207132774}
   - component: {fileID: 2803178370736892042}
   - component: {fileID: 8661408055088096122}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fluorescent_lamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,7 +215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5655901102462059748}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248,7 +248,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5148755375253629778}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,7 +281,7 @@ GameObject:
   - component: {fileID: 4495268753056835844}
   - component: {fileID: 5222800727892603875}
   - component: {fileID: 812726728455909186}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

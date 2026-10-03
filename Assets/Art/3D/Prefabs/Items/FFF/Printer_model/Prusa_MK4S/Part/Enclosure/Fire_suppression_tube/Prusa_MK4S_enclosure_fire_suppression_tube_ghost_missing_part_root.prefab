@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6517386345239953101}
   - component: {fileID: 7835357693288099430}
   - component: {fileID: 3656134043255828466}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_fire_suppression_tube_ghost_missing_part_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4971262150420137334}
   - component: {fileID: 4749846201764649768}
   - component: {fileID: 3762759018269423286}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

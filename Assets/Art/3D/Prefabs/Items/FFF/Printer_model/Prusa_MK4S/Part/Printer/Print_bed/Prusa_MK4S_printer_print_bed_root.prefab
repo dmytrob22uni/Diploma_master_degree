@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8765357439105256367}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: colliders
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -43,7 +43,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3302974326476422923}
   - component: {fileID: 7109376814328341355}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: collider_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 6613690366333226729}
   - component: {fileID: 8983396579231220397}
   - component: {fileID: 2503072341751181808}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: cables_cover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -186,7 +186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6615312452707056684}
   - component: {fileID: 4385120282114449653}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: collider_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 3483420572844785153}
   - component: {fileID: 1750501792197605491}
   - component: {fileID: 5832130009404411871}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_print_bed_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 93.00029
+  currentCondition: 90.99825
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 74899a52481fb913ab0f0ddb4430e2ed, type: 2}
 --- !u!1 &9031297077499588095
@@ -339,7 +339,7 @@ GameObject:
   - component: {fileID: 1747336256236765618}
   - component: {fileID: 7585699243466871943}
   - component: {fileID: 998655273263633782}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: print_bed
   m_TagString: Untagged
   m_Icon: {fileID: 0}

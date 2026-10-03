@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 96.59068
+  currentCondition: 91.84096
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 769b58319c00e34f483e6f0166021e48, type: 2}
 --- !u!1 &8173514433839331282
@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 510091806605568284}
   - component: {fileID: 5042788389734033528}
   - component: {fileID: 3572318981984134408}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: separator_blade
   m_TagString: Untagged
   m_Icon: {fileID: 0}

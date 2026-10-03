@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5007644913927806320}
   - component: {fileID: 1546141484714113944}
   - component: {fileID: 1818093967266507456}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fluorescent_lamp_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 2803178370736892042}
   - component: {fileID: 8661408055088096122}
   - component: {fileID: 8886644668301034278}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: fluorescent_lamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 4495268753056835844}
   - component: {fileID: 5222800727892603875}
   - component: {fileID: 812726728455909186}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

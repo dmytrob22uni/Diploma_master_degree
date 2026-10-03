@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9002548508976486734}
   - component: {fileID: 8964695933015876761}
   - component: {fileID: -8801948911668551453}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_switch_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 5019684105494705259}
   - component: {fileID: 2316886395284509712}
   - component: {fileID: 2773831145043219698}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: tumbler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 3676552368332327497}
   - component: {fileID: 5689774021029030910}
   - component: {fileID: 1248082454775285632}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_switch
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5883903650157756410}
   - component: {fileID: 2685364453324579305}
   - component: {fileID: 8326626860210358183}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: bulb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,6 +123,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1355671586600276693}
+  - {fileID: 12161387221048224}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &493352415167992604
@@ -193,6 +194,59 @@ MonoBehaviour:
     ItemPart: {fileID: 0}
     RotationState1: {x: 0, y: 0, z: 0}
     RotationState2: {x: 0, y: 0, z: 0}
+--- !u!1 &5857626961609007084
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4879898431816136900}
+  - component: {fileID: 950592953672112311}
+  m_Layer: 21
+  m_Name: powered_collider_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4879898431816136900
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5857626961609007084}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 12161387221048224}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &950592953672112311
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5857626961609007084}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.06041058, y: 0.10998274, z: 0.06041058}
+  m_Center: {x: 0, y: 0.055053454, z: 0}
 --- !u!1 &8210224781067326593
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,7 +259,7 @@ GameObject:
   - component: {fileID: 7132625227744127128}
   - component: {fileID: 2840855596284621279}
   - component: {fileID: 81301939292427898}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: LED_lamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,3 +360,35 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.059851952, y: 0.061511423, z: 0.11014035}
   m_Center: {x: 0, y: 0.0000000018626448, z: 0.055070184}
+--- !u!1 &8483280819463335178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 12161387221048224}
+  m_Layer: 15
+  m_Name: colliders
+  m_TagString: Untagged
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &12161387221048224
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8483280819463335178}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4879898431816136900}
+  m_Father: {fileID: 775892610592655670}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

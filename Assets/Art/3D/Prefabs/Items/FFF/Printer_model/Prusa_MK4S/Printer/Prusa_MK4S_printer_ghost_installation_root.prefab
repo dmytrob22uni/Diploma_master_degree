@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7998182822607536426}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: battery_closet_plug_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 5726612475934467484}
   - component: {fileID: 1188823968672424249}
   - component: {fileID: 6256480684555516747}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_belt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 2103093279403095197}
   - component: {fileID: 988848539007937791}
   - component: {fileID: 3527973212854279086}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 636416000449322039}
   - component: {fileID: 904789219857751738}
   - component: {fileID: 5677730015664815380}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: z_axis_guide_left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +410,7 @@ GameObject:
   - component: {fileID: 7688607603160765475}
   - component: {fileID: 3548174284621169292}
   - component: {fileID: 979746834512571858}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -501,7 +501,7 @@ GameObject:
   - component: {fileID: 2717513766536318940}
   - component: {fileID: 6316277345888373441}
   - component: {fileID: 7008644433301608545}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 5504048995070724090}
   - component: {fileID: 4319358778180557347}
   - component: {fileID: 2354735986302817951}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -748,7 +748,7 @@ GameObject:
   - component: {fileID: 5435158147370006909}
   - component: {fileID: 7258010020590364111}
   - component: {fileID: 1888525783376884443}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -871,7 +871,7 @@ GameObject:
   - component: {fileID: 1932175533953153143}
   - component: {fileID: 7968835404973860626}
   - component: {fileID: 1943201143293565389}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_belt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -961,7 +961,7 @@ GameObject:
   - component: {fileID: 8988284421440190013}
   - component: {fileID: 416340924959130879}
   - component: {fileID: 1435509676014897007}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: print_bed_cables_cover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1147,7 +1147,7 @@ GameObject:
   - component: {fileID: 4955502002614120745}
   - component: {fileID: 2070990046287395885}
   - component: {fileID: 1560666926808626600}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: spool_holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1269,7 +1269,7 @@ GameObject:
   - component: {fileID: 7104511117605654063}
   - component: {fileID: 4805128772551444028}
   - component: {fileID: 6021685374472891674}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1360,7 +1360,7 @@ GameObject:
   - component: {fileID: 1191784500454350913}
   - component: {fileID: 7665048061356343020}
   - component: {fileID: 267806550291775356}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1483,7 +1483,7 @@ GameObject:
   - component: {fileID: 2538568409020846923}
   - component: {fileID: 2840877527769805391}
   - component: {fileID: 2314947542008625858}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1572,7 +1572,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3353307524378377557}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_socket_plug_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
@@ -1606,7 +1606,7 @@ GameObject:
   - component: {fileID: 8226279260812686385}
   - component: {fileID: 8735868937596222652}
   - component: {fileID: 2537436200069899820}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: extruder_fan_frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1697,7 +1697,7 @@ GameObject:
   - component: {fileID: 4362269640838888177}
   - component: {fileID: 6154412080214292690}
   - component: {fileID: 133106079407417918}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: wall_socket_plug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1820,7 +1820,7 @@ GameObject:
   - component: {fileID: 7433619353435384355}
   - component: {fileID: 8098403784046614860}
   - component: {fileID: 3489970352167994519}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: extruder_filament_heater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1942,7 +1942,7 @@ GameObject:
   - component: {fileID: 1419281283122042020}
   - component: {fileID: 1825615606892827274}
   - component: {fileID: 5770342920087970370}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: print_plate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2032,7 +2032,7 @@ GameObject:
   - component: {fileID: 7353114641305465891}
   - component: {fileID: 8793845842578954352}
   - component: {fileID: 202978926767919447}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2134,7 +2134,7 @@ GameObject:
   - component: {fileID: 6218838667198383274}
   - component: {fileID: 2889976635105833951}
   - component: {fileID: 2367331354977375350}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2225,7 +2225,7 @@ GameObject:
   - component: {fileID: 3405388473933553999}
   - component: {fileID: 7516919553943528952}
   - component: {fileID: 3815743434318855975}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_guide_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2415,7 +2415,7 @@ GameObject:
   - component: {fileID: 7389689475881976112}
   - component: {fileID: 2300192216307788301}
   - component: {fileID: 5566430994356849961}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: print_bed_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2570,7 +2570,7 @@ GameObject:
   - component: {fileID: 2238564163476506942}
   - component: {fileID: 9144774935109817585}
   - component: {fileID: 3369837178813582288}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2662,7 +2662,7 @@ GameObject:
   - component: {fileID: 5246850625529993708}
   - component: {fileID: 5001733838339909582}
   - component: {fileID: 4298634931604975632}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: computer_closet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2754,7 +2754,7 @@ GameObject:
   - component: {fileID: 2537218625853733304}
   - component: {fileID: 1146228588026350442}
   - component: {fileID: 9153387245067100818}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: battery_closet_plug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3007,7 +3007,7 @@ GameObject:
   - component: {fileID: 5095287130398152531}
   - component: {fileID: 7924335059649894691}
   - component: {fileID: 80585812894951905}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: battery_closet_adapter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3129,7 +3129,7 @@ GameObject:
   - component: {fileID: 8296994086123967359}
   - component: {fileID: 1004017680562717148}
   - component: {fileID: 1988178301212516807}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_guide_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3220,7 +3220,7 @@ GameObject:
   - component: {fileID: 6514195624321640653}
   - component: {fileID: 8465219375139678114}
   - component: {fileID: 3054241569241993991}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: extruder_filament_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3310,7 +3310,7 @@ GameObject:
   - component: {fileID: 6449966251026838245}
   - component: {fileID: 4172783309360746802}
   - component: {fileID: 8177761892281502349}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3434,7 +3434,7 @@ GameObject:
   - component: {fileID: 8020536152338884843}
   - component: {fileID: 3513529830558054143}
   - component: {fileID: 7542126545436223724}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: extruder_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3525,7 +3525,7 @@ GameObject:
   - component: {fileID: 9002010753874758282}
   - component: {fileID: 2295006416977373306}
   - component: {fileID: 5897714848676152067}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3616,7 +3616,7 @@ GameObject:
   - component: {fileID: 4932505943258760802}
   - component: {fileID: 2259668787199045175}
   - component: {fileID: 8169732804619461355}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3707,7 +3707,7 @@ GameObject:
   - component: {fileID: 5013409400009707546}
   - component: {fileID: 7987409327272784282}
   - component: {fileID: 1682425250077245480}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3798,7 +3798,7 @@ GameObject:
   - component: {fileID: 6919858547609378070}
   - component: {fileID: 3930607491049648693}
   - component: {fileID: 3864074548471694684}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: x_axis_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3897,7 +3897,7 @@ GameObject:
   - component: {fileID: 360557419878155864}
   - component: {fileID: 7790536992163204156}
   - component: {fileID: 5316314868413455762}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3989,7 +3989,7 @@ GameObject:
   - component: {fileID: 1096489943338100151}
   - component: {fileID: 9026970823336578269}
   - component: {fileID: 4129870764678081556}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: battery_closet_tumbler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4079,7 +4079,7 @@ GameObject:
   - component: {fileID: 9029645607848205355}
   - component: {fileID: 280066609987632401}
   - component: {fileID: 1259610353781873393}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: print_bed_holder_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4207,7 +4207,7 @@ GameObject:
   - component: {fileID: 1014148506102300820}
   - component: {fileID: 5029542003163313577}
   - component: {fileID: 8658764315500580853}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4330,7 +4330,7 @@ GameObject:
   - component: {fileID: 2219990248388886221}
   - component: {fileID: 2237253774717263396}
   - component: {fileID: 802128066914342405}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: battery_closet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4423,7 +4423,7 @@ GameObject:
   - component: {fileID: 272416664621090027}
   - component: {fileID: 1689080421750456165}
   - component: {fileID: 8824282160656020006}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: print_bed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4513,7 +4513,7 @@ GameObject:
   - component: {fileID: 6687153048912840723}
   - component: {fileID: 2557387870834940295}
   - component: {fileID: 4228155649568171071}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: axis_rotor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4605,7 +4605,7 @@ GameObject:
   - component: {fileID: 6885994932011034868}
   - component: {fileID: 42954173892093766}
   - component: {fileID: 6081546799028290343}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: extruder_nozzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4695,7 +4695,7 @@ GameObject:
   - component: {fileID: 7428446230302235480}
   - component: {fileID: 6785513664890073686}
   - component: {fileID: 4629147557716246953}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: extruder_fan_calm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4785,7 +4785,7 @@ GameObject:
   - component: {fileID: 5035747207043066450}
   - component: {fileID: 8115315634324980588}
   - component: {fileID: 5270777960251758317}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: z_axis_guide_right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5101,7 +5101,7 @@ GameObject:
   - component: {fileID: 3620895744329945536}
   - component: {fileID: 1247518083345317052}
   - component: {fileID: 7121822852408171821}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: extruder_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

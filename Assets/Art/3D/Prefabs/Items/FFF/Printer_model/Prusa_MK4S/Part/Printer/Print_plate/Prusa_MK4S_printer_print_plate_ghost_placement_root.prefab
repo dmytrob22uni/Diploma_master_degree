@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4719225158679651392}
   - component: {fileID: 3923199943596066958}
   - component: {fileID: -8752239819001861495}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_print_plate_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7142937992666690577}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5679803678940418635}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,7 +159,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7703370544420623747}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -192,7 +192,7 @@ GameObject:
   - component: {fileID: 571231055279915719}
   - component: {fileID: 2812459770325946344}
   - component: {fileID: 9189585722615194891}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: print_plate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8193126284199545961}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -311,7 +311,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6372191527170297581}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}

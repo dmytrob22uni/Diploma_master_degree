@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4264907362364382546}
   - component: {fileID: 1154519239740276123}
   - component: {fileID: 9040508133936574782}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: extruder_filament_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 3932243388753963879}
   - component: {fileID: 586615651644258029}
   - component: {fileID: 2230415821920856409}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_extruder_filament_bearing_ghost_missing_part_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7417883939363829540}
   - component: {fileID: 7659065452635524124}
   - component: {fileID: 8440926023309679336}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 1500010168738482541}
   - component: {fileID: 1761307892653270833}
   - component: {fileID: 5559646709330626321}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: adhesive_spray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 8444151311844126417}
   - component: {fileID: 4353218657516124663}
   - component: {fileID: 267491057540238672}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: adhesive_spray_ghost_wear_level_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

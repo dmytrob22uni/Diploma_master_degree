@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4719225158679651392}
   - component: {fileID: 3923199943596066958}
   - component: {fileID: -4737634617697928477}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_print_plate_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 2812459770325946344}
   - component: {fileID: 9189585722615194891}
   - component: {fileID: 139412529721737747}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: print_plate
   m_TagString: Untagged
   m_Icon: {fileID: 0}

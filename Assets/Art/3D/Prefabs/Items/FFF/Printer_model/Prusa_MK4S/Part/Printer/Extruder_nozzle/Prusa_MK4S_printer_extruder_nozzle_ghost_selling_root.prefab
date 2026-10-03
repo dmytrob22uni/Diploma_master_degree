@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5844603926950214662}
   - component: {fileID: 5599702086684273047}
   - component: {fileID: -2322863187853822648}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_extruder_nozzle_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 627203243151614579}
   - component: {fileID: 5730266486355579552}
   - component: {fileID: 8214088727973068981}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: extruder_nozzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

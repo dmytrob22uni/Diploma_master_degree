@@ -97,7 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Surface.ItemSurfaceDataHolder
   itemType: 53
   ShelvesCollidersList:
-  - {fileID: 8417382385005017576}
+  - {fileID: 6897411158509644361}
   ItemsOnShelvesList: []
 --- !u!1 &911862974193167277
 GameObject:
@@ -109,7 +109,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3609151173823095474}
   - component: {fileID: 7515141060286544477}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 8457724009615593576}
   - component: {fileID: 4178595843893689182}
   - component: {fileID: 7789527656898578073}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: table_short
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -253,7 +253,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8266809871132800484}
   - component: {fileID: 1339978500562982071}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +306,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6872902204792744850}
   - component: {fileID: 8417382385005017576}
-  m_Layer: 11
+  m_Layer: 15
   m_Name: collider_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -359,7 +359,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1820553677490188427}
   - component: {fileID: 6765410408635412547}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -412,7 +412,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5002158909989253946}
   - component: {fileID: 2033379974183108957}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -455,6 +455,59 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.028528512, y: 0.86406696, z: 0.028528571}
   m_Center: {x: -0.0009468496, y: 0.43399185, z: -0.0028405488}
+--- !u!1 &4727008085323510789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7835234036188147589}
+  - component: {fileID: 6897411158509644361}
+  m_Layer: 14
+  m_Name: shelf_collider_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7835234036188147589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4727008085323510789}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.883, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3267553981150168500}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6897411158509644361
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4727008085323510789}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.396332, y: 0.035547256, z: 0.8003122}
+  m_Center: {x: 0, y: -0.000022411346, z: 0.000000029802322}
 --- !u!1 &5691719299741507590
 GameObject:
   m_ObjectHideFlags: 0
@@ -464,7 +517,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3267553981150168500}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: colliders
   m_TagString: Untagged
   m_Icon: {fileID: 8418204508859773708, guid: 0000000000000000d000000000000000, type: 0}
@@ -492,6 +545,7 @@ Transform:
   - {fileID: 3609151173823095474}
   - {fileID: 1820553677490188427}
   - {fileID: 6872902204792744850}
+  - {fileID: 7835234036188147589}
   m_Father: {fileID: 2949337323892677065}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7176529035407000523
@@ -504,7 +558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6503050792527765068}
   - component: {fileID: 2230161180799332233}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -557,7 +611,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4756552117261239932}
   - component: {fileID: 1322212458258650720}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -610,7 +664,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8045355124636050611}
   - component: {fileID: 2299134266904146254}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: collider_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}

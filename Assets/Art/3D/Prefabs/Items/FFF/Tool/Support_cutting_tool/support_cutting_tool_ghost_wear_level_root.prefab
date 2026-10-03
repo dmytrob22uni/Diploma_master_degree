@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2267551864427153666}
   - component: {fileID: 2889182603711249134}
   - component: {fileID: 6995779201510029735}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: left_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 6056976257320562088}
   - component: {fileID: 4210920514970211072}
   - component: {fileID: 4721440256390751504}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: right_part
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 7645216538797978886}
   - component: {fileID: 4112346791044405849}
   - component: {fileID: 7623871379929538586}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: support_cutting_tool_base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -331,7 +331,7 @@ GameObject:
   - component: {fileID: 1255856243540412229}
   - component: {fileID: 1736638283208782988}
   - component: {fileID: 5621748320964195565}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: support_cutting_tool_ghost_wear_level_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

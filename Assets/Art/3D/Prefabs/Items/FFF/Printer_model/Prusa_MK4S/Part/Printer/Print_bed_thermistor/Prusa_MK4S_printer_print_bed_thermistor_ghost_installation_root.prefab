@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2443230663885379228}
   - component: {fileID: 5685937119763282049}
   - component: {fileID: -7172608235882361261}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_print_bed_thermistor_ghost_installation_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,8 +89,7 @@ GameObject:
   - component: {fileID: 1736020884233006691}
   - component: {fileID: 1712397009031664760}
   - component: {fileID: 7627824286397919144}
-  - component: {fileID: 5844501082065554503}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: print_bed_thermistor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,24 +169,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5844501082065554503
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5968185133060354416}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 0.23135202, y: 0.18826613, z: 0.0020503704}
-  m_Center: {x: 0, y: 0.011008643, z: -4.5419945e-17}

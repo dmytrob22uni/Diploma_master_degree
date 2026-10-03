@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 643344272212904192}
   - component: {fileID: 5777934518158273154}
   - component: {fileID: 753118196855373873}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: axis_guide_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 1973382296447776213}
   - component: {fileID: 5588944162363606426}
   - component: {fileID: -1966282395319924741}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_axis_guide_bearing_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

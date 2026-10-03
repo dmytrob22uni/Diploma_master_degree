@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1051905917795685819}
   - component: {fileID: 4946433756025394498}
   - component: {fileID: -2698068893968919608}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_axis_rotor_bearing_ghost_missing_part_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4689828397074378511}
   - component: {fileID: 5375641137477546624}
   - component: {fileID: 5594986976907032828}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: axis_rotor_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}

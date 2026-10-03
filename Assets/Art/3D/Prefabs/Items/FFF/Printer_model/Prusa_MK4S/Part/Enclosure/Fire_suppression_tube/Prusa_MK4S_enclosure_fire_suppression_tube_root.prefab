@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7835357693288099430}
   - component: {fileID: 7073176908875035643}
   - component: {fileID: 4822732319339415407}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_fire_suppression_tube_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 94.660065
+  currentCondition: 96.99616
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: f1188c73bc377667caf4f81b52684bbc, type: 2}
 --- !u!1 &3045565610575931964
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 3879108282971482138}
   - component: {fileID: 6425024679230718772}
   - component: {fileID: 1261932187944052785}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fire_suppression_tube_3_exploded
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 8927918331548923314}
   - component: {fileID: 526771552335594974}
   - component: {fileID: 6891295144585507919}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fire_suppression_tube_1_exploded
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -292,7 +292,7 @@ GameObject:
   - component: {fileID: 8783586307050456562}
   - component: {fileID: 678285947014118537}
   - component: {fileID: 5355688672926724885}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fire_suppression_tube_2_exploded
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -384,7 +384,7 @@ GameObject:
   - component: {fileID: 2671966865005546892}
   - component: {fileID: 4971262150420137334}
   - component: {fileID: 4749846201764649768}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: fire_suppression_tube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -475,7 +475,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2194603675491936864}
   - component: {fileID: 870187548630116071}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: fire_suppression_tube_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}

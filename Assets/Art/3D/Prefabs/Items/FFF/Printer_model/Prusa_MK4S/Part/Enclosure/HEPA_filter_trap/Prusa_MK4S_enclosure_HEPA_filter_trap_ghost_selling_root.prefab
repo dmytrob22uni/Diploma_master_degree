@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2291890189799181320}
   - component: {fileID: 6655984170084669663}
   - component: {fileID: -4268317548827694818}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_trap_ghost_selling_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 3911657429613431040}
   - component: {fileID: 3741575896126453530}
   - component: {fileID: 3128309381908371284}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: HEPA_filter_trap
   m_TagString: Untagged
   m_Icon: {fileID: 0}

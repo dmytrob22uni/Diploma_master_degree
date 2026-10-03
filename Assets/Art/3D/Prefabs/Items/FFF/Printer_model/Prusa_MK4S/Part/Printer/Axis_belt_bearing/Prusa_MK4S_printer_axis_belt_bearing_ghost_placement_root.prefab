@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5276430652305324816}
   - component: {fileID: 694629078327692129}
   - component: {fileID: 7814158429313088917}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: axis_belt_bearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3360547762439896628}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 1032842756230286244}
   - component: {fileID: 4387493476389133792}
   - component: {fileID: 3028139269778335402}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Prusa_MK4S_printer_axis_belt_bearing_ghost_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -213,7 +213,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 794140055014865872}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
