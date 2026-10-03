@@ -127,17 +127,109 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 251751871755893408, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.26347
+      objectReference: {fileID: 0}
+    - target: {fileID: 255072534411508060, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 91.80095
+      objectReference: {fileID: 0}
+    - target: {fileID: 431702929928766635, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.069046
+      objectReference: {fileID: 0}
+    - target: {fileID: 1966028080383053879, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.95238
+      objectReference: {fileID: 0}
+    - target: {fileID: 2100864536941520083, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 98.96229
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169775415596528688, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.813934
+      objectReference: {fileID: 0}
     - target: {fileID: 2321595096870056498, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_root
       objectReference: {fileID: 0}
+    - target: {fileID: 2918411974761659132, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 93.00749
+      objectReference: {fileID: 0}
+    - target: {fileID: 3001245873948576862, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 92.39187
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284529674231016111, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.47604
+      objectReference: {fileID: 0}
     - target: {fileID: 3345315828937206210, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: currentCondition
-      value: 90.84196
+      value: 92.06894
+      objectReference: {fileID: 0}
+    - target: {fileID: 3984176844081191637, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.12689
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371480207286664057, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.53606
+      objectReference: {fileID: 0}
+    - target: {fileID: 4956962981173544420, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.833374
+      objectReference: {fileID: 0}
+    - target: {fileID: 4957628720752349538, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.43885
+      objectReference: {fileID: 0}
+    - target: {fileID: 5064200427105523408, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 93.34809
+      objectReference: {fileID: 0}
+    - target: {fileID: 5084759226620225621, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 98.8686
+      objectReference: {fileID: 0}
+    - target: {fileID: 5277332302625607292, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.42981
+      objectReference: {fileID: 0}
+    - target: {fileID: 5336351295267791563, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 92.02336
+      objectReference: {fileID: 0}
+    - target: {fileID: 5566171612379930557, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 92.1105
+      objectReference: {fileID: 0}
+    - target: {fileID: 6242280135019086829, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.47716
+      objectReference: {fileID: 0}
+    - target: {fileID: 6658778740724566657, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.347336
+      objectReference: {fileID: 0}
+    - target: {fileID: 7060843830114664637, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 98.84858
       objectReference: {fileID: 0}
     - target: {fileID: 7407627736932619442, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: currentCondition
-      value: 97.721985
+      value: 94.34654
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527341242452829088, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.073906
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651944362988470836, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.63751
       objectReference: {fileID: 0}
     - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_LocalPosition.x
@@ -179,6 +271,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7746551829741790011, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.0023
+      objectReference: {fileID: 0}
+    - target: {fileID: 7984522531564532326, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.33122
+      objectReference: {fileID: 0}
+    - target: {fileID: 8137249696364387263, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.45104
+      objectReference: {fileID: 0}
+    - target: {fileID: 8288686800099123193, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.13801
+      objectReference: {fileID: 0}
+    - target: {fileID: 8335685911862823819, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 91.17846
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383851182965962424, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.17592
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -195,6 +311,10 @@ PrefabInstance:
     - target: {fileID: 6245900780811570333, guid: 54f94348a73473d41b83688e168f4e6d, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_spool_PETG_magenta_root
+      objectReference: {fileID: 0}
+    - target: {fileID: 6432197325131597416, guid: 54f94348a73473d41b83688e168f4e6d, type: 3}
+      propertyPath: currentCondition
+      value: 97.84152
       objectReference: {fileID: 0}
     - target: {fileID: 6705595234148630119, guid: 54f94348a73473d41b83688e168f4e6d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -490,6 +610,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -1508349766057833946, guid: 804d6dac9632a48a89f2e63730df5240, type: 3}
+      propertyPath: currentCondition
+      value: 94.42645
+      objectReference: {fileID: 0}
     - target: {fileID: 6245900780811570333, guid: 804d6dac9632a48a89f2e63730df5240, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_spool_PETG_red_root
@@ -547,6 +671,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1063005377013084879, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 95.056175
+      objectReference: {fileID: 0}
     - target: {fileID: 1762743641646650074, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_enclosure_root
@@ -567,6 +695,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 106.569
       objectReference: {fileID: 0}
+    - target: {fileID: 2964678533277484844, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 93.836075
+      objectReference: {fileID: 0}
     - target: {fileID: 4369870445564427456, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.5603329
@@ -582,6 +714,10 @@ PrefabInstance:
     - target: {fileID: 4369870445564427456, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -111.842
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377151461146294595, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 97.19829
       objectReference: {fileID: 0}
     - target: {fileID: 4826910708001889071, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
       propertyPath: m_LocalPosition.x
@@ -623,6 +759,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5240149161496052355, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 99.98623
+      objectReference: {fileID: 0}
+    - target: {fileID: 6168221984639678016, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 98.907
+      objectReference: {fileID: 0}
+    - target: {fileID: 7141872105627352864, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 98.84693
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275906369509513430, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 91.71237
+      objectReference: {fileID: 0}
+    - target: {fileID: 8022097532261565969, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 95.00267
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406506658663055444, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 97.14415
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -636,17 +796,109 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 251751871755893408, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.603355
+      objectReference: {fileID: 0}
+    - target: {fileID: 255072534411508060, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 91.56189
+      objectReference: {fileID: 0}
+    - target: {fileID: 431702929928766635, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.78645
+      objectReference: {fileID: 0}
+    - target: {fileID: 1966028080383053879, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 93.94155
+      objectReference: {fileID: 0}
+    - target: {fileID: 2100864536941520083, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.17719
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169775415596528688, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 91.72405
+      objectReference: {fileID: 0}
     - target: {fileID: 2321595096870056498, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_root (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 2918411974761659132, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.32477
+      objectReference: {fileID: 0}
+    - target: {fileID: 3001245873948576862, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.55426
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284529674231016111, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.50623
+      objectReference: {fileID: 0}
     - target: {fileID: 3345315828937206210, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: currentCondition
-      value: 96.07741
+      value: 92.608864
+      objectReference: {fileID: 0}
+    - target: {fileID: 3984176844081191637, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 92.33448
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371480207286664057, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 98.884285
+      objectReference: {fileID: 0}
+    - target: {fileID: 4956962981173544420, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.314415
+      objectReference: {fileID: 0}
+    - target: {fileID: 4957628720752349538, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.578354
+      objectReference: {fileID: 0}
+    - target: {fileID: 5064200427105523408, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.17334
+      objectReference: {fileID: 0}
+    - target: {fileID: 5084759226620225621, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.986435
+      objectReference: {fileID: 0}
+    - target: {fileID: 5277332302625607292, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.34881
+      objectReference: {fileID: 0}
+    - target: {fileID: 5336351295267791563, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.17749
+      objectReference: {fileID: 0}
+    - target: {fileID: 5566171612379930557, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 93.64006
+      objectReference: {fileID: 0}
+    - target: {fileID: 6242280135019086829, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.52149
+      objectReference: {fileID: 0}
+    - target: {fileID: 6658778740724566657, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.19694
+      objectReference: {fileID: 0}
+    - target: {fileID: 7060843830114664637, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.43036
       objectReference: {fileID: 0}
     - target: {fileID: 7407627736932619442, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: currentCondition
-      value: 94.71658
+      value: 97.51643
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527341242452829088, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 91.65348
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651944362988470836, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.5453
       objectReference: {fileID: 0}
     - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_LocalPosition.x
@@ -687,6 +939,30 @@ PrefabInstance:
     - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7746551829741790011, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.33259
+      objectReference: {fileID: 0}
+    - target: {fileID: 7984522531564532326, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.19334
+      objectReference: {fileID: 0}
+    - target: {fileID: 8137249696364387263, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.595215
+      objectReference: {fileID: 0}
+    - target: {fileID: 8288686800099123193, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.45697
+      objectReference: {fileID: 0}
+    - target: {fileID: 8335685911862823819, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 98.99092
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383851182965962424, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 91.49225
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -758,6 +1034,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4201473564125330677, guid: adee652792d39a6ccb9bd3f9ecaeb8ec, type: 3}
+      propertyPath: currentCondition
+      value: 92.34267
+      objectReference: {fileID: 0}
     - target: {fileID: 6245900780811570333, guid: adee652792d39a6ccb9bd3f9ecaeb8ec, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_spool_PETG_blue_root
@@ -826,17 +1106,109 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 251751871755893408, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 92.03714
+      objectReference: {fileID: 0}
+    - target: {fileID: 255072534411508060, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 98.855545
+      objectReference: {fileID: 0}
+    - target: {fileID: 431702929928766635, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.13504
+      objectReference: {fileID: 0}
+    - target: {fileID: 1966028080383053879, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.94695
+      objectReference: {fileID: 0}
+    - target: {fileID: 2100864536941520083, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.18846
+      objectReference: {fileID: 0}
+    - target: {fileID: 2169775415596528688, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 93.15147
+      objectReference: {fileID: 0}
     - target: {fileID: 2321595096870056498, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_root (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 2918411974761659132, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.06439
+      objectReference: {fileID: 0}
+    - target: {fileID: 3001245873948576862, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.34752
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284529674231016111, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.8868
+      objectReference: {fileID: 0}
     - target: {fileID: 3345315828937206210, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: currentCondition
-      value: 97.446556
+      value: 90.63895
+      objectReference: {fileID: 0}
+    - target: {fileID: 3984176844081191637, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.522156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371480207286664057, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.74656
+      objectReference: {fileID: 0}
+    - target: {fileID: 4956962981173544420, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 97.203415
+      objectReference: {fileID: 0}
+    - target: {fileID: 4957628720752349538, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 99.77471
+      objectReference: {fileID: 0}
+    - target: {fileID: 5064200427105523408, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 91.4155
+      objectReference: {fileID: 0}
+    - target: {fileID: 5084759226620225621, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.92305
+      objectReference: {fileID: 0}
+    - target: {fileID: 5277332302625607292, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.98613
+      objectReference: {fileID: 0}
+    - target: {fileID: 5336351295267791563, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.54069
+      objectReference: {fileID: 0}
+    - target: {fileID: 5566171612379930557, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.48034
+      objectReference: {fileID: 0}
+    - target: {fileID: 6242280135019086829, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.8713
+      objectReference: {fileID: 0}
+    - target: {fileID: 6658778740724566657, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.6846
+      objectReference: {fileID: 0}
+    - target: {fileID: 7060843830114664637, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.14207
       objectReference: {fileID: 0}
     - target: {fileID: 7407627736932619442, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: currentCondition
-      value: 95.94569
+      value: 91.8082
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527341242452829088, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 93.20264
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651944362988470836, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 92.59862
       objectReference: {fileID: 0}
     - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_LocalPosition.x
@@ -877,6 +1249,30 @@ PrefabInstance:
     - target: {fileID: 7689618605535600892, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7746551829741790011, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 90.28485
+      objectReference: {fileID: 0}
+    - target: {fileID: 7984522531564532326, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 98.16254
+      objectReference: {fileID: 0}
+    - target: {fileID: 8137249696364387263, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 94.56758
+      objectReference: {fileID: 0}
+    - target: {fileID: 8288686800099123193, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 92.056854
+      objectReference: {fileID: 0}
+    - target: {fileID: 8335685911862823819, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 96.233246
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383851182965962424, guid: 04e40b9a1ded2d94084d1c35f6dc6398, type: 3}
+      propertyPath: currentCondition
+      value: 95.56882
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1015,9 +1411,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1063005377013084879, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 92.43444
+      objectReference: {fileID: 0}
     - target: {fileID: 1762743641646650074, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_enclosure_root (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964678533277484844, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 96.902794
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377151461146294595, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 90.42885
       objectReference: {fileID: 0}
     - target: {fileID: 4826910708001889071, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1059,6 +1467,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5240149161496052355, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 95.40776
+      objectReference: {fileID: 0}
+    - target: {fileID: 6168221984639678016, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 96.92297
+      objectReference: {fileID: 0}
+    - target: {fileID: 7141872105627352864, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 94.37367
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275906369509513430, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 90.66154
+      objectReference: {fileID: 0}
+    - target: {fileID: 8022097532261565969, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 92.44735
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406506658663055444, guid: 368fad75dffd1ad10af239ab2b927d58, type: 3}
+      propertyPath: currentCondition
+      value: 94.23157
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1072,6 +1504,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4124662200319991351, guid: 4cef917edda0d40e9b7b2dc5d06cba70, type: 3}
+      propertyPath: currentCondition
+      value: 96.06178
+      objectReference: {fileID: 0}
     - target: {fileID: 6245900780811570333, guid: 4cef917edda0d40e9b7b2dc5d06cba70, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_spool_PETG_yellow_root
@@ -1208,6 +1644,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 329810693413118664, guid: a7cf6d8f28698b62b9b58e26fca5c83b, type: 3}
+      propertyPath: currentCondition
+      value: 96.94358
+      objectReference: {fileID: 0}
     - target: {fileID: 6245900780811570333, guid: a7cf6d8f28698b62b9b58e26fca5c83b, type: 3}
       propertyPath: m_Name
       value: Prusa_MK4S_printer_spool_PETG_green_root
@@ -1313,6 +1753,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: -876546973899608171, guid: cc923859008f0d00db540717beb94b8d, type: 3}
+    - target: {fileID: 6479298730501054901, guid: ebbe923559372815fb6e2f1459fc7faf, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1326,6 +1770,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1293710065890657202, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
+      propertyPath: m_Cameras.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1293710065890657202, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
+      propertyPath: 'm_Cameras.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2150490673395912624, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 5618919355045468542, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
       propertyPath: LookSpeed
       value: 3
