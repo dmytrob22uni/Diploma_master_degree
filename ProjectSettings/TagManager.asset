@@ -14,21 +14,21 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - background
   - 
   - player
   - 
   - 
   - 
-  - 
+  - surface
   - item
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - part
+  - part_location
+  - plug_location
+  - printer
+  - enclosure
+  - powered
+  - wear_level
   - 
   - 
   - 
