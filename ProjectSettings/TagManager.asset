@@ -29,9 +29,9 @@ TagManager:
   - enclosure
   - powered
   - wear_level
-  - 
-  - 
-  - 
+  - object_to_print
+  - object_to_print_cap
+  - quality
   - 
   - 
   - 
