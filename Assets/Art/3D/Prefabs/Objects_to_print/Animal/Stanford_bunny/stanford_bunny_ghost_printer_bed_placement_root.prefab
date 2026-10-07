@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2120876612372826622}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6158007534016820496}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6924779266455607744}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1950245072308689062}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 132655075517908205}
   - component: {fileID: 231526228855088466}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: stanford_bunny_ghost_printer_bed_placement_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,6 +175,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ObjectsToPrint.Ghost.ObjectToPrintGhostPrinterBedPlacementDataHolder
   ObjectToPrintGhostMetaData: {fileID: 11400000, guid: 558054da89acac55ea2626343645011a, type: 2}
+  ObjectToPrintGhostType: 1
+  ObjectToPrintInstanceInstance: {fileID: 0}
   MeshRenderersList:
   - {fileID: 5434645095796168199}
   CornersList:
@@ -193,9 +195,7 @@ GameObject:
   - component: {fileID: 421981192731640658}
   - component: {fileID: 6043382312173925838}
   - component: {fileID: 5434645095796168199}
-  - component: {fileID: 1081070831677937434}
-  - component: {fileID: 407977585506982959}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: stanford_bunny
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,55 +274,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &1081070831677937434
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7958278468699901064}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -9144040151360201680, guid: fe7c0139efa7deb6091f9c14623c3cfc, type: 3}
---- !u!54 &407977585506982959
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7958278468699901064}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0.1
-  m_AngularDamping: 0.1
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &8941768551628274604
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,7 +283,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4547496596055916041}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}

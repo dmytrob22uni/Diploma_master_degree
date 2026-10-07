@@ -21,3 +21,5 @@ MonoBehaviour:
     ObjectToPrintGhostGameObject: {fileID: 7837376639033383743, guid: b29badfd363718a6fad0ef2835a3b76d, type: 3}
   - ObjectToPrintGhostType: 3
     ObjectToPrintGhostGameObject: {fileID: 7837376639033383743, guid: 510bc6f32154f65d79a235012cf79605, type: 3}
+  - ObjectToPrintGhostType: 4
+    ObjectToPrintGhostGameObject: {fileID: 7837376639033383743, guid: 695aee1580c098d92a60518743e2cd53, type: 3}

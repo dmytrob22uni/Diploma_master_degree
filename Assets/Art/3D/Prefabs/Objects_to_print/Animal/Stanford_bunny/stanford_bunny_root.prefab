@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2120876612372826622}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6158007534016820496}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6924779266455607744}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1950245072308689062}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,8 +137,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 132655075517908205}
+  - component: {fileID: 2150188853541386452}
   - component: {fileID: -3345542591526835161}
-  m_Layer: 15
+  m_Layer: 23
   m_Name: stanford_bunny_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,6 +163,33 @@ Transform:
   - {fileID: 1950245072308689062}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &2150188853541386452
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7837376639033383743}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0.1
+  m_AngularDamping: 0.1
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!114 &-3345542591526835161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,8 +217,7 @@ GameObject:
   - component: {fileID: 6043382312173925838}
   - component: {fileID: 5434645095796168199}
   - component: {fileID: 1081070831677937434}
-  - component: {fileID: 407977585506982959}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: stanford_bunny
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -291,33 +318,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -9144040151360201680, guid: fe7c0139efa7deb6091f9c14623c3cfc, type: 3}
---- !u!54 &407977585506982959
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7958278468699901064}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0.1
-  m_AngularDamping: 0.1
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &8941768551628274604
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +327,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4547496596055916041}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
