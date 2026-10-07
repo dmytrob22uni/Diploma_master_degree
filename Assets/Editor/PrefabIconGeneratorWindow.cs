@@ -1,6 +1,7 @@
+using System;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
-using System.IO;
 
 public class PrefabIconGenerator : EditorWindow
 {
@@ -37,6 +38,14 @@ public class PrefabIconGenerator : EditorWindow
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
+
+            if (path.Contains("ghost", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Debug.LogWarning($"The the prefab path {path} contains \"ghost\" substring. " +
+                "Icon won't be generated for this prefab");
+                continue;
+            }
+
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
 
             if (prefab == null)
