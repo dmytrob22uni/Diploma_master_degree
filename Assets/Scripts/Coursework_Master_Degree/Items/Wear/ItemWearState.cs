@@ -14,9 +14,12 @@ namespace Coursework_Master_Degree.Items.Wear
 
         public event Action OnItemWornOut;
 
+        [Tooltip("Is allow initial random condition generation in range from 95 to 100")]
+        public bool IsAllowRandomInitialCondition = true;
+
         [SerializeField]
         [EnableIf("NotEnabled")]
-        [Tooltip("Initial condition is randomly generated on Awake: 90 to 100")]
+        [Tooltip("Set on Awake. Exposed for debugging")]
         private float currentCondition;
         public float CurrentCondition { get { return currentCondition; } }
 
@@ -45,7 +48,14 @@ namespace Coursework_Master_Degree.Items.Wear
 
         public void GenerateInitialCondition()
         {
-            currentCondition = UnityEngine.Random.Range(90.0f, 100.0f);
+            if (IsAllowRandomInitialCondition)
+            {
+                currentCondition = UnityEngine.Random.Range(95.0f, 100.0f);
+            }
+            else
+            {
+                currentCondition = 100.0f;
+            }
         }
 
         public void ApplyWear(WearDelta wearDelta)
