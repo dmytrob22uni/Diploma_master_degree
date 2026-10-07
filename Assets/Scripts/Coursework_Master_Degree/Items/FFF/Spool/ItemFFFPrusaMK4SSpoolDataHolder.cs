@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using Coursework_Master_Degree.ScriptableObjects.Items.Types;
 
 namespace Coursework_Master_Degree.Items.FFF.Spool
@@ -13,7 +14,12 @@ namespace Coursework_Master_Degree.Items.FFF.Spool
 
         public ItemType MaterialType;
         public ItemType ColorType;
-        public Material Material;
+
+        public Material FinalMaterial;
+        public Material PrintingMaterial;
+
+        [SerializeField]
+        public Dictionary<float, GameObject> SpoolWearLevelsToGameObjectsDictionary;
 
         [Min(10.0f)]
         [Tooltip(
