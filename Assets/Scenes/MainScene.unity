@@ -3184,14 +3184,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: hangar
       objectReference: {fileID: 0}
-    - target: {fileID: 6402883155948199534, guid: ebbe923559372815fb6e2f1459fc7faf, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: -876546973899608171, guid: cc923859008f0d00db540717beb94b8d, type: 3}
-    - target: {fileID: 6479298730501054901, guid: ebbe923559372815fb6e2f1459fc7faf, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3205,22 +3197,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1293710065890657202, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
-      propertyPath: m_Cameras.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1293710065890657202, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
-      propertyPath: 'm_Cameras.Array.data[0]'
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2150490673395912624, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 5618919355045468542, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
-      propertyPath: LookSpeed
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 5879855173042336699, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
       propertyPath: m_Name
       value: player
@@ -3264,14 +3240,6 @@ PrefabInstance:
     - target: {fileID: 8440304075051125937, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8628369492029339313, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
-      propertyPath: LookSpeed
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8628369492029339313, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
-      propertyPath: ZoomLookSpeed
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -179,11 +179,11 @@ MonoBehaviour:
   SpedUpMoveSpeed: 5
   SlowDownMoveSpeed: 1
   CrouchMoveSpeed: 1
-  LookSpeed: 1
+  LookSpeed: 3
   UpLimitLookAngle: -70
   DownLimitLookAngle: 70
   ZoomLookFieldOfView: 20
-  ZoomLookSpeed: 0.33333334
+  ZoomLookSpeed: 1
   ZoomLookTransitionDuration: 0.1
   CrouchScale: 0.5
   CrouchTransitionDuration: 0.3
@@ -206,7 +206,7 @@ MonoBehaviour:
   EyesCamera: {fileID: 2150490673395912624}
   GlobalInputAction: {fileID: -944628639613478452, guid: 4bff531e5862c70e78c2778499520888, type: 3}
   MoveSpeed: 1
-  LookSpeed: 1
+  LookSpeed: 3
   UpLimitLookAngle: -70
   DownLimitLookAngle: 70
   CrouchScale: 0.5
@@ -459,7 +459,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 6199
+    m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
