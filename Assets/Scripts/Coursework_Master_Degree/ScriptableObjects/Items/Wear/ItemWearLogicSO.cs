@@ -12,6 +12,9 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items.Wear
         private bool NotEnabled => false;
         private bool Enabled => true;
 
+        [TextArea]
+        public string WornOutDescription = "Worn out description TO REPLACE";
+
         [SerializeField]
         [EnableIf("NotEnabled")]
         [Tooltip(
