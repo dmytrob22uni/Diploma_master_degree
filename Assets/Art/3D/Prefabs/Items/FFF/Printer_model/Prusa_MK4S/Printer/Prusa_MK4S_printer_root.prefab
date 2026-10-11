@@ -406,6 +406,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 1293194592543969806}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &832400490158773595
 GameObject:
   m_ObjectHideFlags: 0
@@ -752,6 +756,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 90fbadea13e40e7df8cc1c0b03c3c428, type: 2}
   InstalledPart: {fileID: 0}
   IsOccupied: 0
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &1406760392645047536
 GameObject:
   m_ObjectHideFlags: 0
@@ -829,6 +837,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 4650903450553189642}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &1471950795218296133
 GameObject:
   m_ObjectHideFlags: 0
@@ -964,6 +976,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6817521738984559113}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &1651920184776562342
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,6 +1056,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 8100088638968062793}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &1690145362343187474
 GameObject:
   m_ObjectHideFlags: 0
@@ -1396,6 +1416,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6466371276813834439}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2144110200108422259
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,6 +1496,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 1821170213301989781}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2318988355129340200
 GameObject:
   m_ObjectHideFlags: 0
@@ -1550,6 +1578,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 3573250584218429419}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2321595096870056498
 GameObject:
   m_ObjectHideFlags: 0
@@ -1562,7 +1594,7 @@ GameObject:
   - component: {fileID: 9094138599493437641}
   - component: {fileID: 4845091765864811612}
   - component: {fileID: 1361530194986605478}
-  - component: {fileID: 4183559805862427395}
+  - component: {fileID: 858199061406961229}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_root
   m_TagString: Untagged
@@ -1671,7 +1703,7 @@ MonoBehaviour:
   - {fileID: 2614513659517343219}
   - {fileID: 4955724354923195610}
   - {fileID: 1158949717442527240}
---- !u!114 &4183559805862427395
+--- !u!114 &858199061406961229
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1683,7 +1715,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c3040394cc0ad45baf23511e783d557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartsAssembly
-  PartsLocationsList:
+  IsHaveOptionalParts: 1
+  OptionalPartLocationsList:
+  - IsSingleMetaDataReference: 1
+    PartMetaData: {fileID: 0}
+    PartMetaDatasList:
+    - {fileID: 11400000, guid: 0eb6b95f94cdc66fa88ee6ade0bcf9fc, type: 2}
+    - {fileID: 11400000, guid: 1b51741ae1174074c81ae9fc82625d8c, type: 2}
+    - {fileID: 11400000, guid: 1dd3a8511ade5cab0947e2dddb2ed2de, type: 2}
+    - {fileID: 11400000, guid: 2672716bc64081c9d839c81a010e99b9, type: 2}
+    - {fileID: 11400000, guid: 305b05fe0a1608faf93aa213c3d2ab3b, type: 2}
+    - {fileID: 11400000, guid: 3d831d40cee68a583950dfae84d6286b, type: 2}
+    - {fileID: 11400000, guid: 5969a8ddfa9c0ec2f97168dff3777ee9, type: 2}
+    - {fileID: 11400000, guid: 71ffabdb3ec78c013bfbc64cb9d70112, type: 2}
+    - {fileID: 11400000, guid: 82590525dd19e229abe7d45650cc808d, type: 2}
+    - {fileID: 11400000, guid: 82a137f1fb2302ad4b419710ca85c443, type: 2}
+    - {fileID: 11400000, guid: 90fbadea13e40e7df8cc1c0b03c3c428, type: 2}
+    - {fileID: 11400000, guid: 923af264817ea5e9e85717c168692142, type: 2}
+    - {fileID: 11400000, guid: 99d813c1815e479889d076934c4ba732, type: 2}
+    - {fileID: 11400000, guid: a315f6f18aebaa7989bce49bb500725b, type: 2}
+    - {fileID: 11400000, guid: aff97ed0d6092cce19ce899a34fbabcf, type: 2}
+    - {fileID: 11400000, guid: c87172a4a75eddc85ab066d0f97cbd49, type: 2}
+    - {fileID: 11400000, guid: c99da118890180341977454745f6a2c8, type: 2}
+    - {fileID: 11400000, guid: d29cf3b2cca1af7d4beeeda2bc7b2d44, type: 2}
+    - {fileID: 11400000, guid: d51c9cb5948632104a226ee5a614a24c, type: 2}
+    - {fileID: 11400000, guid: def92af9dda97064b91a5eca65ee26ba, type: 2}
+    EssentialPartsNumber: 1
+    PartLocationsList:
+    - {fileID: 8626608670176291238}
+    - {fileID: 2198933648768292544}
+  RegularPartLocationsList:
   - {fileID: 5101444217939252786}
   - {fileID: 5851453670568498479}
   - {fileID: 4464787457696044930}
@@ -1715,8 +1776,6 @@ MonoBehaviour:
   - {fileID: 454191578216812911}
   - {fileID: 3101614061098862216}
   - {fileID: 4177194986401116277}
-  - {fileID: 8626608670176291238}
-  - {fileID: 2198933648768292544}
 --- !u!1 &2345573220605376966
 GameObject:
   m_ObjectHideFlags: 0
@@ -1793,6 +1852,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6850750031824458973}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2360857996822816657
 GameObject:
   m_ObjectHideFlags: 0
@@ -1976,6 +2039,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 1885479415244379821}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2420827772329659107
 GameObject:
   m_ObjectHideFlags: 0
@@ -2142,6 +2209,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 4431822518977360019}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2697699863111465743
 GameObject:
   m_ObjectHideFlags: 0
@@ -2447,6 +2518,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 2721489771907318917}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &3199119077774668314
 GameObject:
   m_ObjectHideFlags: 0
@@ -2661,6 +2736,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 8836336225357638181}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &3398662927919409965
 GameObject:
   m_ObjectHideFlags: 0
@@ -2843,6 +2922,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 7143562480650182682}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &3793237652361286415
 GameObject:
   m_ObjectHideFlags: 0
@@ -3074,6 +3157,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6986552660545832090}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &4211126676032299127
 GameObject:
   m_ObjectHideFlags: 0
@@ -3242,6 +3329,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 7653757867205501669}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &4396084818326210593
 GameObject:
   m_ObjectHideFlags: 0
@@ -3321,6 +3412,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 5674042935203087108}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &4477934545763561418
 GameObject:
   m_ObjectHideFlags: 0
@@ -3566,6 +3661,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 8067242990695198424}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &4890517982991790022
 GameObject:
   m_ObjectHideFlags: 0
@@ -3889,6 +3988,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 302076980000242116}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &5244473480722888962
 GameObject:
   m_ObjectHideFlags: 0
@@ -4081,6 +4184,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6836547006258286308}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &5448617493244736351
 GameObject:
   m_ObjectHideFlags: 0
@@ -4245,6 +4352,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 946351275119809614}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &5500787182580752282
 GameObject:
   m_ObjectHideFlags: 0
@@ -4465,6 +4576,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 7397631414752372859}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &5794787265719191411
 GameObject:
   m_ObjectHideFlags: 0
@@ -4658,6 +4773,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 2684831578917067256}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &6106967465749256349
 GameObject:
   m_ObjectHideFlags: 0
@@ -5003,6 +5122,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 8488062384202419235}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &6860951646724968190
 GameObject:
   m_ObjectHideFlags: 0
@@ -5187,6 +5310,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6020386947520747010}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &6971843570569703734
 GameObject:
   m_ObjectHideFlags: 0
@@ -5654,6 +5781,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 90fbadea13e40e7df8cc1c0b03c3c428, type: 2}
   InstalledPart: {fileID: 0}
   IsOccupied: 0
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &7304074570319443763
 GameObject:
   m_ObjectHideFlags: 0
@@ -5666,7 +5797,7 @@ GameObject:
   - component: {fileID: 811039353918247169}
   - component: {fileID: 3042372913035685079}
   m_Layer: 17
-  m_Name: print_plate_location
+  m_Name: extruder_thermistor_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5736,6 +5867,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 4825362978353999089}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &7326480081558228633
 GameObject:
   m_ObjectHideFlags: 0
@@ -6049,6 +6184,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 818737387400120843}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &7846224478323978130
 GameObject:
   m_ObjectHideFlags: 0
@@ -6209,6 +6348,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 1707741614134045101}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &8149213099804905405
 GameObject:
   m_ObjectHideFlags: 0
@@ -6285,6 +6428,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 7779757876852096793}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &8239755600520290529
 GameObject:
   m_ObjectHideFlags: 0
@@ -6416,6 +6563,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 4738968842938417299}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &8296336033107864996
 GameObject:
   m_ObjectHideFlags: 0
@@ -6495,6 +6646,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6207387979328027419}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &8312364438122405726
 GameObject:
   m_ObjectHideFlags: 0
@@ -7063,6 +7218,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 3842965378660271583}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &9216581109669571603
 GameObject:
   m_ObjectHideFlags: 0
@@ -7126,7 +7285,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 98.748436
+      value: 95.239876
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7201,7 +7360,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4362880129686507579, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: currentCondition
-      value: 94.45348
+      value: 97.370575
       objectReference: {fileID: 0}
     - target: {fileID: 5257129896252028014, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7268,7 +7427,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 99.50402
+      value: 96.87686
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7339,7 +7498,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 92.813416
+      value: 97.42483
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7410,7 +7569,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 94.23602
+      value: 95.46167
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7481,7 +7640,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2905673419552696122, guid: 8c3af6893c8f7550b9f2e84404ca9f78, type: 3}
       propertyPath: currentCondition
-      value: 98.027145
+      value: 98.27638
       objectReference: {fileID: 0}
     - target: {fileID: 4049438005437718146, guid: 8c3af6893c8f7550b9f2e84404ca9f78, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7552,7 +7711,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 91.18591
+      value: 99.32499
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7627,7 +7786,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4362880129686507579, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: currentCondition
-      value: 91.9097
+      value: 98.228745
       objectReference: {fileID: 0}
     - target: {fileID: 5257129896252028014, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7694,7 +7853,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 93.21263
+      value: 97.0775
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7765,7 +7924,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4680362671032482624, guid: 714cd5edc2c45d543be0970c6718d8a7, type: 3}
       propertyPath: currentCondition
-      value: 98.19219
+      value: 98.177956
       objectReference: {fileID: 0}
     - target: {fileID: 6451301900532140921, guid: 714cd5edc2c45d543be0970c6718d8a7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7836,7 +7995,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 99.17327
+      value: 99.74715
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7907,7 +8066,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9171363840408459907, guid: 31b42235223621067aaaae8ac3d453d1, type: 3}
       propertyPath: currentCondition
-      value: 93.61921
+      value: 95.18666
       objectReference: {fileID: 0}
     - target: {fileID: 668414684030049243, guid: 31b42235223621067aaaae8ac3d453d1, type: 3}
       propertyPath: m_Name
@@ -8018,7 +8177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5832130009404411871, guid: 71cb72765373f5726b1b13ee399b5f89, type: 3}
       propertyPath: currentCondition
-      value: 95.97686
+      value: 96.80652
       objectReference: {fileID: 0}
     - target: {fileID: 6833195417905576227, guid: 71cb72765373f5726b1b13ee399b5f89, type: 3}
       propertyPath: m_Name
@@ -8049,7 +8208,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1233996786831135776, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: currentCondition
-      value: 93.981674
+      value: 95.039024
       objectReference: {fileID: 0}
     - target: {fileID: 1973382296447776213, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8120,7 +8279,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -5458089755390511375, guid: 0c091b76e1000934c96f4438efdf7049, type: 3}
       propertyPath: currentCondition
-      value: 93.2048
+      value: 99.13702
       objectReference: {fileID: 0}
     - target: {fileID: 211306764670282936, guid: 0c091b76e1000934c96f4438efdf7049, type: 3}
       propertyPath: m_Name
@@ -8191,7 +8350,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 92.302345
+      value: 97.20561
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8262,7 +8421,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 95.407684
+      value: 95.74391
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8333,7 +8492,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -4039818837015392770, guid: 1b852a6e5ebeead4a880f8d00c11d476, type: 3}
       propertyPath: currentCondition
-      value: 91.1337
+      value: 95.76996
       objectReference: {fileID: 0}
     - target: {fileID: 3932243388753963879, guid: 1b852a6e5ebeead4a880f8d00c11d476, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8404,7 +8563,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 90.05299
+      value: 97.403465
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8475,7 +8634,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 99.42093
+      value: 96.00413
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8546,7 +8705,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3914380257251111164, guid: aac0c65da7958a97a8431c0ff6233550, type: 3}
       propertyPath: currentCondition
-      value: 90.22556
+      value: 95.13633
       objectReference: {fileID: 0}
     - target: {fileID: 5844603926950214662, guid: aac0c65da7958a97a8431c0ff6233550, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8617,7 +8776,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 99.027725
+      value: 95.946655
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8688,7 +8847,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 98.8976
+      value: 98.429695
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8763,7 +8922,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1996776196795890854, guid: be5221e054609233aa7c72e7ba28f31c, type: 3}
       propertyPath: currentCondition
-      value: 95.211365
+      value: 99.350716
       objectReference: {fileID: 0}
     - target: {fileID: 2179562271081893665, guid: be5221e054609233aa7c72e7ba28f31c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8830,7 +8989,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 93.18922
+      value: 98.93988
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8901,7 +9060,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 92.08687
+      value: 96.585884
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8972,7 +9131,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 90.59584
+      value: 96.25973
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9043,7 +9202,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3560122817263848684, guid: 99976572be37cef739a5f6e3fe418b4e, type: 3}
       propertyPath: currentCondition
-      value: 92.214325
+      value: 99.18496
       objectReference: {fileID: 0}
     - target: {fileID: 4135518511695718182, guid: 99976572be37cef739a5f6e3fe418b4e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9114,7 +9273,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1233996786831135776, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: currentCondition
-      value: 93.371216
+      value: 96.26587
       objectReference: {fileID: 0}
     - target: {fileID: 1973382296447776213, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9185,7 +9344,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -7871893048717240610, guid: dfc9d8b7aa9fbaa2fae4a7e22509aa92, type: 3}
       propertyPath: currentCondition
-      value: 90.56815
+      value: 98.892105
       objectReference: {fileID: 0}
     - target: {fileID: 2443230663885379228, guid: dfc9d8b7aa9fbaa2fae4a7e22509aa92, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9256,7 +9415,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 91.485596
+      value: 97.48792
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
