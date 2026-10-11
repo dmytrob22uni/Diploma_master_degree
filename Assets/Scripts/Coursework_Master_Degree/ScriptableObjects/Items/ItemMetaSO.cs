@@ -11,6 +11,10 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items
         public string Name;
         [TextArea]
         public string Description;
+        [TextArea]
+        public string PurposeDescription = "Purpose description TO REPLACE";
+        [TextArea]
+        public string MissingDescription = "Missing description TO REPLACE";
 
         public float Price;
 

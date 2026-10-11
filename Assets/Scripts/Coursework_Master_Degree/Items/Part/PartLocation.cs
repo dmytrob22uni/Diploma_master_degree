@@ -3,11 +3,9 @@ using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
 using Coursework_Master_Degree.ScriptableObjects.Items;
-using NUnit.Framework;
 
 namespace Coursework_Master_Degree.Items.Part
 {
-    [Serializable]
     public class PartLocation : MonoBehaviour
     {
         // naughty attributes enableif / disableif states
@@ -17,14 +15,12 @@ namespace Coursework_Master_Degree.Items.Part
         // Dependent itself to
         [Tooltip("Does any parts define this part as dependency")]
         public bool IsDependency = false;
-        [SerializeField]
         [ShowIf("IsDependency")]
         public List<PartLocation> DependentLocationsList;
 
         // Dependency parts of it
         [Tooltip("Does this part have any dependency parts")]
         public bool IsHaveDependencies = false;
-        [SerializeField]
         [ShowIf("IsHaveDependencies")]
         public List<PartLocation> DependencyLocationsList;
 
@@ -40,10 +36,19 @@ namespace Coursework_Master_Degree.Items.Part
         public GameObject InstalledPart;
 
         // Occupation check
-        [SerializeField]
         [EnableIf("NotEnabled")]
         [Tooltip("Set via script. Exposed for debugging")]
         public bool IsOccupied;
+
+        public bool IsOverridePartPurposeDescription;
+        [TextArea]
+        [ShowIf("IsOverridePartPurposeDescription")]
+        public string PartPurposeDescription = "Part purpose description TO REPLACE";
+
+        public bool IsOverrideMissingPartDescription;
+        [TextArea]
+        [ShowIf("IsOverrideMissingPartDescription")]
+        public string MissingPartDescription = "Missing part description TO REPLACE";
 
         private void OnValidate()
         {
