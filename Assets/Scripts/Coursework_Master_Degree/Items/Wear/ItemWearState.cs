@@ -46,7 +46,7 @@ namespace Coursework_Master_Degree.Items.Wear
             GenerateInitialCondition();
         }
 
-        public void GenerateInitialCondition()
+        private void GenerateInitialCondition()
         {
             if (IsAllowRandomInitialCondition)
             {
