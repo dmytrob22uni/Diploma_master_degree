@@ -1,278 +1,558 @@
 using UnityEngine;
+using NaughtyAttributes;
 using System.Collections.Generic;
-using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
-using Coursework_Master_Degree.Items.Ghosts.Background;
-using Coursework_Master_Degree.Items.Ghosts;
-using UnityEditor.TerrainTools;
+using Coursework_Master_Degree.ScriptableObjects.Items;
 
 namespace Coursework_Master_Degree.Items.Part
 {
     public class PartsAssembly : MonoBehaviour
     {
-        public List<PartLocation> PartsLocationsList;
+        // naughty attributes enableif / disableif states
+        private bool NotEnabled => false;
+        private bool Enabled => true;
 
-        public Material GhostBackgroundMaterial;
-        public Material GhostWearLevelMaterial;
-        public Material GhostMissingPartMaterial;
+        public bool IsHaveOptionalParts;
+        [ShowIf("IsHaveOptionalParts")]
+        [Tooltip("Parts of which not less than N [0, int.MaxValue] is / are needed")]
+        public List<OptionalPart> OptionalPartLocationsList;
 
-        private void Awake()
+        public List<PartLocation> RegularPartLocationsList;
+
+        private void OnValidate()
         {
-            // spawn parts ghosts wear level
-            // int partIndex = -1;
-            // foreach (var partLocation in PartsLocationsList)
-            // {
-            //     partIndex++;
-            //     if (!partLocation.IsOccupied)
-            //     {
-            //         continue;
-            //     }
-
-            //     bool IsPartAttached = partLocation.InstalledPart.TryGetComponent<ItemDataHolder>(out ItemDataHolder partDataHolder);
-            //     if (!IsPartAttached)
-            //     {
-            //         continue;
-            //     }
-
-            //     foreach (var ghostTypeToPrefab in partDataHolder.ItemGhostMetaSO.ItemGhostTypesToPrefabsList)
-            //     {
-            //         if (ghostTypeToPrefab.ItemGhostType == ItemGhostType.WearLevel)
-            //         {
-            //             GameObject partGhostWearLevel = Instantiate(
-            //                 ghostTypeToPrefab.ItemGhostGameObject,
-            //                 partLocation.gameObject.transform.parent);
-            //             partGhostWearLevel.transform.localPosition = partLocation.gameObject.transform.localPosition;
-            //             partGhostWearLevel.transform.localRotation = partLocation.gameObject.transform.localRotation;
-
-            //             // part ghost wear level
-            //             int wearLevelProperty = Shader.PropertyToID("_wear_level_percent");
-            //             // int randomWearLevelPercent = Random.Range(20, 96);
-            //             float randomWearLevelPercent = 0;
-            //             switch (partIndex)
-            //             {
-            //                 // Spool:
-            //                 case 31:
-            //                 case 32:
-            //                     randomWearLevelPercent = 50;
-            //                     break;
-            //                 // AxisBelt,
-            //                 case 4:
-            //                 case 20:
-            //                     randomWearLevelPercent = 85;
-            //                     break;
-            //                 // AxisBeltBearing,
-            //                 case 1:
-            //                 case 3:
-            //                 case 15:
-            //                 case 19:
-            //                     randomWearLevelPercent = 75;
-            //                     break;
-            //                 // AxisGuideBearing,
-            //                 case 16:
-            //                 case 17:
-            //                     randomWearLevelPercent = 78;
-            //                     break;
-            //                 // AxisRotor,
-            //                 case 2:
-            //                 case 5:
-            //                 case 6:
-            //                 case 18:
-            //                 case 23:
-            //                 case 24:
-            //                 case 25:
-            //                     randomWearLevelPercent = 90;
-            //                     break;
-            //                 // AxisRotorBearing,
-            //                 case 11:
-            //                 case 12:
-            //                 case 13:
-            //                 case 14:
-            //                 case 21:
-            //                 case 22:
-            //                     randomWearLevelPercent = 75;
-            //                     break;
-            //                 // BatteryCloset,
-            //                 case 7:
-            //                     randomWearLevelPercent = 98;
-            //                     break;
-            //                 // BatteryClosetAdapter,
-            //                 case 0:
-            //                     randomWearLevelPercent = 98;
-            //                     break;
-            //                 // ExtruderFan,
-            //                 case 26:
-            //                     randomWearLevelPercent = 80;
-            //                     break;
-            //                 // ExtruderFilamentBearing,
-            //                 case 27:
-            //                     randomWearLevelPercent = 65;
-            //                     break;
-            //                 // ExtruderFilamentHeater,
-            //                 case 28:
-            //                     randomWearLevelPercent = 70;
-            //                     break;
-            //                 // ExtruderNozzle,
-            //                 case 29:
-            //                     randomWearLevelPercent = 50;
-            //                     break;
-            //                 // ExtrderThermistor,
-            //                 case 30:
-            //                     randomWearLevelPercent = 85;
-            //                     break;
-            //                 // PrintBed,
-            //                 case 8:
-            //                     randomWearLevelPercent = 88;
-            //                     break;
-            //                 // PrintBedThermistor,
-            //                 case 9:
-            //                     randomWearLevelPercent = 85;
-            //                     break;
-            //                 // PrintPlate,
-            //                 case 10:
-            //                     randomWearLevelPercent = 60;
-            //                     break;
-            //                 default:
-            //                     randomWearLevelPercent = 0;
-            //                     break;
-            //             }
-            //             randomWearLevelPercent -= (100 - randomWearLevelPercent);
-
-            //             ItemGhostWearLevelDataHolder partGhostWearLevelDataHolder = partGhostWearLevel.GetComponent<ItemGhostWearLevelDataHolder>();
-            //             foreach (MeshRenderer renderer in partGhostWearLevelDataHolder.MeshRenderersList)
-            //             {
-            //                 var materials = renderer.sharedMaterials;
-
-            //                 for (int j = 0; j < materials.Length; j++)
-            //                     materials[j] = GhostWearLevelMaterial;
-
-            //                 renderer.sharedMaterials = materials;
-
-            //                 var block = new MaterialPropertyBlock();
-            //                 renderer.GetPropertyBlock(block);
-            //                 block.SetFloat(wearLevelProperty, randomWearLevelPercent);
-            //                 renderer.SetPropertyBlock(block);
-            //             }
-            //         }
-            //     }
-
-            //     partLocation.InstalledPart.SetActive(false);
-            // }
-
-            Debug.Log("yes parts ghosts wear level");
-
-            // foreach (var partLocation in PartsLocationsList)
-            // {
-            //     if (!partLocation.IsOccupied)
-            //     {
-            //         continue;
-            //     }
-
-            //     bool IsPartAttached = partLocation.InstalledPart.TryGetComponent<ItemDataHolder>(out ItemDataHolder partDataHolder);
-            //     if (!IsPartAttached)
-            //     {
-            //         continue;
-            //     }
-
-            //     foreach (var ghostTypeToPrefab in partDataHolder.ItemGhostMetaSO.ItemGhostTypesToPrefabsList)
-            //     {
-            //         if (ghostTypeToPrefab.ItemGhostType == ItemGhostType.MissingPart)
-            //         {
-            //             if (Random.Range(0, 10) < 2)
-            //             {
-            //                 GameObject partGhostMissingPart = Instantiate(
-            //                     ghostTypeToPrefab.ItemGhostGameObject,
-            //                     partLocation.gameObject.transform.parent);
-            //                 partGhostMissingPart.transform.localPosition = partLocation.gameObject.transform.localPosition;
-            //                 partGhostMissingPart.transform.localRotation = partLocation.gameObject.transform.localRotation;
-            //                 partGhostMissingPart.transform.localScale = partLocation.gameObject.transform.localScale;
-
-            //                 // part ghost missing part
-            //                 int missingPartProperty = Shader.PropertyToID("_missing_part_state");
-
-            //                 ItemGhostMissingPartDataHolder partGhostMissingPartDataHolder = partGhostMissingPart.GetComponent<ItemGhostMissingPartDataHolder>();
-            //                 foreach (MeshRenderer renderer in partGhostMissingPartDataHolder.MeshRenderersList)
-            //                 {
-            //                     var materials = renderer.sharedMaterials;
-
-            //                     for (int j = 0; j < materials.Length; j++)
-            //                     {
-            //                         materials[j] = GhostMissingPartMaterial;
-            //                     }
-
-            //                     renderer.sharedMaterials = materials;
-
-            //                     var block = new MaterialPropertyBlock();
-            //                     renderer.GetPropertyBlock(block);
-            //                     block.SetFloat(missingPartProperty, 1);
-            //                     renderer.SetPropertyBlock(block);
-            //                 }
-
-            //                 partLocation.InstalledPart.SetActive(false);
-            //             }
-            //         }
-            //     }
-            // }
-
-            Debug.Log("yes parts ghosts missing");
-
-            ItemDataHolder printerDataHolder = gameObject.GetComponent<ItemDataHolder>();
-
-            // spawn printer ghost background
-            GameObject printerBackground = null;
-            foreach (var ghostTypeToPrefab in printerDataHolder.ItemGhostMetaSO.ItemGhostTypesToPrefabsList)
+            foreach (var optionalPart in OptionalPartLocationsList)
             {
-                if (ghostTypeToPrefab.ItemGhostType == ItemGhostType.Background)
+                optionalPart.OnValidate();
+            }
+        }
+
+        // single regular location
+
+        public bool IsHaveRegularPart(ItemMetaSO partMetaData)
+        {
+            foreach (var part in RegularPartLocationsList)
+            {
+                if (part.IsSingleMetaDataReference)
                 {
-                    printerBackground = Instantiate(
-                        ghostTypeToPrefab.ItemGhostGameObject,
-                        gameObject.transform.parent);
-                    printerBackground.transform.localPosition = gameObject.transform.localPosition;
-                    printerBackground.transform.localRotation = gameObject.transform.localRotation;
+                    if (part.PartMetaData == partMetaData)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (part.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        return true;
+                    }
                 }
             }
 
-            Debug.Log("yes printer ghost background");
+            return false;
+        }
 
-            ItemSyncToGhostBackgroundDataHolder printerSyncToGhostBackgroundDataHolder = GetComponent<ItemSyncToGhostBackgroundDataHolder>();
-            ItemGhostBackgroundDataHolder printerGhostBackgroundDataHolder = printerBackground.GetComponent<ItemGhostBackgroundDataHolder>();
+        public List<PartLocation> GetRegularPartLocations(ItemMetaSO partMetaData)
+        {
+            List<PartLocation> list = new List<PartLocation>();
 
-            foreach (var keyValue in printerSyncToGhostBackgroundDataHolder.PartsToTransformsToSyncDictionary)
+            bool IsHaveRegularPartOfKind = false;
+            foreach (var part in RegularPartLocationsList)
             {
-                if (printerGhostBackgroundDataHolder.PartsToTransformsToSyncDictionary[keyValue.Key] == null)
+                bool isSameMetaData = false;
+                if (part.IsSingleMetaDataReference)
                 {
-                    Debug.Log(keyValue.Key);
+                    if (part.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (part.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
                 }
 
-                if (printerSyncToGhostBackgroundDataHolder.PartsToTransformsToSyncDictionary[keyValue.Key] == null)
+                if (isSameMetaData)
                 {
-                    Debug.Log(keyValue.Key);
+                    IsHaveRegularPartOfKind = true;
+                    list.Add(part);
+                }
+            }
+
+            if (!IsHaveRegularPartOfKind)
+            {
+                Debug.LogWarning($"There is no part of kind \"{partMetaData.Name}\"");
+                return null;
+            }
+
+            return list;
+        }
+
+        public List<PartLocation> GetFreeRegularPartLocations(ItemMetaSO partMetaData)
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            bool IsHaveRegularPartOfKind = false;
+            foreach (var part in RegularPartLocationsList)
+            {
+                bool isSameMetaData = false;
+                if (part.IsSingleMetaDataReference)
+                {
+                    if (part.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (part.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
                 }
 
-                printerGhostBackgroundDataHolder.PartsToTransformsToSyncDictionary[keyValue.Key].localPosition =
-                    printerSyncToGhostBackgroundDataHolder.PartsToTransformsToSyncDictionary[keyValue.Key].localPosition;
-            }
-
-            Debug.Log("yes printer ghost background parts transforms");
-
-            for (int i = 0; i < printerGhostBackgroundDataHolder.MeshRenderersList.Count; i++)
-            {
-                MeshRenderer renderer = printerGhostBackgroundDataHolder.MeshRenderersList[i];
-                Material[] materials = renderer.sharedMaterials;
-                for (int j = 0; j < materials.Length; j++)
+                if (isSameMetaData)
                 {
-                    materials[j] = GhostBackgroundMaterial;
+                    IsHaveRegularPartOfKind = true;
+
+                    if (!part.IsOccupied)
+                    {
+                        list.Add(part);
+                    }
                 }
-                renderer.sharedMaterials = materials;
             }
 
-            Debug.Log("yes printer ghost background mesh material");
-
-            for (int i = 0; i < printerSyncToGhostBackgroundDataHolder.MeshRenderersToSyncList.Count; i++)
+            if (!IsHaveRegularPartOfKind)
             {
-                MeshRenderer renderer = printerSyncToGhostBackgroundDataHolder.MeshRenderersToSyncList[i];
-                renderer.enabled = false;
+                Debug.LogWarning($"There is no part of kind \"{partMetaData.Name}\"");
+                return null;
             }
 
-            Debug.Log("yes printer mesh disable");
+            return list;
+        }
+
+        public List<PartLocation> GetOccupiedRegularPartLocations(ItemMetaSO partMetaData)
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            bool IsHaveRegularPartOfKind = false;
+            foreach (var part in RegularPartLocationsList)
+            {
+                bool isSameMetaData = false;
+                if (part.IsSingleMetaDataReference)
+                {
+                    if (part.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (part.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+
+                if (isSameMetaData)
+                {
+                    IsHaveRegularPartOfKind = true;
+
+                    if (part.IsOccupied)
+                    {
+                        list.Add(part);
+                    }
+                }
+            }
+
+            if (!IsHaveRegularPartOfKind)
+            {
+                Debug.LogWarning($"There is no part of kind \"{partMetaData.Name}\"");
+                return null;
+            }
+
+            return list;
+        }
+
+        public bool IsAllRegularPartLocationsOccupied(ItemMetaSO partMetaData)
+        {
+            bool IsHaveRegularPartOfKind = false;
+            foreach (var part in RegularPartLocationsList)
+            {
+                bool isSameMetaData = false;
+                if (part.IsSingleMetaDataReference)
+                {
+                    if (part.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (part.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+
+                if (isSameMetaData)
+                {
+                    IsHaveRegularPartOfKind = true;
+
+                    if (!part.IsOccupied)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            if (!IsHaveRegularPartOfKind)
+            {
+                Debug.LogWarning($"There is no part of kind \"{partMetaData.Name}\"");
+                return false;
+            }
+
+            return true;
+        }
+
+        // single optional location
+
+        public bool IsHaveOptionalPart(ItemMetaSO partMetaData)
+        {
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                if (optionalPart.IsSingleMetaDataReference)
+                {
+                    if (optionalPart.PartMetaData == partMetaData)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (optionalPart.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public OptionalPart GetOptionalPart(ItemMetaSO partMetaData)
+        {
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                if (optionalPart.IsSingleMetaDataReference)
+                {
+                    if (optionalPart.PartMetaData == partMetaData)
+                    {
+                        return optionalPart;
+                    }
+                }
+                else
+                {
+                    if (optionalPart.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        return optionalPart;
+                    }
+                }
+            }
+
+            Debug.LogWarning($"There is no optional part of kind \"{partMetaData.Name}\"");
+            return null;
+        }
+
+        public List<PartLocation> GetOptionalPartLocations(ItemMetaSO partMetaData)
+        {
+            OptionalPart optionalPartByMetaData = null;
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                bool isSameMetaData = false;
+                if (optionalPart.IsSingleMetaDataReference)
+                {
+                    if (optionalPart.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (optionalPart.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+
+                if (isSameMetaData)
+                {
+                    optionalPartByMetaData = optionalPart;
+                    break;
+                }
+            }
+
+            if (optionalPartByMetaData == null)
+            {
+                Debug.LogWarning($"There is no optional part of kind \"{partMetaData.Name}\"");
+                return null;
+            }
+
+            return optionalPartByMetaData.PartLocationsList;
+        }
+
+        public List<PartLocation> GetFreeOptionalPartLocations(ItemMetaSO partMetaData)
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            OptionalPart optionalPartByMetaData = null;
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                bool isSameMetaData = false;
+                if (optionalPart.IsSingleMetaDataReference)
+                {
+                    if (optionalPart.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (optionalPart.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+
+                if (isSameMetaData)
+                {
+                    optionalPartByMetaData = optionalPart;
+                    break;
+                }
+            }
+
+            if (optionalPartByMetaData == null)
+            {
+                Debug.LogWarning($"There is no optional part of kind \"{partMetaData.Name}\"");
+                return null;
+            }
+
+            foreach (var part in optionalPartByMetaData.PartLocationsList)
+            {
+                if (!part.IsOccupied)
+                {
+                    list.Add(part);
+                }
+            }
+
+            return list;
+        }
+
+        public List<PartLocation> GetOccupiedOptionalLocations(ItemMetaSO partMetaData)
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            OptionalPart optionalPartByMetaData = null;
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                bool isSameMetaData = false;
+                if (optionalPart.IsSingleMetaDataReference)
+                {
+                    if (optionalPart.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (optionalPart.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+
+                if (isSameMetaData)
+                {
+                    optionalPartByMetaData = optionalPart;
+                    break;
+                }
+            }
+
+            if (optionalPartByMetaData == null)
+            {
+                Debug.LogWarning($"There is no optional part of kind \"{partMetaData.Name}\"");
+                return null;
+            }
+
+            foreach (var part in optionalPartByMetaData.PartLocationsList)
+            {
+                if (part.IsOccupied)
+                {
+                    list.Add(part);
+                }
+            }
+
+            return list;
+        }
+
+        public bool IsAllOptionalPartLocationsOccupied(ItemMetaSO partMetaData)
+        {
+            OptionalPart optionalPartByMetaData = null;
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                bool isSameMetaData = false;
+                if (optionalPart.IsSingleMetaDataReference)
+                {
+                    if (optionalPart.PartMetaData == partMetaData)
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+                else
+                {
+                    if (optionalPart.PartMetaDatasList.Contains(partMetaData))
+                    {
+                        isSameMetaData = true;
+                    }
+                }
+
+                if (isSameMetaData)
+                {
+                    optionalPartByMetaData = optionalPart;
+                    break;
+                }
+            }
+
+            if (optionalPartByMetaData == null)
+            {
+                Debug.LogWarning($"There is no optional part of kind \"{partMetaData.Name}\"");
+                return false;
+            }
+
+            int installedPartsNumber = 0;
+
+            foreach (var part in optionalPartByMetaData.PartLocationsList)
+            {
+                if (part.IsOccupied)
+                {
+                    installedPartsNumber++;
+                }
+            }
+
+            if (installedPartsNumber < optionalPartByMetaData.EssentialPartsNumber)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        // massive optional locations
+
+        public List<PartLocation> GetFreeOptionalPartLocations()
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                foreach (var part in optionalPart.PartLocationsList)
+                {
+                    if (!part.IsOccupied)
+                    {
+                        list.Add(part);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public List<PartLocation> GetOccupiedOptionalPartLocations()
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                foreach (var part in optionalPart.PartLocationsList)
+                {
+                    if (part.IsOccupied)
+                    {
+                        list.Add(part);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public bool IsAllOptionalPartLocationsOccupied()
+        {
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                int installedPartsNumber = 0;
+
+                foreach (var part in optionalPart.PartLocationsList)
+                {
+                    if (part.IsOccupied)
+                    {
+                        installedPartsNumber++;
+                    }
+                }
+
+                if (installedPartsNumber < optionalPart.EssentialPartsNumber)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // massive regular locations
+
+        public List<PartLocation> GetFreeRegularPartLocations()
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            foreach (var part in RegularPartLocationsList)
+            {
+                if (!part.IsOccupied)
+                {
+                    list.Add(part);
+                }
+            }
+
+            return list;
+        }
+
+        public List<PartLocation> GetOccupiedRegularPartLocations()
+        {
+            List<PartLocation> list = new List<PartLocation>();
+
+            foreach (var part in RegularPartLocationsList)
+            {
+                if (part.IsOccupied)
+                {
+                    list.Add(part);
+                }
+            }
+
+            return list;
+        }
+
+        public bool IsAllRegularPartLocationsOccupied()
+        {
+            foreach (var part in RegularPartLocationsList)
+            {
+                if (!part.IsOccupied)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
