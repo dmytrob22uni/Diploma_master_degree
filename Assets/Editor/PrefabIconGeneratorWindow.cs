@@ -1,160 +1,164 @@
 using System;
 using System.IO;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-public class PrefabIconGenerator : EditorWindow
+namespace Coursework_Master_Degree.Editor
 {
-    private string rootFolder = "Assets/Art/3D/Prefabs";
-    private float brightnessBoost;
 
-    [MenuItem("Tools/Prefab Icon Generator")]
-    public static void ShowWindow()
+    public class PrefabIconGenerator : EditorWindow
     {
-        GetWindow<PrefabIconGenerator>("Prefab Icon Generator");
-    }
+        private string rootFolder = "Assets/Art/3D/Prefabs/Items";
+        private float brightnessBoost = 4.0f;
 
-    private void OnGUI()
-    {
-        GUILayout.Label("Prefab Icon Generator", EditorStyles.boldLabel);
-
-        rootFolder = EditorGUILayout.TextField("Root Folder", rootFolder);
-        brightnessBoost = EditorGUILayout.Slider("Brightness Boost", brightnessBoost, 1f, 10f);
-
-        GUILayout.Space(10);
-
-        if (GUILayout.Button("Generate Icons"))
+        [MenuItem("Tools/Prefab Icon Generator")]
+        public static void ShowWindow()
         {
-            GenerateIcons();
+            GetWindow<PrefabIconGenerator>("Prefab Icon Generator");
         }
-    }
 
-    private void GenerateIcons()
-    {
-        string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { rootFolder });
-
-        int generated = 0;
-
-        foreach (string guid in guids)
+        private void OnGUI()
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
+            GUILayout.Label("Prefab Icon Generator", EditorStyles.boldLabel);
 
-            if (path.Contains("ghost", StringComparison.InvariantCultureIgnoreCase))
+            rootFolder = EditorGUILayout.TextField("Root Folder", rootFolder);
+            brightnessBoost = EditorGUILayout.Slider("Brightness Boost", brightnessBoost, 1f, 10f);
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Generate Icons"))
             {
-                Debug.LogWarning($"The the prefab path {path} contains \"ghost\" substring. " +
-                "Icon won't be generated for this prefab");
-                continue;
+                GenerateIcons();
+            }
+        }
+
+        private void GenerateIcons()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { rootFolder });
+
+            int generated = 0;
+
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+
+                if (path.Contains("ghost", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Debug.LogWarning($"The the prefab path {path} contains \"ghost\" substring. " +
+                    "Icon won't be generated for this prefab");
+                    continue;
+                }
+
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+
+                if (prefab == null)
+                    continue;
+
+                Texture2D preview = GetPreview(prefab);
+
+                if (preview == null)
+                {
+                    Debug.LogWarning($"No preview for {prefab.name}");
+                    continue;
+                }
+
+                SaveIcon(path, preview);
+                generated++;
             }
 
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            AssetDatabase.Refresh();
+            Debug.Log($"Generated {generated} prefab icons.");
+        }
 
-            if (prefab == null)
-                continue;
+        private Texture2D GetPreview(GameObject prefab)
+        {
+            Texture2D preview = AssetPreview.GetAssetPreview(prefab);
 
-            Texture2D preview = GetPreview(prefab);
-
-            if (preview == null)
+            int attempts = 0;
+            while (preview == null && attempts < 20)
             {
-                Debug.LogWarning($"No preview for {prefab.name}");
-                continue;
+                System.Threading.Thread.Sleep(100);
+                preview = AssetPreview.GetAssetPreview(prefab);
+                attempts++;
             }
 
-            SaveIcon(path, preview);
-            generated++;
+            return preview;
         }
 
-        AssetDatabase.Refresh();
-        Debug.Log($"Generated {generated} prefab icons.");
-    }
-
-    private Texture2D GetPreview(GameObject prefab)
-    {
-        Texture2D preview = AssetPreview.GetAssetPreview(prefab);
-
-        int attempts = 0;
-        while (preview == null && attempts < 20)
+        private void SaveIcon(string prefabPath, Texture2D source)
         {
-            System.Threading.Thread.Sleep(100);
-            preview = AssetPreview.GetAssetPreview(prefab);
-            attempts++;
+            Texture2D readable = MakeReadable(source);
+            Texture2D adjusted = BoostBrightness(readable, brightnessBoost);
+
+            byte[] png = adjusted.EncodeToPNG();
+            if (png == null) return;
+
+            string directory = Path.GetDirectoryName(prefabPath);
+            string name = Path.GetFileNameWithoutExtension(prefabPath);
+
+            string outputPath = Path.Combine(directory, name + "_icon.png");
+
+            File.WriteAllBytes(outputPath, png);
+
+            AssetDatabase.ImportAsset(outputPath);
+
+            TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(outputPath);
+            if (importer != null)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.alphaIsTransparency = true;
+                importer.mipmapEnabled = false;
+                importer.SaveAndReimport();
+            }
         }
 
-        return preview;
-    }
-
-    private void SaveIcon(string prefabPath, Texture2D source)
-    {
-        Texture2D readable = MakeReadable(source);
-        Texture2D adjusted = BoostBrightness(readable, brightnessBoost);
-
-        byte[] png = adjusted.EncodeToPNG();
-        if (png == null) return;
-
-        string directory = Path.GetDirectoryName(prefabPath);
-        string name = Path.GetFileNameWithoutExtension(prefabPath);
-
-        string outputPath = Path.Combine(directory, name + "_icon.png");
-
-        File.WriteAllBytes(outputPath, png);
-
-        AssetDatabase.ImportAsset(outputPath);
-
-        TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(outputPath);
-        if (importer != null)
+        // Fix GPU-only texture issue
+        private Texture2D MakeReadable(Texture2D source)
         {
-            importer.textureType = TextureImporterType.Sprite;
-            importer.alphaIsTransparency = true;
-            importer.mipmapEnabled = false;
-            importer.SaveAndReimport();
+            RenderTexture rt = RenderTexture.GetTemporary(
+                source.width,
+                source.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.Linear);
+
+            Graphics.Blit(source, rt);
+
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = rt;
+
+            Texture2D readable = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
+            readable.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            readable.Apply();
+
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(rt);
+
+            return readable;
         }
-    }
 
-    // Fix GPU-only texture issue
-    private Texture2D MakeReadable(Texture2D source)
-    {
-        RenderTexture rt = RenderTexture.GetTemporary(
-            source.width,
-            source.height,
-            0,
-            RenderTextureFormat.Default,
-            RenderTextureReadWrite.Linear);
-
-        Graphics.Blit(source, rt);
-
-        RenderTexture previous = RenderTexture.active;
-        RenderTexture.active = rt;
-
-        Texture2D readable = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
-        readable.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-        readable.Apply();
-
-        RenderTexture.active = previous;
-        RenderTexture.ReleaseTemporary(rt);
-
-        return readable;
-    }
-
-    // Brightness fix
-    private Texture2D BoostBrightness(Texture2D source, float boost)
-    {
-        Texture2D result = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
-
-        Color[] pixels = source.GetPixels();
-
-        for (int i = 0; i < pixels.Length; i++)
+        // Brightness fix
+        private Texture2D BoostBrightness(Texture2D source, float boost)
         {
-            Color c = pixels[i];
+            Texture2D result = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
 
-            c.r *= boost;
-            c.g *= boost;
-            c.b *= boost;
+            Color[] pixels = source.GetPixels();
 
-            pixels[i] = c;
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                Color c = pixels[i];
+
+                c.r *= boost;
+                c.g *= boost;
+                c.b *= boost;
+
+                pixels[i] = c;
+            }
+
+            result.SetPixels(pixels);
+            result.Apply();
+
+            return result;
         }
-
-        result.SetPixels(pixels);
-        result.Apply();
-
-        return result;
     }
 }
