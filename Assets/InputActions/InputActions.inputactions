@@ -3,11 +3,11 @@
     "name": "InputActions",
     "maps": [
         {
-            "name": "movement",
+            "name": "Movement",
             "id": "5f462c46-83bc-400b-b543-6633894c7bc1",
             "actions": [
                 {
-                    "name": "move",
+                    "name": "Move",
                     "type": "Value",
                     "id": "58698fcd-b187-4082-b5c9-7be31c2754a8",
                     "expectedControlType": "Vector2",
@@ -17,7 +17,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "look",
+                    "name": "Look",
                     "type": "Value",
                     "id": "f4bf2646-ca83-4efe-ad0a-1fcb6ab9efe6",
                     "expectedControlType": "Vector2",
@@ -27,7 +27,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "jump",
+                    "name": "Jump",
                     "type": "Button",
                     "id": "2f0dd209-c031-421e-a9c2-3c2fab6c4902",
                     "expectedControlType": "",
@@ -37,7 +37,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "crouch",
+                    "name": "Crouch",
                     "type": "Button",
                     "id": "721a6cc2-6fc2-4836-969d-00cec2a0a666",
                     "expectedControlType": "",
@@ -47,7 +47,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "initiate_walk",
+                    "name": "InitiateWalk",
                     "type": "Button",
                     "id": "7c19e2ff-af63-4140-9e68-1259c29af831",
                     "expectedControlType": "",
@@ -57,7 +57,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "initiate_run",
+                    "name": "InitiateRun",
                     "type": "Button",
                     "id": "a76027c9-425b-4488-a0b2-c0e5f9fcc596",
                     "expectedControlType": "",
@@ -67,7 +67,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "toggle_zoom",
+                    "name": "ToggleZoom",
                     "type": "Button",
                     "id": "9c6d419c-c7e1-4443-b824-c0da4456e291",
                     "expectedControlType": "",
@@ -85,7 +85,7 @@
                     "interactions": "Press",
                     "processors": "",
                     "groups": "",
-                    "action": "move",
+                    "action": "Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -96,7 +96,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "keyboard&mouse",
-                    "action": "move",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -107,7 +107,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "move",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -118,7 +118,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "move",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -129,7 +129,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "move",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -140,7 +140,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "look",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -151,7 +151,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "initiate_walk",
+                    "action": "InitiateWalk",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -162,7 +162,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "crouch",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -173,7 +173,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "toggle_zoom",
+                    "action": "ToggleZoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -184,7 +184,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "initiate_run",
+                    "action": "InitiateRun",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -195,18 +195,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "jump",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "quit_cancel",
+            "name": "QuitCancel",
             "id": "0727bca0-edb7-4da9-856f-d3f419453288",
             "actions": [
                 {
-                    "name": "quit",
+                    "name": "Quit",
                     "type": "Button",
                     "id": "9165111c-a0fe-4d16-86b3-4fbf71a27af7",
                     "expectedControlType": "",
@@ -216,7 +216,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "cancel",
+                    "name": "Cancel",
                     "type": "Button",
                     "id": "678d4f18-4846-4aa3-b44e-7cdfba41c289",
                     "expectedControlType": "",
@@ -234,7 +234,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "quit",
+                    "action": "Quit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -245,18 +245,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "cancel",
+                    "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "free_walk",
+            "name": "FreeWalk",
             "id": "8d072dce-fb64-44c1-b7f0-61f2f992c9a4",
             "actions": [
                 {
-                    "name": "items_market",
+                    "name": "ItemsMarket",
                     "type": "Button",
                     "id": "4f6cbcb5-e83d-4f23-838d-a13122229e33",
                     "expectedControlType": "",
@@ -266,7 +266,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "interact",
+                    "name": "InteractWithItem",
                     "type": "Button",
                     "id": "05b99215-8749-4ce3-ba3d-6baa10c5829d",
                     "expectedControlType": "",
@@ -276,7 +276,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "take",
+                    "name": "TakeItem",
                     "type": "Button",
                     "id": "e9d79d12-3946-4b8e-9f7c-6f402257d4cc",
                     "expectedControlType": "",
@@ -294,7 +294,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "interact",
+                    "action": "InteractWithItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -305,18 +305,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "take",
+                    "action": "TakeItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "items_market",
+                    "name": "ItemsMarket",
                     "id": "326d6f7d-c810-4dd2-948d-4ab980aac9fe",
                     "path": "OneModifier",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "items_market",
+                    "action": "ItemsMarket",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -327,7 +327,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "items_market",
+                    "action": "ItemsMarket",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -338,18 +338,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "items_market",
+                    "action": "ItemsMarket",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }
             ]
         },
         {
-            "name": "items_sell",
+            "name": "ItemsSell",
             "id": "a5355266-3a22-4038-bfd0-c848494b31bf",
             "actions": [
                 {
-                    "name": "sell",
+                    "name": "SellItem",
                     "type": "Button",
                     "id": "ee316e41-a97b-4ec4-98ae-a0f175408c49",
                     "expectedControlType": "",
@@ -367,18 +367,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "sell",
+                    "action": "SellItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "item_place",
+            "name": "ItemPlace",
             "id": "291782ef-7ed9-4b82-b5ae-df456d1cef1a",
             "actions": [
                 {
-                    "name": "place",
+                    "name": "PlaceItem",
                     "type": "Button",
                     "id": "f70adb35-db13-415e-82f7-0ec981dada33",
                     "expectedControlType": "",
@@ -388,7 +388,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "rotate",
+                    "name": "RotateItem",
                     "type": "Value",
                     "id": "418062f7-bd3b-4286-b710-5a1eb3f17140",
                     "expectedControlType": "Delta",
@@ -406,7 +406,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "place",
+                    "action": "PlaceItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -417,18 +417,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "rotate",
+                    "action": "RotateItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "part_install",
+            "name": "PartInstall",
             "id": "719c47c3-a4a3-4fe6-b755-dc76019cebd3",
             "actions": [
                 {
-                    "name": "install",
+                    "name": "InstallPart",
                     "type": "Button",
                     "id": "93468217-e34e-4c12-a453-3a146c80aac9",
                     "expectedControlType": "",
@@ -446,20 +446,30 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "install",
+                    "action": "InstallPart",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "plug_connect",
+            "name": "PlugConnect",
             "id": "41c05c99-278e-4c20-995e-9b633aec24a0",
             "actions": [
                 {
-                    "name": "connect",
+                    "name": "ConnectPlug",
                     "type": "Button",
                     "id": "7fefabb6-fa6e-4aae-bb35-6af0196d4e19",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "DisconnectPlug",
+                    "type": "Button",
+                    "id": "61e7cf22-4e36-4120-a910-df03377101fe",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -475,18 +485,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "connect",
+                    "action": "ConnectPlug",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f51efcf9-53a2-4ab4-b400-f702a3dbbea7",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "DisconnectPlug",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "item_apply",
+            "name": "ItemApply",
             "id": "c6122da1-0238-4a87-96f6-83215f78b991",
             "actions": [
                 {
-                    "name": "apply",
+                    "name": "ApplyItem",
                     "type": "Button",
                     "id": "d2609731-e66e-49ed-82c2-8eed2fae711a",
                     "expectedControlType": "",
@@ -504,18 +525,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "apply",
+                    "action": "ApplyItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "post_process",
+            "name": "PostProcess",
             "id": "26c3b454-391c-4ec4-bdce-abf4810b5be9",
             "actions": [
                 {
-                    "name": "initiate_camera_rotation",
+                    "name": "InitiateCameraRotationAroundObject",
                     "type": "Button",
                     "id": "2eca5136-20f4-4231-8d55-7a547bd35563",
                     "expectedControlType": "",
@@ -525,7 +546,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "rotate_camera",
+                    "name": "RotateCameraAroundObject",
                     "type": "Value",
                     "id": "70369a68-d139-46af-bb4d-a43b750ded15",
                     "expectedControlType": "Vector2",
@@ -535,7 +556,17 @@
                     "priority": 0
                 },
                 {
-                    "name": "initiate_object_rotation",
+                    "name": "ZoomCameraOnObject",
+                    "type": "Value",
+                    "id": "8211bee9-ebd5-465c-89b5-eda9b3587c78",
+                    "expectedControlType": "Delta",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true,
+                    "priority": 0
+                },
+                {
+                    "name": "InitiateObjectRotation",
                     "type": "Button",
                     "id": "8d9b3c5e-cae2-463a-86b8-cdc713681ad8",
                     "expectedControlType": "",
@@ -545,7 +576,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "rotate_object",
+                    "name": "RotateObject",
                     "type": "Value",
                     "id": "cf1b17e9-5c39-4aec-b7c0-a8dfe464102c",
                     "expectedControlType": "Vector2",
@@ -555,7 +586,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "initiate_processing",
+                    "name": "InitiateProcessing",
                     "type": "Button",
                     "id": "db10d2c4-5df5-4e72-ac15-1d61cbf73664",
                     "expectedControlType": "",
@@ -565,20 +596,10 @@
                     "priority": 0
                 },
                 {
-                    "name": "move_tool",
+                    "name": "MoveTool",
                     "type": "Value",
                     "id": "68845ce1-339c-4b3d-ab93-b2ef0d1b6959",
                     "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true,
-                    "priority": 0
-                },
-                {
-                    "name": "zoom",
-                    "type": "Value",
-                    "id": "8211bee9-ebd5-465c-89b5-eda9b3587c78",
-                    "expectedControlType": "Delta",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true,
@@ -593,7 +614,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "initiate_camera_rotation",
+                    "action": "InitiateCameraRotationAroundObject",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -604,7 +625,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "initiate_object_rotation",
+                    "action": "InitiateObjectRotation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -615,7 +636,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "initiate_processing",
+                    "action": "InitiateProcessing",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -626,7 +647,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "rotate_camera",
+                    "action": "RotateCameraAroundObject",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -637,7 +658,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "rotate_object",
+                    "action": "RotateObject",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -648,7 +669,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "move_tool",
+                    "action": "MoveTool",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -659,18 +680,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "zoom",
+                    "action": "ZoomCameraOnObject",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "object_place",
+            "name": "ObjectPlace",
             "id": "1cae9c5b-e9a1-4b0a-a141-39fa16c4d164",
             "actions": [
                 {
-                    "name": "initiate_camera_rotation",
+                    "name": "InitiateCameraRotationAroundPlate",
                     "type": "Button",
                     "id": "432e2d33-714b-4488-8248-f29d8082509c",
                     "expectedControlType": "",
@@ -680,7 +701,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "rotate_camera",
+                    "name": "RotateCameraAroundPlate",
                     "type": "Value",
                     "id": "171e9610-1b63-497f-b26e-b8de40698c76",
                     "expectedControlType": "Vector2",
@@ -690,7 +711,17 @@
                     "priority": 0
                 },
                 {
-                    "name": "object_rotation_modifier",
+                    "name": "ZoomCameraOnPlate",
+                    "type": "Value",
+                    "id": "a8f915b8-6a22-4957-91ff-4fbbd56903e5",
+                    "expectedControlType": "Delta",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true,
+                    "priority": 0
+                },
+                {
+                    "name": "ObjectRotationModifierOnPlate",
                     "type": "Button",
                     "id": "e85dab4e-b7ce-4f1b-a797-1488c8283a40",
                     "expectedControlType": "",
@@ -700,7 +731,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "rotate_object",
+                    "name": "RotateObjectOnPlate",
                     "type": "Value",
                     "id": "cb48042b-f735-4e27-9ea4-d119dff40593",
                     "expectedControlType": "Vector2",
@@ -710,7 +741,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "object_scale_modifier",
+                    "name": "ObjectScaleModifierOnPlate",
                     "type": "Button",
                     "id": "095c3161-cd4a-4f03-9709-ac9b52dbc8d9",
                     "expectedControlType": "",
@@ -720,7 +751,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "scale_object",
+                    "name": "ScaleObjectOnPlate",
                     "type": "Value",
                     "id": "a3f65d8e-88e2-4311-b1da-265f2db61d44",
                     "expectedControlType": "Vector2",
@@ -730,7 +761,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "object_placement_modifier",
+                    "name": "ObjectPlacementModifierOnPlate",
                     "type": "Button",
                     "id": "68c3dce9-45a9-464a-8308-1851a3e38830",
                     "expectedControlType": "",
@@ -740,7 +771,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "object_placement",
+                    "name": "ObjectPlacementOnPlate",
                     "type": "Value",
                     "id": "660ac9ed-4ddc-4e78-af00-ebae922e4305",
                     "expectedControlType": "Vector2",
@@ -750,7 +781,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "confirm",
+                    "name": "ConfirmObjectPlacementOnPlate",
                     "type": "Button",
                     "id": "e6ed0332-e618-4745-99e7-3b7925f73e25",
                     "expectedControlType": "",
@@ -768,7 +799,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "initiate_camera_rotation",
+                    "action": "InitiateCameraRotationAroundPlate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "23155f81-76cd-4a23-ad93-48eef90e2fd8",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "ZoomCameraOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -779,7 +821,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "rotate_camera",
+                    "action": "RotateCameraAroundPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -790,7 +832,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "rotate_object",
+                    "action": "RotateObjectOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -801,7 +843,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "scale_object",
+                    "action": "ScaleObjectOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -812,7 +854,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "object_placement",
+                    "action": "ObjectPlacementOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -823,7 +865,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "object_rotation_modifier",
+                    "action": "ObjectRotationModifierOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -834,7 +876,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "object_scale_modifier",
+                    "action": "ObjectScaleModifierOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -845,7 +887,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "object_placement_modifier",
+                    "action": "ObjectPlacementModifierOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -856,18 +898,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "confirm",
+                    "action": "ConfirmObjectPlacementOnPlate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "device_bind",
+            "name": "DeviceBind",
             "id": "3e78da8d-2178-458f-b95b-dbd6968fbaa1",
             "actions": [
                 {
-                    "name": "bind",
+                    "name": "BindDevice",
                     "type": "Button",
                     "id": "6dfa5225-7c64-4225-9064-e106448f9e37",
                     "expectedControlType": "",
@@ -877,7 +919,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "unbind",
+                    "name": "UnbindDevice",
                     "type": "Button",
                     "id": "acff6974-9eb0-468e-93f3-042dcc320dbc",
                     "expectedControlType": "",
@@ -895,7 +937,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "bind",
+                    "action": "BindDevice",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -906,18 +948,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "unbind",
+                    "action": "UnbindDevice",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "switch_connect",
+            "name": "SwitchConnect",
             "id": "c2efd623-cd3a-44a4-bad1-62c4b8c22658",
             "actions": [
                 {
-                    "name": "connect",
+                    "name": "ConnectSwitch",
                     "type": "Button",
                     "id": "2f778a93-e01b-4b04-b690-d8072bbacc64",
                     "expectedControlType": "",
@@ -927,7 +969,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "disconnect",
+                    "name": "DisconnectSwitch",
                     "type": "Button",
                     "id": "3f8ca908-5efc-4bbe-9e27-70bc77bc7d5c",
                     "expectedControlType": "",
@@ -945,7 +987,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "connect",
+                    "action": "ConnectSwitch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -956,18 +998,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "disconnect",
+                    "action": "DisconnectSwitch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "parts_wear",
+            "name": "PartsWear",
             "id": "7ff7ac50-2633-4856-8685-9e59748eb5b5",
             "actions": [
                 {
-                    "name": "remove_mode",
+                    "name": "RemoveModeFromPartsWear",
                     "type": "Button",
                     "id": "d950cd5d-476d-4a75-9670-44d76b8e81b6",
                     "expectedControlType": "",
@@ -985,18 +1027,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "remove_mode",
+                    "action": "RemoveModeFromPartsWear",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "parts_integrity",
+            "name": "PartsIntegrity",
             "id": "c34555c3-fd2f-492a-b7fc-86eac624749a",
             "actions": [
                 {
-                    "name": "remove_mode",
+                    "name": "RemoveModeFromPartsIntegrity",
                     "type": "Button",
                     "id": "d44e24fe-fc36-4e7d-9b80-cb49f6cbf76d",
                     "expectedControlType": "",
@@ -1014,18 +1056,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "remove_mode",
+                    "action": "RemoveModeFromPartsIntegrity",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "parts_remove",
+            "name": "PartsRemove",
             "id": "ef4856f2-99d6-4375-9493-2f99f29af6bc",
             "actions": [
                 {
-                    "name": "remove",
+                    "name": "RemovePart",
                     "type": "Button",
                     "id": "1f2b7f5b-7a35-4ceb-901c-28deda17144a",
                     "expectedControlType": "",
@@ -1043,7 +1085,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "remove",
+                    "action": "RemovePart",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
