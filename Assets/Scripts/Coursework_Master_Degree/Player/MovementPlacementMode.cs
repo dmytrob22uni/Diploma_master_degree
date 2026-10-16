@@ -78,20 +78,20 @@ namespace Coursework_Master_Degree.Player
 
         private void TryRetrieveRegularMovementFieldValues()
         {
-            if(TryGetComponent(out Movement movement))
-            {
-                MoveSpeed = movement.SlowDownMoveSpeed;
-                LookSpeed = movement.LookSpeed;
-                UpLimitLookAngle = movement.UpLimitLookAngle;
-                DownLimitLookAngle = movement.DownLimitLookAngle;
-                CrouchScale = movement.CrouchScale;
-                CrouchTransitionDuration = movement.CrouchTransitionDuration;
-            }
-            else
-            {
-                Debug.Log("There is no \"Movement\" component on this Player object to retreive \"SlowDownMoveSpeed\" value from.");
-                throw new Exception("There is no \"Movement\" component on this Player object to retreive \"SlowDownMoveSpeed\" value from.");
-            }
+            // if(TryGetComponent(out Movement movement))
+            // {
+            //     MoveSpeed = movement.SlowDownMoveSpeed;
+            //     LookSpeed = movement.LookSpeed;
+            //     UpLimitLookAngle = movement.UpLimitLookAngle;
+            //     DownLimitLookAngle = movement.DownLimitLookAngle;
+            //     CrouchScale = movement.CrouchScale;
+            //     CrouchTransitionDuration = movement.CrouchTransitionDuration;
+            // }
+            // else
+            // {
+            //     Debug.Log("There is no \"Movement\" component on this Player object to retreive \"SlowDownMoveSpeed\" value from.");
+            //     throw new Exception("There is no \"Movement\" component on this Player object to retreive \"SlowDownMoveSpeed\" value from.");
+            // }
         }
 
         void Awake()
@@ -108,12 +108,13 @@ namespace Coursework_Master_Degree.Player
                 Debug.LogError("UpLimitLookAngle must be smaller than DownLimitLookAngle");
             }
 
-            InputActionMap inputActionMap = GlobalInputAction.FindActionMap("item_placement_movement", true);
-            _moveInputAction = inputActionMap.FindAction("move", true);
-            _lookInputAction = inputActionMap.FindAction("look", true);
-            _crouchInputAction = inputActionMap.FindAction("crouch", true);
-            _placeItemInputAction = inputActionMap.FindAction("place_item", true);
-            _rotateItemInputAction = inputActionMap.FindAction("rotate_item", true);
+            InputActionMap inputActionMapMovement = GlobalInputAction.FindActionMap("movement", true);
+            InputActionMap inputActionMapItemPlace = GlobalInputAction.FindActionMap("item_place", true);
+            _moveInputAction = inputActionMapMovement.FindAction("move", true);
+            _lookInputAction = inputActionMapMovement.FindAction("look", true);
+            _crouchInputAction = inputActionMapMovement.FindAction("crouch", true);
+            _placeItemInputAction = inputActionMapItemPlace.FindAction("place", true);
+            _rotateItemInputAction = inputActionMapItemPlace.FindAction("rotate", true);
         }
 
         private void HideCursor()
