@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Coursework_Master_Degree.UserInterface.Items.ScrollablePick
+namespace Coursework_Master_Degree.UserInterface.ItemsMarket.Items.ScrollablePick
 {
     public class CustomRowScrollRect : ScrollRect
     {

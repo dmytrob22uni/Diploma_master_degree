@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Coursework_Master_Degree.Game.Logic;
 
-namespace Coursework_Master_Degree.UserInterface.Items
+namespace Coursework_Master_Degree.UserInterface.ItemsMarket.Items
 {
     public class UserInterfaceItemsInputManager : MonoBehaviour
     {
         public InputActionAsset GlobalInputAction;
 
         public UserInterfaceItemsNetManager UserInterfaceItemsNetCreator;
-        public MonoBehaviour Movement;
+        public Movement Movement;
 
         private InputAction _showCoreItemPickMenuInterfaceInputAction;
         private InputAction _hideAnyMenuInterfaceInputAction;
@@ -20,9 +21,10 @@ namespace Coursework_Master_Degree.UserInterface.Items
 
         void Awake()
         {
-            InputActionMap inputActionMap = GlobalInputAction.FindActionMap("user_interface", true);
-            _showCoreItemPickMenuInterfaceInputAction = inputActionMap.FindAction("show_core_item_pick_menu_interface", true);
-            _hideAnyMenuInterfaceInputAction = inputActionMap.FindAction("hide_any_menu_interface", true);
+            InputActionMap inputActionMapFreeWalk = GlobalInputAction.FindActionMap("free_walk", true);
+            InputActionMap inputActionMapQuitCancel = GlobalInputAction.FindActionMap("quit_cancel", true);
+            _showCoreItemPickMenuInterfaceInputAction = inputActionMapFreeWalk.FindAction("items_market", true);
+            _hideAnyMenuInterfaceInputAction = inputActionMapQuitCancel.FindAction("quit", true);
         }
 
         void OnEnable()

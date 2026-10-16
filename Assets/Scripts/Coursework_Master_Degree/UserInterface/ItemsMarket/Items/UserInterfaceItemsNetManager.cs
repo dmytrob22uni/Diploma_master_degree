@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
+using Coursework_Master_Degree.UserInterface.ItemsMarket.Items.ScrollablePick;
+using Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.RegularPick;
+using Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.ScrollablePick;
+using Coursework_Master_Degree.ScriptableObjects.Items;
 using Coursework_Master_Degree.ScriptableObjects.UserInterface.Items;
 using Coursework_Master_Degree.ScriptableObjects.UserInterface.Items.Types;
-using Coursework_Master_Degree.UserInterface.PrefabData.RegularPick;
-using Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick;
-using Coursework_Master_Degree.UserInterface.Items.ScrollablePick;
-using Coursework_Master_Degree.ScriptableObjects.Items;
 
-namespace Coursework_Master_Degree.UserInterface.Items
+namespace Coursework_Master_Degree.UserInterface.ItemsMarket.Items
 {
     public class UserInterfaceItemsNetManager : MonoBehaviour
     {

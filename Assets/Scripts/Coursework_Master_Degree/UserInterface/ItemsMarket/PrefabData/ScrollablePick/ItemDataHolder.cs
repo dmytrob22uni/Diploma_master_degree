@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using NaughtyAttributes;
 using Coursework_Master_Degree.ScriptableObjects.Items;
 
-namespace Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick
+namespace Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.ScrollablePick
 {
     public class ItemDataHolder : MonoBehaviour
     {

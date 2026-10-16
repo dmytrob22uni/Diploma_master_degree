@@ -1,8 +1,8 @@
 using TMPro;
 using UnityEngine;
-using Coursework_Master_Degree.UserInterface.Items.ScrollablePick;
+using Coursework_Master_Degree.UserInterface.ItemsMarket.Items.ScrollablePick;
 
-namespace Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick
+namespace Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.ScrollablePick
 {
     public class RowDataHolder : MonoBehaviour
     {

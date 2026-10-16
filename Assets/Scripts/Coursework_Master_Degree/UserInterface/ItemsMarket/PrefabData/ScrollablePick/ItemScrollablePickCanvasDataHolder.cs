@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick
+namespace Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.ScrollablePick
 {
     public class ItemScrollablePickCanvasDataHolder : MonoBehaviour
     {

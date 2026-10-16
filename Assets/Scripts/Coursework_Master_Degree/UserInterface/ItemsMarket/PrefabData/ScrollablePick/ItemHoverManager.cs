@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Action = System.Action;
 
-namespace Coursework_Master_Degree.UserInterface.Items.ScrollablePick
+namespace Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.ScrollablePick
 {
     public class ItemHoverManager : MonoBehaviour, IPointerEnterHandler
     {
