@@ -82,7 +82,7 @@
                     "name": "wasd",
                     "id": "302ed457-cc21-4824-a2d9-27c6f3865ade",
                     "path": "2DVector",
-                    "interactions": "Press",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Move",
