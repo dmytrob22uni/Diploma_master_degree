@@ -1,35 +1,37 @@
 using UnityEngine;
+using Coursework_Master_Degree.Game.Controller;
 using Coursework_Master_Degree.Game.StateMachine;
 
 namespace Coursework_Master_Degree.Game.StateMachine.State
 {
     public class GameStateItemsMarket : GameState
     {
-        public GameStateItemsMarket(GameStateManager gameStateManager) : base(gameStateManager) { }
+        // Controllers
+        private readonly ItemController itemController;
+        private readonly InterfaceController interfaceController;
 
-        public override void Enter()
+        public GameStateItemsMarket()
         {
-            gameStateManager.InputReader.EnableItemsMarketStateInput();
+            itemController = GameStateManager.Instance.ItemController;
+            interfaceController = GameStateManager.Instance.InterfaceController;
         }
 
-        public override void Update()
+        public override void OnEnter()
         {
+            ShowCursor();
 
+            GameStateManager.Instance.InputReader.EnableItemsMarketStateInput();
+
+            itemController.SetItemsMarketState(true);
+            interfaceController.SetItemsMarketState(true);
         }
 
-        public override void LateUpdate()
+        public override void OnExit()
         {
+            interfaceController.SetItemsMarketState(false);
+            itemController.SetItemsMarketState(false);
 
-        }
-
-        public override void FixedUpdate()
-        {
-
-        }
-
-        public override void Exit()
-        {
-            gameStateManager.InputReader.DisableAllInput();
+            GameStateManager.Instance.InputReader.DisableAllInput();
         }
     }
 }

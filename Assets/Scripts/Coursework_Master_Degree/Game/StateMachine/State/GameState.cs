@@ -5,19 +5,20 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 {
     public abstract class GameState
     {
-        protected GameStateManager gameStateManager;
+        public virtual void OnEnter() { }
 
-        public GameState(GameStateManager gameStateManager)
+        public virtual void OnExit() { }
+
+        public static void HideCursor()
         {
-            this.gameStateManager = gameStateManager;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
         }
 
-        public virtual void Enter() { }
-
-        public virtual void Update() { }
-        public virtual void LateUpdate() { }
-        public virtual void FixedUpdate() { }
-
-        public virtual void Exit() { }
+        public static void ShowCursor()
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 }

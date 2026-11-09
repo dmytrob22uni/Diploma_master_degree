@@ -5,31 +5,14 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 {
     public class GameStateDeviceInterface : GameState
     {
-        public GameStateDeviceInterface(GameStateManager gameStateManager) : base(gameStateManager) { }
-
-        public override void Enter()
+        public override void OnEnter()
         {
-            gameStateManager.InputReader.EnableDeviceInterfaceStateInput();
+            GameStateManager.Instance.InputReader.EnableDeviceInterfaceStateInput();
         }
 
-        public override void Update()
+        public override void OnExit()
         {
-
-        }
-
-        public override void LateUpdate()
-        {
-
-        }
-
-        public override void FixedUpdate()
-        {
-
-        }
-
-        public override void Exit()
-        {
-            gameStateManager.InputReader.DisableAllInput();
+            GameStateManager.Instance.InputReader.DisableAllInput();
         }
     }
 }

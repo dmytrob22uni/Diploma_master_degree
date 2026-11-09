@@ -5,31 +5,14 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 {
     public class GameStateDeviceBind : GameState
     {
-        public GameStateDeviceBind(GameStateManager gameStateManager) : base(gameStateManager) { }
-
-        public override void Enter()
+        public override void OnEnter()
         {
-            gameStateManager.InputReader.EnableDeviceBindStateInput();
+            GameStateManager.Instance.InputReader.EnableDeviceBindStateInput();
         }
 
-        public override void Update()
+        public override void OnExit()
         {
-
-        }
-
-        public override void LateUpdate()
-        {
-
-        }
-
-        public override void FixedUpdate()
-        {
-
-        }
-
-        public override void Exit()
-        {
-            gameStateManager.InputReader.DisableAllInput();
+            GameStateManager.Instance.InputReader.DisableAllInput();
         }
     }
 }

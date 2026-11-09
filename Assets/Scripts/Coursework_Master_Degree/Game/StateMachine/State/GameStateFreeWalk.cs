@@ -1,51 +1,36 @@
 using UnityEngine;
-using Coursework_Master_Degree.Game.StateMachine;
+using Coursework_Master_Degree.Game.Controller;
 
 namespace Coursework_Master_Degree.Game.StateMachine.State
 {
     public class GameStateFreeWalk : GameState
     {
-        public GameStateFreeWalk(GameStateManager gameStateManager) : base(gameStateManager) { }
+        // Controllers
+        private readonly PlayerController playerController;
+        private readonly InterfaceController interfaceController;
 
-        public override void Enter()
+        public GameStateFreeWalk()
         {
-            gameStateManager.InputReader.EnableFreeWalkStateInput();
+            playerController = GameStateManager.Instance.PlayerController;
+            interfaceController = GameStateManager.Instance.InterfaceController;
+        }
 
+        public override void OnEnter()
+        {
             HideCursor();
+
+            GameStateManager.Instance.InputReader.EnableFreeWalkStateInput();
+
+            playerController.SetFreeWalkState(true);
+            interfaceController.SetFreeWalkState(true);
         }
 
-        private void HideCursor()
+        public override void OnExit()
         {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+            interfaceController.SetFreeWalkState(false);
+            playerController.SetFreeWalkState(false);
 
-        public override void Update()
-        {
-
-        }
-
-        public override void LateUpdate()
-        {
-
-        }
-
-        public override void FixedUpdate()
-        {
-
-        }
-
-        public override void Exit()
-        {
-            gameStateManager.InputReader.DisableAllInput();
-
-            ShowCursor();
-        }
-
-        private void ShowCursor()
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            GameStateManager.Instance.InputReader.DisableAllInput();
         }
     }
 }
