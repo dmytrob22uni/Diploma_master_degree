@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 552e1521ab0a2cecbb87689a9cacb7e8, type: 3}
-  m_Name: computing_user_interface_node_SO
+  m_Name: surface_user_interface_node_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.UserInterface.UserInterfaceNodeSO
-  UserInterfaceNodeType: 1
-  PickNamesToUserInterfaceNodeSOs: []
+  InterfaceNodeType: 1
+  NamesToInterfaceNodeMetaDatasList: []
   ItemMetasList:
-  - {fileID: 11400000, guid: 0fa5f4eb69d5380a69d8a697390a22dd, type: 2}
+  - {fileID: 11400000, guid: 6a48a7bd9e68b297f8dd8867b1151713, type: 2}
