@@ -1,6 +1,7 @@
 using UnityEngine;
-using NaughtyAttributes;
 using Unity.Cinemachine;
+using NaughtyAttributes;
+using Coursework_Master_Degree.Game.StateMachine.State.ItemPlace;
 
 namespace Coursework_Master_Degree.Game.Logic
 {
@@ -29,6 +30,9 @@ namespace Coursework_Master_Degree.Game.Logic
         [EnableIf("NotEnabled")]
         [Min(0.01f)] public float ZoomLookSpeed;
         [Min(0.01f)] public float ZoomLookTransitionDuration;
+
+        // TODO: ...
+        public Influence Influence { get; set; }
 
         private float _currentLookSpeed;
         public float CurrentLookSpeed => _currentLookSpeed;
@@ -72,6 +76,10 @@ namespace Coursework_Master_Degree.Game.Logic
             CalculateZoomLookState();
         }
 
+        // TODO: extract zoom look calculation in separate script
+        // if new changed state does not allow zooming
+        // zoom out to default FOV and disable itself
+        // otherwise keep enabled and do not touch zoom FOV
         private void CalculateZoomLookState()
         {
             if (_isZoomLookTransition)
@@ -100,6 +108,16 @@ namespace Coursework_Master_Degree.Game.Logic
                     _zoomLookTimePassed = default;
                 }
             }
+        }
+
+        private void ClearState()
+        {
+            //
+        }
+
+        private void OnDisable()
+        {
+            ClearState();
         }
 
         // === Player Controller invoked ===

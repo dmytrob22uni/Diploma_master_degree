@@ -9,6 +9,11 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items.Influences
         [MinValue(1.0f), MaxValue(100.0f)]
         public float MoveSpeedPercent = 90.0f;
 
+        public bool IsAllowedJump = false;
+        [ShowIf("IsAllowedJump")]
+        [MinValue(1.0f), MaxValue(100.0f)]
+        public float JumpSpeedPercent = 100.0f;
+
         public bool IsAllowedCrouch = true;
         [ShowIf("IsAllowedCrouch")]
         [MinValue(1.0f), MaxValue(100.0f)]

@@ -1,5 +1,6 @@
 using UnityEngine;
 using NaughtyAttributes;
+using Coursework_Master_Degree.Game.StateMachine.State.ItemPlace;
 
 namespace Coursework_Master_Degree.Game.Logic
 {
@@ -42,6 +43,9 @@ namespace Coursework_Master_Degree.Game.Logic
         [Min(0.0f)]
         [Tooltip("Keeps player a bit glued to slopes and floors")]
         public float GroundedDownforce;
+
+        // TODO: ...
+        public Influence Influence { get; set; }
 
         private float _verticalVelocity;
 
@@ -104,6 +108,17 @@ namespace Coursework_Master_Degree.Game.Logic
                 GroundCheckRadius,
                 GroundLayer,
                 QueryTriggerInteraction.Ignore);
+        }
+
+        private void ClearState()
+        {
+            _verticalVelocity = default;
+            _isGrounded = default;
+        }
+
+        private void OnDisable()
+        {
+            ClearState();
         }
 
         // === Player Controller invoked ===

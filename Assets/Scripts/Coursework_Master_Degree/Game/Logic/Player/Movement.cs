@@ -1,5 +1,6 @@
 using UnityEngine;
 using NaughtyAttributes;
+using Coursework_Master_Degree.Game.StateMachine.State.ItemPlace;
 
 namespace Coursework_Master_Degree.Game.Logic
 {
@@ -23,6 +24,9 @@ namespace Coursework_Master_Degree.Game.Logic
         [Header("Crouch")]
         [Min(0.3f)] public float CrouchScale;
         [Min(0.1f)] public float CrouchTransitionDuration;
+
+        // TODO: ...
+        public Influence Influence { get; set; }
 
         private float _yaw;
         public float Yaw => _yaw;
@@ -122,6 +126,16 @@ namespace Coursework_Master_Degree.Game.Logic
                 // zero out horizontal momentum on release while keeping gravity
                 PlayerRigidbody.linearVelocity = new Vector3(0f, currentVelocity.y, 0f);
             }
+        }
+
+        private void ClearState()
+        {
+            //
+        }
+
+        private void OnDisable()
+        {
+            ClearState();
         }
 
         // === Player Controller invoked ===
