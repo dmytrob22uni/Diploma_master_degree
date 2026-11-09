@@ -83,6 +83,8 @@ MonoBehaviour:
   IsHaveFreeParts: 0
   ItemPartsToLocationsList: []
   IsHaveWearLevel: 0
+  IsInstalled: 0
+  ParentItemDataHolder: {fileID: 0}
 --- !u!114 &1850909658951201806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +172,7 @@ GameObject:
   - component: {fileID: 3228896963768124984}
   - component: {fileID: 4118432920821587466}
   - component: {fileID: 1910763291969371449}
+  - component: {fileID: 6812007036999390959}
   m_Layer: 15
   m_Name: right_door_2
   m_TagString: Untagged
@@ -271,6 +274,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3595568, y: 0.021257395, z: 0.72322905}
   m_Center: {x: -0.17966047, y: -0.009371474, z: 0.000000029802326}
+--- !u!114 &6812007036999390959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670072146102086102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 1
+  Hinge: {fileID: 2129989364694290330}
+  Rotation: 90
+  transitionDuration: 0.7
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &753840224921700965
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,6 +751,7 @@ GameObject:
   - component: {fileID: 3745589580458267240}
   - component: {fileID: 7682942465529053342}
   - component: {fileID: 900853570253404070}
+  - component: {fileID: 3923955829071702252}
   m_Layer: 15
   m_Name: right_door_1
   m_TagString: Untagged
@@ -808,6 +853,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3595568, y: 0.019629205, z: 0.72322905}
   m_Center: {x: -0.17966089, y: -0.0101855695, z: 0.000000029802322}
+--- !u!114 &3923955829071702252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136443966585932501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 1
+  Hinge: {fileID: 2717315320666805217}
+  Rotation: 90
+  transitionDuration: 0.7
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &2451510938436518166
 GameObject:
   m_ObjectHideFlags: 0
@@ -979,6 +1065,7 @@ GameObject:
   - component: {fileID: 4335963843465745988}
   - component: {fileID: 3318486088068468841}
   - component: {fileID: 583066554614137857}
+  - component: {fileID: 7827340703460633238}
   m_Layer: 15
   m_Name: right_door_3
   m_TagString: Untagged
@@ -1080,6 +1167,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3595568, y: 0.019629205, z: 0.72322905}
   m_Center: {x: -0.17966017, y: -0.0101855695, z: 0.000000029802322}
+--- !u!114 &7827340703460633238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2807358165582319546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 1
+  Hinge: {fileID: 1280969987606562078}
+  Rotation: 90
+  transitionDuration: 0.7
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &4213482192356854378
 GameObject:
   m_ObjectHideFlags: 0
@@ -1189,6 +1317,7 @@ GameObject:
   - component: {fileID: 7027256447722594169}
   - component: {fileID: 6285430468767488311}
   - component: {fileID: 6963534256705652025}
+  - component: {fileID: 5050881746947610326}
   m_Layer: 15
   m_Name: left_door_3
   m_TagString: Untagged
@@ -1290,6 +1419,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3595568, y: 0.021257395, z: 0.723229}
   m_Center: {x: 0.17966089, y: -0.009371474, z: 0.000000029802326}
+--- !u!114 &5050881746947610326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4266737517888653239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 0
+  Hinge: {fileID: 3108751198098962876}
+  Rotation: 90
+  transitionDuration: 0.7
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &4635959829552247099
 GameObject:
   m_ObjectHideFlags: 0
@@ -1673,6 +1843,7 @@ GameObject:
   - component: {fileID: 3102339774726741130}
   - component: {fileID: 6596943295770295699}
   - component: {fileID: 8489183549157614090}
+  - component: {fileID: 8987047008050095835}
   m_Layer: 15
   m_Name: left_door_1
   m_TagString: Untagged
@@ -1774,6 +1945,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3595568, y: 0.021257425, z: 0.723229}
   m_Center: {x: 0.17966017, y: -0.0093714595, z: 0.000000029802322}
+--- !u!114 &8987047008050095835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6873654152916004057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 0
+  Hinge: {fileID: 7319877929668159324}
+  Rotation: 90
+  transitionDuration: 0.7
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &6977171472545204226
 GameObject:
   m_ObjectHideFlags: 0
@@ -2104,6 +2316,7 @@ GameObject:
   - component: {fileID: 7600528372505174983}
   - component: {fileID: 515723625887557707}
   - component: {fileID: 9081579719528802430}
+  - component: {fileID: 5816944746700121032}
   m_Layer: 15
   m_Name: left_door_2
   m_TagString: Untagged
@@ -2205,6 +2418,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3595568, y: 0.021257395, z: 0.723229}
   m_Center: {x: 0.17966047, y: -0.009371474, z: 0.000000029802326}
+--- !u!114 &5816944746700121032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7779993797977234218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 0
+  Hinge: {fileID: 1436673781468808759}
+  Rotation: 90
+  transitionDuration: 0.7
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &8045387885964895083
 GameObject:
   m_ObjectHideFlags: 0
