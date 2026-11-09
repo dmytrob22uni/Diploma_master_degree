@@ -9,10 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1364994310115103343}
+  - component: {fileID: 4536406249177804418}
+  - component: {fileID: 6860568199009119305}
+  - component: {fileID: 936185368355783415}
   m_Layer: 0
   m_Name: eyes
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -32,6 +35,64 @@ Transform:
   - {fileID: 3342864202197239438}
   m_Father: {fileID: 8608216264145000931}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4536406249177804418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f79b83586fd37ec9a5a018842988127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.ItemHoverInfo
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 1
+  ItemLayer:
+    serializedVersion: 2
+    m_Bits: 8495104
+  ItemHoverInfoText: {fileID: 0}
+  TakeRoot: {fileID: 0}
+--- !u!114 &6860568199009119305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c789884bed341900d981dea061a7a296, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.ItemHoverInteract
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 1
+  ItemLayer:
+    serializedVersion: 2
+    m_Bits: 40960
+  InteractText: {fileID: 0}
+  InteractRoot: {fileID: 0}
+--- !u!114 &936185368355783415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 711e21976c6daa287b1c9127e5dfa522, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.ItemHoverPlace
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 2
+  SurfaceLayer:
+    serializedVersion: 2
+    m_Bits: 16384
+  ItemHoverPlaceText: {fileID: 0}
+  PlaceRoot: {fileID: 0}
+  CancelRoot: {fileID: 0}
 --- !u!1 &3798244653681066634
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,7 +280,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4177186022607720949}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfb863eaa22bc25a689d269b5d2365e3, type: 3}
   m_Name: 
@@ -239,7 +300,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4177186022607720949}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e7fff37d49c0e035f8fbfa8146f28bb7, type: 3}
   m_Name: 
@@ -251,7 +312,7 @@ MonoBehaviour:
   ApexThreshold: 0.6
   ApexGravityMultiplier: 0.3
   GroundCheckOrigin: {fileID: 5115547048051170152}
-  GroundCheckRadius: 0.26
+  GroundCheckRadius: 0.25
   GroundLayer:
     serializedVersion: 2
     m_Bits: 12173313
@@ -263,7 +324,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4177186022607720949}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b8f13ff65bd9173dbb3982d2a2f1315, type: 3}
   m_Name: 
@@ -322,7 +383,7 @@ Transform:
   m_GameObject: {fileID: 4357930997750839436}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalPosition: {x: 0, y: 0.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -340,7 +401,7 @@ GameObject:
   m_Layer: 0
   m_Name: body
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
