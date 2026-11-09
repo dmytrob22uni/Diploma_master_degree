@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace Coursework_Master_Degree.UserInterface.ItemsMarket.Items.ScrollablePick
+namespace Coursework_Master_Degree.Game.Logic.Interface.ItemsMarket.ScrollablePick
 {
-    public class CustomRowScrollRect : ScrollRect
+    public class RowScrollRect : ScrollRect
     {
         [SerializeField]
         [Tooltip("Set via script")]
@@ -24,15 +24,15 @@ namespace Coursework_Master_Degree.UserInterface.ItemsMarket.Items.ScrollablePic
         {
             base.OnInitializePotentialDrag(eventData);
 
-            if (ParentScrollRect != null)
-                ParentScrollRect.OnInitializePotentialDrag(eventData);
+            ParentScrollRect?.OnInitializePotentialDrag(eventData);
         }
 
         public override void OnBeginDrag(PointerEventData eventData)
         {
             _route = DragRoute.Undecided;
             _accumulatedDelta = Vector2.zero;
-            // Do not call base yet. Wait until we know whether this drag is horizontal or vertical.
+            // Do not call base yet
+            // Wait until we know whether this drag is horizontal or vertical
         }
 
         public override void OnDrag(PointerEventData eventData)
@@ -41,32 +41,47 @@ namespace Coursework_Master_Degree.UserInterface.ItemsMarket.Items.ScrollablePic
             {
                 _accumulatedDelta += eventData.delta;
 
-                // Optional small threshold so tiny movement does not decide too early.
+                // Check against small threshold, so to discard tiny movements
                 if (_accumulatedDelta.sqrMagnitude < 9f)
+                {
                     return;
+                }
 
-                _route = Mathf.Abs(_accumulatedDelta.y) > Mathf.Abs(_accumulatedDelta.x)
+                _route =
+                    Mathf.Abs(_accumulatedDelta.y) > Mathf.Abs(_accumulatedDelta.x)
                     ? DragRoute.Parent
                     : DragRoute.Self;
 
                 if (_route == DragRoute.Parent)
+                {
                     ParentScrollRect?.OnBeginDrag(eventData);
+                }
                 else
+                {
                     base.OnBeginDrag(eventData);
+                }
             }
 
             if (_route == DragRoute.Parent)
+            {
                 ParentScrollRect?.OnDrag(eventData);
+            }
             else
+            {
                 base.OnDrag(eventData);
+            }
         }
 
         public override void OnEndDrag(PointerEventData eventData)
         {
             if (_route == DragRoute.Parent)
+            {
                 ParentScrollRect?.OnEndDrag(eventData);
+            }
             else if (_route == DragRoute.Self)
+            {
                 base.OnEndDrag(eventData);
+            }
 
             _route = DragRoute.Undecided;
             _accumulatedDelta = Vector2.zero;

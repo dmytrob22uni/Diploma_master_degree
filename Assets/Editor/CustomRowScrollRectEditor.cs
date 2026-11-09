@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEditor.UI;
 
-namespace Coursework_Master_Degree.UserInterface.ItemsMarket.Items.ScrollablePick
+namespace Coursework_Master_Degree.Game.Logic.Interface.ItemsMarket.ScrollablePick
 {
-    [CustomEditor(typeof(CustomRowScrollRect))]
+    [CustomEditor(typeof(RowScrollRect))]
     public class CustomRowScrollRectEditor : ScrollRectEditor
     {
         private SerializedProperty _parentScrollRect;

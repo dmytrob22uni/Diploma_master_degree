@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using NaughtyAttributes;
 using Coursework_Master_Degree.ScriptableObjects.Items;
 
-namespace Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.ScrollablePick
+namespace Coursework_Master_Degree.Game.Logic.Interface.ItemsMarket.PrefabData.ScrollablePick
 {
     public class ItemDataHolder : MonoBehaviour
     {
@@ -22,9 +22,9 @@ namespace Coursework_Master_Degree.UserInterface.ItemsMarket.PrefabData.Scrollab
 
         [EnableIf("NotEnabled")]
         [Tooltip("Set via script")]
-        public TextMeshProUGUI DescriptionHeaderText;
+        public TextMeshProUGUI HeaderText;
         [EnableIf("NotEnabled")]
         [Tooltip("Set via script")]
-        public TextMeshProUGUI DescriptionBodyText;
+        public TextMeshProUGUI DescriptionText;
     }
 }
