@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5873524099903523165}
   - component: {fileID: 5764692278927704993}
   - component: {fileID: 1466784119200397208}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: tablet_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82,6 +82,8 @@ MonoBehaviour:
   IsHaveFreeParts: 0
   ItemPartsToLocationsList: []
   IsHaveWearLevel: 0
+  IsInstalled: 0
+  ParentItemDataHolder: {fileID: 0}
 --- !u!114 &1466784119200397208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,7 +111,7 @@ GameObject:
   - component: {fileID: 6025886685987801647}
   - component: {fileID: 347036230132968045}
   - component: {fileID: 339397929263232085}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +202,7 @@ GameObject:
   - component: {fileID: 604029391946503160}
   - component: {fileID: 7026509563830956858}
   - component: {fileID: 7236479084746599941}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: tablet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

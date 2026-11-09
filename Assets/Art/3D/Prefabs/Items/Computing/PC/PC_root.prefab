@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1432601190152097671}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: mouse_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1758114668480666781}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1303473544203730947}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 7064210553699756582}
   - component: {fileID: 3958049431806285973}
   - component: {fileID: 4854131282850198551}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: wall_socket_plug_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fb0cf562037c1f948b39534b00569c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemFreePartDataHolder
+  Name: Wall socket plug
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: d0b65ce19486daccba583c0a200e9bf2, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
 --- !u!1 &1646004055261211602
@@ -180,7 +181,7 @@ GameObject:
   - component: {fileID: 2794929390093410414}
   - component: {fileID: 7663056748115182679}
   - component: {fileID: 4959931932598616404}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: monitor_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
@@ -242,6 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fb0cf562037c1f948b39534b00569c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemFreePartDataHolder
+  Name: Monitor
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: 07ade824125d438619f1f9e7e3e1a0e3, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
 --- !u!1 &2351076872516246619
@@ -253,7 +255,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2333762256006625899}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -298,7 +300,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5994956256857533243}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: keyboard_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -333,7 +335,7 @@ GameObject:
   - component: {fileID: 9090327304538090106}
   - component: {fileID: 3890610662959565280}
   - component: {fileID: 1822460007048790481}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -435,67 +437,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.31964678, y: 0.12775594, z: 0.010009749}
   m_Center: {x: 0, y: -0.00032173478, z: 0.00502792}
---- !u!1 &3082559247192260653
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5202303415376225809}
-  - component: {fileID: 5583462625336864167}
-  m_Layer: 15
-  m_Name: PC_root
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5202303415376225809
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3082559247192260653}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.298, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 3299379103670426223}
-  - {fileID: 9213838889742031905}
-  m_Father: {fileID: 1517807852911384144}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &5583462625336864167
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3082559247192260653}
-  serializedVersion: 5
-  m_Mass: 5
-  m_LinearDamping: 0.1
-  m_AngularDamping: 0.1
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!1 &3478555993645196031
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,7 +446,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2306448388267020673}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -538,7 +479,7 @@ GameObject:
   - component: {fileID: 3987911747774584546}
   - component: {fileID: 8131648424924484930}
   - component: {fileID: 5445432846520207336}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: keyboard_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
@@ -600,6 +541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fb0cf562037c1f948b39534b00569c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemFreePartDataHolder
+  Name: Keyboard
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: d37d0519441ac82f0a3628325f9c0f4c, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
 --- !u!1 &4428031633699143420
@@ -611,7 +553,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5696032805195533423}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -644,7 +586,7 @@ GameObject:
   - component: {fileID: 2356427260865099129}
   - component: {fileID: 3932211823757737164}
   - component: {fileID: 6131031510108633482}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: keys
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -732,10 +674,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1517807852911384144}
+  - component: {fileID: 4297200215123170195}
   - component: {fileID: 7244353744281143315}
   - component: {fileID: -798957194648827033}
   - component: {fileID: 2568401955853790556}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: PC_root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -756,10 +699,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2068236870778333981}
-  - {fileID: 5202303415376225809}
+  - {fileID: 3299379103670426223}
   - {fileID: 2333762256006625899}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &4297200215123170195
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5232699185485455824}
+  serializedVersion: 5
+  m_Mass: 5
+  m_LinearDamping: 0.1
+  m_AngularDamping: 0.1
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!114 &7244353744281143315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -788,6 +758,8 @@ MonoBehaviour:
   - ItemPart: {fileID: 1614308948347836205}
     Location: {fileID: 7765332433700689088}
   IsHaveWearLevel: 0
+  IsInstalled: 0
+  ParentItemDataHolder: {fileID: 0}
 --- !u!114 &-798957194648827033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -830,7 +802,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4429886156376404554}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -861,7 +833,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7905881226765035963}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -892,7 +864,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4746187709245382297}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: monitor_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -926,7 +898,7 @@ GameObject:
   - component: {fileID: 2930261977195567604}
   - component: {fileID: 7462702411040634267}
   - component: {fileID: 1299236605118869909}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: mouse_root
   m_TagString: Untagged
   m_Icon: {fileID: -5938655980376293919, guid: 0000000000000000d000000000000000, type: 0}
@@ -988,6 +960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fb0cf562037c1f948b39534b00569c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemFreePartDataHolder
+  Name: Mouse
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: 13182e92459e7f502b63fd3113fdce07, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
 --- !u!1 &6078003790579646528
@@ -1000,7 +973,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6612457053830038697}
   - component: {fileID: 7173446526321589241}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: collider_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1052,7 +1025,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8415531685497916858}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1083,7 +1056,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5229147233369564402}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1117,7 +1090,7 @@ GameObject:
   - component: {fileID: 6861160722787611357}
   - component: {fileID: 2417143785226760714}
   - component: {fileID: 3730106750241723436}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1228,7 +1201,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3119391859897314065}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1262,7 +1235,7 @@ GameObject:
   - component: {fileID: 6740841999882120260}
   - component: {fileID: 8688301464321505904}
   - component: {fileID: 977440314659061491}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: mouse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1372,7 +1345,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1399217509266193567}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1403,7 +1376,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2068236870778333981}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: free_parts_reset_points
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
@@ -1440,7 +1413,7 @@ GameObject:
   - component: {fileID: 4861842350470840312}
   - component: {fileID: 8833883379911746919}
   - component: {fileID: 5259405037399012252}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: screen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1528,7 +1501,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9213838889742031905}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: colliders
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -1543,14 +1516,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7625856199520193425}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6612457053830038697}
   - {fileID: 3015636285768591491}
-  m_Father: {fileID: 5202303415376225809}
+  m_Father: {fileID: 3299379103670426223}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7814083510137771890
 GameObject:
@@ -1563,7 +1536,7 @@ GameObject:
   - component: {fileID: 3299379103670426223}
   - component: {fileID: 4041953224961811261}
   - component: {fileID: 2035895590435133829}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: PC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1579,11 +1552,12 @@ Transform:
   m_GameObject: {fileID: 7814083510137771890}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.298, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5202303415376225809}
+  m_Children:
+  - {fileID: 9213838889742031905}
+  m_Father: {fileID: 1517807852911384144}
   m_LocalEulerAnglesHint: {x: -90, y: 180, z: 0}
 --- !u!33 &4041953224961811261
 MeshFilter:
@@ -1653,7 +1627,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7765332433700689088}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: wall_socket_plug_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1685,7 +1659,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 429592537390078279}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1716,7 +1690,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2019893276302714800}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1748,7 +1722,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3015636285768591491}
   - component: {fileID: 5879579887688576450}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: collider_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1800,7 +1774,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1551453309895154055}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1831,7 +1805,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6125458124153898236}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: corner_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1865,7 +1839,7 @@ GameObject:
   - component: {fileID: 8847116509190930471}
   - component: {fileID: 1804690616857316888}
   - component: {fileID: 2256811960626461034}
-  m_Layer: 15
+  m_Layer: 13
   m_Name: wall_socket_plug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
