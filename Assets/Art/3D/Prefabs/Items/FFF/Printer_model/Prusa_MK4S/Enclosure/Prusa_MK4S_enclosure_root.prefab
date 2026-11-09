@@ -76,6 +76,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 3021932441682002796}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &418786180412137134
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,6 +401,7 @@ GameObject:
   - component: {fileID: -4998241898145780294}
   - component: {fileID: 1681323683822225889}
   - component: {fileID: -6489002443560543048}
+  - component: {fileID: -243831197333374092}
   m_Layer: 15
   m_Name: Prusa_MK4S_enclosure_root
   m_TagString: Untagged
@@ -473,6 +478,8 @@ MonoBehaviour:
   - ItemPart: {fileID: 0}
     Location: {fileID: 41572032276612803}
   IsHaveWearLevel: 0
+  IsInstalled: 0
+  ParentItemDataHolder: {fileID: 0}
 --- !u!114 &1681323683822225889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -503,18 +510,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemSyncToGhostBackgroundDataHolder
   IsHavePartsToSync: 0
   PartsToTransformsToSyncDictionary: []
-  MeshRenderersToHideList:
-  - {fileID: 7386290925852739562}
-  - {fileID: 5719030212767360231}
-  - {fileID: 6020126548167754238}
-  - {fileID: 8261365883324490223}
-  - {fileID: 1990996035772198477}
   MeshRenderersToSyncList:
   - {fileID: 7386290925852739562}
   - {fileID: 5719030212767360231}
   - {fileID: 6020126548167754238}
   - {fileID: 8261365883324490223}
   - {fileID: 1990996035772198477}
+--- !u!114 &-243831197333374092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762743641646650074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c3040394cc0ad45baf23511e783d557, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartsAssembly
+  IsHaveOptionalParts: 0
+  OptionalPartLocationsList: []
+  RegularPartLocationsList:
+  - {fileID: 8074260900121233423}
+  - {fileID: 3969268605310647850}
+  - {fileID: 4010792883348728552}
+  - {fileID: 2819473336310229906}
+  - {fileID: 5041714718287059677}
+  - {fileID: 3744242255348058350}
+  - {fileID: 7478155525561712692}
+  - {fileID: 6825290852173205690}
+  - {fileID: 7055446340319959937}
+  - {fileID: 8047876646139820904}
+  - {fileID: 4377969378252202404}
 --- !u!1 &2272560016191019848
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,6 +704,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 970848872245479923}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2873067041562204930
 GameObject:
   m_ObjectHideFlags: 0
@@ -688,7 +719,7 @@ GameObject:
   - component: {fileID: 4930449941724105152}
   - component: {fileID: 540244959552196713}
   - component: {fileID: 4010792883348728552}
-  m_Layer: 15
+  m_Layer: 17
   m_Name: battery_closet_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -752,6 +783,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 0}
   IsOccupied: 0
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &2912930574668353897
 GameObject:
   m_ObjectHideFlags: 0
@@ -847,6 +882,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 90fbadea13e40e7df8cc1c0b03c3c428, type: 2}
   InstalledPart: {fileID: 0}
   IsOccupied: 0
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &3025466305864449878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,6 +1068,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 1177822381469383984}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &3448704063028309244
 GameObject:
   m_ObjectHideFlags: 0
@@ -1104,6 +1147,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 0}
   IsOccupied: 0
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &3894937281629655400
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,6 +1227,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 7401867851548474309}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &3900903665203446921
 GameObject:
   m_ObjectHideFlags: 0
@@ -1536,6 +1587,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 2138860332250710309}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &4903796286869305945
 GameObject:
   m_ObjectHideFlags: 0
@@ -1761,6 +1816,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 8798622622853545022}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &5540789428766710759
 GameObject:
   m_ObjectHideFlags: 0
@@ -1772,7 +1831,7 @@ GameObject:
   - component: {fileID: 5612586986095826495}
   - component: {fileID: 1393480139271907780}
   - component: {fileID: 2819473336310229906}
-  m_Layer: 15
+  m_Layer: 17
   m_Name: battery_closet_adapter_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1836,6 +1895,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 0}
   IsOccupied: 0
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &5762376371628153396
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,6 +2010,7 @@ GameObject:
   - component: {fileID: 7361969336946561777}
   - component: {fileID: 6020126548167754238}
   - component: {fileID: 2822570643979260933}
+  - component: {fileID: 1145975702243777692}
   m_Layer: 15
   m_Name: enclosure_door_right
   m_TagString: Untagged
@@ -1976,7 +2040,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5883449981606969049}
-  m_Mesh: {fileID: -8731665670522783753, guid: e593a63ec3082d5c8afdb5294e420c30, type: 3}
+  m_Mesh: {fileID: -8731665670522783753, guid: 963e628fb42bd5cebadb0ccc53adba62, type: 3}
 --- !u!23 &6020126548167754238
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2048,6 +2112,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.23930945, y: 0.01285409, z: 0.431897}
   m_Center: {x: -0.1196546, y: -0.006272184, z: -2.1889178e-17}
+--- !u!114 &1145975702243777692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5883449981606969049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 1
+  Hinge: {fileID: 4369870445564427456}
+  Rotation: 150
+  transitionDuration: 0.5
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &5889037363017457757
 GameObject:
   m_ObjectHideFlags: 0
@@ -2323,6 +2428,7 @@ GameObject:
   - component: {fileID: 6412810485276935571}
   - component: {fileID: 5719030212767360231}
   - component: {fileID: 3234114606282212235}
+  - component: {fileID: 4566047673914549831}
   m_Layer: 15
   m_Name: enclosure_door_left
   m_TagString: Untagged
@@ -2352,7 +2458,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7163193644230371026}
-  m_Mesh: {fileID: -3961611171641573793, guid: e593a63ec3082d5c8afdb5294e420c30, type: 3}
+  m_Mesh: {fileID: -3961611171641573793, guid: 963e628fb42bd5cebadb0ccc53adba62, type: 3}
 --- !u!23 &5719030212767360231
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2424,6 +2530,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.23930945, y: 0.012854095, z: 0.431897}
   m_Center: {x: 0.1196546, y: -0.0062721805, z: -2.188923e-17}
+--- !u!114 &4566047673914549831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7163193644230371026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee362b18167ae8d99ed6f28e676de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.SimpleInteraction.Door
+  DoorSide: 0
+  Hinge: {fileID: 2360077251288376740}
+  Rotation: 150
+  transitionDuration: 0.5
+  smoothCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  isLocked: 0
 --- !u!1 &7575227823714764865
 GameObject:
   m_ObjectHideFlags: 0
@@ -2606,6 +2753,10 @@ MonoBehaviour:
   PartMetaDatasList: []
   InstalledPart: {fileID: 6206036234721414524}
   IsOccupied: 1
+  IsOverridePartPurposeDescription: 0
+  PartPurposeDescription: Part purpose description TO REPLACE
+  IsOverrideMissingPartDescription: 0
+  MissingPartDescription: Missing part description TO REPLACE
 --- !u!1 &8274764409465668048
 GameObject:
   m_ObjectHideFlags: 0
@@ -2779,7 +2930,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4822732319339415407, guid: ec373b7abd93f6246a7253a853644218, type: 3}
       propertyPath: currentCondition
-      value: 96.11975
+      value: 97.473885
       objectReference: {fileID: 0}
     - target: {fileID: 6517386345239953101, guid: ec373b7abd93f6246a7253a853644218, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2850,7 +3001,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4822732319339415407, guid: ec373b7abd93f6246a7253a853644218, type: 3}
       propertyPath: currentCondition
-      value: 99.960106
+      value: 96.385895
       objectReference: {fileID: 0}
     - target: {fileID: 6517386345239953101, guid: ec373b7abd93f6246a7253a853644218, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2917,7 +3068,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3545797897952211294, guid: 5af48395afb29d1c2ac0ea3e360dd80a, type: 3}
       propertyPath: currentCondition
-      value: 94.70185
+      value: 97.15053
       objectReference: {fileID: 0}
     - target: {fileID: 607690325978844127, guid: 5af48395afb29d1c2ac0ea3e360dd80a, type: 3}
       propertyPath: m_Name
@@ -2992,7 +3143,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4822732319339415407, guid: ec373b7abd93f6246a7253a853644218, type: 3}
       propertyPath: currentCondition
-      value: 95.96039
+      value: 97.21274
       objectReference: {fileID: 0}
     - target: {fileID: 6517386345239953101, guid: ec373b7abd93f6246a7253a853644218, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3059,7 +3210,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -5340717639540281871, guid: 96fed50de079e3ce88f1aad81891a50e, type: 3}
       propertyPath: currentCondition
-      value: 93.027756
+      value: 99.58351
       objectReference: {fileID: 0}
     - target: {fileID: 2291890189799181320, guid: 96fed50de079e3ce88f1aad81891a50e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3130,7 +3281,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3545797897952211294, guid: 5af48395afb29d1c2ac0ea3e360dd80a, type: 3}
       propertyPath: currentCondition
-      value: 96.47748
+      value: 95.74636
       objectReference: {fileID: 0}
     - target: {fileID: 607690325978844127, guid: 5af48395afb29d1c2ac0ea3e360dd80a, type: 3}
       propertyPath: m_Name
@@ -3245,7 +3396,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5846564152076029166, guid: ddc6a3b9531eb928ba7e5d8602697a98, type: 3}
       propertyPath: currentCondition
-      value: 93.310974
+      value: 99.964714
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

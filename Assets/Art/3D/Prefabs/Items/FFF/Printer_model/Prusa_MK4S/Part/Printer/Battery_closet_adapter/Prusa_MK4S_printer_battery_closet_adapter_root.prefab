@@ -122,6 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4049438005437718146}
   - component: {fileID: 8821779140987028657}
+  - component: {fileID: 6773852716830298015}
   - component: {fileID: 5763329083451325996}
   - component: {fileID: 2905673419552696122}
   m_Layer: 16
@@ -174,6 +175,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &6773852716830298015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8951657518640537077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fb0cf562037c1f948b39534b00569c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.ItemFreePartDataHolder
+  Name: Battery closet adapter
+  ItemFreePartGhostPlacementPrefab: {fileID: 8951657518640537077, guid: ba7ac5e4d9634c31c8693d233691afed, type: 3}
+  ItemFreePartGhostPlacementInstance: {fileID: 0}
 --- !u!114 &5763329083451325996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,6 +210,8 @@ MonoBehaviour:
   IsHaveFreeParts: 0
   ItemPartsToLocationsList: []
   IsHaveWearLevel: 1
+  IsInstalled: 0
+  ParentItemDataHolder: {fileID: 0}
 --- !u!114 &2905673419552696122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,6 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e037322bc1aaed975ddd7d550311d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
-  currentCondition: 92.22351
+  IsAllowRandomInitialCondition: 1
+  currentCondition: 95.5503
   isWornOut: 0
   ItemWearLogicSO: {fileID: 11400000, guid: 69c3b2fd5717224059dcb39e920eb396, type: 2}
