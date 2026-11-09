@@ -19,7 +19,7 @@ namespace Coursework_Master_Degree.ObjectsToPrint.Ghost
         public ObjectToPrintGhostType ObjectToPrintGhostType;
         [EnableIf("NotEnabled")]
         [Tooltip("Set via script")]
-        public GameObject ObjectToPrintInstanceInstance;
+        public GameObject ObjectToPrintInstance;
 
         public List<MeshRenderer> MeshRenderersList;
     }
