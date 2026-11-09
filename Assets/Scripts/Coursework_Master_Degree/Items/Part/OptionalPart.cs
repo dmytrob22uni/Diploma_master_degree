@@ -32,6 +32,11 @@ namespace Coursework_Master_Degree.Items.Part
 
         public void OnValidate()
         {
+            ValidateOptionalPart();
+        }
+
+        private void ValidateOptionalPart()
+        {
             foreach (var part in PartLocationsList)
             {
                 if (IsSingleMetaDataReference)

@@ -29,14 +29,45 @@ namespace Coursework_Master_Degree.Items.Surface
             return ItemsOnShelvesList.Contains(item);
         }
 
+        public bool TryPlaceItemOnShelf(GameObject item)
+        {
+            if (!IsItemOnShelf(item))
+            {
+                PlaceItemOnShelf(item);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void PlaceItemOnShelf(GameObject item)
         {
             ItemsOnShelvesList.Add(item);
         }
 
+        public bool TryRemoveItemFromShelf(GameObject item)
+        {
+            if (IsItemOnShelf(item))
+            {
+                RemoveItemFromShelf(item);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void RemoveItemFromShelf(GameObject item)
         {
             ItemsOnShelvesList.Remove(item);
+        }
+
+        public bool IsEmptyShelves()
+        {
+            return ItemsOnShelvesList.Count == 0;
         }
     }
 }

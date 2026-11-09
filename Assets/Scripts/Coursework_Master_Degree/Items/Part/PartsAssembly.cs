@@ -18,11 +18,36 @@ namespace Coursework_Master_Degree.Items.Part
 
         public List<PartLocation> RegularPartLocationsList;
 
-        private void OnValidate()
+        private void Awake()
         {
+            SetupItemsInstallationStates();
+        }
+
+        private void SetupItemsInstallationStates()
+        {
+            ItemDataHolder localItem = GetComponent<ItemDataHolder>();
+
             foreach (var optionalPart in OptionalPartLocationsList)
             {
-                optionalPart.OnValidate();
+                foreach (var part in optionalPart.PartLocationsList)
+                {
+                    if (part.IsOccupied)
+                    {
+                        ItemDataHolder item = part.InstalledPart.GetComponent<ItemDataHolder>();
+                        item.IsInstalled = true;
+                        item.ParentItemDataHolder = localItem;
+                    }
+                }
+            }
+
+            foreach (var part in RegularPartLocationsList)
+            {
+                if (part.IsOccupied)
+                {
+                    ItemDataHolder item = part.InstalledPart.GetComponent<ItemDataHolder>();
+                    item.IsInstalled = true;
+                    item.ParentItemDataHolder = localItem;
+                }
             }
         }
 
