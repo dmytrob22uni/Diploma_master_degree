@@ -65,10 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'some example description is here some example description is here some
-    example description is here some example description is here some example description
-    is here some example description is here some example description is here some
-    example description is here '
+  m_text: 'some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5ad31ba9d12f1626cbb3f6cc07578143, type: 2}
   m_sharedMaterial: {fileID: 3737642060098692968, guid: 5ad31ba9d12f1626cbb3f6cc07578143, type: 2}
@@ -118,7 +115,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -297,6 +294,8 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+  m_MaxWidth: -1
+  m_MaxHeight: -1
 --- !u!1 &6462750743140598696
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,6 +474,8 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+  m_MaxWidth: -1
+  m_MaxHeight: -1
 --- !u!114 &8125869375659371413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,8 +515,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick.RowDataHolder
   HeaderText: {fileID: 783133436396843012}
-  ContentGameObject: {fileID: 6462750743140598696}
-  CustomRowScrollRect: {fileID: 7807989369209555235}
+  Content: {fileID: 6462750743140598696}
+  RowScrollRect: {fileID: 7807989369209555235}
 --- !u!1 &6597890255712677037
 GameObject:
   m_ObjectHideFlags: 0

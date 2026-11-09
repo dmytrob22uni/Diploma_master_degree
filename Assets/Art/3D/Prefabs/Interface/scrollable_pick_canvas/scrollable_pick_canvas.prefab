@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 89654236333869760}
   - component: {fileID: 2519854880993158552}
   m_Layer: 5
-  m_Name: item_scrollable_pick_canvas
+  m_Name: scrollable_pick_canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,10 +234,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6630cfc3b6537d1d8f7103f6011c58b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.UserInterface.PrefabData.ScrollablePick.ItemScrollablePickCanvasDataHolder
-  ContentGameObject: {fileID: 20735168068014130}
+  Content: {fileID: 20735168068014130}
   VerticalScrollRect: {fileID: 8669813265983320076}
-  DescriptionHeaderText: {fileID: 7620334238332635475}
-  DescriptionBodyText: {fileID: 8491963831371543760}
+  HeaderText: {fileID: 7620334238332635475}
+  DescriptionText: {fileID: 8491963831371543760}
 --- !u!1 &1462143954033499837
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,7 +248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 136755888620618111}
   m_Layer: 0
-  m_Name: body
+  m_Name: description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -451,10 +451,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'some example description is here some example description is here some
-    example description is here some example description is here some example description
-    is here some example description is here some example description is here some
-    example description is here '
+  m_text: 'some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5ad31ba9d12f1626cbb3f6cc07578143, type: 2}
   m_sharedMaterial: {fileID: 3737642060098692968, guid: 5ad31ba9d12f1626cbb3f6cc07578143, type: 2}
@@ -504,7 +501,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -591,10 +588,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'some example description is here some example description is here some
-    example description is here some example description is here some example description
-    is here some example description is here some example description is here some
-    example description is here '
+  m_text: 'some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here some example description is here '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5ad31ba9d12f1626cbb3f6cc07578143, type: 2}
   m_sharedMaterial: {fileID: 3737642060098692968, guid: 5ad31ba9d12f1626cbb3f6cc07578143, type: 2}
@@ -644,7 +638,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
+  m_ActiveFontFeatures: 6e72656bu
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -765,6 +759,8 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+  m_MaxWidth: -1
+  m_MaxHeight: -1
 --- !u!114 &8350595511325679239
 MonoBehaviour:
   m_ObjectHideFlags: 0
