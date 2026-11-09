@@ -12,8 +12,9 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _ENUM_REFERENCE_RIGHT
+  m_InvalidKeywords:
   - _PRINTER_BED_PLACEMENT_STATE_WRONG
-  m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -39,9 +40,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ENUM_REFERENCE: 0
     - _PRINTER_BED_PLACEMENT_STATE: 1
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _printer_bed_placement_state: 0
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

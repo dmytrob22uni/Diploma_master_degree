@@ -25,9 +25,10 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _MISSING_PART_STATE_PRESENT
+  - _ENUM_REFERENCE_PRESENT
   m_InvalidKeywords:
   - _INSTALLATION_STATE_INSTALL
+  - _MISSING_PART_STATE_PRESENT
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -53,10 +54,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ENUM_REFERENCE: 0
     - _INSTALLATION_STATE: 0
     - _MISSING_PART_STATE: 0
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _missing_part_state: 0
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
