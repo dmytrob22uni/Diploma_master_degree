@@ -47,7 +47,7 @@ namespace Coursework_Master_Degree.Input
 
         // === ItemPlace events ===
         public event Action OnPlaceItemEvent = delegate { };
-        public event Action<float> OnRotateItemEvent = delegate { };
+        public event Action<Vector2> OnRotateItemEvent = delegate { };
 
         // === PartInstall events ===
         public event Action OnInstallPartEvent = delegate { };
@@ -399,7 +399,7 @@ namespace Coursework_Master_Degree.Input
 
         public void OnRotateItem(InputAction.CallbackContext context)
         {
-            float value = context.ReadValue<float>();
+            Vector2 value = context.ReadValue<Vector2>();
             OnRotateItemEvent?.Invoke(value);
         }
 

@@ -479,7 +479,7 @@ namespace Coursework_Master_Degree.Input
                     ""name"": ""RotateItem"",
                     ""type"": ""Value"",
                     ""id"": ""418062f7-bd3b-4286-b710-5a1eb3f17140"",
-                    ""expectedControlType"": ""Delta"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true,
