@@ -122,26 +122,11 @@ namespace Coursework_Master_Degree.Game.Controller
                 // Movement inputs
                 GameStateManager.Instance.InputReader.OnMoveEvent -= HandleMove;
                 GameStateManager.Instance.InputReader.OnLookEvent -= HandleLook;
-                if (influence.IsAllowedJump)
-                {
-                    GameStateManager.Instance.InputReader.OnJumpEvent -= HandleJump;
-                }
-                if (influence.IsAllowedCrouch)
-                {
-                    GameStateManager.Instance.InputReader.OnCrouchEvent -= HandleCrouch;
-                }
-                if (influence.IsAllowedWalk)
-                {
-                    GameStateManager.Instance.InputReader.OnInitiateWalkEvent -= HandleInitiateWalk;
-                }
-                if (influence.IsAllowedRun)
-                {
-                    GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
-                }
-                if (influence.IsAllowedZoom)
-                {
-                    GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
-                }
+                GameStateManager.Instance.InputReader.OnJumpEvent -= HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent -= HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent -= HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
                 // ItemPlace Input
                 GameStateManager.Instance.InputReader.OnPlaceItemEvent -= HandlePlaceItem;
                 GameStateManager.Instance.InputReader.OnRotateItemEvent -= HandleRotateItem;
