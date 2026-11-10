@@ -65,7 +65,10 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                     () =>
                     {
                         var surface = itemFreePart.ParentSurfaceDataHolder;
-                        surface.TryRemoveItemFromShelf(itemFreePart.gameObject);
+                        if (surface != null)
+                        {
+                            surface.TryRemoveItemFromShelf(itemFreePart.gameObject);
+                        }
                         itemFreePart.IsPlaced = false;
                         itemFreePart.ParentSurfaceDataHolder = default;
                     };
@@ -99,7 +102,10 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                     () =>
                     {
                         var surface = item.ParentSurfaceDataHolder;
-                        surface.TryRemoveItemFromShelf(item.gameObject);
+                        if (surface != null)
+                        {
+                            surface.TryRemoveItemFromShelf(item.gameObject);
+                        }
                         item.IsPlaced = false;
                         item.ParentSurfaceDataHolder = default;
                     };
@@ -134,7 +140,10 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                     () =>
                     {
                         var surface = objectToPrint.ParentSurfaceDataHolder;
-                        surface.TryRemoveItemFromShelf(objectToPrint.gameObject);
+                        if (surface != null)
+                        {
+                            surface.TryRemoveItemFromShelf(objectToPrint.gameObject);
+                        }
                         objectToPrint.IsPlaced = false;
                         objectToPrint.ParentSurfaceDataHolder = default;
                     };

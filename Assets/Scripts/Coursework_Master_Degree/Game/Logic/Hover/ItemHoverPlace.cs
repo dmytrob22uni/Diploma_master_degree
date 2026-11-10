@@ -296,16 +296,20 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return;
             }
 
+            var surface = cachedCollider.GetComponentInParent<ItemSurfaceDataHolder>();
+            if (surface == null)
+            {
+                return;
+            }
+
+            itemPlaceData.ClearParentSurface();
+            itemPlaceData.SetParentSurface(surface);
+
             ghostGameObject.SetActive(false);
 
             itemGameObject.SetActive(true);
             itemGameObject.transform.position = ghostPosition;
             itemGameObject.transform.rotation = ghostRotation;
-
-            var surface = cachedCollider.GetComponent<ItemSurfaceDataHolder>();
-
-            itemPlaceData.ClearParentSurface();
-            itemPlaceData.SetParentSurface(surface);
 
             GameState previousGameState = GameStateManager.Instance.PreviousGameState;
             GameStateManager.Instance.ChangeState(previousGameState);
