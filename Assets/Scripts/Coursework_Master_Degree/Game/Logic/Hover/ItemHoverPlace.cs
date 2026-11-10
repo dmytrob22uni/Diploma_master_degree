@@ -157,7 +157,6 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             ghostPosition = position;
 
             ghostGameObject.transform.position = ghostPosition;
-            ghostGameObject.transform.up = Vector3.up;
         }
 
         private bool IsCornerDownRaycastHit(Transform corner, out RaycastHit hit)
