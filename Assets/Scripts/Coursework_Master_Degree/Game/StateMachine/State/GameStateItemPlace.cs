@@ -38,6 +38,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             itemPlaceData = new ItemPlaceData()
             {
                 ItemGameObject = itemGameObject,
+                ReturnGameState = GetReturnGameState(),
                 ClearParentSurface = clearParentSurface,
                 SetParentSurface = setParentSurface,
                 ItemName = itemName,
@@ -46,6 +47,18 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 GhostCorners = ghostCorners
             };
             influence = CreateInfluenceFrom(itemGameObject);
+        }
+
+        private GameState GetReturnGameState()
+        {
+            var gameStateManager = GameStateManager.Instance;
+
+            if (gameStateManager.CurrentGameState is GameStateItemsMarket)
+            {
+                return gameStateManager.PreviousGameState;
+            }
+
+            return gameStateManager.CurrentGameState;
         }
 
         private void ExtractGhostData(GameObject itemGameObject, out Action clearParentSurface, out Action<ItemSurfaceDataHolder> setParentSurface, out string itemName, out GameObject hostGameObject, out List<MeshRenderer> ghostMeshRenderers, out List<Transform> ghostCorners)

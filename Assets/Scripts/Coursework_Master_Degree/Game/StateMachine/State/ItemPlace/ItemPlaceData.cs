@@ -8,6 +8,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
     public class ItemPlaceData
     {
         public GameObject ItemGameObject;
+        public GameState ReturnGameState;
         public Action ClearParentSurface;
         public Action<ItemSurfaceDataHolder> SetParentSurface;
         public string ItemName;

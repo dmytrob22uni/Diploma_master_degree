@@ -311,8 +311,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             itemGameObject.transform.position = ghostPosition;
             itemGameObject.transform.rotation = ghostRotation;
 
-            GameState previousGameState = GameStateManager.Instance.PreviousGameState;
-            GameStateManager.Instance.ChangeState(previousGameState);
+            GameStateManager.Instance.ChangeState(itemPlaceData.ReturnGameState);
         }
 
         public void ApplyRotateItem(float direction)
@@ -329,8 +328,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             itemGameObject.SetActive(true);
 
-            GameState previousGameState = GameStateManager.Instance.PreviousGameState;
-            GameStateManager.Instance.ChangeState(previousGameState);
+            GameStateManager.Instance.ChangeState(itemPlaceData.ReturnGameState);
         }
     }
 }
