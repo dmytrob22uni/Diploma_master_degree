@@ -69,6 +69,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 ghostCorners = value.GhostCorners;
                 ghostMeshRenderers = value.GhostMeshRenderers;
 
+                isPlacementStateApplied = false;
+
                 if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket)
                 {
                     CancelRoot.SetActive(true);
@@ -99,6 +101,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         // local
         private bool isRightPlacement;
+        private bool isPlacementStateApplied;
 
         private Vector3 ghostPosition;
         private Quaternion ghostRotation;
@@ -196,11 +199,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void TrySetPlacementState(bool isRight)
         {
-            if (isRightPlacement == isRight)
+            if (isPlacementStateApplied && isRightPlacement == isRight)
             {
                 return;
             }
 
+            isPlacementStateApplied = true;
             isRightPlacement = isRight;
 
             SetupInfoAndPlace();
@@ -263,6 +267,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             rightPlacementInfo = default;
             wrongPlacementInfo = default;
             isRightPlacement = default;
+            isPlacementStateApplied = default;
             ghostPosition = default;
             ghostRotation = default;
         }
