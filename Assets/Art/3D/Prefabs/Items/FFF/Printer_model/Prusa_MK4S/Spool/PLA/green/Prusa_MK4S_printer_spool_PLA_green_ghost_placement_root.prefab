@@ -234,7 +234,7 @@ MonoBehaviour:
   - {fileID: 5239858240623607830}
   - {fileID: 8396398202277127429}
   CornersList:
-  - {fileID: 0}
+  - {fileID: 4150256662657300604}
 --- !u!1 &6810380409290228576
 GameObject:
   m_ObjectHideFlags: 0
