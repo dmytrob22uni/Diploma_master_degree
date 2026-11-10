@@ -1,7 +1,6 @@
 using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using Coursework_Master_Degree.ScriptableObjects.Items.Types;
 
 namespace Coursework_Master_Degree.Items.Power

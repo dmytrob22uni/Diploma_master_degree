@@ -3,12 +3,11 @@ using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items.Ghosts;
+using Coursework_Master_Degree.Items.Surface;
 using Coursework_Master_Degree.ScriptableObjects.Items;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts;
 using Coursework_Master_Degree.ScriptableObjects.Items.Influences;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
-using Unity.VisualScripting;
-using Coursework_Master_Degree.Items.Surface;
 
 namespace Coursework_Master_Degree.Items
 {
