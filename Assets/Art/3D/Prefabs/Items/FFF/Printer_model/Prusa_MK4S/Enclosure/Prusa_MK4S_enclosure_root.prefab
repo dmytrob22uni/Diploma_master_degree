@@ -400,6 +400,7 @@ GameObject:
   - component: {fileID: 1681323683822225889}
   - component: {fileID: -6489002443560543048}
   - component: {fileID: -243831197333374092}
+  - component: {fileID: -2960955573796487781}
   m_Layer: 15
   m_Name: Prusa_MK4S_enclosure_root
   m_TagString: Untagged
@@ -542,6 +543,18 @@ MonoBehaviour:
   - {fileID: 7055446340319959937}
   - {fileID: 8047876646139820904}
   - {fileID: 4377969378252202404}
+--- !u!114 &-2960955573796487781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762743641646650074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7973897e253edada88e506a4650823c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.FFFInteractions
 --- !u!1 &2272560016191019848
 GameObject:
   m_ObjectHideFlags: 0
