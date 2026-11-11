@@ -38,14 +38,13 @@ namespace Coursework_Master_Degree.Game.Controller
             if (enable)
             {
                 // InteractionsList Logics
-                // TODO: ...
-                // InteractionsListGenerator.OnPickInteractionEvent += HandlePickInteraction;
+                InteractionsListGenerator.OnPickInteractionEvent += HandlePickInteraction;
+                InteractionsListGenerator.SetInteractions(interactions);
             }
             else
             {
                 // InteractionsList Logics
-                // TODO: ...
-                // InteractionsListGenerator.OnPickInteractionEvent -= HandlePickInteraction;
+                InteractionsListGenerator.OnPickInteractionEvent -= HandlePickInteraction;
             }
         }
 
@@ -62,9 +61,9 @@ namespace Coursework_Master_Degree.Game.Controller
 
         // InteractionsList
 
-        private void HandlePickInteraction()
+        private void HandlePickInteraction(InteractionOption interaction)
         {
-            // TODO: ...
+            interaction.OnExecute?.Invoke();
         }
     }
 }
