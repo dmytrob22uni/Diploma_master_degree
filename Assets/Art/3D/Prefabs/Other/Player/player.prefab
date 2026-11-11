@@ -70,7 +70,7 @@ MonoBehaviour:
   HoverDistance: 1
   ItemLayer:
     serializedVersion: 2
-    m_Bits: 40960
+    m_Bits: 57344
   InteractText: {fileID: 0}
   InteractRoot: {fileID: 0}
 --- !u!114 &936185368355783415
