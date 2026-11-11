@@ -130,7 +130,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 ray,
                 out hit,
                 HoverDistance,
-                SurfaceLayer,
+                Physics.DefaultRaycastLayers,
                 QueryTriggerInteraction.Ignore);
         }
 
