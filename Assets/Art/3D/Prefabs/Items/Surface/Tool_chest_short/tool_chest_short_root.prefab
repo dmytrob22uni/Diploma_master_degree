@@ -492,6 +492,8 @@ MonoBehaviour:
   IsHaveWearLevel: 0
   IsInstalled: 0
   ParentItemDataHolder: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!114 &8637946532506247602
 MonoBehaviour:
   m_ObjectHideFlags: 0
