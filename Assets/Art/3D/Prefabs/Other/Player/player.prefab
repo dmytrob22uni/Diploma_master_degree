@@ -51,7 +51,7 @@ MonoBehaviour:
   HoverDistance: 1
   ItemLayer:
     serializedVersion: 2
-    m_Bits: 8495104
+    m_Bits: 8511488
   ItemHoverInfoText: {fileID: 0}
   TakeRoot: {fileID: 0}
 --- !u!114 &6860568199009119305
@@ -89,7 +89,10 @@ MonoBehaviour:
   HoverDistance: 2
   SurfaceLayer:
     serializedVersion: 2
-    m_Bits: 16384
+    m_Bits: 20480
+  RotationPerInput: 15
+  UpOffset: 0.1
+  DownCheck: 0.2
   ItemHoverPlaceText: {fileID: 0}
   PlaceRoot: {fileID: 0}
   CancelRoot: {fileID: 0}
@@ -315,7 +318,7 @@ MonoBehaviour:
   GroundCheckRadius: 0.25
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 12173313
+    m_Bits: 12177409
   GroundedDownforce: 0.1
 --- !u!114 &3276573266080768120
 MonoBehaviour:
