@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 4536406249177804418}
   - component: {fileID: 6860568199009119305}
   - component: {fileID: 936185368355783415}
+  - component: {fileID: 361045678852359181}
+  - component: {fileID: 2681966614510173508}
+  - component: {fileID: 958928578868707070}
   m_Layer: 0
   m_Name: eyes
   m_TagString: Untagged
@@ -96,6 +99,49 @@ MonoBehaviour:
   ItemHoverPlaceText: {fileID: 0}
   PlaceRoot: {fileID: 0}
   CancelRoot: {fileID: 0}
+--- !u!114 &361045678852359181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb4fd952c040fc5d8b4a7990976593e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.PartHoverIntegrity
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 1
+  PartLayer:
+    serializedVersion: 2
+    m_Bits: 65536
+  ItemHoverIntegrityNameText: {fileID: 0}
+  ItemHoverIntegrityDescriptionText: {fileID: 0}
+--- !u!114 &2681966614510173508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a812487a8e65e40faae484d13fce495c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.PartHoverRemove
+--- !u!114 &958928578868707070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3a1e317aafac9d42bba105d57ebeb16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.PartHoverWear
 --- !u!1 &3798244653681066634
 GameObject:
   m_ObjectHideFlags: 0
