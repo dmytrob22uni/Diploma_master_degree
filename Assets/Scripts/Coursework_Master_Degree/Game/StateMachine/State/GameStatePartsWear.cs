@@ -18,11 +18,25 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
         public override void OnEnter()
         {
+            HideCursor();
+
             GameStateManager.Instance.InputReader.EnablePartsWearStateInput();
+
+            GameStateManager.Instance.PartsWearStateSetup.SetupPartsWear(
+                PartsAssembly,
+                ItemDataHolder);
+
+            GameStateManager.Instance.PlayerController.SetPartsWearState(true, PartsAssembly);
+            GameStateManager.Instance.InterfaceController.SetPartsWearState(true);
         }
 
         public override void OnExit()
         {
+            GameStateManager.Instance.InterfaceController.SetPartsWearState(false);
+            GameStateManager.Instance.PlayerController.SetPartsWearState(false);
+
+            GameStateManager.Instance.PartsWearStateSetup.ClearPartsWear();
+
             GameStateManager.Instance.InputReader.DisableAllInput();
         }
     }

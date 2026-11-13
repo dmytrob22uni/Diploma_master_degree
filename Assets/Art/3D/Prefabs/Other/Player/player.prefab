@@ -142,6 +142,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3a1e317aafac9d42bba105d57ebeb16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.PartHoverWear
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 1
+  PartLayer:
+    serializedVersion: 2
+    m_Bits: 4259840
+  ItemHoverWearNameText: {fileID: 0}
+  ItemHoverWearDescriptionText: {fileID: 0}
+  ItemHoverWearLevelText: {fileID: 0}
 --- !u!1 &3798244653681066634
 GameObject:
   m_ObjectHideFlags: 0

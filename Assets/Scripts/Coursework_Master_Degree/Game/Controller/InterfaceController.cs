@@ -222,7 +222,7 @@ namespace Coursework_Master_Degree.Game.Controller
 
         private void HandleQuitPartsWear()
         {
-
+            GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
         }
 
         // PartsRemove

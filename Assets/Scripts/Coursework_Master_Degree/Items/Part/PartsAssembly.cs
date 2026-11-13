@@ -51,6 +51,18 @@ namespace Coursework_Master_Degree.Items.Part
             }
         }
 
+        // assembly parts
+
+        public bool IsPartOfAssembly(Transform partTransform)
+        {
+            if (partTransform == null)
+            {
+                return false;
+            }
+
+            return partTransform == transform || partTransform.IsChildOf(transform);
+        }
+
         // single regular location
 
         public bool IsHaveRegularPart(ItemMetaSO partMetaData)
