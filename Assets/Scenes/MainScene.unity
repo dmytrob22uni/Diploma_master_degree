@@ -5605,7 +5605,9 @@ MonoBehaviour:
   ItemController: {fileID: 1440078785}
   InterfaceController: {fileID: 639401773}
   ItemInstancer: {fileID: 431100735}
-  PartsAssemblySetup: {fileID: 2070795385}
+  PartsIntegrityStateSetup: {fileID: 2070795385}
+  PartsRemoveStateSetup: {fileID: 2070795386}
+  PartsWearStateSetup: {fileID: 2070795387}
 --- !u!1 &1005289205
 GameObject:
   m_ObjectHideFlags: 0
@@ -10705,6 +10707,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2070795384}
   - component: {fileID: 2070795385}
+  - component: {fileID: 2070795386}
+  - component: {fileID: 2070795387}
   m_Layer: 0
   m_Name: parts_assembly_setup
   m_TagString: Untagged
@@ -10738,8 +10742,32 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be4de11b584fbf57ca5fd4ee41559f75, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PartsAssemblySetup
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Helper.PartsIntegrityStateSetup
   ExitTriggerRadius: 1.5
+--- !u!114 &2070795386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070795383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33c464a4fb474c759485b03fa346d48f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Helper.PartsRemoveStateSetup
+--- !u!114 &2070795387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070795383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ba47fe231954046b1ac471c291ff306, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Helper.PartsWearStateSetup
 --- !u!1 &2078788075
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,7 +22,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
             GameStateManager.Instance.InputReader.EnablePartsIntegrityStateInput();
 
-            GameStateManager.Instance.PartsAssemblySetup.SetupPartsIntegrity(
+            GameStateManager.Instance.PartsIntegrityStateSetup.SetupPartsIntegrity(
                 PartsAssembly,
                 ItemDataHolder);
 
@@ -35,7 +35,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             GameStateManager.Instance.InterfaceController.SetPartsIntegrityState(false);
             GameStateManager.Instance.PlayerController.SetPartsIntegrityState(false);
 
-            GameStateManager.Instance.PartsAssemblySetup.ClearPartsIntegrity();
+            GameStateManager.Instance.PartsIntegrityStateSetup.ClearPartsIntegrity();
 
             GameStateManager.Instance.InputReader.DisableAllInput();
         }

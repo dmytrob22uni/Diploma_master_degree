@@ -12,7 +12,7 @@ using Coursework_Master_Degree.Game.StateMachine.State;
 
 namespace Coursework_Master_Degree.Game.Helper
 {
-    public class PartsAssemblySetup : MonoBehaviour
+    public class PartsIntegrityStateSetup : MonoBehaviour
     {
         [Header("Parts Integrity Settings")]
         [Tooltip("Minimal radius of the integrity mode exit trigger around the item")]

@@ -21,7 +21,11 @@ namespace Coursework_Master_Degree.Game.StateMachine
 
         [Header("Common Logics")]
         public ItemInstancer ItemInstancer;
-        public PartsAssemblySetup PartsAssemblySetup;
+
+        [Header("Parts State Setups")]
+        public PartsIntegrityStateSetup PartsIntegrityStateSetup;
+        public PartsRemoveStateSetup PartsRemoveStateSetup;
+        public PartsWearStateSetup PartsWearStateSetup;
 
         [NonSerialized]
         public GameState PreviousGameState;
