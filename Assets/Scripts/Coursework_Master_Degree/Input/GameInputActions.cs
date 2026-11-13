@@ -1134,6 +1134,16 @@ namespace Coursework_Master_Degree.Input
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""AnotherHoverLayer"",
+                    ""type"": ""Value"",
+                    ""id"": ""082a2e6d-28cb-427b-b372-f9355a1266f2"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -1145,6 +1155,17 @@ namespace Coursework_Master_Degree.Input
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
                     ""action"": ""RemoveModeFromPartsIntegrity"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc3a9723-9e5f-4cff-aa0f-67864fb5c380"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";keyboard&mouse"",
+                    ""action"": ""AnotherHoverLayer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1269,6 +1290,7 @@ namespace Coursework_Master_Degree.Input
             // PartsIntegrity
             m_PartsIntegrity = asset.FindActionMap("PartsIntegrity", throwIfNotFound: true);
             m_PartsIntegrity_RemoveModeFromPartsIntegrity = m_PartsIntegrity.FindAction("RemoveModeFromPartsIntegrity", throwIfNotFound: true);
+            m_PartsIntegrity_AnotherHoverLayer = m_PartsIntegrity.FindAction("AnotherHoverLayer", throwIfNotFound: true);
             // PartsRemove
             m_PartsRemove = asset.FindActionMap("PartsRemove", throwIfNotFound: true);
             m_PartsRemove_RemovePart = m_PartsRemove.FindAction("RemovePart", throwIfNotFound: true);
@@ -2923,6 +2945,7 @@ namespace Coursework_Master_Degree.Input
         private readonly InputActionMap m_PartsIntegrity;
         private List<IPartsIntegrityActions> m_PartsIntegrityActionsCallbackInterfaces = new List<IPartsIntegrityActions>();
         private readonly InputAction m_PartsIntegrity_RemoveModeFromPartsIntegrity;
+        private readonly InputAction m_PartsIntegrity_AnotherHoverLayer;
         /// <summary>
         /// Provides access to input actions defined in input action map "PartsIntegrity".
         /// </summary>
@@ -2938,6 +2961,10 @@ namespace Coursework_Master_Degree.Input
             /// Provides access to the underlying input action "PartsIntegrity/RemoveModeFromPartsIntegrity".
             /// </summary>
             public InputAction @RemoveModeFromPartsIntegrity => m_Wrapper.m_PartsIntegrity_RemoveModeFromPartsIntegrity;
+            /// <summary>
+            /// Provides access to the underlying input action "PartsIntegrity/AnotherHoverLayer".
+            /// </summary>
+            public InputAction @AnotherHoverLayer => m_Wrapper.m_PartsIntegrity_AnotherHoverLayer;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -2967,6 +2994,9 @@ namespace Coursework_Master_Degree.Input
                 @RemoveModeFromPartsIntegrity.started += instance.OnRemoveModeFromPartsIntegrity;
                 @RemoveModeFromPartsIntegrity.performed += instance.OnRemoveModeFromPartsIntegrity;
                 @RemoveModeFromPartsIntegrity.canceled += instance.OnRemoveModeFromPartsIntegrity;
+                @AnotherHoverLayer.started += instance.OnAnotherHoverLayer;
+                @AnotherHoverLayer.performed += instance.OnAnotherHoverLayer;
+                @AnotherHoverLayer.canceled += instance.OnAnotherHoverLayer;
             }
 
             /// <summary>
@@ -2981,6 +3011,9 @@ namespace Coursework_Master_Degree.Input
                 @RemoveModeFromPartsIntegrity.started -= instance.OnRemoveModeFromPartsIntegrity;
                 @RemoveModeFromPartsIntegrity.performed -= instance.OnRemoveModeFromPartsIntegrity;
                 @RemoveModeFromPartsIntegrity.canceled -= instance.OnRemoveModeFromPartsIntegrity;
+                @AnotherHoverLayer.started -= instance.OnAnotherHoverLayer;
+                @AnotherHoverLayer.performed -= instance.OnAnotherHoverLayer;
+                @AnotherHoverLayer.canceled -= instance.OnAnotherHoverLayer;
             }
 
             /// <summary>
@@ -3528,6 +3561,13 @@ namespace Coursework_Master_Degree.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRemoveModeFromPartsIntegrity(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "AnotherHoverLayer" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnAnotherHoverLayer(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PartsRemove" which allows adding and removing callbacks.

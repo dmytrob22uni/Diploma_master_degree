@@ -1046,6 +1046,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "AnotherHoverLayer",
+                    "type": "Value",
+                    "id": "082a2e6d-28cb-427b-b372-f9355a1266f2",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -1057,6 +1067,17 @@
                     "processors": "",
                     "groups": ";keyboard&mouse",
                     "action": "RemoveModeFromPartsIntegrity",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dc3a9723-9e5f-4cff-aa0f-67864fb5c380",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "AnotherHoverLayer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -93,6 +93,7 @@ namespace Coursework_Master_Degree.Input
 
         // === PartsIntegrity events ===
         public event Action OnRemoveModeFromPartsIntegrityEvent = delegate { };
+        public event Action<Vector2> OnAnotherHoverLayerEvent = delegate { };
 
         // === PartsRemove events ===
         public event Action OnRemovePartEvent = delegate { };
@@ -633,6 +634,12 @@ namespace Coursework_Master_Degree.Input
             {
                 OnRemoveModeFromPartsIntegrityEvent?.Invoke();
             }
+        }
+
+        public void OnAnotherHoverLayer(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            OnAnotherHoverLayerEvent?.Invoke(value);
         }
 
         // === PartsRemove callbacks ===================================================================================
