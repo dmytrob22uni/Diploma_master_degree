@@ -1,9 +1,8 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
+using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.Ghosts;
-using Coursework_Master_Degree.Items.Surface;
 using Coursework_Master_Degree.ObjectsToPrint;
 using Coursework_Master_Degree.ObjectsToPrint.Ghost;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
@@ -29,8 +28,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
             ExtractGhostData(
                 itemGameObject,
-                out var clearParentSurface,
-                out var setParentSurface,
+                out var surfacePlaceable,
                 out var itemName,
                 out var ghostGameObject,
                 out var ghostMeshRenderers,
@@ -39,8 +37,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             {
                 ItemGameObject = itemGameObject,
                 ReturnGameState = GetReturnGameState(),
-                ClearParentSurface = clearParentSurface,
-                SetParentSurface = setParentSurface,
+                SurfacePlaceable = surfacePlaceable,
                 ItemName = itemName,
                 GhostGameObject = ghostGameObject,
                 GhostMeshRenderers = ghostMeshRenderers,
@@ -61,10 +58,9 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             return gameStateManager.CurrentGameState;
         }
 
-        private void ExtractGhostData(GameObject itemGameObject, out Action clearParentSurface, out Action<ItemSurfaceDataHolder> setParentSurface, out string itemName, out GameObject hostGameObject, out List<MeshRenderer> ghostMeshRenderers, out List<Transform> ghostCorners)
+        private void ExtractGhostData(GameObject itemGameObject, out ISurfacePlaceable surfacePlaceable, out string itemName, out GameObject hostGameObject, out List<MeshRenderer> ghostMeshRenderers, out List<Transform> ghostCorners)
         {
-            clearParentSurface = default;
-            setParentSurface = default;
+            surfacePlaceable = default;
             itemName = default;
             hostGameObject = default;
             ghostMeshRenderers = default;
@@ -74,24 +70,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
             if (itemGameObject.TryGetComponent<ItemFreePartDataHolder>(out var itemFreePart))
             {
-                clearParentSurface =
-                    () =>
-                    {
-                        var surface = itemFreePart.ParentSurfaceDataHolder;
-                        if (surface != null)
-                        {
-                            surface.TryRemoveItemFromShelf(itemFreePart.gameObject);
-                        }
-                        itemFreePart.IsPlaced = false;
-                        itemFreePart.ParentSurfaceDataHolder = default;
-                    };
-                setParentSurface =
-                    (surface) =>
-                    {
-                        surface.PlaceItemOnShelf(itemFreePart.gameObject);
-                        itemFreePart.IsPlaced = true;
-                        itemFreePart.ParentSurfaceDataHolder = surface;
-                    };
+                surfacePlaceable = itemFreePart;
                 itemName = itemFreePart.Name;
 
                 if (!itemFreePart.TryGetGhostInstance(out var itemFreePartGhost))
@@ -111,24 +90,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             }
             else if (itemGameObject.TryGetComponent<ItemDataHolder>(out var item))
             {
-                clearParentSurface =
-                    () =>
-                    {
-                        var surface = item.ParentSurfaceDataHolder;
-                        if (surface != null)
-                        {
-                            surface.TryRemoveItemFromShelf(item.gameObject);
-                        }
-                        item.IsPlaced = false;
-                        item.ParentSurfaceDataHolder = default;
-                    };
-                setParentSurface =
-                    (surface) =>
-                    {
-                        surface.PlaceItemOnShelf(item.gameObject);
-                        item.IsPlaced = true;
-                        item.ParentSurfaceDataHolder = surface;
-                    };
+                surfacePlaceable = item;
                 itemName = item.ItemMetaData.Name;
 
                 if (!item.TryGetGhostInstance(ItemGhostType.Placement, out var itemGhost))
@@ -149,24 +111,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             }
             else if (itemGameObject.TryGetComponent<ObjectToPrintDataHolder>(out var objectToPrint))
             {
-                clearParentSurface =
-                    () =>
-                    {
-                        var surface = objectToPrint.ParentSurfaceDataHolder;
-                        if (surface != null)
-                        {
-                            surface.TryRemoveItemFromShelf(objectToPrint.gameObject);
-                        }
-                        objectToPrint.IsPlaced = false;
-                        objectToPrint.ParentSurfaceDataHolder = default;
-                    };
-                setParentSurface =
-                    (surface) =>
-                    {
-                        surface.PlaceItemOnShelf(objectToPrint.gameObject);
-                        objectToPrint.IsPlaced = true;
-                        objectToPrint.ParentSurfaceDataHolder = surface;
-                    };
+                surfacePlaceable = objectToPrint;
                 itemName = objectToPrint.ObjectToPrintMetaData.Name;
 
                 if (!objectToPrint.TryGetGhostInstance(ObjectToPrintGhostType.Placement, out var objectToPrintGhost))

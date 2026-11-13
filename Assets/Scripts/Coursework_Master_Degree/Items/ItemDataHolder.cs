@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
+using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.Items.Surface;
 using Coursework_Master_Degree.ScriptableObjects.Items;
@@ -11,7 +12,7 @@ using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
 
 namespace Coursework_Master_Degree.Items
 {
-    public class ItemDataHolder : MonoBehaviour
+    public class ItemDataHolder : MonoBehaviour, ISurfacePlaceable
     {
         // naughty attributes enableif / disableif states
         private bool NotEnabled => false;
@@ -54,6 +55,64 @@ namespace Coursework_Master_Degree.Items
         [ShowIf("IsPlaced")]
         [Tooltip("Set via script")]
         public ItemSurfaceDataHolder ParentSurfaceDataHolder;
+
+        bool ISurfacePlaceable.IsPlaced => IsPlaced;
+        ItemSurfaceDataHolder ISurfacePlaceable.ParentSurfaceDataHolder => ParentSurfaceDataHolder;
+
+        public bool PlaceOnSurface(ItemSurfaceDataHolder surface)
+        {
+            if (surface == null)
+            {
+                return false;
+            }
+
+            bool isChanged = false;
+
+            if (ParentSurfaceDataHolder != null && ParentSurfaceDataHolder != surface)
+            {
+                isChanged |= ParentSurfaceDataHolder.TryRemoveItemFromShelf(gameObject);
+            }
+
+            isChanged |= surface.TryPlaceItemOnShelf(gameObject);
+
+            if (!IsPlaced)
+            {
+                IsPlaced = true;
+                isChanged = true;
+            }
+
+            if (ParentSurfaceDataHolder != surface)
+            {
+                ParentSurfaceDataHolder = surface;
+                isChanged = true;
+            }
+
+            return isChanged;
+        }
+
+        public bool RemoveFromSurface()
+        {
+            bool isChanged = false;
+
+            if (ParentSurfaceDataHolder != null)
+            {
+                isChanged |= ParentSurfaceDataHolder.TryRemoveItemFromShelf(gameObject);
+            }
+
+            if (IsPlaced)
+            {
+                IsPlaced = false;
+                isChanged = true;
+            }
+
+            if (ParentSurfaceDataHolder != null)
+            {
+                ParentSurfaceDataHolder = default;
+                isChanged = true;
+            }
+
+            return isChanged;
+        }
 
         public bool TryAddGhostType(ItemGhostType type, ItemGhostDataHolder itemGhost)
         {

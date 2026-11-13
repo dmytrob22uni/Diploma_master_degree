@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
-using Coursework_Master_Degree.Items.Surface;
+using Coursework_Master_Degree.Items.Contracts;
 
 namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
 {
@@ -9,8 +8,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
     {
         public GameObject ItemGameObject;
         public GameState ReturnGameState;
-        public Action ClearParentSurface;
-        public Action<ItemSurfaceDataHolder> SetParentSurface;
+        public ISurfacePlaceable SurfacePlaceable;
         public string ItemName;
         public GameObject GhostGameObject;
         public List<MeshRenderer> GhostMeshRenderers;

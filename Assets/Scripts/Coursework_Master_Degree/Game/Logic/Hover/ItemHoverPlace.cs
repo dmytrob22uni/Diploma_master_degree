@@ -302,8 +302,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return;
             }
 
-            itemPlaceData.ClearParentSurface();
-            itemPlaceData.SetParentSurface(surface);
+            itemPlaceData.SurfacePlaceable?.PlaceOnSurface(surface);
 
             ghostGameObject.SetActive(false);
 
