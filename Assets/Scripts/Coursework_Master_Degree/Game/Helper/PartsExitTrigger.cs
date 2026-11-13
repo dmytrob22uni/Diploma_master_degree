@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Coursework_Master_Degree.Game.Helper
 {
-    public class PartsIntegrityExitTrigger : MonoBehaviour
+    public class PartsExitTrigger : MonoBehaviour
     {
         public event Action<Collider> OnTriggerExited = delegate { };
 
