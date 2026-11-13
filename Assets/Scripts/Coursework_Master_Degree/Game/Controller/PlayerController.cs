@@ -161,7 +161,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 GameStateManager.Instance.InputReader.OnInitiateRunEvent += HandleInitiateRun;
                 GameStateManager.Instance.InputReader.OnToggleZoomEvent += HandleToggleZoom;
                 // PartsIntegrity Inputs
-                GameStateManager.Instance.InputReader.OnAnotherHoverLayerEvent += HandleAnotherHoverLayer;
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerPartsIntegrityEvent += HandleAnotherHoverLayerPartsIntegrity;
 
                 // Movement Logics
                 Movement.enabled = true;
@@ -181,7 +181,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
                 GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
                 // PartsIntegrity Inputs
-                GameStateManager.Instance.InputReader.OnAnotherHoverLayerEvent -= HandleAnotherHoverLayer;
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerPartsIntegrityEvent -= HandleAnotherHoverLayerPartsIntegrity;
 
                 // Movement Logics
                 Movement.enabled = false;
@@ -317,7 +317,7 @@ namespace Coursework_Master_Degree.Game.Controller
 
         // PartsIntegrity
 
-        private void HandleAnotherHoverLayer(Vector2 value)
+        private void HandleAnotherHoverLayerPartsIntegrity(Vector2 value)
         {
             PartHoverIntegrity.ApplyAnotherHoverLayer(value);
         }

@@ -1017,6 +1017,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "AnotherHoverLayerPartsWear",
+                    "type": "Value",
+                    "id": "9e7dc60e-6db9-40be-9912-5012d9f6ba5f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -1028,6 +1038,17 @@
                     "processors": "",
                     "groups": ";keyboard&mouse",
                     "action": "RemoveModeFromPartsWear",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "64c957f4-24e7-4ea4-aadb-54f927a7c953",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "AnotherHoverLayerPartsWear",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1048,7 +1069,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "AnotherHoverLayer",
+                    "name": "AnotherHoverLayerPartsIntegrity",
                     "type": "Value",
                     "id": "082a2e6d-28cb-427b-b372-f9355a1266f2",
                     "expectedControlType": "Vector2",
@@ -1077,7 +1098,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
-                    "action": "AnotherHoverLayer",
+                    "action": "AnotherHoverLayerPartsIntegrity",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

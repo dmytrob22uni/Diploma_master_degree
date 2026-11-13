@@ -90,10 +90,11 @@ namespace Coursework_Master_Degree.Input
 
         // === PartsWear events ===
         public event Action OnRemoveModeFromPartsWearEvent = delegate { };
+        public event Action<Vector2> OnAnotherHoverLayerPartsWearEvent = delegate { };
 
         // === PartsIntegrity events ===
         public event Action OnRemoveModeFromPartsIntegrityEvent = delegate { };
-        public event Action<Vector2> OnAnotherHoverLayerEvent = delegate { };
+        public event Action<Vector2> OnAnotherHoverLayerPartsIntegrityEvent = delegate { };
 
         // === PartsRemove events ===
         public event Action OnRemovePartEvent = delegate { };
@@ -626,6 +627,12 @@ namespace Coursework_Master_Degree.Input
             }
         }
 
+        public void OnAnotherHoverLayerPartsWear(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            OnAnotherHoverLayerPartsWearEvent?.Invoke(value);
+        }
+
         // === PartsIntegrity callbacks ================================================================================
 
         public void OnRemoveModeFromPartsIntegrity(InputAction.CallbackContext context)
@@ -636,10 +643,10 @@ namespace Coursework_Master_Degree.Input
             }
         }
 
-        public void OnAnotherHoverLayer(InputAction.CallbackContext context)
+        public void OnAnotherHoverLayerPartsIntegrity(InputAction.CallbackContext context)
         {
             Vector2 value = context.ReadValue<Vector2>();
-            OnAnotherHoverLayerEvent?.Invoke(value);
+            OnAnotherHoverLayerPartsIntegrityEvent?.Invoke(value);
         }
 
         // === PartsRemove callbacks ===================================================================================
