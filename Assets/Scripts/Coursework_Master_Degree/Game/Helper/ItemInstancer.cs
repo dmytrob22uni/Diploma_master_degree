@@ -5,6 +5,7 @@ using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.ObjectsToPrint;
 using Coursework_Master_Degree.ObjectsToPrint.Ghost;
 using Coursework_Master_Degree.ScriptableObjects.Items;
+using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
 using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
 using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint.Ghost.Types;
@@ -42,8 +43,25 @@ namespace Coursework_Master_Degree.Game.Helper
 
         public ItemGhostDataHolder InstantiateItemGhost(ItemDataHolder item, ItemGhostType type, Vector3 position = default, Quaternion rotation = default, Transform parent = default)
         {
+            var itemGhost = InstantiateItemGhost(
+                item.ItemGhostMetaSO,
+                type,
+                position,
+                rotation,
+                parent,
+                item.ItemMetaData != null ? item.ItemMetaData.Name : default);
+
+            // setup mutual referencing
+            itemGhost.ItemInstance = item.gameObject;
+            item.TryAddGhostType(type, itemGhost);
+
+            return itemGhost;
+        }
+
+        public ItemGhostDataHolder InstantiateItemGhost(ItemGhostMetaSO itemGhostMeta, ItemGhostType type, Vector3 position = default, Quaternion rotation = default, Transform parent = default, string ownerName = default)
+        {
             GameObject itemGhostPrefab = default;
-            foreach (var itemGhostTypeToPrefab in item.ItemGhostMetaSO.ItemGhostTypesToPrefabsList)
+            foreach (var itemGhostTypeToPrefab in itemGhostMeta.ItemGhostTypesToPrefabsList)
             {
                 if (itemGhostTypeToPrefab.ItemGhostType == type)
                 {
@@ -55,7 +73,7 @@ namespace Coursework_Master_Degree.Game.Helper
             if (itemGhostPrefab == null)
             {
                 throw new NullReferenceException(
-                    $"Item \'{item.ItemMetaData.Name}\' doesn't have ghost form of type \'${type}\'");
+                    $"Item \'{ownerName ?? itemGhostMeta.name}\' doesn't have ghost form of type \'${type}\'");
             }
 
             GameObject itemGhostGameObject = GameObject.Instantiate(
@@ -65,14 +83,13 @@ namespace Coursework_Master_Degree.Game.Helper
                 parent);
 
             var itemGhost = itemGhostGameObject.GetComponent<ItemGhostDataHolder>();
+
+            // Some ghosts (e.g. the enclosure background) already carry authored transparent
+            // materials and must be instantiated as-is, without overriding their renderers.
             if (itemGhost.IsNotPreconfiguredMaterials())
             {
                 SetupItemGhostMaterial(in itemGhost);
             }
-
-            // setup mutual referencing
-            itemGhost.ItemInstance = item.gameObject;
-            item.TryAddGhostType(type, itemGhost);
 
             return itemGhost;
         }

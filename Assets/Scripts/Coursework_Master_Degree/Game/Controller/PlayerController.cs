@@ -21,6 +21,10 @@ namespace Coursework_Master_Degree.Game.Controller
         public ItemHoverInteract ItemHoverInteract;
         [Header("ItemPlace Logics")]
         public ItemHoverPlace ItemHoverPlace;
+        [Header("Parts Logics")]
+        public PartHoverIntegrity PartHoverIntegrity;
+        public PartHoverRemove PartHoverRemove;
+        public PartHoverWear PartHoverWear;
 
         public void SetFreeWalkState(bool enable)
         {
@@ -144,6 +148,90 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
+        public void SetPartsIntegrityState(bool enable)
+        {
+            if (enable)
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent += HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent += HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent += HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent += HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent += HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent += HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent += HandleToggleZoom;
+                // PartsIntegrity Inputs
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerEvent += HandleAnotherHoverLayer;
+
+                // Movement Logics
+                Movement.enabled = true;
+                Jump.enabled = true;
+                Look.enabled = true;
+                // PartsIntegrity Logics
+                PartHoverIntegrity.enabled = true;
+            }
+            else
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent -= HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent -= HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent -= HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent -= HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent -= HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
+                // PartsIntegrity Inputs
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerEvent -= HandleAnotherHoverLayer;
+
+                // Movement Logics
+                Movement.enabled = false;
+                Jump.enabled = false;
+                Look.enabled = false;
+                // PartsIntegrity Logics
+                PartHoverIntegrity.enabled = false;
+            }
+        }
+
+        public void SetPartsRemoveState(bool enable)
+        {
+            if (enable)
+            {
+                // PartsRemove Inputs
+                //
+
+                // PartsRemove Logics
+                //
+            }
+            else
+            {
+                // PartsRemove Inputs
+                //
+
+                // PartsRemove Logics
+                //
+            }
+        }
+
+        public void SetPartsWearState(bool enable)
+        {
+            if (enable)
+            {
+                // PartsWear Inputs
+                //
+
+                // PartsWear Logics
+                //
+            }
+            else
+            {
+                // PartsWear Inputs
+                //
+
+                // PartsWear Logics
+                //
+            }
+        }
+
         // === Handler methods  ===
 
         // Movement
@@ -217,6 +305,21 @@ namespace Coursework_Master_Degree.Game.Controller
         private void HandleCancelItemPlace()
         {
             ItemHoverPlace.ApplyCancelItemPlace();
+        }
+
+        // PartsWear
+
+        //
+
+        // PartsRemove
+
+        //
+
+        // PartsIntegrity
+
+        private void HandleAnotherHoverLayer(Vector2 value)
+        {
+            PartHoverIntegrity.ApplyAnotherHoverLayer(value);
         }
     }
 }

@@ -23,8 +23,13 @@ namespace Coursework_Master_Degree.Game.Controller
         [Header("Game State Interfaces")]
         public GameObject FreeWalkInterface;
         public GameObject ItemsMarketInterface;
+        public GameObject ItemsMarketCanvas;
         public GameObject ItemPlaceInterface;
         public GameObject InteractionsListInterface;
+        public GameObject InteractionsListCanvas;
+        public GameObject PartsWearInterface;
+        public GameObject PartsRemoveInterface;
+        public GameObject PartsIntegrityInterface;
 
         public void SetFreeWalkState(bool enable)
         {
@@ -60,6 +65,7 @@ namespace Coursework_Master_Degree.Game.Controller
 
                 // ItemsMarket Interfaces
                 ItemsMarketInterface.SetActive(true);
+                ItemsMarketCanvas.SetActive(true);
             }
             else
             {
@@ -71,6 +77,7 @@ namespace Coursework_Master_Degree.Game.Controller
 
                 // ItemsMarket Interfaces
                 ItemsMarketInterface.SetActive(false);
+                ItemsMarketCanvas.SetActive(false);
             }
         }
 
@@ -90,9 +97,9 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
-        public void SetInteractionsListState(bool enabled)
+        public void SetInteractionsListState(bool enable)
         {
-            if (enabled)
+            if (enable)
             {
                 // InteractionsList Input
                 GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitInteractionsList;
@@ -102,6 +109,7 @@ namespace Coursework_Master_Degree.Game.Controller
 
                 // InteractionsList Interfaces
                 InteractionsListInterface.SetActive(true);
+                InteractionsListCanvas.SetActive(true);
             }
             else
             {
@@ -113,6 +121,73 @@ namespace Coursework_Master_Degree.Game.Controller
 
                 // InteractionsList Interfaces
                 InteractionsListInterface.SetActive(false);
+                InteractionsListCanvas.SetActive(false);
+            }
+        }
+
+        public void SetPartsWearState(bool enable)
+        {
+            if (enable)
+            {
+                // Input
+                GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitPartsWear;
+
+                // Interfaces
+                PointInterface.SetActive(true);
+                PartsWearInterface.SetActive(true);
+            }
+            else
+            {
+                // Input
+                GameStateManager.Instance.InputReader.OnQuitEvent -= HandleQuitPartsWear;
+
+                // Interfaces
+                PointInterface.SetActive(false);
+                PartsWearInterface.SetActive(false);
+            }
+        }
+
+        public void SetPartsRemoveState(bool enable)
+        {
+            if (enable)
+            {
+                // Input
+                GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitPartsRemove;
+
+                // Interfaces
+                PointInterface.SetActive(true);
+                PartsRemoveInterface.SetActive(true);
+            }
+            else
+            {
+                // Input
+                GameStateManager.Instance.InputReader.OnQuitEvent -= HandleQuitPartsRemove;
+
+                // Interfaces
+                PointInterface.SetActive(false);
+                PartsRemoveInterface.SetActive(false);
+            }
+        }
+
+        public void SetPartsIntegrityState(bool enable)
+        {
+            if (enable)
+            {
+                // Input
+                GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitPartsIntegrity;
+
+                // Interfaces
+                PointInterface.SetActive(true);
+                PartsIntegrityInterface.SetActive(true);
+            }
+            else
+            {
+                // Input
+                GameStateManager.Instance.InputReader.OnQuitEvent -= HandleQuitPartsIntegrity;
+
+                // Interfaces
+                PointInterface.SetActive(false);
+                PartsIntegrityInterface.SetActive(false);
             }
         }
 
@@ -140,6 +215,27 @@ namespace Coursework_Master_Degree.Game.Controller
         {
             interactionsListGenerator.ApplyQuitInteractionsList();
 
+            GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
+        }
+
+        // PartsWear
+
+        private void HandleQuitPartsWear()
+        {
+
+        }
+
+        // PartsRemove
+
+        private void HandleQuitPartsRemove()
+        {
+
+        }
+
+        // PartsIntegrity
+
+        private void HandleQuitPartsIntegrity()
+        {
             GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
         }
     }

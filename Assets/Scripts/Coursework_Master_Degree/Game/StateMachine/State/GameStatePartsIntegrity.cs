@@ -18,11 +18,25 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
         public override void OnEnter()
         {
+            HideCursor();
+
             GameStateManager.Instance.InputReader.EnablePartsIntegrityStateInput();
+
+            GameStateManager.Instance.PartsAssemblySetup.SetupPartsIntegrity(
+                PartsAssembly,
+                ItemDataHolder);
+
+            GameStateManager.Instance.PlayerController.SetPartsIntegrityState(true);
+            GameStateManager.Instance.InterfaceController.SetPartsIntegrityState(true);
         }
 
         public override void OnExit()
         {
+            GameStateManager.Instance.InterfaceController.SetPartsIntegrityState(false);
+            GameStateManager.Instance.PlayerController.SetPartsIntegrityState(false);
+
+            GameStateManager.Instance.PartsAssemblySetup.ClearPartsIntegrity();
+
             GameStateManager.Instance.InputReader.DisableAllInput();
         }
     }

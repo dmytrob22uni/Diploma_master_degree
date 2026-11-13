@@ -1,9 +1,371 @@
+using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
+using Coursework_Master_Degree.Items;
+using Coursework_Master_Degree.Items.Ghosts;
+using Coursework_Master_Degree.ScriptableObjects.Items;
 
 namespace Coursework_Master_Degree.Game.Logic.Hover
 {
     public class PartHoverIntegrity : MonoBehaviour
     {
+        [Header("Hover Settings")]
+        [Tooltip(
+            "Use player eyes instead of camera, because current setup " +
+            "uses Cinemachine, which catch up the player camera in LateUpdate, " +
+            "(not in Update, which is default / expectable place to raycast)")]
+        public Transform Eyes;
+        public float HoverDistance;
+        [Tooltip(
+            "Layer against which to check for parts only. " +
+            "Printer frame, item, surface, etc. are intentionally ignored, " +
+            "because integrity info is expected to be shown for parts only.")]
+        public LayerMask PartLayer;
 
+        [Header("Interface Units")]
+        public TextMeshProUGUI ItemHoverIntegrityNameText;
+        public TextMeshProUGUI ItemHoverIntegrityDescriptionText;
+
+        private const float EyesMoveThresholdSqr = 0.0001f;
+        private const float EyesRotationThreshold = 0.1f;
+        private const float ScrollDeadZone = 0.01f;
+
+        private RaycastHit[] cachedHits = new RaycastHit[32];
+        private readonly List<HoveredPart> cachedHoveredParts = new();
+        private readonly HashSet<PartCacheKey> cachedPartKeys = new();
+
+        private Vector3 cachedEyesPosition;
+        private Quaternion cachedEyesRotation;
+
+        private int scrollIndex;
+
+        private int lastScrollFrame = -1;
+        private float lastScrollValue;
+
+        private void Awake()
+        {
+            // Fallback for prefabs set up before the dedicated part layer mask
+            // was introduced on the component.
+            if (PartLayer.value == 0)
+            {
+                int partLayer = LayerMask.NameToLayer("part");
+                if (partLayer >= 0)
+                {
+                    PartLayer = 1 << partLayer;
+                }
+            }
+
+            ClearHover();
+        }
+
+        private void Update()
+        {
+            if (!IsEyesChanged())
+            {
+                return;
+            }
+
+            PerformHoverCheck();
+        }
+
+        private bool IsEyesChanged()
+        {
+            if (Eyes == null)
+            {
+                return false;
+            }
+
+            if (Vector3.SqrMagnitude(cachedEyesPosition - Eyes.position) > EyesMoveThresholdSqr)
+            {
+                return true;
+            }
+
+            if (Quaternion.Angle(cachedEyesRotation, Eyes.rotation) > EyesRotationThreshold)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void PerformHoverCheck()
+        {
+            if (Eyes == null)
+            {
+                ClearCachedParts();
+                ClearHover();
+
+                return;
+            }
+
+            cachedEyesPosition = Eyes.position;
+            cachedEyesRotation = Eyes.rotation;
+
+            Ray ray = new(
+                Eyes.position,
+                Eyes.forward);
+
+            int hitNumber = Physics.RaycastNonAlloc(
+                ray,
+                cachedHits,
+                HoverDistance,
+                PartLayer,
+                QueryTriggerInteraction.Ignore);
+
+            if (hitNumber == 0)
+            {
+                ClearCachedParts();
+                ClearHover();
+
+                return;
+            }
+
+            System.Array.Sort(
+                cachedHits,
+                0,
+                hitNumber,
+                RaycastHitDistanceComparer.Instance);
+
+            // reset layer counter when the primary hovered part changed
+            PartCacheKey previousPrimaryPart = cachedHoveredParts.Count > 0
+                ? cachedHoveredParts[0].Key
+                : default;
+
+            cachedHoveredParts.Clear();
+            cachedPartKeys.Clear();
+
+            for (int index = 0; index < hitNumber; index++)
+            {
+                if (!TryGetHoveredPart(cachedHits[index], out HoveredPart hoveredPart))
+                {
+                    continue;
+                }
+
+                // Parts often consist of several colliders. Keep only the closest
+                // hit for every unique physical part, so scrolling cycles parts
+                // instead of cycling colliders of the same part.
+                if (!cachedPartKeys.Add(hoveredPart.Key))
+                {
+                    continue;
+                }
+
+                cachedHoveredParts.Add(hoveredPart);
+            }
+
+            if (cachedHoveredParts.Count == 0)
+            {
+                ClearHover();
+
+                return;
+            }
+
+            if (cachedHoveredParts[0].Key != previousPrimaryPart)
+            {
+                scrollIndex = 0;
+            }
+
+            scrollIndex = Mathf.Clamp(scrollIndex, 0, cachedHoveredParts.Count - 1);
+
+            SetupInfo(cachedHoveredParts[scrollIndex]);
+        }
+
+        private bool TryGetHoveredPart(RaycastHit hit, out HoveredPart hoveredPart)
+        {
+            ItemGhostMissingPartDataHolder missingPart =
+                hit.collider.GetComponentInParent<ItemGhostMissingPartDataHolder>();
+
+            if (missingPart != null)
+            {
+                ItemMetaSO metaData = missingPart.PartMetaData;
+                hoveredPart = new HoveredPart(
+                    new PartCacheKey(missingPart.gameObject, metaData),
+                    metaData,
+                    hit.collider);
+
+                return true;
+            }
+
+            ItemDataHolder item = hit.collider.GetComponentInParent<ItemDataHolder>();
+
+            if (item != null)
+            {
+                ItemMetaSO metaData = item.ItemMetaData;
+                hoveredPart = new HoveredPart(
+                    new PartCacheKey(item.gameObject, metaData),
+                    metaData,
+                    hit.collider);
+
+                return true;
+            }
+
+            hoveredPart = default;
+            return false;
+        }
+
+        private void SetupInfo(HoveredPart part)
+        {
+            ItemMetaSO metaData = part.MetaData;
+
+            string partName = metaData != null
+                ? metaData.Name
+                : part.Key.Root != null
+                    ? part.Key.Root.name
+                    : default;
+
+            string description = metaData != null
+                ? metaData.Description
+                : default;
+
+            SetText(ItemHoverIntegrityNameText, partName);
+            SetText(ItemHoverIntegrityDescriptionText, description);
+        }
+
+        private static void SetText(TextMeshProUGUI text, string value)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            text.text = value;
+            text.gameObject.SetActive(true);
+        }
+
+        private void ClearCachedParts()
+        {
+            cachedHoveredParts.Clear();
+            cachedPartKeys.Clear();
+            scrollIndex = 0;
+        }
+
+        private void ClearHover()
+        {
+            ClearText(ItemHoverIntegrityNameText);
+            ClearText(ItemHoverIntegrityDescriptionText);
+        }
+
+        private static void ClearText(TextMeshProUGUI text)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            text.text = default;
+            text.gameObject.SetActive(false);
+        }
+
+        private void OnDisable()
+        {
+            ClearCachedParts();
+            ClearHover();
+
+            cachedEyesPosition = default;
+            cachedEyesRotation = default;
+        }
+
+        // === Player Controller invoked ===
+
+        public void ApplyAnotherHoverLayer(Vector2 value)
+        {
+            if (Mathf.Abs(value.y) < ScrollDeadZone)
+            {
+                return;
+            }
+
+            // ignore duplicated started / performed callbacks for the same scroll tick
+            if (Time.frameCount == lastScrollFrame && Mathf.Approximately(lastScrollValue, value.y))
+            {
+                return;
+            }
+
+            lastScrollFrame = Time.frameCount;
+            lastScrollValue = value.y;
+
+            // The hover check is normally refreshed only when eyes move.
+            // Make the first scroll after entering the state reliable even if
+            // no hover pass has happened yet.
+            if (cachedHoveredParts.Count == 0)
+            {
+                PerformHoverCheck();
+            }
+
+            if (cachedHoveredParts.Count == 0)
+            {
+                return;
+            }
+
+            int direction = value.y > 0.0f ? 1 : -1;
+            scrollIndex = (scrollIndex + direction + cachedHoveredParts.Count) % cachedHoveredParts.Count;
+
+            SetupInfo(cachedHoveredParts[scrollIndex]);
+        }
+
+        private readonly struct HoveredPart
+        {
+            public readonly PartCacheKey Key;
+            public readonly ItemMetaSO MetaData;
+            public readonly Collider ClosestHit;
+
+            public HoveredPart(PartCacheKey key, ItemMetaSO metaData, Collider closestHit)
+            {
+                Key = key;
+                MetaData = metaData;
+                ClosestHit = closestHit;
+            }
+        }
+
+        private readonly struct PartCacheKey : System.IEquatable<PartCacheKey>
+        {
+            public readonly GameObject Root;
+            public readonly ItemMetaSO MetaData;
+
+            public PartCacheKey(GameObject root, ItemMetaSO metaData)
+            {
+                Root = root;
+                MetaData = metaData;
+            }
+
+            public bool Equals(PartCacheKey other)
+            {
+                return Root == other.Root && MetaData == other.MetaData;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is PartCacheKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hashCode = Root != null ? Root.GetHashCode() : 0;
+                    hashCode = (hashCode * 397) ^ (MetaData != null ? MetaData.GetHashCode() : 0);
+
+                    return hashCode;
+                }
+            }
+
+            public static bool operator ==(PartCacheKey left, PartCacheKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(PartCacheKey left, PartCacheKey right)
+            {
+                return !left.Equals(right);
+            }
+        }
+
+        private class RaycastHitDistanceComparer : IComparer<RaycastHit>
+        {
+            public static readonly RaycastHitDistanceComparer Instance = new();
+
+            public int Compare(RaycastHit x, RaycastHit y)
+            {
+                return x.distance.CompareTo(y.distance);
+            }
+        }
     }
 }
