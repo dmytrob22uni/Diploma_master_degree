@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
+using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.ScriptableObjects.Items;
 
@@ -41,6 +42,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private int lastScrollFrame = -1;
         private float lastScrollValue;
+
+        private PartsAssembly targetAssembly;
 
         private void Awake()
         {
@@ -176,6 +179,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (missingPart != null)
             {
+                if (!IsPartOfTargetAssembly(missingPart.transform))
+                {
+                    hoveredPart = default;
+                    return false;
+                }
+
                 ItemMetaSO metaData = missingPart.PartMetaData;
                 hoveredPart = new HoveredPart(
                     new PartCacheKey(missingPart.gameObject, metaData),
@@ -189,6 +198,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (item != null)
             {
+                if (!IsPartOfTargetAssembly(item.transform))
+                {
+                    hoveredPart = default;
+                    return false;
+                }
+
                 ItemMetaSO metaData = item.ItemMetaData;
                 hoveredPart = new HoveredPart(
                     new PartCacheKey(item.gameObject, metaData),
@@ -200,6 +215,18 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             hoveredPart = default;
             return false;
+        }
+
+        private bool IsPartOfTargetAssembly(Transform partTransform)
+        {
+            // Hover info belongs to the inspected assembly only. Parts of
+            // nearby items are intentionally ignored.
+            if (targetAssembly == null)
+            {
+                return true;
+            }
+
+            return targetAssembly.IsPartOfAssembly(partTransform);
         }
 
         private void SetupInfo(HoveredPart part)
@@ -265,6 +292,14 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         }
 
         // === Player Controller invoked ===
+
+        public void SetTargetAssembly(PartsAssembly partsAssembly)
+        {
+            targetAssembly = partsAssembly;
+
+            ClearCachedParts();
+            ClearHover();
+        }
 
         public void ApplyAnotherHoverLayer(Vector2 value)
         {

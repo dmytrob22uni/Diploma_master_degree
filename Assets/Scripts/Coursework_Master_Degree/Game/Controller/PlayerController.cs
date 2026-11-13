@@ -149,7 +149,7 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
-        public void SetPartsIntegrityState(bool enable)
+        public void SetPartsIntegrityState(bool enable, PartsAssembly targetAssembly = default)
         {
             if (enable)
             {
@@ -169,6 +169,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 Jump.enabled = true;
                 Look.enabled = true;
                 // PartsIntegrity Logics
+                PartHoverIntegrity.SetTargetAssembly(targetAssembly);
                 PartHoverIntegrity.enabled = true;
             }
             else
@@ -190,6 +191,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 Look.enabled = false;
                 // PartsIntegrity Logics
                 PartHoverIntegrity.enabled = false;
+                PartHoverIntegrity.SetTargetAssembly(default);
             }
         }
 

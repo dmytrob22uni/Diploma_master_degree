@@ -26,7 +26,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 PartsAssembly,
                 ItemDataHolder);
 
-            GameStateManager.Instance.PlayerController.SetPartsIntegrityState(true);
+            GameStateManager.Instance.PlayerController.SetPartsIntegrityState(true, PartsAssembly);
             GameStateManager.Instance.InterfaceController.SetPartsIntegrityState(true);
         }
 
