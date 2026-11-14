@@ -1205,6 +1205,16 @@ namespace Coursework_Master_Degree.Input
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""AnotherHoverLayerPartsRemove"",
+                    ""type"": ""Value"",
+                    ""id"": ""cb3f7f9e-2d4a-4f1e-9c60-0d4f8b7a1e52"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -1216,6 +1226,17 @@ namespace Coursework_Master_Degree.Input
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
                     ""action"": ""RemovePart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6e2b4d1-7c93-4f08-b1d5-8e3a2c6f9b47"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";keyboard&mouse"",
+                    ""action"": ""AnotherHoverLayerPartsRemove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1316,6 +1337,7 @@ namespace Coursework_Master_Degree.Input
             // PartsRemove
             m_PartsRemove = asset.FindActionMap("PartsRemove", throwIfNotFound: true);
             m_PartsRemove_RemovePart = m_PartsRemove.FindAction("RemovePart", throwIfNotFound: true);
+            m_PartsRemove_AnotherHoverLayerPartsRemove = m_PartsRemove.FindAction("AnotherHoverLayerPartsRemove", throwIfNotFound: true);
         }
 
         ~@GameInputActions()
@@ -3085,6 +3107,7 @@ namespace Coursework_Master_Degree.Input
         private readonly InputActionMap m_PartsRemove;
         private List<IPartsRemoveActions> m_PartsRemoveActionsCallbackInterfaces = new List<IPartsRemoveActions>();
         private readonly InputAction m_PartsRemove_RemovePart;
+        private readonly InputAction m_PartsRemove_AnotherHoverLayerPartsRemove;
         /// <summary>
         /// Provides access to input actions defined in input action map "PartsRemove".
         /// </summary>
@@ -3100,6 +3123,10 @@ namespace Coursework_Master_Degree.Input
             /// Provides access to the underlying input action "PartsRemove/RemovePart".
             /// </summary>
             public InputAction @RemovePart => m_Wrapper.m_PartsRemove_RemovePart;
+            /// <summary>
+            /// Provides access to the underlying input action "PartsRemove/AnotherHoverLayerPartsRemove".
+            /// </summary>
+            public InputAction @AnotherHoverLayerPartsRemove => m_Wrapper.m_PartsRemove_AnotherHoverLayerPartsRemove;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -3129,6 +3156,9 @@ namespace Coursework_Master_Degree.Input
                 @RemovePart.started += instance.OnRemovePart;
                 @RemovePart.performed += instance.OnRemovePart;
                 @RemovePart.canceled += instance.OnRemovePart;
+                @AnotherHoverLayerPartsRemove.started += instance.OnAnotherHoverLayerPartsRemove;
+                @AnotherHoverLayerPartsRemove.performed += instance.OnAnotherHoverLayerPartsRemove;
+                @AnotherHoverLayerPartsRemove.canceled += instance.OnAnotherHoverLayerPartsRemove;
             }
 
             /// <summary>
@@ -3143,6 +3173,9 @@ namespace Coursework_Master_Degree.Input
                 @RemovePart.started -= instance.OnRemovePart;
                 @RemovePart.performed -= instance.OnRemovePart;
                 @RemovePart.canceled -= instance.OnRemovePart;
+                @AnotherHoverLayerPartsRemove.started -= instance.OnAnotherHoverLayerPartsRemove;
+                @AnotherHoverLayerPartsRemove.performed -= instance.OnAnotherHoverLayerPartsRemove;
+                @AnotherHoverLayerPartsRemove.canceled -= instance.OnAnotherHoverLayerPartsRemove;
             }
 
             /// <summary>
@@ -3623,6 +3656,13 @@ namespace Coursework_Master_Degree.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRemovePart(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "AnotherHoverLayerPartsRemove" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnAnotherHoverLayerPartsRemove(InputAction.CallbackContext context);
         }
     }
 }

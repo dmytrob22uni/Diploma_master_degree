@@ -1117,6 +1117,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "AnotherHoverLayerPartsRemove",
+                    "type": "Value",
+                    "id": "cb3f7f9e-2d4a-4f1e-9c60-0d4f8b7a1e52",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -1128,6 +1138,17 @@
                     "processors": "",
                     "groups": ";keyboard&mouse",
                     "action": "RemovePart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a6e2b4d1-7c93-4f08-b1d5-8e3a2c6f9b47",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "AnotherHoverLayerPartsRemove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

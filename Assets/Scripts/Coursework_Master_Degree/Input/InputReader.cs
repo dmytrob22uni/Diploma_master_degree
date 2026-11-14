@@ -98,6 +98,7 @@ namespace Coursework_Master_Degree.Input
 
         // === PartsRemove events ===
         public event Action OnRemovePartEvent = delegate { };
+        public event Action<Vector2> OnAnotherHoverLayerPartsRemoveEvent = delegate { };
 
         private void OnEnable()
         {
@@ -657,6 +658,12 @@ namespace Coursework_Master_Degree.Input
             {
                 OnRemovePartEvent?.Invoke();
             }
+        }
+
+        public void OnAnotherHoverLayerPartsRemove(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            OnAnotherHoverLayerPartsRemoveEvent?.Invoke(value);
         }
     }
 }
