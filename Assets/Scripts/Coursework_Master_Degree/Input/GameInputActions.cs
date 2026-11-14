@@ -372,6 +372,16 @@ namespace Coursework_Master_Degree.Input
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""ItemsSell"",
+                    ""type"": ""Button"",
+                    ""id"": ""bd7a5c7d-bd18-42c5-a66f-8c38deb5d102"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -429,6 +439,17 @@ namespace Coursework_Master_Degree.Input
                     ""action"": ""ItemsMarket"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5cd3b32f-a3bd-4681-a4b5-6a353f6bd1b5"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";keyboard&mouse"",
+                    ""action"": ""ItemsSell"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -451,7 +472,7 @@ namespace Coursework_Master_Degree.Input
                 {
                     ""name"": """",
                     ""id"": ""35a0e546-b025-43de-ba41-5bc64c65517d"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Mouse>/middleButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
@@ -1280,6 +1301,7 @@ namespace Coursework_Master_Degree.Input
             m_FreeWalk_ItemsMarket = m_FreeWalk.FindAction("ItemsMarket", throwIfNotFound: true);
             m_FreeWalk_InteractWithItem = m_FreeWalk.FindAction("InteractWithItem", throwIfNotFound: true);
             m_FreeWalk_TakeItem = m_FreeWalk.FindAction("TakeItem", throwIfNotFound: true);
+            m_FreeWalk_ItemsSell = m_FreeWalk.FindAction("ItemsSell", throwIfNotFound: true);
             // ItemsSell
             m_ItemsSell = asset.FindActionMap("ItemsSell", throwIfNotFound: true);
             m_ItemsSell_SellItem = m_ItemsSell.FindAction("SellItem", throwIfNotFound: true);
@@ -1704,6 +1726,7 @@ namespace Coursework_Master_Degree.Input
         private readonly InputAction m_FreeWalk_ItemsMarket;
         private readonly InputAction m_FreeWalk_InteractWithItem;
         private readonly InputAction m_FreeWalk_TakeItem;
+        private readonly InputAction m_FreeWalk_ItemsSell;
         /// <summary>
         /// Provides access to input actions defined in input action map "FreeWalk".
         /// </summary>
@@ -1727,6 +1750,10 @@ namespace Coursework_Master_Degree.Input
             /// Provides access to the underlying input action "FreeWalk/TakeItem".
             /// </summary>
             public InputAction @TakeItem => m_Wrapper.m_FreeWalk_TakeItem;
+            /// <summary>
+            /// Provides access to the underlying input action "FreeWalk/ItemsSell".
+            /// </summary>
+            public InputAction @ItemsSell => m_Wrapper.m_FreeWalk_ItemsSell;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1762,6 +1789,9 @@ namespace Coursework_Master_Degree.Input
                 @TakeItem.started += instance.OnTakeItem;
                 @TakeItem.performed += instance.OnTakeItem;
                 @TakeItem.canceled += instance.OnTakeItem;
+                @ItemsSell.started += instance.OnItemsSell;
+                @ItemsSell.performed += instance.OnItemsSell;
+                @ItemsSell.canceled += instance.OnItemsSell;
             }
 
             /// <summary>
@@ -1782,6 +1812,9 @@ namespace Coursework_Master_Degree.Input
                 @TakeItem.started -= instance.OnTakeItem;
                 @TakeItem.performed -= instance.OnTakeItem;
                 @TakeItem.canceled -= instance.OnTakeItem;
+                @ItemsSell.started -= instance.OnItemsSell;
+                @ItemsSell.performed -= instance.OnItemsSell;
+                @ItemsSell.canceled -= instance.OnItemsSell;
             }
 
             /// <summary>
@@ -3329,6 +3362,13 @@ namespace Coursework_Master_Degree.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnTakeItem(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ItemsSell" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnItemsSell(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemsSell" which allows adding and removing callbacks.

@@ -41,6 +41,7 @@ namespace Coursework_Master_Degree.Input
         public event Action OnItemsMarketEvent = delegate { };
         public event Action OnInteractWithItemEvent = delegate { };
         public event Action OnTakeItemEvent = delegate { };
+        public event Action OnItemsSellEvent = delegate { };
 
         // === ItemsSell events ===
         public event Action OnSellItemEvent = delegate { };
@@ -377,6 +378,14 @@ namespace Coursework_Master_Degree.Input
             if (context.performed)
             {
                 OnTakeItemEvent?.Invoke();
+            }
+        }
+
+        public void OnItemsSell(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                OnItemsSellEvent?.Invoke();
             }
         }
 

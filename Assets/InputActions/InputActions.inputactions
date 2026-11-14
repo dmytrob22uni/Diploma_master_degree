@@ -284,6 +284,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "ItemsSell",
+                    "type": "Button",
+                    "id": "bd7a5c7d-bd18-42c5-a66f-8c38deb5d102",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -341,6 +351,17 @@
                     "action": "ItemsMarket",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "5cd3b32f-a3bd-4681-a4b5-6a353f6bd1b5",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "ItemsSell",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -363,7 +384,7 @@
                 {
                     "name": "",
                     "id": "35a0e546-b025-43de-ba41-5bc64c65517d",
-                    "path": "<Mouse>/leftButton",
+                    "path": "<Mouse>/middleButton",
                     "interactions": "",
                     "processors": "",
                     "groups": ";keyboard&mouse",
