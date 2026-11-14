@@ -208,6 +208,7 @@ MonoBehaviour:
   PrintBedRotation: 0
   PrintBedScale: 0
   PrintingMaterial: {fileID: 0}
+  IsHaveQuality: 1
   ObjectToPrintGhostTypesToInstancesList: []
 --- !u!1 &7958278468699901064
 GameObject:

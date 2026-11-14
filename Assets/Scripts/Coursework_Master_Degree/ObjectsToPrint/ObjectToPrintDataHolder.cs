@@ -34,6 +34,9 @@ namespace Coursework_Master_Degree.ObjectsToPrint
         [Tooltip("Set via script")]
         public Material PrintingMaterial;
 
+        [Tooltip("Whether the printed object has acceptable quality")]
+        public bool IsHaveQuality;
+
         [EnableIf("NotEnabled")]
         [Tooltip("Set via script")]
         public List<ObjectToPrintGhostTypeToInstance> ObjectToPrintGhostTypesToInstancesList;
