@@ -652,6 +652,11 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 removedPart.ParentItemDataHolder = default;
             }
 
+            // Parts are authored to be placed with their prefab pivot.
+            // Drop the part location rotation, so Item Place starts from
+            // the canonical orientation instead of the installed one.
+            removedPartGameObject.transform.rotation = Quaternion.identity;
+
             ClearShownPartGhosts();
             ClearHover();
 
