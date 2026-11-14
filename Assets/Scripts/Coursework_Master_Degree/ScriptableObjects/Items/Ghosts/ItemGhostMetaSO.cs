@@ -8,5 +8,25 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items.Ghosts
     public class ItemGhostMetaSO : ScriptableObject
     {
         public List<ItemGhostTypeToPrefab> ItemGhostTypesToPrefabsList;
+
+        public bool IsHaveGhostType(ItemGhostType type)
+        {
+            if (ItemGhostTypesToPrefabsList == null)
+            {
+                return false;
+            }
+
+            foreach (ItemGhostTypeToPrefab itemGhostTypeToPrefab in ItemGhostTypesToPrefabsList)
+            {
+                if (itemGhostTypeToPrefab != null &&
+                    itemGhostTypeToPrefab.ItemGhostType == type &&
+                    itemGhostTypeToPrefab.ItemGhostGameObject != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

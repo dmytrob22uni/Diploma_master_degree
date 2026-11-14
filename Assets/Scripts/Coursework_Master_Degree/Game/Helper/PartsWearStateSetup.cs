@@ -11,8 +11,9 @@ using Coursework_Master_Degree.Game.StateMachine.State;
 namespace Coursework_Master_Degree.Game.Helper
 {
     /// <summary>
-    /// Prepares an item with <see cref="PartsAssembly"/> for the parts wear game state.
+    /// Prepares an item for the parts wear game state.
     /// Shows the transparent frame and replaces installed parts with their wear ghosts.
+    /// A standalone wearable item uses its own wear ghost instead of an assembly.
     /// </summary>
     public class PartsWearStateSetup : PartsStateSetup
     {
@@ -37,14 +38,24 @@ namespace Coursework_Master_Degree.Game.Helper
         {
             ClearPartsWear();
 
-            if (partsAssembly == null || item == null)
+            if (item == null)
             {
                 return;
             }
 
             SetupBackgroundGhost(item);
             SetupExitTrigger(item);
-            SetupWearPartGhosts(partsAssembly, item);
+
+            if (partsAssembly != null)
+            {
+                SetupWearPartGhosts(partsAssembly, item);
+
+                return;
+            }
+
+            // A standalone wearable item has no assembly, but it still exposes
+            // its own wear ghost through the same item ghost type.
+            SetupWearPartGhost(item, item.transform);
         }
 
         public void ClearPartsWear()
@@ -100,6 +111,11 @@ namespace Coursework_Master_Degree.Game.Helper
                 return;
             }
 
+            SetupWearPartGhost(part, item.transform);
+        }
+
+        private void SetupWearPartGhost(ItemDataHolder part, Transform parent)
+        {
             if (!IsGhostTypeAvailable(part.ItemGhostMetaSO, ItemGhostType.WearLevel))
             {
                 return;
@@ -111,7 +127,7 @@ namespace Coursework_Master_Degree.Game.Helper
                 part,
                 partTransform.position,
                 partTransform.rotation,
-                item.transform);
+                parent);
 
             if (wearPartGhost == null)
             {
@@ -182,6 +198,13 @@ namespace Coursework_Master_Degree.Game.Helper
             foreach (MeshRenderer meshRenderer in part.GetComponentsInChildren<MeshRenderer>())
             {
                 if (meshRenderer == null)
+                {
+                    continue;
+                }
+
+                // The item may be its own inspection target; never hide the
+                // ghost which is currently replacing its renderers.
+                if (meshRenderer.GetComponentInParent<ItemGhostDataHolder>() != null)
                 {
                     continue;
                 }

@@ -28,6 +28,7 @@ namespace Coursework_Master_Degree.Game.Controller
         public GameObject InteractionsListInterface;
         public GameObject InteractionsListCanvas;
         public GameObject PartsWearInterface;
+        public GameObject PartsWearRemoveModeRoot;
         public GameObject PartsRemoveInterface;
         public GameObject PartsIntegrityInterface;
         public GameObject ItemsSellCanvas;
@@ -128,17 +129,26 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
-        public void SetPartsWearState(bool enable)
+        public void SetPartsWearState(bool enable, bool isRemoveModeAvailable = true)
         {
             if (enable)
             {
                 // Input
                 GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitPartsWear;
-                GameStateManager.Instance.InputReader.OnRemoveModeFromPartsWearEvent += HandleRemoveModeFromPartsWear;
+
+                if (isRemoveModeAvailable)
+                {
+                    GameStateManager.Instance.InputReader.OnRemoveModeFromPartsWearEvent += HandleRemoveModeFromPartsWear;
+                }
 
                 // Interfaces
                 PointInterface.SetActive(true);
                 PartsWearInterface.SetActive(true);
+
+                if (PartsWearRemoveModeRoot != null)
+                {
+                    PartsWearRemoveModeRoot.SetActive(isRemoveModeAvailable);
+                }
             }
             else
             {

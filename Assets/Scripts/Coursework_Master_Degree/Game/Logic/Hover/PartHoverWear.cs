@@ -45,6 +45,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private float lastScrollValue;
 
         private PartsAssembly targetAssembly;
+        private ItemDataHolder targetItem;
 
         private void Awake()
         {
@@ -188,7 +189,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (wearLevelGhost != null && wearLevelGhost.ItemInstance != null)
             {
-                if (!IsPartOfTargetAssembly(wearLevelGhost.transform))
+                if (!IsPartOfTarget(wearLevelGhost.transform))
                 {
                     hoveredPart = default;
                     return false;
@@ -207,7 +208,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (item != null)
             {
-                if (!IsPartOfTargetAssembly(item.transform))
+                if (!IsPartOfTarget(item.transform))
                 {
                     hoveredPart = default;
                     return false;
@@ -221,16 +222,22 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             return false;
         }
 
-        private bool IsPartOfTargetAssembly(Transform partTransform)
+        private bool IsPartOfTarget(Transform partTransform)
         {
-            // Hover info belongs to the inspected assembly only. Parts of
-            // nearby items are intentionally ignored.
-            if (targetAssembly == null)
+            // Hover info belongs to the inspected assembly or item only. Parts
+            // of nearby items are intentionally ignored.
+            if (targetAssembly != null)
             {
-                return true;
+                return targetAssembly.IsPartOfAssembly(partTransform);
             }
 
-            return targetAssembly.IsPartOfAssembly(partTransform);
+            if (targetItem != null)
+            {
+                return partTransform == targetItem.transform ||
+                    partTransform.IsChildOf(targetItem.transform);
+            }
+
+            return true;
         }
 
         private static HoveredPart CreateHoveredPart(ItemDataHolder item, Collider closestHit)
@@ -325,6 +332,15 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         public void SetTargetAssembly(PartsAssembly partsAssembly)
         {
             targetAssembly = partsAssembly;
+            targetItem = default;
+
+            ClearCachedParts();
+            ClearHover();
+        }
+
+        public void SetTargetItem(ItemDataHolder item)
+        {
+            targetItem = item;
 
             ClearCachedParts();
             ClearHover();

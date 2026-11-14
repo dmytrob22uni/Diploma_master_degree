@@ -166,21 +166,7 @@ namespace Coursework_Master_Degree.Game.Helper
 
         protected static bool IsGhostTypeAvailable(ItemGhostMetaSO itemGhostMeta, ItemGhostType type)
         {
-            if (itemGhostMeta == null || itemGhostMeta.ItemGhostTypesToPrefabsList == null)
-            {
-                return false;
-            }
-
-            foreach (var itemGhostTypeToPrefab in itemGhostMeta.ItemGhostTypesToPrefabsList)
-            {
-                if (itemGhostTypeToPrefab.ItemGhostType == type &&
-                    itemGhostTypeToPrefab.ItemGhostGameObject != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return itemGhostMeta != null && itemGhostMeta.IsHaveGhostType(type);
         }
 
         protected void SetupExitTrigger(ItemDataHolder item)

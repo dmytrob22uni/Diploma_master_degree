@@ -58,6 +58,7 @@ MonoBehaviour:
     m_Bits: 8511488
   ItemHoverInfoText: {fileID: 0}
   TakeRoot: {fileID: 0}
+  InspectWearRoot: {fileID: 0}
 --- !u!114 &6860568199009119305
 MonoBehaviour:
   m_ObjectHideFlags: 0

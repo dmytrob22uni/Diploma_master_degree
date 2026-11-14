@@ -26,8 +26,13 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 PartsAssembly,
                 ItemDataHolder);
 
-            GameStateManager.Instance.PlayerController.SetPartsWearState(true, PartsAssembly);
-            GameStateManager.Instance.InterfaceController.SetPartsWearState(true);
+            GameStateManager.Instance.PlayerController.SetPartsWearState(
+                true,
+                PartsAssembly,
+                ItemDataHolder);
+            GameStateManager.Instance.InterfaceController.SetPartsWearState(
+                true,
+                PartsAssembly != null);
         }
 
         public override void OnExit()

@@ -1,8 +1,11 @@
 using TMPro;
 using UnityEngine;
 using Coursework_Master_Degree.Items;
+using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
+using Coursework_Master_Degree.Items.Wear;
 using Coursework_Master_Degree.ObjectsToPrint;
+using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
 using Coursework_Master_Degree.Game.StateMachine.State;
 using Coursework_Master_Degree.Game.StateMachine;
 
@@ -31,11 +34,15 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         [Header("Interface Units")]
         public TextMeshProUGUI ItemHoverInfoText;
         public GameObject TakeRoot;
+        public GameObject InspectWearRoot;
 
         private Collider cachedCollider;
 
         private GameObject cachedItemGameObject;
         public GameObject CachedItemGameObject => cachedItemGameObject;
+
+        private ItemDataHolder cachedWearItem;
+        public bool CanInspectWear => cachedWearItem != null;
 
         private bool isHoverClear;
 
@@ -102,11 +109,11 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                         return;
                     }
 
-                    bool isInstalledItem = item.IsInstalled;
-                    while (isInstalledItem)
+                    bool isInstalledPart = item.IsInstalled;
+                    while (isInstalledPart)
                     {
                         item = item.ParentItemDataHolder;
-                        isInstalledItem = item.IsInstalled;
+                        isInstalledPart = item.IsInstalled;
                     }
 
                     if (item.IsSurface)
@@ -121,6 +128,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                     }
 
                     cachedItemGameObject = item.gameObject;
+                    cachedWearItem = IsWearInspectAvailable(item)
+                        ? item
+                        : default;
 
                     string info = item.ItemMetaData.Name;
                     SetupInfoAndTake(info);
@@ -149,12 +159,34 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             }
         }
 
+        private static bool IsWearInspectAvailable(ItemDataHolder item)
+        {
+            // Assemblies keep their own interaction list; only standalone
+            // wearable items are inspected through the parts wear state.
+            if (item == null ||
+                item.IsInstalled ||
+                item.GetComponent<PartsAssembly>() != null ||
+                !item.IsHaveWearLevel)
+            {
+                return false;
+            }
+
+            if (item.ItemGhostMetaSO == null ||
+                !item.ItemGhostMetaSO.IsHaveGhostType(ItemGhostType.WearLevel))
+            {
+                return false;
+            }
+
+            return item.GetComponent<ItemWearState>() != null;
+        }
+
         private void SetupInfoAndTake(string info)
         {
             ItemHoverInfoText.text = info;
             ItemHoverInfoText.gameObject.SetActive(true);
 
             TakeRoot.SetActive(true);
+            SetupInspectWear(cachedWearItem != null);
 
             isHoverClear = false;
         }
@@ -162,8 +194,19 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private void SetupTake(bool isActive)
         {
             TakeRoot.SetActive(isActive);
+            SetupInspectWear(false);
 
             isHoverClear = false;
+        }
+
+        private void SetupInspectWear(bool isActive)
+        {
+            if (InspectWearRoot == null)
+            {
+                return;
+            }
+
+            InspectWearRoot.SetActive(isActive);
         }
 
         private void ClearCachedCollider()
@@ -174,6 +217,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private void ClearCached()
         {
             cachedItemGameObject = default;
+            cachedWearItem = default;
         }
 
         private void ClearHover()
@@ -182,6 +226,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             ItemHoverInfoText.gameObject.SetActive(false);
 
             TakeRoot.SetActive(false);
+            SetupInspectWear(false);
 
             isHoverClear = true;
         }
@@ -204,6 +249,17 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             cachedItemGameObject.SetActive(false);
             GameStateManager.Instance.ChangeState(new GameStateItemPlace(cachedItemGameObject));
+        }
+
+        public void ApplyInspectWear()
+        {
+            if (cachedWearItem == null)
+            {
+                return;
+            }
+
+            GameStateManager.Instance.ChangeState(
+                new GameStatePartsWear(default, cachedWearItem));
         }
     }
 }

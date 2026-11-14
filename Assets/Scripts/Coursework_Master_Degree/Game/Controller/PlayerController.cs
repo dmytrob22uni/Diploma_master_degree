@@ -1,5 +1,6 @@
 using UnityEngine;
 using NaughtyAttributes;
+using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Game.Logic;
 using Coursework_Master_Degree.Game.Logic.Hover;
@@ -291,7 +292,10 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
-        public void SetPartsWearState(bool enable, PartsAssembly targetAssembly = default)
+        public void SetPartsWearState(
+            bool enable,
+            PartsAssembly targetAssembly = default,
+            ItemDataHolder targetItem = default)
         {
             if (enable)
             {
@@ -312,6 +316,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 Look.enabled = true;
                 // PartsWear Logics
                 PartHoverWear.SetTargetAssembly(targetAssembly);
+                PartHoverWear.SetTargetItem(targetItem);
                 PartHoverWear.enabled = true;
             }
             else
@@ -334,6 +339,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 // PartsWear Logics
                 PartHoverWear.enabled = false;
                 PartHoverWear.SetTargetAssembly(default);
+                PartHoverWear.SetTargetItem(default);
             }
         }
 
@@ -386,6 +392,13 @@ namespace Coursework_Master_Degree.Game.Controller
 
         private void HandleInteractWithItem()
         {
+            if (ItemHoverInfo.CanInspectWear)
+            {
+                ItemHoverInfo.ApplyInspectWear();
+
+                return;
+            }
+
             ItemHoverInteract.ApplyInteractWithItem();
         }
 
