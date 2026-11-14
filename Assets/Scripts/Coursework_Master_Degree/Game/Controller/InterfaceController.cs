@@ -131,6 +131,7 @@ namespace Coursework_Master_Degree.Game.Controller
             {
                 // Input
                 GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitPartsWear;
+                GameStateManager.Instance.InputReader.OnRemoveModeFromPartsWearEvent += HandleRemoveModeFromPartsWear;
 
                 // Interfaces
                 PointInterface.SetActive(true);
@@ -140,6 +141,7 @@ namespace Coursework_Master_Degree.Game.Controller
             {
                 // Input
                 GameStateManager.Instance.InputReader.OnQuitEvent -= HandleQuitPartsWear;
+                GameStateManager.Instance.InputReader.OnRemoveModeFromPartsWearEvent -= HandleRemoveModeFromPartsWear;
 
                 // Interfaces
                 PointInterface.SetActive(false);
@@ -175,6 +177,7 @@ namespace Coursework_Master_Degree.Game.Controller
             {
                 // Input
                 GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitPartsIntegrity;
+                GameStateManager.Instance.InputReader.OnRemoveModeFromPartsIntegrityEvent += HandleRemoveModeFromPartsIntegrity;
 
                 // Interfaces
                 PointInterface.SetActive(true);
@@ -184,6 +187,7 @@ namespace Coursework_Master_Degree.Game.Controller
             {
                 // Input
                 GameStateManager.Instance.InputReader.OnQuitEvent -= HandleQuitPartsIntegrity;
+                GameStateManager.Instance.InputReader.OnRemoveModeFromPartsIntegrityEvent -= HandleRemoveModeFromPartsIntegrity;
 
                 // Interfaces
                 PointInterface.SetActive(false);
@@ -225,11 +229,24 @@ namespace Coursework_Master_Degree.Game.Controller
             GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
         }
 
+        private void HandleRemoveModeFromPartsWear()
+        {
+            if (GameStateManager.Instance.CurrentGameState is not GameStatePartsWear partsWear)
+            {
+                return;
+            }
+
+            GameStateManager.Instance.ChangeState(
+                new GameStatePartsRemove(
+                    partsWear.PartsAssembly,
+                    partsWear.ItemDataHolder));
+        }
+
         // PartsRemove
 
         private void HandleQuitPartsRemove()
         {
-
+            GameStateManager.Instance.ChangeState(GameStatePartsRemove.GetReturnGameState());
         }
 
         // PartsIntegrity
@@ -237,6 +254,19 @@ namespace Coursework_Master_Degree.Game.Controller
         private void HandleQuitPartsIntegrity()
         {
             GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
+        }
+
+        private void HandleRemoveModeFromPartsIntegrity()
+        {
+            if (GameStateManager.Instance.CurrentGameState is not GameStatePartsIntegrity partsIntegrity)
+            {
+                return;
+            }
+
+            GameStateManager.Instance.ChangeState(
+                new GameStatePartsRemove(
+                    partsIntegrity.PartsAssembly,
+                    partsIntegrity.ItemDataHolder));
         }
     }
 }

@@ -195,23 +195,51 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
-        public void SetPartsRemoveState(bool enable)
+        public void SetPartsRemoveState(bool enable, PartsAssembly targetAssembly = default)
         {
             if (enable)
             {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent += HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent += HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent += HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent += HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent += HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent += HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent += HandleToggleZoom;
                 // PartsRemove Inputs
-                //
+                GameStateManager.Instance.InputReader.OnRemovePartEvent += HandleRemovePart;
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerPartsRemoveEvent += HandleAnotherHoverLayerPartsRemove;
 
+                // Movement Logics
+                Movement.enabled = true;
+                Jump.enabled = true;
+                Look.enabled = true;
                 // PartsRemove Logics
-                //
+                PartHoverRemove.SetTargetAssembly(targetAssembly);
+                PartHoverRemove.enabled = true;
             }
             else
             {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent -= HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent -= HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent -= HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent -= HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent -= HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
                 // PartsRemove Inputs
-                //
+                GameStateManager.Instance.InputReader.OnRemovePartEvent -= HandleRemovePart;
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerPartsRemoveEvent -= HandleAnotherHoverLayerPartsRemove;
 
+                // Movement Logics
+                Movement.enabled = false;
+                Jump.enabled = false;
+                Look.enabled = false;
                 // PartsRemove Logics
-                //
+                PartHoverRemove.enabled = false;
+                PartHoverRemove.SetTargetAssembly(default);
             }
         }
 
@@ -345,7 +373,15 @@ namespace Coursework_Master_Degree.Game.Controller
 
         // PartsRemove
 
-        //
+        private void HandleRemovePart()
+        {
+            PartHoverRemove.ApplyRemovePart();
+        }
+
+        private void HandleAnotherHoverLayerPartsRemove(Vector2 value)
+        {
+            PartHoverRemove.ApplyAnotherHoverLayer(value);
+        }
 
         // PartsIntegrity
 

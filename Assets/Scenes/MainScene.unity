@@ -10757,6 +10757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33c464a4fb474c759485b03fa346d48f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Helper.PartsRemoveStateSetup
+  ExitTriggerRadius: 1.5
 --- !u!114 &2070795387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12215,6 +12216,18 @@ PrefabInstance:
       propertyPath: ItemHoverWearDescriptionText
       value: 
       objectReference: {fileID: 2070795403}
+    - target: {fileID: 2681966614510173508, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
+      propertyPath: ItemHoverRemoveNameText
+      value: 
+      objectReference: {fileID: 1854501089}
+    - target: {fileID: 2681966614510173508, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
+      propertyPath: RemoveRoot
+      value: 
+      objectReference: {fileID: 1091372742}
+    - target: {fileID: 2681966614510173508, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
+      propertyPath: ItemHoverRemoveText
+      value: 
+      objectReference: {fileID: 454629771}
     - target: {fileID: 3276573266080768120, guid: 8eb2292fea7b2de04a7b58d11c083413, type: 3}
       propertyPath: PlayerCamera
       value: 

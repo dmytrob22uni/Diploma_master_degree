@@ -38,6 +38,11 @@ namespace Coursework_Master_Degree.Game.Helper
 
         protected abstract bool IsPartsStateActive();
 
+        protected virtual GameState GetExitGameState()
+        {
+            return new GameStateFreeWalk();
+        }
+
         protected void SetupBackgroundGhost(ItemDataHolder item)
         {
             ItemSyncToGhostBackgroundDataHolder itemSync = item.GetComponent<ItemSyncToGhostBackgroundDataHolder>();
@@ -240,7 +245,7 @@ namespace Coursework_Master_Degree.Game.Helper
                 return;
             }
 
-            GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
+            GameStateManager.Instance.ChangeState(GetExitGameState());
         }
     }
 }
