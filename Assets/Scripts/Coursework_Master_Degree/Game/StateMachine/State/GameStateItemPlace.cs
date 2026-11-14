@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.Ghosts;
+using Coursework_Master_Degree.Items.Surface;
 using Coursework_Master_Degree.ObjectsToPrint;
 using Coursework_Master_Degree.ObjectsToPrint.Ghost;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
@@ -33,6 +34,8 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 out var ghostGameObject,
                 out var ghostMeshRenderers,
                 out var ghostCorners);
+            ItemSurfaceDataHolder requiredSurface =
+                GetRequiredSurface(itemGameObject, out var isSurfaceRestricted);
             itemPlaceData = new ItemPlaceData()
             {
                 ItemGameObject = itemGameObject,
@@ -41,9 +44,44 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 ItemName = itemName,
                 GhostGameObject = ghostGameObject,
                 GhostMeshRenderers = ghostMeshRenderers,
-                GhostCorners = ghostCorners
+                GhostCorners = ghostCorners,
+                RequiredSurface = requiredSurface,
+                IsSurfaceRestricted = isSurfaceRestricted
             };
             influence = CreateInfluenceFrom(itemGameObject);
+        }
+
+        private static ItemSurfaceDataHolder GetRequiredSurface(
+            GameObject itemGameObject,
+            out bool isSurfaceRestricted)
+        {
+            isSurfaceRestricted = false;
+
+            if (!itemGameObject.TryGetComponent(out ItemFreePartDataHolder _))
+            {
+                return default;
+            }
+
+            // A free part must stay on the surface its core item is placed on,
+            // so e.g. a PC mouse cannot be moved to an unrelated table.
+            // The free part is deactivated before this state is created, so
+            // inactive parents have to be searched as well.
+            ItemDataHolder coreItem =
+                itemGameObject.GetComponentInParent<ItemDataHolder>(true);
+
+            if (coreItem == null)
+            {
+                return default;
+            }
+
+            while (coreItem.IsInstalled && coreItem.ParentItemDataHolder != null)
+            {
+                coreItem = coreItem.ParentItemDataHolder;
+            }
+
+            isSurfaceRestricted = true;
+
+            return coreItem.ParentSurfaceDataHolder;
         }
 
         private GameState GetReturnGameState()

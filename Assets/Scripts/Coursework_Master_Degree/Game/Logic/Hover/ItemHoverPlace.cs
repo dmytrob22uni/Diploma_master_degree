@@ -143,7 +143,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                 SetGhostPosition(hit.point);
 
-                bool isRight = IsAllCornersOverSurface();
+                bool isRight = IsSurfaceAllowed() && IsAllCornersOverSurface();
                 TrySetPlacementState(isRight);
             }
             else
@@ -175,6 +175,24 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                     DownCheck,
                     SurfaceLayer,
                     QueryTriggerInteraction.Ignore);
+        }
+
+        private bool IsSurfaceAllowed()
+        {
+            if (itemPlaceData == null || !itemPlaceData.IsSurfaceRestricted)
+            {
+                return true;
+            }
+
+            if (itemPlaceData.RequiredSurface == null || cachedCollider == null)
+            {
+                return false;
+            }
+
+            ItemSurfaceDataHolder surface =
+                cachedCollider.GetComponentInParent<ItemSurfaceDataHolder>();
+
+            return surface == itemPlaceData.RequiredSurface;
         }
 
         private bool IsAllCornersOverSurface()

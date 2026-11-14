@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items.Contracts;
+using Coursework_Master_Degree.Items.Surface;
 
 namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
 {
@@ -13,5 +14,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
         public GameObject GhostGameObject;
         public List<MeshRenderer> GhostMeshRenderers;
         public List<Transform> GhostCorners;
+        public ItemSurfaceDataHolder RequiredSurface;
+        public bool IsSurfaceRestricted;
     }
 }
