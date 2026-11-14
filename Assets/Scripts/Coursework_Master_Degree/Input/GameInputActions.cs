@@ -443,7 +443,7 @@ namespace Coursework_Master_Degree.Input
                 {
                     ""name"": """",
                     ""id"": ""5cd3b32f-a3bd-4681-a4b5-6a353f6bd1b5"",
-                    ""path"": ""<Keyboard>/o"",
+                    ""path"": ""<Keyboard>/m"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
