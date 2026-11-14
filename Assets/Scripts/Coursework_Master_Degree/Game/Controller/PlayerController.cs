@@ -105,7 +105,8 @@ namespace Coursework_Master_Degree.Game.Controller
                 // ItemPlace Input
                 GameStateManager.Instance.InputReader.OnPlaceItemEvent += HandlePlaceItem;
                 GameStateManager.Instance.InputReader.OnRotateItemEvent += HandleRotateItem;
-                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket)
+                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket &&
+                    GameStateManager.Instance.PreviousGameState is not GameStatePartsRemove)
                 {
                     GameStateManager.Instance.InputReader.OnCancelEvent += HandleCancelItemPlace;
                 }
@@ -135,7 +136,8 @@ namespace Coursework_Master_Degree.Game.Controller
                 // ItemPlace Input
                 GameStateManager.Instance.InputReader.OnPlaceItemEvent -= HandlePlaceItem;
                 GameStateManager.Instance.InputReader.OnRotateItemEvent -= HandleRotateItem;
-                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket)
+                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket &&
+                    GameStateManager.Instance.PreviousGameState is not GameStatePartsRemove)
                 {
                     GameStateManager.Instance.InputReader.OnCancelEvent -= HandleCancelItemPlace;
                 }

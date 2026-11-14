@@ -50,6 +50,11 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
         {
             var gameStateManager = GameStateManager.Instance;
 
+            if (gameStateManager.CurrentGameState is GameStatePartsRemove)
+            {
+                return GameStatePartsRemove.GetReturnGameState();
+            }
+
             if (gameStateManager.CurrentGameState is GameStateItemsMarket)
             {
                 return gameStateManager.PreviousGameState;

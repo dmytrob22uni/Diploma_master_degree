@@ -71,7 +71,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                 isPlacementStateApplied = false;
 
-                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket)
+                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket &&
+                    GameStateManager.Instance.PreviousGameState is not GameStatePartsRemove)
                 {
                     CancelRoot.SetActive(true);
                 }
