@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 361045678852359181}
   - component: {fileID: 2681966614510173508}
   - component: {fileID: 958928578868707070}
+  - component: {fileID: 5243177269812034568}
   m_Layer: 0
   m_Name: eyes
   m_TagString: Untagged
@@ -159,6 +160,30 @@ MonoBehaviour:
   ItemHoverWearNameText: {fileID: 0}
   ItemHoverWearDescriptionText: {fileID: 0}
   ItemHoverWearLevelText: {fileID: 0}
+--- !u!114 &5243177269812034568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e1f635be7f3a0ebd843d67a867560ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.ItemHoverSell
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 1
+  ItemLayer:
+    serializedVersion: 2
+    m_Bits: 8511488
+  WearLevelThresholdPercent: 70
+  PartWearLevelThresholdPercent: 20
+  WornPartsCountThreshold: 3
+  ItemHoverSellText: {fileID: 0}
+  ItemHoverSellNameText: {fileID: 0}
+  ItemHoverSellDescriptionText: {fileID: 0}
+  SellRoot: {fileID: 0}
 --- !u!1 &3798244653681066634
 GameObject:
   m_ObjectHideFlags: 0

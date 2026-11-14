@@ -30,6 +30,7 @@ namespace Coursework_Master_Degree.Game.Controller
         public GameObject PartsWearInterface;
         public GameObject PartsRemoveInterface;
         public GameObject PartsIntegrityInterface;
+        public GameObject ItemsSellCanvas;
 
         public void SetFreeWalkState(bool enable)
         {
@@ -37,6 +38,7 @@ namespace Coursework_Master_Degree.Game.Controller
             {
                 // FreeWalk Input
                 GameStateManager.Instance.InputReader.OnItemsMarketEvent += HandleItemsMarket;
+                GameStateManager.Instance.InputReader.OnItemsSellEvent += HandleItemsSell;
 
                 // FreeWalk Interfaces
                 PointInterface.SetActive(true);
@@ -46,6 +48,7 @@ namespace Coursework_Master_Degree.Game.Controller
             {
                 // FreeWalk Input
                 GameStateManager.Instance.InputReader.OnItemsMarketEvent -= HandleItemsMarket;
+                GameStateManager.Instance.InputReader.OnItemsSellEvent -= HandleItemsSell;
 
                 // FreeWalk Interfaces
                 PointInterface.SetActive(false);
@@ -171,6 +174,28 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
+        public void SetItemsSellState(bool enable)
+        {
+            if (enable)
+            {
+                // ItemsSell Input
+                GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitItemsSell;
+
+                // ItemsSell Interfaces
+                PointInterface.SetActive(true);
+                ItemsSellCanvas.SetActive(true);
+            }
+            else
+            {
+                // ItemsSell Input
+                GameStateManager.Instance.InputReader.OnQuitEvent -= HandleQuitItemsSell;
+
+                // ItemsSell Interfaces
+                PointInterface.SetActive(false);
+                ItemsSellCanvas.SetActive(false);
+            }
+        }
+
         public void SetPartsIntegrityState(bool enable)
         {
             if (enable)
@@ -204,12 +229,24 @@ namespace Coursework_Master_Degree.Game.Controller
             GameStateManager.Instance.ChangeState(new GameStateItemsMarket());
         }
 
+        private void HandleItemsSell()
+        {
+            GameStateManager.Instance.ChangeState(new GameStateItemsSell());
+        }
+
         // ItemsMarket
 
         private void HandleQuitItemsMarket()
         {
             ItemsMarketGenerator.ApplyQuitItemsMarket();
 
+            GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
+        }
+
+        // ItemsSell
+
+        private void HandleQuitItemsSell()
+        {
             GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
         }
 

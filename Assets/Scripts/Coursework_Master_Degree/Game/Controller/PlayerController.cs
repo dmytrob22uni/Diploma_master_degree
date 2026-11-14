@@ -20,6 +20,8 @@ namespace Coursework_Master_Degree.Game.Controller
         [Header("FreeWalk Logics")]
         public ItemHoverInfo ItemHoverInfo;
         public ItemHoverInteract ItemHoverInteract;
+        [Header("ItemsSell Logics")]
+        public ItemHoverSell ItemHoverSell;
         [Header("ItemPlace Logics")]
         public ItemHoverPlace ItemHoverPlace;
         [Header("Parts Logics")]
@@ -72,6 +74,50 @@ namespace Coursework_Master_Degree.Game.Controller
                 // FreeWalk Logics
                 ItemHoverInfo.enabled = false;
                 ItemHoverInteract.enabled = false;
+            }
+        }
+
+        public void SetItemsSellState(bool enable)
+        {
+            if (enable)
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent += HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent += HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent += HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent += HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent += HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent += HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent += HandleToggleZoom;
+                // ItemsSell Inputs
+                GameStateManager.Instance.InputReader.OnSellItemEvent += HandleSellItem;
+
+                // Movement Logics
+                Movement.enabled = true;
+                Jump.enabled = true;
+                Look.enabled = true;
+                // ItemsSell Logics
+                ItemHoverSell.enabled = true;
+            }
+            else
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent -= HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent -= HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent -= HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent -= HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent -= HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
+                // ItemsSell Inputs
+                GameStateManager.Instance.InputReader.OnSellItemEvent -= HandleSellItem;
+
+                // Movement Logics
+                Movement.enabled = false;
+                Jump.enabled = false;
+                Look.enabled = false;
+                // ItemsSell Logics
+                ItemHoverSell.enabled = false;
             }
         }
 
@@ -341,6 +387,13 @@ namespace Coursework_Master_Degree.Game.Controller
         private void HandleInteractWithItem()
         {
             ItemHoverInteract.ApplyInteractWithItem();
+        }
+
+        // ItemsSell
+
+        private void HandleSellItem()
+        {
+            ItemHoverSell.ApplySellItem();
         }
 
         // ItemPlace
