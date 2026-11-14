@@ -130,6 +130,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a812487a8e65e40faae484d13fce495c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.PartHoverRemove
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 1
+  PartLayer:
+    serializedVersion: 2
+    m_Bits: 65536
+  BlockedDependenciesGhostDuration: 2
+  ItemHoverRemoveNameText: {fileID: 0}
+  RemoveRoot: {fileID: 0}
+  ItemHoverRemoveText: {fileID: 0}
 --- !u!114 &958928578868707070
 MonoBehaviour:
   m_ObjectHideFlags: 0
