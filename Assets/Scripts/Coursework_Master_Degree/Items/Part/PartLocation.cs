@@ -210,8 +210,8 @@ namespace Coursework_Master_Degree.Items.Part
 
             part.transform.SetParent(gameObject.transform);
             part.transform.SetAsFirstSibling();
-            part.transform.position = Vector3.zero;
-            part.transform.rotation = Quaternion.identity;
+            part.transform.localPosition = Vector3.zero;
+            part.transform.localRotation = Quaternion.identity;
 
             InstalledPart = part;
 
