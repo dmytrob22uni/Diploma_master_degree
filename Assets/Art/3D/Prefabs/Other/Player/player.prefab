@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2681966614510173508}
   - component: {fileID: 958928578868707070}
   - component: {fileID: 5243177269812034568}
+  - component: {fileID: 1961234018158427900}
   m_Layer: 0
   m_Name: eyes
   m_TagString: Untagged
@@ -101,6 +102,7 @@ MonoBehaviour:
   ItemHoverPlaceText: {fileID: 0}
   PlaceRoot: {fileID: 0}
   CancelRoot: {fileID: 0}
+  InstallModeRoot: {fileID: 0}
 --- !u!114 &361045678852359181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,6 +187,26 @@ MonoBehaviour:
   ItemHoverSellNameText: {fileID: 0}
   ItemHoverSellDescriptionText: {fileID: 0}
   SellRoot: {fileID: 0}
+--- !u!114 &1961234018158427900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601146082286700735}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e6e4e6e4241330da39a33b06d56251, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Game.Logic.Hover.PartHoverInstall
+  Eyes: {fileID: 1364994310115103343}
+  HoverDistance: 1
+  PartLocationLayer:
+    serializedVersion: 2
+    m_Bits: 131072
+  BlockedDependenciesGhostDuration: 2
+  PartInstallNameText: {fileID: 0}
+  InstallRoot: {fileID: 0}
 --- !u!1 &3798244653681066634
 GameObject:
   m_ObjectHideFlags: 0
