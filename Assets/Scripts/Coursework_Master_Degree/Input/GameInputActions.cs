@@ -505,6 +505,16 @@ namespace Coursework_Master_Degree.Input
                     ""interactions"": """",
                     ""initialStateCheck"": true,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""InstallModeFromItemPlace"",
+                    ""type"": ""Button"",
+                    ""id"": ""c7cb05a0-f03c-49db-93f7-298c4bc80865"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -516,6 +526,17 @@ namespace Coursework_Master_Degree.Input
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
                     ""action"": ""PlaceItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b8fec61b-8a8e-4c09-83ac-06e4a6748640"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";keyboard&mouse"",
+                    ""action"": ""InstallModeFromItemPlace"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -545,6 +566,16 @@ namespace Coursework_Master_Degree.Input
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""AnotherHoverLayerPartInstall"",
+                    ""type"": ""Value"",
+                    ""id"": ""13fa5845-d800-4701-b0c7-68e551a16141"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -556,6 +587,17 @@ namespace Coursework_Master_Degree.Input
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
                     ""action"": ""InstallPart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fe6c1ba9-bbea-42f9-b664-da9e5b9078dd"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";keyboard&mouse"",
+                    ""action"": ""AnotherHoverLayerPartInstall"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1309,9 +1351,11 @@ namespace Coursework_Master_Degree.Input
             m_ItemPlace = asset.FindActionMap("ItemPlace", throwIfNotFound: true);
             m_ItemPlace_PlaceItem = m_ItemPlace.FindAction("PlaceItem", throwIfNotFound: true);
             m_ItemPlace_RotateItem = m_ItemPlace.FindAction("RotateItem", throwIfNotFound: true);
+            m_ItemPlace_InstallModeFromItemPlace = m_ItemPlace.FindAction("InstallModeFromItemPlace", throwIfNotFound: true);
             // PartInstall
             m_PartInstall = asset.FindActionMap("PartInstall", throwIfNotFound: true);
             m_PartInstall_InstallPart = m_PartInstall.FindAction("InstallPart", throwIfNotFound: true);
+            m_PartInstall_AnotherHoverLayerPartInstall = m_PartInstall.FindAction("AnotherHoverLayerPartInstall", throwIfNotFound: true);
             // PlugConnect
             m_PlugConnect = asset.FindActionMap("PlugConnect", throwIfNotFound: true);
             m_PlugConnect_ConnectPlug = m_PlugConnect.FindAction("ConnectPlug", throwIfNotFound: true);
@@ -1950,6 +1994,7 @@ namespace Coursework_Master_Degree.Input
         private List<IItemPlaceActions> m_ItemPlaceActionsCallbackInterfaces = new List<IItemPlaceActions>();
         private readonly InputAction m_ItemPlace_PlaceItem;
         private readonly InputAction m_ItemPlace_RotateItem;
+        private readonly InputAction m_ItemPlace_InstallModeFromItemPlace;
         /// <summary>
         /// Provides access to input actions defined in input action map "ItemPlace".
         /// </summary>
@@ -1969,6 +2014,10 @@ namespace Coursework_Master_Degree.Input
             /// Provides access to the underlying input action "ItemPlace/RotateItem".
             /// </summary>
             public InputAction @RotateItem => m_Wrapper.m_ItemPlace_RotateItem;
+            /// <summary>
+            /// Provides access to the underlying input action "ItemPlace/InstallModeFromItemPlace".
+            /// </summary>
+            public InputAction @InstallModeFromItemPlace => m_Wrapper.m_ItemPlace_InstallModeFromItemPlace;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -2001,6 +2050,9 @@ namespace Coursework_Master_Degree.Input
                 @RotateItem.started += instance.OnRotateItem;
                 @RotateItem.performed += instance.OnRotateItem;
                 @RotateItem.canceled += instance.OnRotateItem;
+                @InstallModeFromItemPlace.started += instance.OnInstallModeFromItemPlace;
+                @InstallModeFromItemPlace.performed += instance.OnInstallModeFromItemPlace;
+                @InstallModeFromItemPlace.canceled += instance.OnInstallModeFromItemPlace;
             }
 
             /// <summary>
@@ -2018,6 +2070,9 @@ namespace Coursework_Master_Degree.Input
                 @RotateItem.started -= instance.OnRotateItem;
                 @RotateItem.performed -= instance.OnRotateItem;
                 @RotateItem.canceled -= instance.OnRotateItem;
+                @InstallModeFromItemPlace.started -= instance.OnInstallModeFromItemPlace;
+                @InstallModeFromItemPlace.performed -= instance.OnInstallModeFromItemPlace;
+                @InstallModeFromItemPlace.canceled -= instance.OnInstallModeFromItemPlace;
             }
 
             /// <summary>
@@ -2056,6 +2111,7 @@ namespace Coursework_Master_Degree.Input
         private readonly InputActionMap m_PartInstall;
         private List<IPartInstallActions> m_PartInstallActionsCallbackInterfaces = new List<IPartInstallActions>();
         private readonly InputAction m_PartInstall_InstallPart;
+        private readonly InputAction m_PartInstall_AnotherHoverLayerPartInstall;
         /// <summary>
         /// Provides access to input actions defined in input action map "PartInstall".
         /// </summary>
@@ -2071,6 +2127,10 @@ namespace Coursework_Master_Degree.Input
             /// Provides access to the underlying input action "PartInstall/InstallPart".
             /// </summary>
             public InputAction @InstallPart => m_Wrapper.m_PartInstall_InstallPart;
+            /// <summary>
+            /// Provides access to the underlying input action "PartInstall/AnotherHoverLayerPartInstall".
+            /// </summary>
+            public InputAction @AnotherHoverLayerPartInstall => m_Wrapper.m_PartInstall_AnotherHoverLayerPartInstall;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -2100,6 +2160,9 @@ namespace Coursework_Master_Degree.Input
                 @InstallPart.started += instance.OnInstallPart;
                 @InstallPart.performed += instance.OnInstallPart;
                 @InstallPart.canceled += instance.OnInstallPart;
+                @AnotherHoverLayerPartInstall.started += instance.OnAnotherHoverLayerPartInstall;
+                @AnotherHoverLayerPartInstall.performed += instance.OnAnotherHoverLayerPartInstall;
+                @AnotherHoverLayerPartInstall.canceled += instance.OnAnotherHoverLayerPartInstall;
             }
 
             /// <summary>
@@ -2114,6 +2177,9 @@ namespace Coursework_Master_Degree.Input
                 @InstallPart.started -= instance.OnInstallPart;
                 @InstallPart.performed -= instance.OnInstallPart;
                 @InstallPart.canceled -= instance.OnInstallPart;
+                @AnotherHoverLayerPartInstall.started -= instance.OnAnotherHoverLayerPartInstall;
+                @AnotherHoverLayerPartInstall.performed -= instance.OnAnotherHoverLayerPartInstall;
+                @AnotherHoverLayerPartInstall.canceled -= instance.OnAnotherHoverLayerPartInstall;
             }
 
             /// <summary>
@@ -3406,6 +3472,13 @@ namespace Coursework_Master_Degree.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRotateItem(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "InstallModeFromItemPlace" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnInstallModeFromItemPlace(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PartInstall" which allows adding and removing callbacks.
@@ -3421,6 +3494,13 @@ namespace Coursework_Master_Degree.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnInstallPart(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "AnotherHoverLayerPartInstall" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnAnotherHoverLayerPartInstall(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PlugConnect" which allows adding and removing callbacks.

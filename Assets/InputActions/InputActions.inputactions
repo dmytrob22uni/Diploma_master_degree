@@ -417,6 +417,16 @@
                     "interactions": "",
                     "initialStateCheck": true,
                     "priority": 0
+                },
+                {
+                    "name": "InstallModeFromItemPlace",
+                    "type": "Button",
+                    "id": "c7cb05a0-f03c-49db-93f7-298c4bc80865",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -428,6 +438,17 @@
                     "processors": "",
                     "groups": ";keyboard&mouse",
                     "action": "PlaceItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b8fec61b-8a8e-4c09-83ac-06e4a6748640",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "InstallModeFromItemPlace",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -457,6 +478,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "AnotherHoverLayerPartInstall",
+                    "type": "Value",
+                    "id": "13fa5845-d800-4701-b0c7-68e551a16141",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -468,6 +499,17 @@
                     "processors": "",
                     "groups": ";keyboard&mouse",
                     "action": "InstallPart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fe6c1ba9-bbea-42f9-b664-da9e5b9078dd",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";keyboard&mouse",
+                    "action": "AnotherHoverLayerPartInstall",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

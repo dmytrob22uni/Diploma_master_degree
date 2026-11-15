@@ -49,9 +49,11 @@ namespace Coursework_Master_Degree.Input
         // === ItemPlace events ===
         public event Action OnPlaceItemEvent = delegate { };
         public event Action<Vector2> OnRotateItemEvent = delegate { };
+        public event Action OnInstallModeFromItemPlaceEvent = delegate { };
 
         // === PartInstall events ===
         public event Action OnInstallPartEvent = delegate { };
+        public event Action<Vector2> OnAnotherHoverLayerPartInstallEvent = delegate { };
 
         // === PlugConnect events ===
         public event Action OnConnectPlugEvent = delegate { };
@@ -161,6 +163,7 @@ namespace Coursework_Master_Degree.Input
         {
             DisableAllInput();
             gameInputActions.Movement.Enable();
+            gameInputActions.QuitCancel.Enable();
             gameInputActions.PartInstall.Enable();
         }
 
@@ -415,6 +418,14 @@ namespace Coursework_Master_Degree.Input
             OnRotateItemEvent?.Invoke(value);
         }
 
+        public void OnInstallModeFromItemPlace(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                OnInstallModeFromItemPlaceEvent?.Invoke();
+            }
+        }
+
         // === PartInstall callbacks ===================================================================================
 
         public void OnInstallPart(InputAction.CallbackContext context)
@@ -423,6 +434,12 @@ namespace Coursework_Master_Degree.Input
             {
                 OnInstallPartEvent?.Invoke();
             }
+        }
+
+        public void OnAnotherHoverLayerPartInstall(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            OnAnotherHoverLayerPartInstallEvent?.Invoke(value);
         }
 
         // === PlugConnect callbacks ===================================================================================
