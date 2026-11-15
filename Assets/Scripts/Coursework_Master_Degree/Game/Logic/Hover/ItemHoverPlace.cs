@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Coursework_Master_Degree.Game.StateMachine;
 using Coursework_Master_Degree.Game.StateMachine.State;
 using Coursework_Master_Degree.Game.StateMachine.State.ItemPlace;
+using Coursework_Master_Degree.Items;
+using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
 
 namespace Coursework_Master_Degree.Game.Logic.Hover
@@ -41,6 +43,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         public TextMeshProUGUI ItemHoverPlaceText;
         public GameObject PlaceRoot;
         public GameObject CancelRoot;
+        public GameObject InstallModeRoot;
 
         private MaterialPropertyBlock propertyBlock;
         private int propertyID;
@@ -69,18 +72,18 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 ghostCorners = value.GhostCorners;
                 ghostMeshRenderers = value.GhostMeshRenderers;
 
+                itemGameObject.TryGetComponent(out itemDataHolder);
+
                 isPlacementStateApplied = false;
 
-                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket &&
-                    GameStateManager.Instance.PreviousGameState is not GameStatePartsRemove)
-                {
-                    CancelRoot.SetActive(true);
-                }
+                CancelRoot.SetActive(value.IsCancelAvailable);
+                SetInstallTarget(default);
             }
         }
 
         private GameObject itemGameObject;
         private string itemName;
+        private ItemDataHolder itemDataHolder;
 
         private GameObject ghostGameObject;
         private List<Transform> ghostCorners;
@@ -114,6 +117,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             ClearHover();
             CancelRoot.SetActive(false);
+            SetInstallTarget(default);
         }
 
         private void Update()
@@ -141,6 +145,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 cachedCollider = hit.collider;
 
+                SetInstallTarget(hit.collider.GetComponentInParent<PartsAssembly>());
+
                 SetGhostPosition(hit.point);
 
                 bool isRight = IsSurfaceAllowed() && IsAllCornersOverSurface();
@@ -150,9 +156,33 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 ClearCachedCollider();
 
+                SetInstallTarget(default);
+
                 SetGhostPosition(ray.GetPoint(HoverDistance));
 
                 TrySetPlacementState(false);
+            }
+        }
+
+        private void SetInstallTarget(PartsAssembly partsAssembly)
+        {
+            // Installation mode is offered only while the placed item is a
+            // part expected by the hovered complex item's assembly.
+            bool isInstallModeAvailable = itemPlaceData != null &&
+                itemPlaceData.IsInstallModeAvailable &&
+                partsAssembly != null &&
+                itemDataHolder != null &&
+                partsAssembly.IsExpectedPart(itemDataHolder.ItemMetaData);
+
+            if (itemPlaceData != null)
+            {
+                itemPlaceData.InstallTargetAssembly =
+                    isInstallModeAvailable ? partsAssembly : default;
+            }
+
+            if (InstallModeRoot != null)
+            {
+                InstallModeRoot.SetActive(isInstallModeAvailable);
             }
         }
 
@@ -271,6 +301,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         {
             itemGameObject = default;
             itemName = default;
+            itemDataHolder = default;
             ghostGameObject = default;
             ghostCorners = default;
             influence = default;
@@ -299,6 +330,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void OnDisable()
         {
+            SetInstallTarget(default);
+
             ClearPassedData();
             ClearCachedCollider();
             ClearState();

@@ -24,6 +24,7 @@ namespace Coursework_Master_Degree.Game.StateMachine
 
         [Header("Parts State Setups")]
         public PartsIntegrityStateSetup PartsIntegrityStateSetup;
+        public PartsInstallStateSetup PartsInstallStateSetup;
         public PartsRemoveStateSetup PartsRemoveStateSetup;
         public PartsWearStateSetup PartsWearStateSetup;
 

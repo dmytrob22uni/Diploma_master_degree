@@ -63,6 +63,57 @@ namespace Coursework_Master_Degree.Items.Part
             return partTransform == transform || partTransform.IsChildOf(transform);
         }
 
+        public bool IsPartLocationOfAssembly(PartLocation partLocation)
+        {
+            if (partLocation == null)
+            {
+                return false;
+            }
+
+            foreach (var part in RegularPartLocationsList)
+            {
+                if (part == partLocation)
+                {
+                    return true;
+                }
+            }
+
+            if (OptionalPartLocationsList == null)
+            {
+                return false;
+            }
+
+            foreach (var optionalPart in OptionalPartLocationsList)
+            {
+                foreach (var part in optionalPart.PartLocationsList)
+                {
+                    if (part == partLocation)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsExpectedPart(ItemMetaSO partMetaData)
+        {
+            if (partMetaData == null)
+            {
+                return false;
+            }
+
+            if (RegularPartLocationsList != null && IsHaveRegularPart(partMetaData))
+            {
+                return true;
+            }
+
+            return IsHaveOptionalParts &&
+                OptionalPartLocationsList != null &&
+                IsHaveOptionalPart(partMetaData);
+        }
+
         // single regular location
 
         public bool IsHaveRegularPart(ItemMetaSO partMetaData)

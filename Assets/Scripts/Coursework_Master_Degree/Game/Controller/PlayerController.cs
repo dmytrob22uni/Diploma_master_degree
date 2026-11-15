@@ -28,7 +28,10 @@ namespace Coursework_Master_Degree.Game.Controller
         [Header("Parts Logics")]
         public PartHoverIntegrity PartHoverIntegrity;
         public PartHoverRemove PartHoverRemove;
+        public PartHoverInstall PartHoverInstall;
         public PartHoverWear PartHoverWear;
+
+        private int itemPlaceCancelEnableFrame = -1;
 
         public void SetFreeWalkState(bool enable)
         {
@@ -152,10 +155,10 @@ namespace Coursework_Master_Degree.Game.Controller
                 // ItemPlace Input
                 GameStateManager.Instance.InputReader.OnPlaceItemEvent += HandlePlaceItem;
                 GameStateManager.Instance.InputReader.OnRotateItemEvent += HandleRotateItem;
-                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket &&
-                    GameStateManager.Instance.PreviousGameState is not GameStatePartsRemove)
+                if (itemPlaceData != null && itemPlaceData.IsCancelAvailable)
                 {
                     GameStateManager.Instance.InputReader.OnCancelEvent += HandleCancelItemPlace;
+                    itemPlaceCancelEnableFrame = Time.frameCount;
                 }
 
                 // Movement Logics
@@ -183,8 +186,8 @@ namespace Coursework_Master_Degree.Game.Controller
                 // ItemPlace Input
                 GameStateManager.Instance.InputReader.OnPlaceItemEvent -= HandlePlaceItem;
                 GameStateManager.Instance.InputReader.OnRotateItemEvent -= HandleRotateItem;
-                if (GameStateManager.Instance.PreviousGameState is not GameStateItemsMarket &&
-                    GameStateManager.Instance.PreviousGameState is not GameStatePartsRemove)
+                if (ItemHoverPlace.ItemPlaceData != null &&
+                    ItemHoverPlace.ItemPlaceData.IsCancelAvailable)
                 {
                     GameStateManager.Instance.InputReader.OnCancelEvent -= HandleCancelItemPlace;
                 }
@@ -195,6 +198,57 @@ namespace Coursework_Master_Degree.Game.Controller
                 Look.enabled = false;
                 // ItemPlace Logics
                 ItemHoverPlace.enabled = false;
+            }
+        }
+
+        public void SetPartInstallState(
+            bool enable,
+            ItemDataHolder targetItem = default,
+            PartsAssembly targetAssembly = default)
+        {
+            if (enable)
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent += HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent += HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent += HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent += HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent += HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent += HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent += HandleToggleZoom;
+                // PartInstall Inputs
+                GameStateManager.Instance.InputReader.OnInstallPartEvent += HandleInstallPart;
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerPartInstallEvent += HandleAnotherHoverLayerPartInstall;
+
+                // Movement Logics
+                Movement.enabled = true;
+                Jump.enabled = true;
+                Look.enabled = true;
+                // PartInstall Logics
+                PartHoverInstall.SetTargetItem(targetItem, targetAssembly);
+                PartHoverInstall.enabled = true;
+            }
+            else
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent -= HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent -= HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent -= HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent -= HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent -= HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
+                // PartInstall Inputs
+                GameStateManager.Instance.InputReader.OnInstallPartEvent -= HandleInstallPart;
+                GameStateManager.Instance.InputReader.OnAnotherHoverLayerPartInstallEvent -= HandleAnotherHoverLayerPartInstall;
+
+                // Movement Logics
+                Movement.enabled = false;
+                Jump.enabled = false;
+                Look.enabled = false;
+                // PartInstall Logics
+                PartHoverInstall.enabled = false;
+                PartHoverInstall.SetTargetItem(default);
             }
         }
 
@@ -429,6 +483,15 @@ namespace Coursework_Master_Degree.Game.Controller
 
         private void HandleCancelItemPlace()
         {
+            // Item place can be resumed from part install inside the Quit
+            // callback. Quit and Cancel share the same key, so the Cancel
+            // callback of that same press must not cancel the resumed
+            // placement immediately.
+            if (Time.frameCount == itemPlaceCancelEnableFrame)
+            {
+                return;
+            }
+
             ItemHoverPlace.ApplyCancelItemPlace();
         }
 
@@ -437,6 +500,18 @@ namespace Coursework_Master_Degree.Game.Controller
         private void HandleAnotherHoverLayerPartsWear(Vector2 value)
         {
             PartHoverWear.ApplyAnotherHoverLayer(value);
+        }
+
+        // PartInstall
+
+        private void HandleInstallPart()
+        {
+            PartHoverInstall.ApplyInstallPart();
+        }
+
+        private void HandleAnotherHoverLayerPartInstall(Vector2 value)
+        {
+            PartHoverInstall.ApplyAnotherHoverLayer(value);
         }
 
         // PartsRemove

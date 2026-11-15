@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items.Contracts;
+using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
 
 namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
@@ -9,6 +10,9 @@ namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
     {
         public GameObject ItemGameObject;
         public GameState ReturnGameState;
+        public bool IsCancelAvailable;
+        public bool IsInstallModeAvailable;
+        public PartsAssembly InstallTargetAssembly;
         public ISurfacePlaceable SurfacePlaceable;
         public string ItemName;
         public GameObject GhostGameObject;

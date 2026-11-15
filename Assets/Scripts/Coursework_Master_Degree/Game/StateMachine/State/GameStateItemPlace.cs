@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.Ghosts;
+using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
 using Coursework_Master_Degree.ObjectsToPrint;
 using Coursework_Master_Degree.ObjectsToPrint.Ghost;
@@ -22,10 +23,17 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
         private readonly ItemPlaceData itemPlaceData;
         private readonly Influence influence;
 
+        public ItemDataHolder ItemDataHolder { get; }
+        public bool IsPartInstallable { get; }
+        public GameState ReturnGameState => itemPlaceData.ReturnGameState;
+        public PartsAssembly InstallTargetAssembly => itemPlaceData.InstallTargetAssembly;
+
         public GameStateItemPlace(GameObject itemGameObject)
         {
             playerController = GameStateManager.Instance.PlayerController;
             interfaceController = GameStateManager.Instance.InterfaceController;
+
+            ItemDataHolder itemDataHolder = itemGameObject.GetComponent<ItemDataHolder>();
 
             ExtractGhostData(
                 itemGameObject,
@@ -40,6 +48,8 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             {
                 ItemGameObject = itemGameObject,
                 ReturnGameState = GetReturnGameState(),
+                IsCancelAvailable = IsItemPlaceCancelAvailable(),
+                IsInstallModeAvailable = IsInstallablePart(itemDataHolder),
                 SurfacePlaceable = surfacePlaceable,
                 ItemName = itemName,
                 GhostGameObject = ghostGameObject,
@@ -49,6 +59,16 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 IsSurfaceRestricted = isSurfaceRestricted
             };
             influence = CreateInfluenceFrom(itemGameObject);
+
+            ItemDataHolder = itemDataHolder;
+            IsPartInstallable = itemPlaceData.IsInstallModeAvailable;
+        }
+
+        private static bool IsInstallablePart(ItemDataHolder item)
+        {
+            return item != null &&
+                item.ItemGhostMetaSO != null &&
+                item.ItemGhostMetaSO.IsHaveGhostType(ItemGhostType.Installation);
         }
 
         private static ItemSurfaceDataHolder GetRequiredSurface(
@@ -99,6 +119,16 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             }
 
             return gameStateManager.CurrentGameState;
+        }
+
+        private static bool IsItemPlaceCancelAvailable()
+        {
+            // Buying an item or re-placing a removed part is a forced
+            // placement flow, so it must not expose the cancel hint.
+            GameState currentGameState = GameStateManager.Instance.CurrentGameState;
+
+            return currentGameState is not GameStateItemsMarket &&
+                currentGameState is not GameStatePartsRemove;
         }
 
         private void ExtractGhostData(GameObject itemGameObject, out ISurfacePlaceable surfacePlaceable, out string itemName, out GameObject hostGameObject, out List<MeshRenderer> ghostMeshRenderers, out List<Transform> ghostCorners)
@@ -210,15 +240,29 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
         {
             HideCursor();
 
+            ShowPlacementGhost();
+
             GameStateManager.Instance.InputReader.EnableItemPlaceStateInput();
 
             playerController.SetItemPlaceState(true, itemPlaceData, influence);
-            interfaceController.SetItemPlaceState(true);
+            interfaceController.SetItemPlaceState(true, IsPartInstallable);
+        }
+
+        private void ShowPlacementGhost()
+        {
+            // The ghost is hidden when entering part install. Re-entering
+            // this state (e.g. after quitting part install) must restore it.
+            if (itemPlaceData.GhostGameObject == null)
+            {
+                return;
+            }
+
+            itemPlaceData.GhostGameObject.SetActive(true);
         }
 
         public override void OnExit()
         {
-            interfaceController.SetItemPlaceState(false);
+            interfaceController.SetItemPlaceState(false, IsPartInstallable);
             playerController.SetItemPlaceState(false);
 
             GameStateManager.Instance.InputReader.DisableAllInput();

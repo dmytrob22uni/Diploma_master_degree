@@ -1,5 +1,7 @@
 using UnityEngine;
 using NaughtyAttributes;
+using Coursework_Master_Degree.Items;
+using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Game.Logic.Interface.ItemsMarket;
 using Coursework_Master_Degree.Game.Logic.Interface.InteractionsList;
 using Coursework_Master_Degree.Game.StateMachine;
@@ -25,6 +27,7 @@ namespace Coursework_Master_Degree.Game.Controller
         public GameObject ItemsMarketInterface;
         public GameObject ItemsMarketCanvas;
         public GameObject ItemPlaceInterface;
+        public GameObject PartInstallInterface;
         public GameObject InteractionsListInterface;
         public GameObject InteractionsListCanvas;
         public GameObject PartsWearInterface;
@@ -85,19 +88,53 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
-        public void SetItemPlaceState(bool enable)
+        public void SetItemPlaceState(bool enable, bool isInstallModeAvailable = false)
         {
             if (enable)
             {
+                // ItemPlace Input
+                if (isInstallModeAvailable)
+                {
+                    GameStateManager.Instance.InputReader.OnInstallModeFromItemPlaceEvent += HandleInstallModeFromItemPlace;
+                }
+
                 // ItemPlace Interfaces
                 PointInterface.SetActive(true);
                 ItemPlaceInterface.SetActive(true);
             }
             else
             {
+                // ItemPlace Input
+                if (isInstallModeAvailable)
+                {
+                    GameStateManager.Instance.InputReader.OnInstallModeFromItemPlaceEvent -= HandleInstallModeFromItemPlace;
+                }
+
                 // ItemPlace Interfaces
                 PointInterface.SetActive(false);
                 ItemPlaceInterface.SetActive(false);
+            }
+        }
+
+        public void SetPartInstallState(bool enable)
+        {
+            if (enable)
+            {
+                // PartInstall Input
+                GameStateManager.Instance.InputReader.OnQuitEvent += HandleQuitPartInstall;
+
+                // PartInstall Interfaces
+                PointInterface.SetActive(true);
+                PartInstallInterface.SetActive(true);
+            }
+            else
+            {
+                // PartInstall Input
+                GameStateManager.Instance.InputReader.OnQuitEvent -= HandleQuitPartInstall;
+
+                // PartInstall Interfaces
+                PointInterface.SetActive(false);
+                PartInstallInterface.SetActive(false);
             }
         }
 
@@ -242,6 +279,48 @@ namespace Coursework_Master_Degree.Game.Controller
         private void HandleItemsSell()
         {
             GameStateManager.Instance.ChangeState(new GameStateItemsSell());
+        }
+
+        // ItemPlace
+
+        private void HandleInstallModeFromItemPlace()
+        {
+            if (GameStateManager.Instance.CurrentGameState is not GameStateItemPlace itemPlace)
+            {
+                return;
+            }
+
+            ItemDataHolder item = itemPlace.ItemDataHolder;
+            PartsAssembly partsAssembly = itemPlace.InstallTargetAssembly;
+
+            if (item == null || !itemPlace.IsPartInstallable || partsAssembly == null)
+            {
+                return;
+            }
+
+            GameStateManager.Instance.ChangeState(
+                new GameStatePartInstall(item, itemPlace.ReturnGameState, partsAssembly));
+        }
+
+        // PartInstall
+
+        private void HandleQuitPartInstall()
+        {
+            if (GameStateManager.Instance.CurrentGameState is not GameStatePartInstall)
+            {
+                return;
+            }
+
+            // Part install is entered only from item placement, so quitting
+            // resumes placing the same item instead of dropping it.
+            if (GameStateManager.Instance.PreviousGameState is GameStateItemPlace itemPlace)
+            {
+                GameStateManager.Instance.ChangeState(itemPlace);
+
+                return;
+            }
+
+            GameStateManager.Instance.ChangeState(new GameStateFreeWalk());
         }
 
         // ItemsMarket
