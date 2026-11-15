@@ -208,10 +208,14 @@ namespace Coursework_Master_Degree.Items.Part
                 return;
             }
 
-            part.transform.SetParent(gameObject.transform);
+            // The location is the socket: the part must adopt its position,
+            // rotation and fitment scale instead of keeping the world scale it
+            // had while being carried.
+            part.transform.SetParent(gameObject.transform, false);
             part.transform.SetAsFirstSibling();
             part.transform.localPosition = Vector3.zero;
             part.transform.localRotation = Quaternion.identity;
+            part.transform.localScale = Vector3.one;
 
             InstalledPart = part;
 
