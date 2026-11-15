@@ -74,6 +74,12 @@ namespace Coursework_Master_Degree.Game.Helper
 
             backgroundGhostInstance = backgroundGhost;
 
+            // The background ghost is authored in the complex item's local
+            // space, so it must inherit the item's full transform.
+            GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                backgroundGhost,
+                item.transform);
+
             SyncBackgroundGhostParts(itemSync, backgroundGhost);
             HideFrameMeshRenderers(itemSync);
 
@@ -123,6 +129,10 @@ namespace Coursework_Master_Degree.Game.Helper
 
                 ghostPart.position = itemPart.Value.position;
                 ghostPart.rotation = itemPart.Value.rotation;
+
+                GameStateManager.Instance.ItemInstancer.SyncGhostWorldScale(
+                    ghostPart,
+                    itemPart.Value);
             }
         }
 

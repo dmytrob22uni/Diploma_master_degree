@@ -345,9 +345,13 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private ItemGhostDataHolder GetPartInstallationGhost(ItemDataHolder part)
         {
-            Transform parent = targetAssembly != null
-                ? targetAssembly.transform
-                : part.transform.parent;
+            PartLocation partLocation = part.GetComponentInParent<PartLocation>();
+
+            Transform anchor = partLocation != null
+                ? partLocation.transform
+                : targetAssembly != null
+                    ? targetAssembly.transform
+                    : part.transform.parent;
 
             if (part.TryGetGhostInstance(ItemGhostType.Installation, out ItemGhostDataHolder installationGhost) &&
                 installationGhost != null)
@@ -356,10 +360,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 // stored ghost is reused across hovers and inspections.
                 installationGhost.ItemInstance = part.gameObject;
 
-                installationGhost.transform.SetParent(parent, true);
-                installationGhost.transform.SetPositionAndRotation(
-                    part.transform.position,
-                    part.transform.rotation);
+                GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                    installationGhost,
+                    anchor);
 
                 installationGhost.gameObject.SetActive(true);
 
@@ -371,12 +374,18 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return null;
             }
 
-            return GameStateManager.Instance.ItemInstancer.InstantiateItemGhost(
+            ItemGhostDataHolder ghost = GameStateManager.Instance.ItemInstancer.InstantiateItemGhost(
                 part,
                 ItemGhostType.Installation,
                 part.transform.position,
                 part.transform.rotation,
-                parent);
+                anchor);
+
+            GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                ghost,
+                anchor);
+
+            return ghost;
         }
 
         private void SetupInstallationState(ItemGhostDataHolder partGhost)

@@ -425,6 +425,10 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 dependencyTransform.rotation,
                 dependencyTransform);
 
+            GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                dependencyGhost,
+                dependencyTransform);
+
             SetupInstallationState(dependencyGhost, 1.0f);
 
             return dependencyGhost;
@@ -485,10 +489,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             Transform locationTransform = partLocation.transform;
 
-            installationGhost.transform.SetParent(locationTransform, true);
-            installationGhost.transform.SetPositionAndRotation(
-                locationTransform.position,
-                locationTransform.rotation);
+            // A part location is a socket. Snapping the ghost in its local
+            // space makes the preview adopt the same fitment scale as the
+            // part which will be installed there.
+            GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                installationGhost,
+                locationTransform);
 
             installationGhost.gameObject.SetActive(true);
 
@@ -506,6 +512,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             installationGhost.transform.SetPositionAndRotation(
                 position,
                 targetItem.transform.rotation);
+
+            // In the air there is no target socket, so the preview should
+            // match the part which is currently being carried.
+            GameStateManager.Instance.ItemInstancer.SyncGhostWorldScale(
+                installationGhost.transform,
+                targetItem.transform);
 
             installationGhost.gameObject.SetActive(true);
 

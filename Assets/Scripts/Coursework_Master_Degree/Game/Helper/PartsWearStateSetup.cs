@@ -48,7 +48,7 @@ namespace Coursework_Master_Degree.Game.Helper
 
             if (partsAssembly != null)
             {
-                SetupWearPartGhosts(partsAssembly, item);
+                SetupWearPartGhosts(partsAssembly);
 
                 return;
             }
@@ -79,13 +79,13 @@ namespace Coursework_Master_Degree.Game.Helper
             wearPartGhostInstances.Clear();
         }
 
-        private void SetupWearPartGhosts(PartsAssembly partsAssembly, ItemDataHolder item)
+        private void SetupWearPartGhosts(PartsAssembly partsAssembly)
         {
-            SetupWearPartGhosts(partsAssembly.GetOccupiedRegularPartLocations(), item);
-            SetupWearPartGhosts(partsAssembly.GetOccupiedOptionalPartLocations(), item);
+            SetupWearPartGhosts(partsAssembly.GetOccupiedRegularPartLocations());
+            SetupWearPartGhosts(partsAssembly.GetOccupiedOptionalPartLocations());
         }
 
-        private void SetupWearPartGhosts(List<PartLocation> partLocations, ItemDataHolder item)
+        private void SetupWearPartGhosts(List<PartLocation> partLocations)
         {
             if (partLocations == null)
             {
@@ -94,11 +94,11 @@ namespace Coursework_Master_Degree.Game.Helper
 
             foreach (PartLocation partLocation in partLocations)
             {
-                SetupWearPartGhost(partLocation, item);
+                SetupWearPartGhost(partLocation);
             }
         }
 
-        private void SetupWearPartGhost(PartLocation partLocation, ItemDataHolder item)
+        private void SetupWearPartGhost(PartLocation partLocation)
         {
             if (partLocation.InstalledPart == null)
             {
@@ -111,23 +111,17 @@ namespace Coursework_Master_Degree.Game.Helper
                 return;
             }
 
-            SetupWearPartGhost(part, item.transform);
+            SetupWearPartGhost(part, partLocation.transform);
         }
 
-        private void SetupWearPartGhost(ItemDataHolder part, Transform parent)
+        private void SetupWearPartGhost(ItemDataHolder part, Transform anchor)
         {
             if (!IsGhostTypeAvailable(part.ItemGhostMetaSO, ItemGhostType.WearLevel))
             {
                 return;
             }
 
-            Transform partTransform = part.transform;
-
-            ItemGhostDataHolder wearPartGhost = GetWearPartGhost(
-                part,
-                partTransform.position,
-                partTransform.rotation,
-                parent);
+            ItemGhostDataHolder wearPartGhost = GetWearPartGhost(part, anchor);
 
             if (wearPartGhost == null)
             {
@@ -140,28 +134,34 @@ namespace Coursework_Master_Degree.Game.Helper
             wearPartGhostInstances.Add(wearPartGhost);
         }
 
-        private ItemGhostDataHolder GetWearPartGhost(ItemDataHolder part, Vector3 position, Quaternion rotation, Transform parent)
+        private ItemGhostDataHolder GetWearPartGhost(ItemDataHolder part, Transform anchor)
         {
             // Wear ghosts are stored on the part item data holder and reused,
-            // but their positions are synced to the current part placement.
+            // but their transforms are synced to the current part placement.
             if (part.TryGetGhostInstance(ItemGhostType.WearLevel, out ItemGhostDataHolder wearPartGhost) &&
                 wearPartGhost != null)
             {
-                wearPartGhost.transform.SetParent(parent, true);
-                wearPartGhost.transform.position = position;
-                wearPartGhost.transform.rotation = rotation;
+                GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                    wearPartGhost,
+                    anchor);
 
                 wearPartGhost.gameObject.SetActive(true);
 
                 return wearPartGhost;
             }
 
-            return GameStateManager.Instance.ItemInstancer.InstantiateItemGhost(
+            ItemGhostDataHolder ghost = GameStateManager.Instance.ItemInstancer.InstantiateItemGhost(
                 part,
                 ItemGhostType.WearLevel,
-                position,
-                rotation,
-                parent);
+                anchor.position,
+                anchor.rotation,
+                anchor);
+
+            GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                ghost,
+                anchor);
+
+            return ghost;
         }
 
         private void SetupWearLevel(ItemGhostDataHolder wearPartGhost, ItemDataHolder part)

@@ -36,7 +36,7 @@ namespace Coursework_Master_Degree.Game.Helper
 
             SetupBackgroundGhost(item);
             SetupExitTrigger(item);
-            SetupMissingPartGhosts(partsAssembly, item);
+            SetupMissingPartGhosts(partsAssembly);
         }
 
         public void ClearPartsIntegrity()
@@ -56,14 +56,14 @@ namespace Coursework_Master_Degree.Game.Helper
             missingPartGhostInstances.Clear();
         }
 
-        private void SetupMissingPartGhosts(PartsAssembly partsAssembly, ItemDataHolder item)
+        private void SetupMissingPartGhosts(PartsAssembly partsAssembly)
         {
             List<PartLocation> freeRegularLocations = partsAssembly.GetFreeRegularPartLocations();
             if (freeRegularLocations != null)
             {
                 foreach (PartLocation partLocation in freeRegularLocations)
                 {
-                    InstantiateMissingPartGhost(partLocation, item);
+                    InstantiateMissingPartGhost(partLocation);
                 }
             }
 
@@ -94,13 +94,13 @@ namespace Coursework_Master_Degree.Game.Helper
                 {
                     if (!partLocation.IsOccupied)
                     {
-                        InstantiateMissingPartGhost(partLocation, item);
+                        InstantiateMissingPartGhost(partLocation);
                     }
                 }
             }
         }
 
-        private void InstantiateMissingPartGhost(PartLocation partLocation, ItemDataHolder item)
+        private void InstantiateMissingPartGhost(PartLocation partLocation)
         {
             ItemMetaSO partMetaData = GetExpectedPartMetaData(partLocation);
             if (partMetaData == null || partMetaData.Prefab == null)
@@ -126,7 +126,11 @@ namespace Coursework_Master_Degree.Game.Helper
                 ItemGhostType.MissingPart,
                 partLocationTransform.position,
                 partLocationTransform.rotation,
-                item.transform);
+                partLocationTransform);
+
+            GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
+                missingPartGhost,
+                partLocationTransform);
 
             if (missingPartGhost is not ItemGhostMissingPartDataHolder missingPart)
             {
