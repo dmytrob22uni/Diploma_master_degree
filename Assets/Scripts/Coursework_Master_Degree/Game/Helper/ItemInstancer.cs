@@ -125,6 +125,96 @@ namespace Coursework_Master_Degree.Game.Helper
             };
         }
 
+        // Ghost transforms
+
+        /// <summary>
+        /// Parents a ghost to an anchor in its local space (e.g. a
+        /// PartLocation), so the ghost inherits the anchor's full transform,
+        /// including a non-uniform fitment scale.
+        /// </summary>
+        public void SnapItemGhostToAnchor(ItemGhostDataHolder itemGhost, Transform anchor)
+        {
+            if (itemGhost == null || anchor == null)
+            {
+                return;
+            }
+
+            Transform ghostTransform = itemGhost.transform;
+
+            ghostTransform.SetParent(anchor, false);
+            ghostTransform.localPosition = Vector3.zero;
+            ghostTransform.localRotation = Quaternion.identity;
+            ghostTransform.localScale = Vector3.one;
+        }
+
+        /// <summary>
+        /// Matches a ghost which represents a specific item instance to that
+        /// item's current world transform, including its scale.
+        /// </summary>
+        public void SyncItemGhostToItem(ItemGhostDataHolder itemGhost, ItemDataHolder item)
+        {
+            if (itemGhost == null || item == null)
+            {
+                return;
+            }
+
+            SyncGhostToSource(itemGhost.transform, item.transform);
+        }
+
+        /// <summary>
+        /// Matches a ghost transform to a source transform. Use this for ghosts
+        /// which are not parented to the source, such as placement previews.
+        /// </summary>
+        public void SyncGhostToSource(Transform ghostTransform, Transform source)
+        {
+            if (ghostTransform == null || source == null)
+            {
+                return;
+            }
+
+            ghostTransform.SetPositionAndRotation(source.position, source.rotation);
+            SyncWorldScale(ghostTransform, source.lossyScale);
+        }
+
+        /// <summary>
+        /// Copies only the world scale of a source transform to a ghost.
+        /// </summary>
+        public void SyncGhostWorldScale(Transform ghostTransform, Transform source)
+        {
+            if (ghostTransform == null || source == null)
+            {
+                return;
+            }
+
+            SyncWorldScale(ghostTransform, source.lossyScale);
+        }
+
+        private static void SyncWorldScale(Transform target, Vector3 worldScale)
+        {
+            Transform parent = target.parent;
+
+            if (parent == null)
+            {
+                target.localScale = worldScale;
+
+                return;
+            }
+
+            Vector3 parentScale = parent.lossyScale;
+
+            target.localScale = new Vector3(
+                DivideScale(worldScale.x, parentScale.x),
+                DivideScale(worldScale.y, parentScale.y),
+                DivideScale(worldScale.z, parentScale.z));
+        }
+
+        private static float DivideScale(float worldScale, float parentScale)
+        {
+            return Mathf.Approximately(parentScale, 0.0f)
+                ? 1.0f
+                : worldScale / parentScale;
+        }
+
         // ItemFreePart
 
         public ItemFreePartGhostPlacementDataHolder InstantiateItemFreePartGhost(ItemFreePartDataHolder itemFreePart, Vector3 position = default, Quaternion rotation = default, Transform parent = default)
