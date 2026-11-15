@@ -155,6 +155,10 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                             itemFreePart.transform.position,
                             itemFreePart.transform.rotation);
                 }
+                GameStateManager.Instance.ItemInstancer.SyncGhostToSource(
+                    itemFreePartGhost.transform,
+                    itemFreePart.transform);
+
                 itemFreePartGhost.gameObject.SetActive(true);
                 hostGameObject = itemFreePartGhost.gameObject;
 
@@ -176,6 +180,10 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                             item.transform.position,
                             item.transform.rotation);
                 }
+                GameStateManager.Instance.ItemInstancer.SyncItemGhostToItem(
+                    itemGhost,
+                    item);
+
                 itemGhost.gameObject.SetActive(true);
                 hostGameObject = itemGhost.gameObject;
 
@@ -197,6 +205,10 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                             objectToPrint.transform.position,
                             objectToPrint.transform.rotation);
                 }
+                GameStateManager.Instance.ItemInstancer.SyncGhostToSource(
+                    objectToPrintGhost.transform,
+                    objectToPrint.transform);
+
                 objectToPrintGhost.gameObject.SetActive(true);
                 hostGameObject = objectToPrintGhost.gameObject;
 

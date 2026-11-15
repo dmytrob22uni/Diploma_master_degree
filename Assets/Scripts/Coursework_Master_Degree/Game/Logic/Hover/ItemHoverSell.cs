@@ -378,9 +378,10 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             itemGhost.ItemInstance = item.gameObject;
 
             itemGhost.transform.SetParent(item.transform.parent, true);
-            itemGhost.transform.SetPositionAndRotation(
-                item.transform.position,
-                item.transform.rotation);
+
+            GameStateManager.Instance.ItemInstancer.SyncItemGhostToItem(
+                itemGhost,
+                item);
 
             itemGhost.gameObject.SetActive(true);
 
@@ -404,9 +405,10 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             objectToPrintGhost.ObjectToPrintInstance = objectToPrint.gameObject;
 
             objectToPrintGhost.transform.SetParent(objectToPrint.transform.parent, true);
-            objectToPrintGhost.transform.SetPositionAndRotation(
-                objectToPrint.transform.position,
-                objectToPrint.transform.rotation);
+
+            GameStateManager.Instance.ItemInstancer.SyncGhostToSource(
+                objectToPrintGhost.transform,
+                objectToPrint.transform);
 
             objectToPrintGhost.gameObject.SetActive(true);
 
