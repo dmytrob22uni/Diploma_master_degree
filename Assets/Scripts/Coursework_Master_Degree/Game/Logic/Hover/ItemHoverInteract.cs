@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Contracts;
+using Coursework_Master_Degree.Items.Computing;
 using Coursework_Master_Degree.Game.StateMachine;
 using Coursework_Master_Degree.Game.StateMachine.State;
 using System.Numerics;
@@ -36,6 +37,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private readonly string defaultInteractText = "Interact";
 
         private Collider cachedCollider;
+        private Device cachedDevice;
 
         private IInteractable cachedInteractable;
         public IInteractable CachedInteractable => cachedInteractable;
@@ -74,6 +76,35 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 if (hit.collider == cachedCollider)
                 {
+                    return;
+                }
+
+                // computing device root: its colliders live on child meshes
+                Device device = hit.collider.GetComponentInParent<Device>();
+                if (device != null)
+                {
+                    cachedCollider = hit.collider;
+
+                    if (device == cachedDevice && cachedAction != null)
+                    {
+                        return;
+                    }
+
+                    ClearCached();
+                    cachedDevice = device;
+
+                    IReadOnlyList<InteractionOption> deviceInteractions =
+                        device.GetInteractions();
+
+                    if (deviceInteractions == null || deviceInteractions.Count == 0)
+                    {
+                        ClearHover();
+                        return;
+                    }
+
+                    cachedAction = deviceInteractions[0].OnExecute;
+                    SetupInteract(deviceInteractions[0].Info);
+
                     return;
                 }
 
@@ -169,6 +200,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void ClearCached()
         {
+            cachedDevice = default;
             cachedInteractable = default;
             cachedInteractions = default;
             cachedAction = default;
