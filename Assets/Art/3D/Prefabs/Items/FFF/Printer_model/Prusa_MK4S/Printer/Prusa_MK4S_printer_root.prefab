@@ -1284,6 +1284,69 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.007805815, y: 0.05626727, z: 0.04575126}
   m_Center: {x: 0.030701894, y: 0.053837027, z: -0.00028708763}
+--- !u!1 &1943516697614249920
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6850209795416751546}
+  - component: {fileID: 5635780204267657346}
+  - component: {fileID: 8292513857083763464}
+  m_Layer: 17
+  m_Name: print_bed_anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6850209795416751546
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943516697614249920}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2038345832107882915}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5635780204267657346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943516697614249920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce7b81c0f7a28cf1d8d7d5e12aa002f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrintBedAnchor
+  SurfaceOffset: 0.0016
+  PlateSize: {x: 0.256, y: 0.223}
+--- !u!114 &8292513857083763464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943516697614249920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7b7e46c91a2b88909f9dcd61ddf7b26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrintBedAnchorDebug
+  Anchor: {fileID: 5635780204267657346}
+  CubeSize: {x: 0.02, y: 0.02, z: 0.02}
+  CubeMaterial: {fileID: 2100000, guid: 902f3fb7aa025f37d8c4de93f163529e, type: 2}
+  SpawnOnStart: 0
 --- !u!1 &2089443987815745632
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,6 +1659,11 @@ GameObject:
   - component: {fileID: 1361530194986605478}
   - component: {fileID: 858199061406961229}
   - component: {fileID: 4347076074494014245}
+  - component: {fileID: 4454626548426163925}
+  - component: {fileID: 1571749936679602612}
+  - component: {fileID: 3248404705524490586}
+  - component: {fileID: 459495362381015763}
+  - component: {fileID: 2224377703605105773}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_root
   m_TagString: Untagged
@@ -1793,6 +1861,113 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7973897e253edada88e506a4650823c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.FFFInteractions
+--- !u!114 &4454626548426163925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2321595096870056498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e15c5f18feb900198a102f5fca247a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrinterEnvironment
+  HasEnclosure: 0
+  AmbientTemperature: 21
+  ChamberTemperature: 21
+  DraftFactor: 0.5
+  ParticulateFactor: 0
+--- !u!114 &1571749936679602612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2321595096870056498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2e8942a4a6dfb430b17768ef6e2ee1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.CartesianPrinterMotion
+  buildVolume: {x: 0.256, y: 0.221, z: 0.223}
+  horizontalX:
+    Node: {fileID: 7224255152097467366}
+    LocalAxis: {x: 1, y: 0, z: 0}
+    MinLocal: -0.127
+    MaxLocal: 0.127
+    Invert: 0
+    Speed: 0.2
+  horizontalZ:
+    Node: {fileID: 6575913149364803352}
+    LocalAxis: {x: 0, y: 1, z: 0}
+    MinLocal: -0.07
+    MaxLocal: 0.151
+    Invert: 0
+    Speed: 0.2
+  verticalY:
+    Node: {fileID: 3190614672177522936}
+    LocalAxis: {x: 0, y: 0, z: 1}
+    MinLocal: -0.22
+    MaxLocal: 0
+    Invert: 0
+    Speed: 0.1
+  bedAnchor: {fileID: 5635780204267657346}
+--- !u!114 &3248404705524490586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2321595096870056498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d18c6e774e882b40b0416548aa04250, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.Printer
+  Assembly: {fileID: 858199061406961229}
+  ItemData: {fileID: 4845091765864811612}
+  Motion: {fileID: 1571749936679602612}
+  BedAnchor: {fileID: 5635780204267657346}
+  Environment: {fileID: 4454626548426163925}
+  BindHighlight: {fileID: 459495362381015763}
+--- !u!114 &459495362381015763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2321595096870056498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8c50113817bef02bc1c994795c7c18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrinterBindHighlight
+  BoundsRoot: {fileID: 7689618605535600892}
+  Padding: 0.08
+  SphereMaterial: {fileID: 0}
+  Opacity: 0.18
+  BindableColor: {r: 0.1, g: 0.9, b: 1, a: 1}
+  BoundToThisDeviceColor: {r: 0.2, g: 1, b: 0.3, a: 1}
+  BoundToOtherDeviceColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  SelectedForUnbindColor: {r: 1, g: 0.65, b: 0.1, a: 1}
+  DebugState: 0
+--- !u!114 &2224377703605105773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2321595096870056498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ed0ee96e8ec30369efd508df8c78b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrinterMotionDebug
+  Motion: {fileID: 1571749936679602612}
+  ShowGui: 0
+  DebugTravel: 0.3
+  TestCalibratedRange: 0
 --- !u!1 &2345573220605376966
 GameObject:
   m_ObjectHideFlags: 0
@@ -5714,7 +5889,7 @@ GameObject:
   - component: {fileID: 811039353918247169}
   - component: {fileID: 3042372913035685079}
   m_Layer: 17
-  m_Name: extruder_thermistor_location
+  m_Name: printer_print_plate_location
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5734,6 +5909,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 101219069700383753}
+  - {fileID: 6850209795416751546}
   m_Father: {fileID: 6795495862800488449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &811039353918247169
