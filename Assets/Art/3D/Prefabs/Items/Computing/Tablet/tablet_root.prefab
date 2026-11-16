@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 5873524099903523165}
   - component: {fileID: 5764692278927704993}
   - component: {fileID: 1466784119200397208}
+  - component: {fileID: 5026527655683691593}
+  - component: {fileID: 5919328769010666900}
   m_Layer: 13
   m_Name: tablet_root
   m_TagString: Untagged
@@ -84,6 +86,8 @@ MonoBehaviour:
   IsHaveWearLevel: 0
   IsInstalled: 0
   ParentItemDataHolder: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!114 &1466784119200397208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,6 +104,38 @@ MonoBehaviour:
   ScreenGameObject: {fileID: 4319533490063473903}
   IsLidOpened: 1
   IsTurnedOn: 0
+--- !u!114 &5026527655683691593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983131788833340573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 053614c783095b6a7900ef9f61d2ea8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.Device
+  Computing: {fileID: 0}
+  Screen: {fileID: 5919328769010666900}
+  ScreenAnchor: {fileID: 203495801214969445}
+--- !u!114 &5919328769010666900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983131788833340573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7e8455c93b81e31851096dd044db03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenDisplay
+  Computing: {fileID: 0}
+  ScreenRenderers: []
+  ScreenOffMaterial: {fileID: 0}
+  ApplyStateOnAwake: 0
+  isOn: 1
 --- !u!1 &4319533490063473903
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,7 +166,8 @@ Transform:
   m_LocalPosition: {x: -0, y: 0, z: 0.007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 921843648578574996}
   m_Father: {fileID: 7355352383186400374}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &347036230132968045
@@ -304,3 +341,48 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.17950001, y: 0.24860007, z: 0.007000002}
   m_Center: {x: 0, y: 0, z: 0.003500001}
+--- !u!1 &7453969020187457632
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 921843648578574996}
+  - component: {fileID: 203495801214969445}
+  m_Layer: 13
+  m_Name: screen_anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &921843648578574996
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7453969020187457632}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6025886685987801647}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+--- !u!114 &203495801214969445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7453969020187457632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45bd326e8852712df993ca98e50794da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenAnchor
+  InvertNormal: 0

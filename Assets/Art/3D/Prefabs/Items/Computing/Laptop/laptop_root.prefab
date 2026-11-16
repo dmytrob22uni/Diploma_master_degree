@@ -128,6 +128,8 @@ GameObject:
   - component: {fileID: 7166169853637550477}
   - component: {fileID: 3720816692758807099}
   - component: {fileID: -3489945319184053325}
+  - component: {fileID: 4673760929647594284}
+  - component: {fileID: 5245554647493267570}
   m_Layer: 13
   m_Name: laptop_root
   m_TagString: Untagged
@@ -200,6 +202,8 @@ MonoBehaviour:
   IsHaveWearLevel: 0
   IsInstalled: 0
   ParentItemDataHolder: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!114 &-3489945319184053325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +220,38 @@ MonoBehaviour:
   ScreenGameObject: {fileID: 6060527750774809319}
   IsLidOpened: 1
   IsTurnedOn: 0
+--- !u!114 &4673760929647594284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4598947599289433959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 053614c783095b6a7900ef9f61d2ea8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.Device
+  Computing: {fileID: 0}
+  Screen: {fileID: 5245554647493267570}
+  ScreenAnchor: {fileID: 4546490793252809202}
+--- !u!114 &5245554647493267570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4598947599289433959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7e8455c93b81e31851096dd044db03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenDisplay
+  Computing: {fileID: 0}
+  ScreenRenderers: []
+  ScreenOffMaterial: {fileID: 0}
+  ApplyStateOnAwake: 0
+  isOn: 1
 --- !u!1 &5749181252732285924
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,7 +372,8 @@ Transform:
   m_LocalPosition: {x: 0.000000007450581, y: 0.12619673, z: 0.0035462305}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3306297583964307979}
   m_Father: {fileID: 5018653466054884505}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1490770762549183287
@@ -396,6 +433,51 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6918766462902529841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3306297583964307979}
+  - component: {fileID: 4546490793252809202}
+  m_Layer: 13
+  m_Name: screen_anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3306297583964307979
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6918766462902529841}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1060023363896510193}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: -180}
+--- !u!114 &4546490793252809202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6918766462902529841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45bd326e8852712df993ca98e50794da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenAnchor
+  InvertNormal: 0
 --- !u!1 &9120773593140857697
 GameObject:
   m_ObjectHideFlags: 0

@@ -170,6 +170,8 @@ MonoBehaviour:
   Name: Wall socket plug
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: d0b65ce19486daccba583c0a200e9bf2, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!1 &1646004055261211602
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,6 +248,8 @@ MonoBehaviour:
   Name: Monitor
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: 07ade824125d438619f1f9e7e3e1a0e3, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!1 &2351076872516246619
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,6 +548,8 @@ MonoBehaviour:
   Name: Keyboard
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: d37d0519441ac82f0a3628325f9c0f4c, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!1 &4428031633699143420
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,6 +581,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2333762256006625899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4731150184889401410
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8198669481491608231}
+  - component: {fileID: 8756000697599322454}
+  m_Layer: 13
+  m_Name: screen_anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8198669481491608231
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4731150184889401410}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071069, z: -0.70710677, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4861842350470840312}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: -180}
+--- !u!114 &8756000697599322454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4731150184889401410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45bd326e8852712df993ca98e50794da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenAnchor
+  InvertNormal: 0
 --- !u!1 &5050172139305689239
 GameObject:
   m_ObjectHideFlags: 0
@@ -678,6 +729,8 @@ GameObject:
   - component: {fileID: 7244353744281143315}
   - component: {fileID: -798957194648827033}
   - component: {fileID: 2568401955853790556}
+  - component: {fileID: 6941500415387299008}
+  - component: {fileID: 1312396673177776894}
   m_Layer: 13
   m_Name: PC_root
   m_TagString: Untagged
@@ -760,6 +813,8 @@ MonoBehaviour:
   IsHaveWearLevel: 0
   IsInstalled: 0
   ParentItemDataHolder: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!114 &-798957194648827033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -793,6 +848,38 @@ MonoBehaviour:
   - {fileID: 7173446526321589241}
   - {fileID: 5879579887688576450}
   ItemsOnShelvesList: []
+--- !u!114 &6941500415387299008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5232699185485455824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 053614c783095b6a7900ef9f61d2ea8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.Device
+  Computing: {fileID: 0}
+  Screen: {fileID: 1312396673177776894}
+  ScreenAnchor: {fileID: 8756000697599322454}
+--- !u!114 &1312396673177776894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5232699185485455824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7e8455c93b81e31851096dd044db03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenDisplay
+  Computing: {fileID: 0}
+  ScreenRenderers: []
+  ScreenOffMaterial: {fileID: 0}
+  ApplyStateOnAwake: 0
+  isOn: 1
 --- !u!1 &5307755433979395170
 GameObject:
   m_ObjectHideFlags: 0
@@ -963,6 +1050,8 @@ MonoBehaviour:
   Name: Mouse
   ItemFreePartGhostPlacementPrefab: {fileID: 5232699185485455824, guid: 13182e92459e7f502b63fd3113fdce07, type: 3}
   ItemFreePartGhostPlacementInstance: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!1 &6078003790579646528
 GameObject:
   m_ObjectHideFlags: 0
@@ -1432,7 +1521,8 @@ Transform:
   m_LocalPosition: {x: -0, y: 0.043305125, z: 0.31467563}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8198669481491608231}
   m_Father: {fileID: 2916256754204054865}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8833883379911746919

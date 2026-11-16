@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1294931049645727358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6114031009425948171}
+  - component: {fileID: 4078000659154402193}
+  m_Layer: 13
+  m_Name: screen_anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6114031009425948171
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1294931049645727358}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7685143443765614221}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+--- !u!114 &4078000659154402193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1294931049645727358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45bd326e8852712df993ca98e50794da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenAnchor
+  InvertNormal: 0
 --- !u!1 &3211579692862049872
 GameObject:
   m_ObjectHideFlags: 0
@@ -30,7 +75,8 @@ Transform:
   m_LocalPosition: {x: -0, y: 0, z: 0.00875}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6114031009425948171}
   m_Father: {fileID: 2936497481555297837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3977851521220785754
@@ -102,6 +148,8 @@ GameObject:
   - component: {fileID: 1095742342815595077}
   - component: {fileID: -4505011947065466877}
   - component: {fileID: 4212623080995132811}
+  - component: {fileID: 5543831663114647126}
+  - component: {fileID: 8025406295907390776}
   m_Layer: 13
   m_Name: smartphone_root
   m_TagString: Untagged
@@ -174,6 +222,8 @@ MonoBehaviour:
   IsHaveWearLevel: 0
   IsInstalled: 0
   ParentItemDataHolder: {fileID: 0}
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!114 &4212623080995132811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,6 +240,38 @@ MonoBehaviour:
   ScreenGameObject: {fileID: 3211579692862049872}
   IsLidOpened: 1
   IsTurnedOn: 0
+--- !u!114 &5543831663114647126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070272445071592015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 053614c783095b6a7900ef9f61d2ea8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.Device
+  Computing: {fileID: 0}
+  Screen: {fileID: 8025406295907390776}
+  ScreenAnchor: {fileID: 4078000659154402193}
+--- !u!114 &8025406295907390776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070272445071592015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7e8455c93b81e31851096dd044db03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Computing.DeviceScreenDisplay
+  Computing: {fileID: 0}
+  ScreenRenderers: []
+  ScreenOffMaterial: {fileID: 0}
+  ApplyStateOnAwake: 0
+  isOn: 1
 --- !u!1 &7394219612479797985
 GameObject:
   m_ObjectHideFlags: 0
