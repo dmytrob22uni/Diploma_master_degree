@@ -32,6 +32,10 @@ namespace Coursework_Master_Degree.Items.FFF
         [Range(0.0f, 1.0f)]
         public float Opacity = 0.18f;
 
+        [Tooltip("Opacity while the printer is hovered. Slightly more solid, never opaque.")]
+        [Range(0.0f, 1.0f)]
+        public float HoverOpacity = 0.30f;
+
         [Header("State colours")]
         public Color BindableColor = new Color(0.10f, 0.90f, 1.00f);
         public Color BoundToThisDeviceColor = new Color(0.20f, 1.00f, 0.30f);
@@ -128,6 +132,42 @@ namespace Coursework_Master_Degree.Items.FFF
         {
             IsHovered = hovered;
             ApplyColor();
+        }
+
+        /// <summary>
+        /// The sphere the player sees, used for bind targeting. Aiming uses
+        /// this volume instead of the printer colliders, so small or awkward
+        /// shapes stay easy to pick.
+        /// </summary>
+        public bool TryGetTargetSphere(out Vector3 center, out float radius)
+        {
+            center = Vector3.zero;
+            radius = 0.0f;
+
+            if (State == PrinterBindHighlightState.Hidden)
+            {
+                return false;
+            }
+
+            if (sphere != null)
+            {
+                center = sphere.transform.position;
+                radius = sphere.transform.lossyScale.x * 0.5f;
+            }
+            else
+            {
+                if (!hasBounds)
+                {
+                    RefreshBounds();
+                }
+
+                Vector3 size = targetBounds.size;
+                center = targetBounds.center;
+                radius = Mathf.Max(size.x, Mathf.Max(size.y, size.z)) *
+                    (1.0f + Padding) * 0.5f;
+            }
+
+            return radius > 0.0001f;
         }
 
         [ContextMenu("Debug/Show Bindable")]
@@ -308,13 +348,7 @@ namespace Coursework_Master_Degree.Items.FFF
                     return;
             }
 
-            color.a *= Opacity;
-
-            if (IsHovered)
-            {
-                color = Color.Lerp(color, Color.white, 0.35f);
-                color.a = Mathf.Min(1.0f, color.a * 2.5f);
-            }
+            color.a *= IsHovered ? HoverOpacity : Opacity;
 
             if (instanceMaterial.HasProperty("_BaseColor"))
             {

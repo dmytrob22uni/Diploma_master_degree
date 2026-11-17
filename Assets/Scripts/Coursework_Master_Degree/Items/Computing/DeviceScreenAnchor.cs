@@ -11,6 +11,18 @@ namespace Coursework_Master_Degree.Items.Computing
         [Tooltip("Flip the screen normal if local +Z points into the display")]
         public bool InvertNormal = false;
 
+        [Header("Console mask")]
+        [Tooltip(
+            "Optional UI sprite that clips the console to the display shape. " +
+            "Leave empty for square corners or use ScreenCornerRadius.")]
+        public Sprite ScreenMaskSprite;
+
+        [Tooltip(
+            "Rounded corner radius as a fraction of the logical console width. " +
+            "0 keeps square corners.")]
+        [Range(0.0f, 0.2f)]
+        public float ScreenCornerRadius = 0.0f;
+
         public Vector3 Center => transform.position;
 
         public Vector3 Normal => InvertNormal ? -transform.forward : transform.forward;

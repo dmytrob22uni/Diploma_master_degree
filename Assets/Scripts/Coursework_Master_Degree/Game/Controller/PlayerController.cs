@@ -81,6 +81,61 @@ namespace Coursework_Master_Degree.Game.Controller
             }
         }
 
+        public void SetDeviceInterfaceState(bool enable)
+        {
+            // The console owns the mouse. World movement, look and free-walk
+            // hover must stay off while it is open, and stay off when it
+            // closes until the next state explicitly enables them.
+            Movement.enabled = false;
+            Jump.enabled = false;
+            Look.enabled = false;
+            ItemHoverInfo.enabled = false;
+            ItemHoverInteract.enabled = false;
+        }
+
+        public void SetDeviceBindState(bool enable)
+        {
+            if (enable)
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent += HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent += HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent += HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent += HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent += HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent += HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent += HandleToggleZoom;
+
+                // Movement Logics
+                Movement.enabled = true;
+                Jump.enabled = true;
+                Look.enabled = true;
+
+                // Bind targeting does its own raycast; free-walk hover stays off.
+                ItemHoverInfo.enabled = false;
+                ItemHoverInteract.enabled = false;
+            }
+            else
+            {
+                // Movement Inputs
+                GameStateManager.Instance.InputReader.OnMoveEvent -= HandleMove;
+                GameStateManager.Instance.InputReader.OnLookEvent -= HandleLook;
+                GameStateManager.Instance.InputReader.OnJumpEvent -= HandleJump;
+                GameStateManager.Instance.InputReader.OnCrouchEvent -= HandleCrouch;
+                GameStateManager.Instance.InputReader.OnInitiateWalkEvent -= HandleInitiateWalk;
+                GameStateManager.Instance.InputReader.OnInitiateRunEvent -= HandleInitiateRun;
+                GameStateManager.Instance.InputReader.OnToggleZoomEvent -= HandleToggleZoom;
+
+                // Movement Logics
+                Movement.enabled = false;
+                Jump.enabled = false;
+                Look.enabled = false;
+
+                ItemHoverInfo.enabled = false;
+                ItemHoverInteract.enabled = false;
+            }
+        }
+
         public void SetItemsSellState(bool enable)
         {
             if (enable)

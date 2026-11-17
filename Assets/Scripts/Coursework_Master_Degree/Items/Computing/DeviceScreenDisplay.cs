@@ -19,16 +19,40 @@ namespace Coursework_Master_Degree.Items.Computing
         [Tooltip("Optional black material. A runtime black material is created when empty.")]
         public Material ScreenOffMaterial;
 
-        [Tooltip(
-            "Apply ItemComputingDataHolder.IsTurnedOn in Awake.\n" +
-            "Leave off in M0 so screens keep their authored look until tested.")]
-        public bool ApplyStateOnAwake = false;
-
         [SerializeField]
         [Tooltip("Set via script. Exposed for debugging")]
-        private bool isOn = true;
+        private bool isOn = false;
 
         public bool IsOn => isOn;
+
+        /// <summary>
+        /// False while the display renderers are disabled, for example when
+        /// the item is replaced by a sell or placement ghost.
+        /// </summary>
+        public bool IsVisible
+        {
+            get
+            {
+                if (ScreenRenderers.Count == 0)
+                {
+                    return true;
+                }
+
+                for (int i = 0; i < ScreenRenderers.Count; i++)
+                {
+                    Renderer renderer = ScreenRenderers[i];
+
+                    if (renderer != null &&
+                        renderer.enabled &&
+                        renderer.gameObject.activeInHierarchy)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         private readonly List<Material[]> originalMaterials = new List<Material[]>();
         private Material runtimeOffMaterial;
@@ -44,10 +68,8 @@ namespace Coursework_Master_Degree.Items.Computing
 
             CaptureOriginalMaterials();
 
-            if (ApplyStateOnAwake && Computing != null)
-            {
-                SetOn(Computing.IsTurnedOn);
-            }
+            // Every device spawns with its display off.
+            SetOn(false);
         }
 
         [ContextMenu("Screen Off")]
