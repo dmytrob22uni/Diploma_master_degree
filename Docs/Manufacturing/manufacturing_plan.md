@@ -1,7 +1,7 @@
 # Manufacturing Plan — Device-Controlled FFF Printing
 
 **Status:** Draft for implementation  
-**Last updated:** 2026-11-16  
+**Last updated:** 2026-11-17  
 **Scope:** Laptop / PC / Smartphone / Tablet controlling one or more Prusa MK4S printers  
 **Document type:** Living design spec + milestone checklist
 
@@ -38,7 +38,7 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 - Wear and filament consumption.
 - Procedural nozzle/bed motion and shader-based layer reveal.
 - Partial print left after a hard stop.
-- Screen-space console overlay and a smooth camera focus on the device screen.
+- World-space console that stays visible on the device screen, with a smooth camera focus for interaction.
 - Screen-off state for the device display.
 - Enclosure hooks, with enclosure gameplay delivered in a later milestone.
 
@@ -86,7 +86,7 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 5. The game switches to `GameStateDeviceInterface(device)`.
 6. Player movement/look is disabled, the cursor is shown and unlocked.
 7. A dedicated Cinemachine camera blends from the player's view to a framed view of the device screen.
-8. The console overlay fades in.
+8. The console is already on the device screen; it becomes interactive when the blend completes.
 
 ### 4.2 Console
 
@@ -99,25 +99,27 @@ The console shows:
 - Infill selector.
 - Estimated print time and filament use.
 - Validation messages.
-- `Start print`, `Hard stop`, `Add printer`, `Disconnect printer`, `Turn off screen`, and `Quit`.
+- `Start print`, `Hard stop`, `Connect printer`, `Disconnect`, `Screen off`, and `Quit`.
+
+M1 ships only the binding and power controls; the job controls arrive in M2.
 
 ### 4.3 Binding a printer
 
-1. Player clicks `Add printer` in the console.
-2. The console closes, the camera blends back to the player, and movement/look is enabled.
-3. A small banner says `Select a printer (LMB), Q to cancel`.
-4. Bindable printers show a translucent cyan sphere; printers already bound to this device show green; printers bound to another device show red; the hovered target brightens.
+1. Player clicks `Connect printer` in the console.
+2. The console stays visible on the device screen but stops accepting pointer input; the camera blends back to the player, and movement/look is enabled.
+3. The device console's header and footer are hidden. The authored `device_bind_canvas` appears together with `point_canvas`, like `parts_integrity_canvas`: a top `horizontal_stack` reading `Printer binding`, the hovered printer's name, a reason line for failed attempts, and a bottom `horizontal_stack` with `Q Quit`.
+4. Bindable printers show a translucent cyan sphere; printers already bound to this device show green; printers bound to another device show red. The hovered sphere becomes slightly more opaque, never fully opaque.
 5. The player looks at a printer and left-clicks.
-6. Binding succeeds, a toast confirms it, and the console reopens with the new printer selected.
-7. If the printer is already bound to another device, binding fails with a clear message.
+6. Binding succeeds and the console returns to the device screen with the new printer selected; no message block is shown.
+7. Hovering a printer anywhere inside its sphere shows its name in `device_bind_hover_name` and the `bind_root` key hint (constant authored text, `LMB Bind`). A failed click on a printer shows a short reason in `device_bind_reason` for `ReasonDuration` seconds, such as `Controlled by another device.` Clicking empty space is silent.
 
 ### 4.4 Disconnecting a printer
 
-1. Player clicks `Disconnect printer` in the console.
+1. Player clicks `Disconnect` in the console.
 2. If the active printer is printing, a confirmation modal warns that the print will continue.
-3. The console closes and the camera returns to the player.
-4. Bound printers show a translucent amber/orange sphere.
-5. Player left-clicks a bound printer; that binding is removed and the console reopens.
+3. The console stops accepting input and the camera returns to the player.
+4. Bound printers show a translucent amber/orange sphere; the hovered sphere becomes slightly more opaque.
+5. Player left-clicks a bound printer; that binding is removed and the console becomes interactive again.
 6. The printer keeps its current job and state. The device simply stops controlling it.
 
 ### 4.5 Starting a print
@@ -141,8 +143,8 @@ The console shows:
 
 ### 4.7 Leaving the console
 
-- `Q` quits the console.
-- The console fades out, the camera blends back to the player, movement/look is restored, and the cursor is hidden/locked.
+- `Q` quits the console (`Quit`).
+- The console stops accepting pointer input and stays visible on the device screen; the camera blends back to the player, movement/look is restored, and the cursor is hidden/locked.
 - Printers continue running while the player walks away.
 - The screen-off state is preserved in the world.
 
@@ -321,19 +323,19 @@ Why:
 
 Implementation:
 
-- Add `device_console_camera` as a `CinemachineCamera` with a `CinemachineHardLookAt` component.
+- Add `device_console_camera` as a `CinemachineCamera` with no procedural components; `DeviceFocusController` writes its transform directly.
 - On focus:
   - Read the device's screen anchor.
   - Place the camera in front of the screen at a distance derived from the screen bounds and FOV.
-  - Set the look-at target to the screen center.
-  - Raise the camera priority above the player camera.
+  - Orient it toward the screen center using the anchor's up axis.
+  - Raise the console camera priority to `100`.
 - On release:
-  - Lower the console camera priority.
-  - Let the Cinemachine Brain blend back to the player camera.
-- Default blend: `0.35–0.5 s` each way.
-- The console UI fades in after the blend completes, or cross-fades during the blend.
-- While the console is open, player movement/look is disabled and the cursor is visible.
+  - Lower the console camera priority to `-1` (below the player camera's implicit `0`), then let the Cinemachine Brain blend back.
+- Default blend: `0.55 s` each way, `EaseInOut`.
+- The console is always visible on the screen. Only the focused device's `GraphicRaycaster` is enabled, after the blend completes, with the player camera as its event camera.
+- While the console is focused, player movement/look is disabled and the cursor is visible.
 - While bind targeting is active, the cursor is hidden/locked and player movement/look is enabled.
+- Console camera near clip is `0.01 m` so close-up laptop framing does not clip.
 
 Edge cases:
 
@@ -357,9 +359,9 @@ Behavior:
 - `Device.SetScreenOn(bool)` updates both the logical state and the physical screen material.
 - When off:
   - The physical screen switches to a black/unlit material.
-  - The console shows a black screen with a `Power on` button and a hint.
-  - `Q` still closes the console; the screen remains off in the world.
-- When the player next interacts, the console opens in the off state and can be powered on.
+  - The console shows a black screen with a `Power on` button and a hint on top of it.
+  - `Q` still leaves the console; the screen remains off in the world.
+- When the player next interacts, the console is focused in the off state and can be powered on.
 - Printers are unaffected.
 
 ### 5.5 InputActions changes
@@ -760,27 +762,46 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 
 ### 6.8 Console UI
 
-Use one screen-space overlay prefab for all device types.
+Use one console per device, not a shared screen-space overlay.
 
-Suggested layout:
+Placement:
 
-- Dark translucent scrim.
-- Centered console panel, 16:9.
-- Header: device name, screen power, connection status.
-- Left column: bound printer list with status dots and active selection.
-- Main area: active printer status, temperatures, progress, job details.
-- Footer: job picker, infill segmented control, estimate, validation, action buttons.
-- Toast area for bind/unbind/validation messages.
-- `screen_off_root`: black panel with `Power on` and hints.
+- The console is a world-space uGUI canvas parented to the device's `ScreenAnchor` and positioned in front of the measured display bounds.
+- It stays visible on the device screen at all times, including while the player walks away.
+- Logical width is `1600`; logical height follows the physical screen aspect. One uniform scale maps `1600` logical units to the display width.
+- The canvas is offset in front of the front-most display point by `0.0015 m`.
+- Only the focused device enables its `GraphicRaycaster`; its event camera is the active Cinemachine output camera. Interaction is impossible while unfocused.
+
+Style:
+
+- Follow `Assets/Art/3D/Prefabs/Interface/items_market`: the default rounded UI sprite, white `(1,1,1,0.78)` and gray `(0.52,0.52,0.52,0.78)` boxes, black text, sizes 20–25.
+- No accent colours, gradients, or modern dashboard styling. Selection uses a black bar and weight, not hue.
+- Key badges follow the `interactions_list` / `part_install_canvas` pattern: a white badge sized to its key (`LMB`, `Q`) plus a short label.
+- Only non-obvious targets show hover text (printers in bind mode). Buttons do not change the hint line.
+- Text for `Q` is short: `Quit` in the console, `Leave` in bind mode.
+
+Layout:
+
+- Header: device name, connection count, `Screen off`, `Quit`.
+- Left column: bound printer list with active selection.
+- Main area: active printer status and details.
+- Footer: `Q Quit` chip, `Connect printer`, `Disconnect`. The `Q Quit` chip and the screen-off `Q Quit` chip share the same bottom-left anchor (`Margin`, `Margin`) so the badge does not jump between power states.
+- Screen-off overlay: black panel with `Power on` and a `Q` hint.
+- Bind mode uses the authored `device_bind_canvas` in the player's view, shown by `InterfaceController.SetDeviceBindState` together with `point_canvas`.
+- The console is clipped by a screen-shape mask: `DeviceScreenAnchor.ScreenMaskSprite` when set, otherwise a rounded-rectangle generated from `ScreenCornerRadius` (fraction of the logical width); `0` keeps square corners.
+- The console hides whenever the display renderers are disabled, so selling, placing, or other ghost previews do not leave the UI floating over the ghost.
+- `DeviceBindPanel` fills the canvas: the top `horizontal_stack` reads `Printer binding` / `Printer unbinding`, `device_bind_hover_name` shows the hovered printer, `bind_root` shows the constant `LMB Bind` key hint only while a printer is hovered, and `device_bind_reason` shows a failed-attempt reason for an exposed `ReasonDuration`.
+- While bound to, the device canvas hides its header and footer and keeps the printer list.
+- No toasts; success returns to the console silently.
+- Every device spawns with its screen off.
 
 Behavior:
 
-- `DeviceConsolePresenter.Open(device)` binds to the device and active printer.
-- `Close()` unsubscribes from printer events.
-- Refresh on events and at ~5 Hz; do not rebuild strings every frame.
+- `DeviceConsolePresenter` owns one `DeviceConsoleView` per device and enables interaction through `Focus(device, eventCamera)` / `Unfocus()`.
+- Views subscribe to their own device and refresh on events plus ~5 Hz polling; unfocused views refresh at a lower rate.
+- Do not rebuild strings every frame.
 - Disable buttons with reasons rather than hiding them.
 - Confirm hard stop and unbind-while-printing.
-- Show printer state colors consistently (idle, heating, printing, finished, maintenance, fault).
 - Do not show a printer as “connected” if its binding was removed.
 
 ### 6.9 Camera controller
@@ -790,23 +811,26 @@ Behavior:
 - References:
   - `CinemachineCamera ConsoleCamera`
   - `CinemachineBrain Brain`
-  - `DeviceConsolePresenter Console`
 - Methods:
   - `Focus(Device device, Action onReady)`
   - `Release(Action onReady)`
+- `DeviceController` enables console interaction in the `onReady` callback; the console canvas is already visible on the screen.
 - Framing:
   - Get the screen anchor (`DeviceScreenAnchor` or `ItemComputingDataHolder.ScreenGameObject`).
-  - Compute the screen center and normal from renderer bounds.
+  - Compute the screen center, extents and normal from the renderer bounds expressed in the screen anchor's frame. Do not use the world-space AABB: at arbitrary device rotations it inflates the size and pushes the console off the glass.
   - Place the camera at `center + normal * distance`.
   - Distance from screen size, FOV, and a fill factor; clamp to a safe minimum.
-  - Look at the screen center with `CinemachineHardLookAt`.
+  - Orient toward the screen center directly; no look-at component is required.
 - Priority:
-  - Console camera high (e.g., `100`), player camera low (`0`).
-  - Release restores the console camera priority to `0`.
+  - Console camera active `100`; idle `-1`, below the player camera's implicit `0` so activation-order tie-breaking never selects it.
+  - Release restores the console camera priority to `-1`.
 - Blend:
-  - Use the Brain's default blend or a per-camera blend.
-  - Wait for the blend before enabling the console, or cross-fade the UI.
+  - Temporarily set the Brain's default blend to `BlendTime` (`0.55 s`).
+  - Wait for the blend to start, then for it to finish, before invoking `onReady`.
+  - Restore the previous default blend when the wait ends.
   - Cancel any pending focus/release coroutine when the console is closed early or the device becomes invalid.
+- Event camera:
+  - Exposes `Brain.OutputCamera` so the focused console can raycast with the player camera.
 - Cursor:
   - Show/unlock in console.
   - Hide/lock in bind mode and free walk.
@@ -953,7 +977,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - Horizontal Z → `print_bed_holder_base`, local Y (bed front/back)
   - Vertical Y → `x_axis_base`, local Z (gantry up/down)
 - `PrintBedAnchor` under/at `print_bed_location`, calibrated to Y-up.
-- `PrinterBindHighlight` with a translucent sphere sized to printer bounds.
+- `PrinterBindHighlight` with a translucent sphere sized to printer bounds; the same sphere is the bind hover volume.
 - `Device` component on all four computing prefabs.
 - Minimal `Device.GetInteractions()` returning `Use device`, plus the `ItemHoverInteract` parent-`Device` resolution. This is only the interaction entry point; in M0 the execute action can log a placeholder, and M1 wires it to the console state.
 - `DeviceScreenDisplay` on all four computing prefabs.
@@ -969,7 +993,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - The test cube reveals correctly with `_reveal_height`.
 - `F` prompt appears on all four computing device prefabs.
 - The screen anchor frames the screen for all four device types.
-- Bind highlight spheres fit the printer and do not block raycasts.
+- Bind highlight spheres fit the printer, are the bind hover volume, and do not block raycasts.
 
 **Manual gate (must be recorded in the calibration table)**
 
@@ -989,7 +1013,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 ### M1 — Device console and printer binding
 
-**Goal:** The player can open a device console, add/remove printers, and see a live printer list.
+**Goal:** The player can open a device console, connect and disconnect printers, and see a live printer list.
 
 **Deliverables**
 
@@ -1001,36 +1025,51 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - `EnterBindMode`, `ExitBindMode`
   - bind/unbind selection events
 - `DeviceFocusController` with Cinemachine blend.
-- `DeviceConsolePresenter` with:
+- `DeviceConsolePresenter` + `DeviceConsoleView` with:
+  - one always-visible world-space console per device
   - printer list
   - active selection
   - connection status
-  - `Add printer` / `Disconnect printer`
-  - `Turn off screen`
+  - `Connect printer` / `Disconnect`
+  - `Screen off`
   - `Quit`
+  - `Q Quit` chips in the console footer and on the screen-off overlay, at the same anchor
 - `PrinterBindTargeting` with hover highlight.
 - `PrinterBindHighlight` colors:
   - bindable: cyan
   - already bound to this device: green
   - bound to another device (unavailable): red
   - selected for unbinding in unbind mode: amber
-  - hovered: brighter
+  - hovered: slightly more opaque (`0.30` vs `0.18`), never fully opaque
 - `PlayerController.SetDeviceInterfaceState` / `SetDeviceBindState`.
 - Scene wiring for `DeviceController` and the console canvas. The scene already contains empty `states/device_interface` and `interface/device_interface` marker objects; use or replace them rather than adding parallel placeholders.
+
+**Scene wiring (implemented)**
+
+- `states`: `DeviceController` next to `GameStateManager` (single shared controller).
+- `controllers/device_bind`: `PrinterBindTargeting` with the player camera, `3 m` range, all layers. It is a persistent controller, not a state object.
+- `controllers/interface/device_bind/device_bind_canvas`: `DeviceBindPanel` bound to the authored title, hover name, `bind_root` and reason texts; `ReasonDuration` is exposed (currently `2 s`).
+- `InterfaceController.PointInterface` and `InterfaceController.DeviceBindPanel` drive the bind UI.
+- `interface/device_interface`: `DeviceConsolePresenter` using the Montserrat SDF font and the built-in rounded UI sprite. It owns one world-space `DeviceConsoleView` per device, built at runtime under that device's screen anchor; there is no screen-space console HUD.
+- New root `device_console_camera`: `CinemachineCamera` (priority `-1` idle, FOV `55`, near clip `0.01`) plus `DeviceFocusController`.
+- `GameStateManager.DeviceController` points at the shared controller.
+- The `demonstration_1` laptop instance is active so the console has an authored device next to a paired printer.
 
 **Acceptance criteria**
 
 - Hovering a computing device shows `Use device` and `F`.
-- `F` focuses the device screen and opens the console.
-- `Q` closes the console and returns the camera and controls.
-- `Add printer` enters bind mode, highlights bindable printers, and binds on LMB.
+- `F` focuses the device screen and enables console interaction.
+- The console is visible on the device screen even while the player is in free walk.
+- `Q` leaves the console and returns the camera and controls.
+- `Connect printer` enters bind mode, highlights bindable printers, and binds on LMB.
 - `Q` cancels bind mode and returns to the console.
 - Binding a printer already bound to another device fails with feedback.
 - Bound printers appear in the console list.
-- `Disconnect printer` enters unbind mode and removes the selected binding.
+- `Disconnect` enters unbind mode and removes the selected binding.
 - Multiple printers can be bound to one device and selected in the list.
 - Unbinding while printing does not stop the print.
-- Screen off shows a black console and black physical screen; power-on restores both.
+- Screen off shows a black physical screen with an on-screen `Power on` overlay; power-on restores both.
+- Hovering a printer in bind mode shows its name and the `bind_root` `LMB Bind` hint; buttons stay silent.
 - No duplicate event subscriptions or dangling references.
 
 **Manual gate**
@@ -1040,9 +1079,10 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 3. Test binding from different player positions and distances.
 4. Test that printers behind walls cannot be bound.
 5. Test UI at 16:9, 21:9, and 4:3; text must remain legible.
-6. Test screen-off and power-on transitions.
-7. Test binding persistence while walking away and returning.
-8. Test unbinding a printing printer and rebinding it.
+6. Walk away and confirm the console stays visible on the device screen but cannot be clicked from free walk.
+7. Test screen-off and power-on transitions.
+8. Test binding persistence while walking away and returning.
+9. Test unbinding a printing printer and rebinding it.
 
 **Do not proceed to M2 until binding and camera flow feel comfortable and do not break free walk.**
 
@@ -1240,13 +1280,22 @@ Fill this table during M0 and update it during later milestones.
 | Spool reveal mapping | same cutoff direction | remaining filament is the inverse of print progress; verify in M4 |
 | Spool rotation axis |  | not implemented yet; decide in M4 |
 | Spool remaining formula verified | no | deferred to M4 |
-| Laptop screen anchor + distance | +Z → world +Z | distance deferred to M1 |
-| PC screen anchor + distance | +Z → world +Z | distance deferred to M1 |
-| Smartphone screen anchor + distance | +Z → world +Y | device lies flat; distance deferred to M1 |
-| Tablet screen anchor + distance | +Z → world +Y | device lies flat; distance deferred to M1 |
-| Camera blend in / out |  | deferred to M1 |
-| Bind highlight bounds | printer bounds + `0.08 m` padding | translucent sphere, no raycast |
-| Bind distance | `1 m` proposed | not enforced in M0; enforce in M1 |
+| Laptop screen anchor + distance | +Z → world +Z | oriented renderer bounds in the anchor frame (fill `0.82`, FOV `55`, padding `0.025 m`, min `0.12 m`); verify in the M1 gate |
+| PC screen anchor + distance | +Z → world +Z | computed from bounds (fill `0.82`, FOV `55`, padding `0.025 m`, min `0.12 m`); prefab not yet instanced, verify in the M1 gate |
+| Smartphone screen anchor + distance | +Z → world +Y | device lies flat; distance computed from bounds (same values); prefab not yet instanced, verify in the M1 gate |
+| Tablet screen anchor + distance | +Z → world +Y | device lies flat; distance computed from bounds (same values); prefab not yet instanced, verify in the M1 gate |
+| Camera blend in / out | `0.55 s` EaseInOut | both directions; console interaction enables after the focus blend |
+| Bind highlight bounds | printer bounds + `0.08 m` padding | translucent sphere, no collider |
+| Bind hover volume | the highlight sphere itself | analytic ray-sphere test; aiming at the bubble is enough |
+| Bind hover opacity | `0.30` vs `0.18` idle | slightly more opaque on hover, never opaque |
+| Bind distance | `3 m` | `PrinterBindTargeting.MaxDistance`; to the sphere entry point, with a line-of-sight raycast |
+| Bind reason duration | `2 s` | `DeviceBindPanel.ReasonDuration` on `device_bind_canvas` |
+| Console UI | world-space uGUI canvas per device | logical width `1600`, height from screen aspect, `0.0015 m` offset, Montserrat SDF, items_market style |
+| Console canvas facing | forward points into the screen | UGUI is readable when the viewer looks along canvas `+Z`; verify in the M1 gate |
+| Console canvas placement | display bounds centre + normal | offset from the front-most bounds point, then `0.0015 m`; verify in the M1 gate |
+| Console refresh | `0.2 s` | focused view on events plus ~5 Hz polling; other views slower |
+| Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
+| Console camera idle priority | `-1` | player camera stays at implicit `0` |
 | Print speed multiplier | 120× |  |
 | Hard-stop penalty |  | deferred to M3 |
 
@@ -1267,6 +1316,9 @@ Fill this table during M0 and update it during later milestones.
 ### M1
 
 - Open/close console from all four devices.
+- Console stays visible on the device screen from free walk.
+- The bind canvas shows `Printer binding`, the hovered printer name and `bind_root`; failed clicks on a printer show the reason.
+- Screens spawn off; a fresh device shows the `Power on` overlay when focused.
 - Bind/unbind one printer.
 - Bind/unbind multiple printers.
 - Bind rejection cases.
@@ -1347,25 +1399,43 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**M0 scripts are implemented. Prefab/scene wiring is next.**
+**Status:** M0 is committed. M1 implementation is complete; the laptop flow has been iterated and approved in play mode. Formal M1 close still needs the other device types and aspect ratios checked (see the manual gate).
 
-M0 is the highest-leverage milestone because it de-risks every later step:
 
-- It proves the axis mapping and signs.
-- It proves the bed anchor and print orientation.
-- It proves the shader reveal and cutoff formula.
-- It proves the device hover and screen framing.
-- It gives concrete values for the calibration table.
+M1 is code-complete:
 
-Remaining M0 work:
+- `DeviceController` owns the console flow and bind selections.
+- `DeviceFocusController` frames the screen, blends the camera, and exposes its event camera.
+- `DeviceScreenFraming` shares screen measurements between framing and the on-screen console.
+- `DeviceConsolePresenter` manages one always-visible `DeviceConsoleView` per device.
+- `DeviceBindPanel` fills the authored `device_bind_canvas` with the hovered printer and failed-attempt reasons.
+- The console lives on the device screen, follows the items_market style, and hides its header and footer while binding; `device_bind_canvas` and `point_canvas` are the bind UI.
+- Only the focused console enables its raycaster, so free walk cannot click a remote screen.
+- `PrinterBindTargeting` (under `controllers/device_bind`) plus `PrinterBindHighlight` provide sphere-hover targeting and feedback.
+- `GameStateDeviceInterface` / `GameStateDeviceBind` are contextual; no new global states or InputActions.
+- `MainScene` wires the controller, targeting, presenter, and `device_console_camera`. No MonoBehaviour lives under `states/...` except the legacy shared `GameStateManager`/`DeviceController` on the `states` root.
 
-1. Wire the printer prefab per Appendix E.1–E.4.
-2. Wire the four computing prefabs per Appendix E.5.
-3. Test the bind highlight per Appendix E.6.
-4. Record the §9 calibration values.
-5. Stop and review before M1.
+M1 is the highest-leverage gate after M0 because it proves the player-facing loop:
 
-Do not start M1 until the manual M0 gate is recorded.
+- The console focuses the screen and returns control cleanly.
+- Binding is centre-screen and cannot reach through walls.
+- A printer never stops because its device stopped listening.
+- One console serves every device type.
+
+Remaining M1 work (manual gate):
+
+1. Open `MainScene`; confirm `F` focuses the laptop screen and enables console interaction.
+2. Confirm the console stays visible on the screen after `Q`, from free walk, and after walking away.
+3. Confirm `Q` restores the player camera and controls.
+4. Confirm `device_bind_canvas` and `point_canvas` appear, the title reads `Printer binding`, the hovered printer name fills in, and failed attempts show their reason for `ReasonDuration` seconds.
+5. Bind and unbind the paired MK4S and the test printer; confirm highlight colours and rejection feedback.
+   - The "unbinding does not stop the print" criterion can only be exercised once M3 provides a running print.
+6. Confirm screen off/on affects both the console and the physical display.
+7. Check the console at 16:9, 21:9, and 4:3.
+8. Instance the PC, smartphone, and tablet prefabs; verify framing, canvas fit, hover, and bind targeting.
+9. Record any tuning values in §9.
+
+Do not start M2 until the M1 gate passes.
 
 ---
 
@@ -1420,6 +1490,13 @@ Notes:
 ---
 
 ## Appendix B — Proposed file map
+
+### Scene hierarchy conventions
+
+- MonoBehaviours belong under `controllers/...` (persistent controllers, targeting, managers) or `interface/...` (UI presenters and canvases).
+- `states/...` folders are scene markers for state-scoped data or objects. Do not attach scripts under them. If a state needs behaviour, put the component under `controllers/...` and let the state call it.
+- The only current exceptions are the shared `GameStateManager` and `DeviceController` on the `states` root. Treat them as legacy and do not add more scripts there.
+- `PrinterBindTargeting` follows this rule: it lives under `controllers/device_bind` because it persists across states and only runs while bind mode is active.
 
 M0 files actually added are listed in Appendix D. The tree below is the full target layout.
 
@@ -1482,6 +1559,12 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-16 | Partial print remains after hard stop | Approved default |
 | 2026-11-16 | 120× simulated print time | Approved default |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
+| 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
+| 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |
+| 2026-11-17 | Screen metrics measured in the anchor frame | A world AABB inflates `FrontOffset` by `0.1–0.2 m` and the extents at non-90° device rotations |
+| 2026-11-17 | Key badge images are sliced | A simple image stretches the rounded corners when the badge is wider than the sprite |
+| 2026-11-17 | Console clipped by a screen-shape mask | Rounded phone displays otherwise show a rectangular UI; sprite override covers notches |
+| 2026-11-17 | Console follows screen renderer visibility | Selling/placing ghosts disable the screen renderers, so the UI must hide with them |
 
 ---
 
@@ -1518,7 +1601,7 @@ Assets/Scripts/Coursework_Master_Degree/
 **Deliberate M0 behaviour**
 
 - `Device.RequestUse()` logs a placeholder until M1 wires the console state.
-- `DeviceScreenDisplay.ApplyStateOnAwake` is off by default, so screens keep their authored look during calibration.
+- Screens spawn off: `DeviceScreenDisplay` applies the off state in `Awake`, and `ApplyStateOnAwake` has been removed.
 - Runtime materials are created for the bind sphere and screen-off state only if no material is assigned.
 - No scene or `InputActions` change has been made. The only deliberate prefab change is renaming the print plate node to `printer_print_plate_location`; its fileIDs and part metadata are unchanged.
 
@@ -1594,12 +1677,12 @@ Calibrate to the **usable print volume**, not the mechanical travel extremes. `A
 Repeat for `laptop_root`, `PC_root`, `smartphone_root`, and `tablet_root`.
 
 1. Add `Device` to the root. `Computing` auto-assigns; leave `Screen` and `ScreenAnchor` until the next steps.
-2. Add `DeviceScreenDisplay` to the root. `Computing` auto-assigns. Leave `ScreenRenderers` empty so it collects from `ScreenGameObject`. Leave `ScreenOffMaterial` empty for a runtime black material. Keep `ApplyStateOnAwake = false`.
+2. Add `DeviceScreenDisplay` to the root. `Computing` auto-assigns. Leave `ScreenRenderers` empty so it collects from `ScreenGameObject`. Leave `ScreenOffMaterial` empty for a runtime black material. Screens spawn off: the component applies the off state in `Awake`, and the old `ApplyStateOnAwake` flag is gone.
 3. Create an empty child named `screen_anchor` under the **screen mesh GameObject**, not the device root: `.../screen/screen_anchor`. This keeps the anchor attached to the display when a laptop lid or monitor moves. Put it at the display centre (reset its local position first) and rotate it until its local +Z (blue arrow) points **out of** the screen toward the viewer. Add `DeviceScreenAnchor`. Use `InvertNormal` if the blue arrow must point inward. A root-level anchor works only if the screen never moves relative to the root.
 4. Assign `Device.Screen` and `Device.ScreenAnchor`.
-5. Test hover on each child mesh: the prompt should read `Use device`. Press `F`; the console should log the M0 placeholder.
+5. Test hover on each child mesh: the prompt should read `Use device`. Press `F`; the console should open and the camera should focus the display (M1).
 6. Enter **play mode** first, then test screen-off from the component context menu: select the device root, open the `DeviceScreenDisplay` component's ⋮ menu, and choose `Screen Off`, `Screen On`, or `Toggle Screen`. The context menu relies on the materials cached in `Awake`, so it is not a safe edit-mode test. Confirm the display goes black and `Screen On` restores the authored material. Stop play mode afterward; nothing is saved.
-7. Optional, and not required for the M0 gate: add a `device_console_camera` (`CinemachineCamera`, priority 0, `CinemachineHardLookAt`) under `states`. Defer this to M1, when the console UI exists and the framing distance can be tuned. For M0, verify the anchor by selecting `screen_anchor` and aligning the Scene view to it (`Ctrl+Shift+F`): the display should be centred and the blue +Z arrow should point outward.
+7. The console camera is now wired once in `MainScene` (`device_console_camera` with `CinemachineCamera` priority `-1` and `DeviceFocusController`); there is no per-prefab camera component. For each prefab, verify the anchor by selecting `screen_anchor` and aligning the Scene view to it (`Ctrl+Shift+F`): the display should be centred and the blue +Z arrow should point outward.
 
 ### E.6 Bind highlight
 
