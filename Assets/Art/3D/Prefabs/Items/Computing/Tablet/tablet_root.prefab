@@ -134,7 +134,6 @@ MonoBehaviour:
   Computing: {fileID: 0}
   ScreenRenderers: []
   ScreenOffMaterial: {fileID: 0}
-  ApplyStateOnAwake: 0
   isOn: 1
 --- !u!1 &4319533490063473903
 GameObject:
