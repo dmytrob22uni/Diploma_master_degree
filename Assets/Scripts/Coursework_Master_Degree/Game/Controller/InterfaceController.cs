@@ -6,6 +6,7 @@ using Coursework_Master_Degree.Game.Logic.Interface.ItemsMarket;
 using Coursework_Master_Degree.Game.Logic.Interface.InteractionsList;
 using Coursework_Master_Degree.Game.StateMachine;
 using Coursework_Master_Degree.Game.StateMachine.State;
+using Coursework_Master_Degree.Game.Logic.Interface.DeviceBind;
 
 namespace Coursework_Master_Degree.Game.Controller
 {
@@ -22,6 +23,7 @@ namespace Coursework_Master_Degree.Game.Controller
         [HorizontalLine(1.0f)]
         [Header("Common Interfaces")]
         public GameObject PointInterface;
+        public DeviceBindPanel DeviceBindPanel;
         [Header("Game State Interfaces")]
         public GameObject FreeWalkInterface;
         public GameObject ItemsMarketInterface;
@@ -35,6 +37,17 @@ namespace Coursework_Master_Degree.Game.Controller
         public GameObject PartsRemoveInterface;
         public GameObject PartsIntegrityInterface;
         public GameObject ItemsSellCanvas;
+
+        public void SetDeviceBindState(bool enable)
+        {
+            // The centre point and the bind prompt belong to the aimed bind state.
+            PointInterface.SetActive(enable);
+
+            if (DeviceBindPanel != null)
+            {
+                DeviceBindPanel.gameObject.SetActive(enable);
+            }
+        }
 
         public void SetFreeWalkState(bool enable)
         {

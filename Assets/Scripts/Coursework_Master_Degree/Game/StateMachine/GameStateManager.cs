@@ -18,6 +18,7 @@ namespace Coursework_Master_Degree.Game.StateMachine
         public PlayerController PlayerController;
         public ItemController ItemController;
         public InterfaceController InterfaceController;
+        public DeviceController DeviceController;
 
         [Header("Common Logics")]
         public ItemInstancer ItemInstancer;
