@@ -3,7 +3,10 @@ using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint.Types;
 
 namespace Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint
 {
-    [CreateAssetMenu(fileName = "object_to_print_meta_SO", menuName = "Game Items/Object To Print Meta SO", order = 2)]
+    [CreateAssetMenu(
+        fileName = "object_to_print_meta_SO",
+        menuName = "Game Items/Object To Print Meta SO",
+        order = 2)]
     public class ObjectToPrintMetaSO : ScriptableObject
     {
         public string Id;
@@ -17,5 +20,11 @@ namespace Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint
         public Texture2D Icon;
 
         public ObjectToPrintType[] ObjectToPrintTypes;
+
+        public ObjectToPrintPrintProfile PrintProfile =
+            new ObjectToPrintPrintProfile();
+
+        public ObjectToPrintRequirements Requirements =
+            new ObjectToPrintRequirements();
     }
 }

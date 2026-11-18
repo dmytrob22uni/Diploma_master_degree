@@ -18,3 +18,10 @@ MonoBehaviour:
   Prefab: {fileID: 7837376639033383743, guid: b131f5844c8cac9999db4039019f4e4d, type: 3}
   Icon: {fileID: 2800000, guid: e67316ead48935c19aa30a3e632ce1e9, type: 3}
   ObjectToPrintTypes: 00000000i
+  PrintProfile:
+    FilamentMetersAt100PercentInfill: 85.36
+    PrintTimeSecondsAt100PercentInfill: 36720
+    SupportsRequired: 1
+    SupportOverhangPercent: 15.48308
+  Requirements:
+    DefaultInfill: 1
