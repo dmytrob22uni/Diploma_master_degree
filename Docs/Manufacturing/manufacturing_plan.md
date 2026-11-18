@@ -66,6 +66,8 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 | Print time | Simulated time = real time × configurable multiplier; default `120×` |
 | Hard stop result | Partial print stays on the bed until removed |
 | Infill choices | `None`, `Grid`, `Gyroid`; affects time/filament only |
+| Print settings | Layer height (`Draft 0.28` / `Normal 0.20` / `Fine 0.12` mm), speed (`Slow 40` / `Normal 80` / `Fast 140` mm/s), supports (`None` / `Auto`) |
+| Nozzle diameter | Not a per-print setting; treat nozzles as hardware |
 | Job queue | None; one active job per printer |
 | Device-to-printer model | One device → many printers; one printer → one device |
 | Printer ownership of job | Printer owns the job and keeps printing if the device is unbound |
@@ -96,12 +98,12 @@ The console shows:
 - Bound printer list with status indicators.
 - Active printer status card.
 - Job picker from the `ObjectsToPrint` catalog.
-- Infill selector.
+- Layer-height, print-speed, infill and supports selectors.
 - Estimated print time and filament use.
 - Validation messages.
 - `Start print`, `Hard stop`, `Connect printer`, `Disconnect`, `Screen off`, and `Quit`.
 
-M1 ships only the binding and power controls; the job controls arrive in M2.
+M1 ships only the binding and power controls; the job controls arrive in M2. M2.5 adds `Place on bed` between job setup and starting.
 
 ### 4.3 Binding a printer
 
@@ -125,14 +127,33 @@ M1 ships only the binding and power controls; the job controls arrive in M2.
 ### 4.5 Starting a print
 
 1. Player selects the active printer.
-2. Player selects an object and infill.
-3. Console validates the job.
-4. `Start print` becomes available only when the job is valid.
+2. Player selects an object, layer height, speed and infill. Estimates are shown for the default placement (centred, unrotated, scale `1`).
+3. Player places the object on the bed (see 4.6). Estimates recalculate from the chosen scale.
+4. Console validates the job.
+5. `Start print` becomes available only when the job is valid.
 5. Printer transitions `Idle → Preheating → Printing → Cooling → Finished`.
 6. Console shows live state, temperatures, progress, remaining time, and filament use.
 7. When finished, the object is fully revealed on the bed and can be removed.
 
-### 4.6 Hard stop
+### 4.6 Placing, rotating and scaling the object
+
+1. Player clicks `Place on bed` in the console.
+2. The console stays on the device screen but stops accepting input; the camera focuses the printer's print plate, and the cursor is hidden.
+3. A `PrinterBedPlacement` ghost appears at the plate centre, at scale `1`, facing the printer front from `PrintBedAnchor`.
+4. Interaction is hold-to-modify. With no modifier the mouse only moves the cursor:
+   - move: hold `G` and move the pointer; the object follows the plate raycast,
+   - yaw: hold `R` and move the mouse left/right,
+   - scale: hold `S` and move the mouse right/up to grow and left/down to shrink; exponential. Overscale/underscale is allowed, turns the ghost to the wrong state, and blocks confirmation.
+   - camera orbit: hold `RMB`; pitch is clamped to `15°–75°` above the plate,
+   - zoom: wheel, with clamped distance,
+   - confirm `LMB`, cancel `Q`. Scale/rotate happen around the object's bottom centre.
+   Releasing a modifier returns to the idle state. No snap is used.
+5. The ghost uses `shader_object_to_print_printer_bed_placement_mode`; valid placements use the `right` state, invalid placements switch the shader to the `wrong` state via its blackboard (`_printer_bed_placement_state` / `_PRINTER_BED_PLACEMENT_STATE_WRONG`).
+6. A placement is invalid when the rotated, scaled footprint leaves the usable plate area, the height exceeds `BuildVolume.y`, or the scale leaves its dynamic min/max. Confirm is disabled while invalid.
+7. Confirming stores the local position, yaw and uniform scale on the current job draft, returns to the console, and recalculates the estimates. Cancelling discards it and returns without saving; if nothing was placed, the console reports that a placement is still required.
+8. The placement UI (hints, valid/invalid message, confirm/cancel) is authored separately — the roadmap asks the project owner to create it before implementation.
+
+### 4.7 Hard stop
 
 1. Player clicks `Hard stop` and confirms.
 2. The printer immediately stops motion and turns heaters off.
@@ -141,7 +162,7 @@ M1 ships only the binding and power controls; the job controls arrive in M2.
 5. The printer cools down and returns to `Idle` with `HasPartialPrint = true`.
 6. No new job can start until the partial print is removed.
 
-### 4.7 Leaving the console
+### 4.8 Leaving the console
 
 - `Q` quits the console (`Quit`).
 - The console stops accepting pointer input and stays visible on the device screen; the camera blends back to the player, movement/look is restored, and the cursor is hidden/locked.
@@ -439,7 +460,7 @@ PrinterStateMachine
   - Idle
   - Preheating
   - Printing
-  - Paused        (reserved for later)
+  - Paused        (pause/resume and safe service)
   - Cooling
   - Finished
   - Maintenance
@@ -555,6 +576,30 @@ No new events are required. Reuse:
 - `OnBindDeviceEvent`
 - `OnUnbindDeviceEvent`
 
+#### `Game/Logic/Hover/ItemHoverSell.cs`
+
+Computing devices cannot be sold while connected to any printer. The sell hover resolves the `Device` on the item root and checks `Device.BoundPrinters`:
+
+- bound to at least one printer → `SellingState.Wrong`, reason `Connected to a printer`;
+- no bound printers → normal sell rules.
+
+The wrong state is applied through the existing selling ghost `_selling_state` blackboard, and the reason appears in the sell hint like `Missing parts` / `Worn parts`.
+
+#### Combined free-part / wearable items
+
+Some parts are both a free part and a regular item (e.g. `Prusa_MK4S_printer_battery_closet_adapter_root` has `ItemFreePartDataHolder`, `ItemDataHolder`, and `ItemWearState`). These rules keep the flows consistent:
+
+- Regular free parts live directly under their `free_parts_reset_points` location and are moved as their own item root.
+- A wearable free part is installed in a `PartLocation` carrier. `ItemPlacementUtility.GetFreePartMovableTransform` resolves the carrier as the movable transform, so the location collider and the installed part travel together.
+- A free part nested under a core item stays restricted to the core item's parent surface.
+- A standalone item which also exposes `ItemFreePartDataHolder` has no core item above it and can be placed freely.
+- Placement updates every `ISurfacePlaceable` on the item root, so both free-part and item surface states agree.
+- Taking a wearable free part moves its `PartLocation` carrier; it stays installed in that carrier. Install mode is not offered while it is already installed. The carrier is deactivated while carried so its location collider cannot block placement rays.
+- Taking a core item resets every mapped free part: regular parts return to their `ItemPartsToLocationsList` location, and wearable parts move their `PartLocation` carrier to it. Old shelf registrations and placement ghosts are cleared.
+- `PartLocation.Remove()` and `PartLocation.Install()` reset a wearable part's carrier to its authored `ItemPartsToLocationsList` location, so the assembly socket is never left displaced.
+- Entering installation hides both the regular placement ghost and the free-part placement ghost.
+- Hovering a detached combined part still offers wear inspection through its `ItemDataHolder`.
+
 ### 6.3 Printer state machine
 
 States and transitions:
@@ -569,7 +614,7 @@ States and transitions:
 | `Printing` | fatal fault (M5) | `Cooling` / `Fault` |
 | `Cooling` | temperatures near ambient | `Finished` or `Idle` |
 | `Finished` | print removed | `Idle` |
-| `Idle` / `Finished` | worn-out/missing critical part | `Maintenance` |
+| `Idle` / `Finished` | any part at 0% / missing critical part | `Maintenance` |
 | `Maintenance` | parts repaired | `Idle` |
 
 Rules:
@@ -577,7 +622,7 @@ Rules:
 - `Finished` means a completed print is still on the bed.
 - `Idle` means the bed is clear.
 - A hard-stopped partial print sets `HasPartialPrint = true`; the printer returns to `Idle` after cooling but rejects new jobs until the partial print is removed.
-- `Paused` is reserved for a later pause/resume feature.
+- `Paused` is used for player pause and safe part service; it does not consume print progress.
 - `Fault` is reserved for M5 failure modes.
 
 The printer ticks with simulated time:
@@ -606,15 +651,30 @@ Validation rules:
 - A printer is selected and bound.
 - Printer is `Idle` or `Finished` with no partial print.
 - Printer has all critical parts installed.
-- No critical part is worn out.
+- No installed part is completely worn out (`0%`); any installed part at `0%` blocks.
+- Every installed part at `20%` or less warns; critical parts additionally warn between `20%` and `40%`.
+- All installed part conditions feed the raw-quality hardware penalty.
 - Spool is installed.
-- Spool material is compatible with the object/profile.
 - Remaining filament is enough.
 - Object fits the build volume.
 - Print plate is present.
-- No job is already active on that printer.
+- No job is already active or queued on that printer.
+- The object has a confirmed placement inside the usable plate area and within the build volume.
+- Supports match the object: a model that needs supports can start with `None`, but receives a severe raw-quality penalty and a warning. `Auto` on a model that does not need it is allowed with a "not mandatory" warning and extra cost.
 
-Hard failures block `Start print`. Warnings do not block but are shown in the console.
+All part locations are scanned, not only the critical list. Critical parts are the only ones that block when missing; a completely worn non-critical part still blocks because the policy is “any part at 0% blocks”.
+
+Critical parts are serialized as **`PartLocation` references** on the printer (`Printer.CriticalPartLocations`), not names. The print plate is `Printer.PrintPlateLocation`. References survive renames and support prefab variants; names are only used by the editor auto-assign helper. `ItemMetaSO.ItemTypes` is deliberately not used because it stores only broad paths (`FFF`, `Printer`, `Part`), not leaf types such as nozzle or print plate.
+
+Balanced default critical set:
+
+- extruder nozzle, heater, thermistor, fan, filament bearing,
+- print bed and print bed thermistor (print plate is separate),
+- X/Y belts, X/Y rotors, Z left/right rotors.
+
+Other bearings/bushings are wear-warned and 0%-blocked by the all-parts scan but are not in the missing-critical list; add their references if the assembly should demand them.
+
+Hard failures block `Start print`. Warnings do not block but are shown in the console. Any installed spool material is printable; material affects M3 temperatures and M5 quality rather than job validity.
 
 ### 6.5 Temperature model
 
@@ -784,10 +844,13 @@ Layout:
 
 - Header: device name, connection count, `Screen off`, `Quit`.
 - Left column: bound printer list with active selection.
-- Main area: active printer status and details.
+- Main area: a compact active-printer strip and a print-job card with the object list grouped by `ObjectToPrintType`, layer-height/speed/infill/supports selectors, estimates, raw-quality range, a scrollable validation/warnings list and `Start print`.
+- Validation rows show every block and warning; the list scrolls independently so the selectors and `Start print` stay fixed. The job card itself is not a scroll view. The validation block has a subtle inset background and a thin top rule to separate it from the card.
+- The printer list and object list are `ScrollRect` views with `RectMask2D`; mouse wheel and drag work over the full viewport, including empty space, and content grows with the number of entries.
 - Footer: `Q Quit` chip, `Connect printer`, `Disconnect`. The `Q Quit` chip and the screen-off `Q Quit` chip share the same bottom-left anchor (`Margin`, `Margin`) so the badge does not jump between power states.
 - Screen-off overlay: black panel with `Power on` and a `Q` hint.
 - Bind mode uses the authored `device_bind_canvas` in the player's view, shown by `InterfaceController.SetDeviceBindState` together with `point_canvas`.
+- When a device is sold or otherwise deactivated, its console view is removed and destroyed; generated mask textures are disposed.
 - The console is clipped by a screen-shape mask: `DeviceScreenAnchor.ScreenMaskSprite` when set, otherwise a rounded-rectangle generated from `ScreenCornerRadius` (fraction of the logical width); `0` keeps square corners.
 - The console hides whenever the display renderers are disabled, so selling, placing, or other ghost previews do not leave the UI floating over the ghost.
 - `DeviceBindPanel` fills the canvas: the top `horizontal_stack` reads `Printer binding` / `Printer unbinding`, `device_bind_hover_name` shows the hovered printer, `bind_root` shows the constant `LMB Bind` key hint only while a printer is hovered, and `device_bind_reason` shows a failed-attempt reason for an exposed `ReasonDuration`.
@@ -870,26 +933,35 @@ Add a serializable print profile:
 [Serializable]
 public class ObjectToPrintPrintProfile
 {
-    public float ModelHeightMeters;
-    public float LayerHeightMillimeters = 0.2f;
     public float FilamentMetersAt100PercentInfill;
     public float PrintTimeSecondsAt100PercentInfill;
     public bool SupportsRequired;
+    public float SupportOverhangPercent;
+}
+
+[Serializable]
+public class ObjectToPrintRequirements
+{
     public InfillPattern DefaultInfill = InfillPattern.Grid;
 }
 ```
 
-Add:
+Add both to the meta:
 
 ```
 public ObjectToPrintPrintProfile PrintProfile;
+public ObjectToPrintRequirements Requirements;
 ```
+
+Object dimensions are **derived from the prefab bounds** by `ObjectToPrintSizing`, not authored. The global reference layer height (`0.2 mm`) and speed (`80 mm/s`) come from `LayerHeightSettings` / `PrintSpeedSettings`; only the two 100% baseline numbers are per object.
 
 Why inline instead of a separate asset:
 
 - The catalog is currently small.
 - It keeps object metadata self-contained.
 - A separate `ObjectToPrintPrintProfileSO` can be introduced later without changing job code if needed.
+
+The current catalog has one entry (`Stanford bunny`, `Assets/Art/3D/Prefabs/ObjectsToPrint/Animal/Stanford_bunny/SOs/stanford_bunny_meta_SO.asset`). Its 100% infill baseline is calibrated against PrusaSlicer in the M2 gate.
 
 ### Infill
 
@@ -902,20 +974,38 @@ public enum InfillPattern
 }
 ```
 
-Initial tuning table (placeholders, calibrate in M2):
+Initial tuning table (calibrated against PrusaSlicer in the M2 gate):
 
 | Pattern | Effective density | Time factor |
 |---|---:|---:|
-| `None` | 0.15 | 0.60 |
-| `Grid` | 0.50 | 1.00 |
-| `Gyroid` | 0.55 | 1.12 |
+| `None` | 0.1892 | 0.2615 |
+| `Grid` | 0.3153 | 0.3399 |
+| `Gyroid` | 0.3531 | 0.3765 |
 
 ```
 filament = profile.FilamentMetersAt100PercentInfill * density;
-time = profile.PrintTimeSecondsAt100PercentInfill * timeFactor;
+time = profile.PrintTimeSecondsAt100PercentInfill
+     * infillTimeFactor
+     * (LayerHeightSettings.ReferenceMillimeters / selectedLayerHeight)
+     * Pow(PrintSpeedSettings.ReferenceMillimetersPerSecond / selectedSpeed, 0.8);
 ```
 
-These values are intentionally simple and tunable. The important property is that infill affects time and filament consistently.
+These values are intentionally simple and tunable. Infill changes time and filament; supports add a provisional multiplier; layer height and speed change time (filament stays constant at this abstraction). The reference layer height (`0.2 mm`) and speed (`80 mm/s`) are global settings.
+
+Raw quality is projected from the same settings before post-processing:
+
+```
+raw = 82
+    + layerDelta   (Draft -10, Normal 0, Fine +4)
+    + speedDelta   (Slow +4, Normal 0, Fast -10)
+    - hardwareWear (0..10 from the worst installed part condition)
+    - supportsMark (2 when Auto supports are used)
+    - supportRisk (25 when supports are required but None is selected)
+
+range = clamp(raw, 20, 100) .. clamp(raw + 5, 20, 100)
+```
+
+M5 replaces the deltas with the full `PrintQualityModel` (warp, chamber, draft, cooling, failures). Post-processing raises the rolled raw value; supports must be removed, and sanding cannot fix warping or layer shifts.
 
 ### Filament material profile
 
@@ -928,13 +1018,15 @@ Add a `FilamentMaterialProfileSO` (one asset per material) with:
 - `WarpFactor`
 - `CoolingRateMultiplier`
 
-The spool can reference it, or a lookup by `ItemType` can resolve it.
+`ItemFFFPrusaMK4SSpoolDataHolder` gains an optional `MaterialProfile` reference. Any spool material can print any catalog object; `MaterialType` and the thermal profile are consumed in M3/M5 for temperatures, shrink, warp and quality. Assets for PLA/PETG/ABS/TPU are not created yet.
 
 ### Printer runtime state
 
 Plain C# classes, not MonoBehaviours:
 
 - `PrintJob`
+- `PrintJobRequest` with `PrintPlacement`
+- `PrintPlacement` (position on plate, yaw, uniform scale, footprint corners)
 - `PrintProgress`
 - `PrintResult`
 - `PrinterTemperatureState`
@@ -955,6 +1047,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 | **M0** | Prefab wiring + calibration | Axes, bed anchor, reveal, hover, screen framing confirmed |
 | **M1** | Console + binding | Open/close console, bind/unbind multiple printers, camera flow feels right |
 | **M2** | Jobs + validation | Object/infill selection, believable estimates, clear rejection reasons |
+| **M2.5** | Bed placement + profile tooling | Place/rotate/scale on the plate, live validity, estimates recalculated, editor profile generator |
 | **M3** | FSM + temperatures + wear | Full job cycle, hard stop, wear/filament applied correctly |
 | **M4** | Print visuals | Object reveal, motion, spool, partial print, performance |
 | **M5** | Failure + enclosure + polish | Enclosure effects, failures, quality, audio/VFX |
@@ -1090,46 +1183,123 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 ### M2 — Job selection and validation
 
-**Goal:** The console can present objects and infill, calculate estimates, and reject invalid jobs with clear reasons.
+**Goal:** The console can present objects and print settings, calculate estimates and a raw-quality range, and reject invalid jobs with clear reasons.
 
 **Deliverables**
 
-- `ObjectToPrintPrintProfile` fields on `ObjectToPrintMetaSO`.
+- `ObjectToPrintPrintProfile` (baseline filament/time, supports) and `ObjectToPrintRequirements` on `ObjectToPrintMetaSO`.
+- `ObjectToPrintSizing` derives object dimensions from the prefab bounds.
 - `InfillPattern` and `InfillSettings`.
-- `FilamentMaterialProfileSO` or equivalent material data.
-- `PrintJobRequest`.
-- `PrintJobValidator`.
-- Console job picker, infill selector, estimate panel, validation panel.
-- `Start print` gating.
-- Placeholder printer status if M3 is not implemented yet.
+- `SupportsMode` (`None` / `Auto`) and support cost/penalty rules.
+- `FilamentMaterialProfileSO` (data type; spool reference is optional).
+- `LayerHeightPreset`, `PrintSpeedPreset`, `LayerHeightSettings`, `PrintSpeedSettings`.
+- `PrintJobRequest`, `PrintJobValidationResult`, `PrintJobValidator`, `PrintEstimates`, `PrintQualityEstimator`.
+- Console job picker, layer-height/speed/infill/supports selectors, estimate panel, raw-quality range, validation panel.
+- `Start print` gating and a `Printer.PendingJob` slot for M3.
+- Placeholder printer status until M3 runs jobs.
+- Placement is deliberately deferred to M2.5; M2 uses the default placement for estimates and commands.
 
 **Acceptance criteria**
 
-- The object list is populated from `ObjectToPrintMetasListSO`.
-- Selecting an object shows name, icon, height, and estimates.
-- Infill selection updates time and filament.
+- The object list is populated from `ObjectToPrintMetasListSO` and grouped into sections by the object's first `ObjectToPrintType`; new types get a new section automatically.
+- Selecting an object shows name, icon, derived height, estimates, and a raw-quality range.
+- Layer height, speed and infill selections update time and filament (filament depends on infill and supports only).
+- Supports defaults from the meta; `Auto` adds cost, and a required object with `None` shows the severe quality penalty.
+- Every installed part at `0%` blocks; every installed part at `20%` or below warns; critical parts also warn between `20%` and `40%`.
+- The projected raw-quality range moves with layer height, speed and critical-part condition.
 - `Start print` is disabled when:
   - no printer is selected
   - printer is busy
   - a partial print is on the bed
-  - a critical part is missing or worn out
+  - any installed part is at 0% (critical parts missing also block)
   - no spool is installed
   - remaining filament is insufficient
   - the object does not fit the build volume
   - the print plate is missing
-- Validation messages are specific and readable.
-- Estimates are deterministic for the same object/infill/spool.
+- Validation messages are specific, readable, and all current blocks/warnings are listed in the scrollable validation block.
+- Estimates are deterministic for the same object, settings and spool.
 
 **Manual gate**
 
-1. Fill in print profiles for the current object catalog.
-2. Compare estimates against a slicer or a known reference print; record the tuning factor.
+1. Fill in the two 100% baseline values for the current object catalog; dimensions and reference settings are derived/global.
+2. Compare estimates against a slicer at Normal layer height and Normal speed; record the tuning factor. Check one Draft and one Fine print for the layer-height scaling.
 3. Verify spool remaining calculation at 100%, 50%, and 10% condition.
 4. Verify build-volume rejection with an oversized test object.
-5. Verify material compatibility warnings.
 6. Verify that the console cannot start a job on an unbound printer.
+7. Toggle supports on a required and a non-required object; confirm the warning, cost and severe quality penalty.
+8. Set a critical part to `30%` (critical warning), a non-critical part to `10%` (low warning), and any part to `0%` (block).
 
 **Do not proceed to M3 until the estimates and validation rules are believable.**
+
+---
+
+### M2.5 — Interactive bed placement and profile tooling
+
+**Goal:** The player places, rotates and uniformly scales the selected object on the print plate before starting, with live validity feedback, and object profiles can be seeded from an editor tool.
+
+**Deliverables**
+
+- `PrintPlacement` data on the job: local position on the plate, yaw, uniform scale, footprint corners.
+- `GameStateObjectPlace(Device, Printer, draft job, returnState)` contextual state. Replace the empty `GameStateObjectPlace` stub; no new global state.
+- Plate focus camera/controller, separate from `DeviceFocusController`, using `Printer.ResolvedBedAnchor` (`PrintBedAnchor`) for the plate plane, size and front direction.
+- `ObjectPlacementController` using the existing `ObjectPlace` input map:
+  - hold `G` + pointer raycast for movement; bind `ObjectPlacementOnPlate` to pointer position instead of mouse delta,
+  - hold `R` + mouse delta for yaw,
+  - hold `S` + mouse delta for uniform scale,
+  - hold `RMB` for camera orbit; wheel for zoom,
+  - confirm `LMB`, cancel `Q`;
+  - an internal `PlacementMode` enum (`Idle`, `Moving`, `Rotating`, `Scaling`, `OrbitingCamera`) is enough; no new global states.
+- Ghost of type `ObjectToPrintGhostType.PrinterBedPlacement`, using `CornersList`/bounds for footprint.
+- Shader feedback through `shader_object_to_print_printer_bed_placement_mode`:
+  - `_printer_bed_placement_state` (`0` valid, `1` wrong),
+  - `_PRINTER_BED_PLACEMENT_STATE_WRONG` keyword,
+  - apply through a `MaterialPropertyBlock` on the ghost renderers.
+- Validation (soft limits, no hard clamping):
+  - rotated, scaled footprint inside the usable plate area (plate bounds minus margin),
+  - height within `PrinterMotionBase.BuildVolume.y`,
+  - scale inside the dynamic min/max described below,
+  - confirm disabled while invalid; the ghost uses the wrong shader state.
+- Scale limits are dynamic:
+  - maximum: the largest scale that keeps the rotated footprint inside the usable plate and the scaled height inside `PrinterMotionBase.BuildVolume`;
+  - minimum: the scale at which the object's largest bounding dimension reaches `2 cm` (`MinimumObjectSizeMeters`);
+  - the player may exceed either limit; the placement simply becomes invalid until corrected.
+- Estimates:
+  - initial console estimates remain the default placement (centred, yaw `0`, scale `1`);
+  - after confirm, filament and time scale by `scale³` (fixed layer height and speed), then feed validation and `PrintJobRequest`;
+  - rotation changes fit only, not volume.
+- `Place on bed` button in the console; `Start print` requires a confirmed placement.
+- Placement is draft-only and required for every print. It is not stored on the printer or reused; leaving the console or starting a print discards it so the next job must place the object again.
+- **Placement UI is authored by the project owner.** The roadmap asks for the hints/validity/confirm-cancel UI before implementation.
+- Editor tool `PrintProfileGenerator`:
+  - batch or selected `ObjectToPrintMetaSO` entries from the catalog,
+  - load the prefab, combine renderer bounds (report only; runtime sizing uses the same data), compute mesh volume,
+  - estimate overhang ratio and set `SupportsRequired` plus `SupportOverhangPercent`,
+  - seed 100% infill filament/time from volume and a configurable reference flow,
+  - share the reference layer height/speed and flow in one editor settings asset,
+  - report what was written; slicer values still override the seeds.
+
+**Acceptance criteria**
+
+- The object appears at the plate centre on first entry with estimates matching the M2 defaults.
+- Moving keeps the footprint on the plate; invalid positions turn the ghost to the wrong shader state.
+- Rotation and scale update the ghost and validity live.
+- Scale changes the displayed time/filament; rotation does not.
+- Overscaling/underscaling is possible, shows the wrong shader state, and cannot be confirmed.
+- Confirm stores placement and returns to the console; cancel restores the previous placement.
+- `Start print` is disabled until a valid placement is confirmed.
+- The editor tool reports dimensions and fills supports/baseline seeds for every catalog entry without scene edits.
+- No overlapping objects are allowed because one job per printer and partial prints block new jobs.
+
+**Manual gate**
+
+1. Push the ghost to each plate corner and beyond; confirm the wrong state and that confirm is blocked.
+2. Go below the dynamic min (`2 cm` largest dimension) and above the max (`BuildVolume`/plate fit); confirm the wrong state and blocked confirm.
+3. Compare recalculated estimates with the cube-scaling rule at the minimum, `1.0` and the maximum scale.
+4. Confirm cancel restores the previous placement and confirm survives console close/reopen.
+5. Run the editor generator on the bunny and compare the seeded volume/filament with a slicer.
+6. **Ask the project owner to create the placement UI before starting these deliverables.**
+
+**Do not start M3 until placement and estimates behave consistently.**
 
 ---
 
@@ -1148,10 +1318,17 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Hard-stop flow with partial-print flag.
 - Console live status binding.
 - Printer continues ticking when unbound.
+- Player pause/resume using the existing `PausePrint` input (no new InputAction):
+  - pause stops motion and print progress, moves the nozzle to a service position and lets the nozzle/bed cool;
+  - service swap is allowed only after the nozzle and bed are below `SafeServiceTemperatureC` (default `50 °C`);
+  - parts may be swapped while paused, except `Printer.ServiceBlockedDuringPrint` references (default: print bed, print bed thermistor, print plate);
+  - resume requires every critical part to be installed again; if a blocked part must change, the print can only be hard-stopped;
+  - a pause leaves a seam/quality penalty and a long pause may add adhesion risk in M5.
+- `Printer.ServiceBlockedDuringPrint` is a `PartLocation[]` reference list, like the critical list.
 
 **Acceptance criteria**
 
-- Start job → `Preheating` → `Printing` → `Cooling` → `Finished`.
+- Start job → `Preheating` → `Printing` → `Cooling` → `Finished` using the stored placement/scale.
 - Preheat completes at target temperature within tolerance.
 - Print progress reaches 100% at the expected simulated duration.
 - Cooling returns temperatures toward ambient.
@@ -1164,7 +1341,13 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - blocks new jobs until removal
 - Unbinding the device during a print does not stop the printer.
 - Rebinding shows the correct live state.
-- A worn-out critical part blocks a new job.
+- A worn-out part blocks a new job; low parts warn.
+- Pause mid-print:
+  - motion and progress stop, heaters cool to the safe service temperature;
+  - swapping an allowed part works and the print can resume;
+  - swapping a `ServiceBlockedDuringPrint` part is refused;
+  - resume applies the pause seam/quality penalty;
+  - the print does not fail merely because it was paused.
 
 **Manual gate**
 
@@ -1174,6 +1357,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 4. Profile 2–4 printers printing simultaneously; check CPU and GC.
 5. Verify no NaN/Inf in temperatures, progress, or condition.
 6. Verify partial print blocks the next job.
+7. Pause, wait for cooling, swap a nozzle/fan/belt, resume and confirm the seam penalty.
+8. Attempt to swap a print-bed part while paused and confirm it is refused.
 
 **Do not proceed to M4 until the numbers and timing feel right and wear is applied to the intended parts.**
 
@@ -1186,6 +1371,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 **Deliverables**
 
 - `PrintedObjectPresenter`.
+- `PrintedSupportPresenter`: sample overhang triangles for the placed object, cluster them to a capped number of points (e.g. `48`), and spawn thin vertical support columns to the plate. Simple Y-scaled cubes or cylinders are enough; reveal them with print height and hide them after completion.
 - `PrintRevealController`.
 - `PrinterMotionSimulator`.
 - `CartesianPrinterMotion` integration.
@@ -1196,7 +1382,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 **Acceptance criteria**
 
-- The object appears at the bed center, correct scale, correct orientation.
+- The object appears where the M2.5 placement put it: position, yaw and uniform scale.
+- With `Auto` supports, visible support columns appear under the overhangs and are revealed with the print; `None` prints no supports.
 - Reveal starts empty and grows bottom-up.
 - Reveal follows the moving bed correctly.
 - The nozzle appears to work over the printed area.
@@ -1228,7 +1415,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 - `PrinterEnvironment` enclosure integration.
 - Chamber temperature, draft, and cooling effects.
-- `PrintQualityModel` and `IsHaveQuality`.
+- `PrintQualityModel` expanding the M2 `PrintQualityEstimator` range, and a real quality value on `IsHaveQuality`.
 - Failure modes:
   - filament runout
   - clog
@@ -1236,7 +1423,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - warping
   - layer shift
 - Quality-dependent sale value.
-- Pause/resume.
+- Maintenance scheduling when critical parts enter the `20–40%` warning band.
 - Optional print queue.
 - Audio/VFX:
   - fan hum
@@ -1294,6 +1481,21 @@ Fill this table during M0 and update it during later milestones.
 | Console canvas facing | forward points into the screen | UGUI is readable when the viewer looks along canvas `+Z`; verify in the M1 gate |
 | Console canvas placement | display bounds centre + normal | offset from the front-most bounds point, then `0.0015 m`; verify in the M1 gate |
 | Console refresh | `0.2 s` | focused view on events plus ~5 Hz polling; other views slower |
+| Infill density | None `0.1892`, Grid `0.3153`, Gyroid `0.3531` | `InfillSettings.Density` |
+| Infill time factor | None `0.2615`, Grid `0.3399`, Gyroid `0.3765` | `InfillSettings.TimeFactor` |
+| Layer height | `0.28` / `0.20` / `0.12` mm | `LayerHeightSettings`; time scales `reference / selected` |
+| Print speed | `40` / `80` / `140` mm/s | `PrintSpeedSettings`; time scales `(reference / selected)^0.8` |
+| Raw quality | base `82`, range width `5` | `PrintQualityEstimator`; M5 expands the model |
+| Part wear (all installed) | block `0%`, warn `≤20%`; critical warn `20–40%` | `WornOutConditionPercent` / `LowConditionWarningPercent` / `CriticalPartWarningPercent` |
+| Job catalog | `Assets/SOs/ObjectsToPrint/object_to_print_metas_list_SO.asset` | assigned to `DeviceConsolePresenter.ObjectCatalog` |
+| Placement scale | soft limits: largest dimension ≥ `2 cm`; footprint/height within plate/`BuildVolume` | overscale/underscale is allowed but invalid; no clamp |
+| Plate margin | `2 mm` inside the plate bounds | keeps the footprint off the plate edge |
+| Placement shader | `_printer_bed_placement_state` `0/1`, `_PRINTER_BED_PLACEMENT_STATE_WRONG` | ghost validity feedback |
+| Scale estimate rule | filament and time × `scale³` | fixed layer height and speed |
+| Support cost (provisional) | filament × `1.06`, time × `1.12` | replace with `SupportOverhangPercent` model later |
+| Support rule | required object: `None` → `-25` raw and max `55`; optional `Auto` → warning only | `PrintJobValidator` / `PrintQualityEstimator` |
+| Material gating | none | any spool material prints; M3/M5 use material for temperatures and quality |
+| Bunny baseline (calibrated) | `85.36 m` at 100%, `36 720 s` at 100% | PrusaSlicer, `0.2 mm` / `80 mm/s`; dimensions derived |
 | Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
 | Console camera idle priority | `-1` | player camera stays at implicit `0` |
 | Print speed multiplier | 120× |  |
@@ -1329,15 +1531,27 @@ Fill this table during M0 and update it during later milestones.
 ### M2
 
 - Job list and estimates.
+- Layer-height and speed changes.
 - Infill changes.
+- Supports default/cost/warning/penalty.
+- Raw-quality range changes with settings, supports and part wear.
+
+### M2.5
+
+- Enter/exit placement, cursor and camera behavior.
+- Move, rotate and scale; soft limits and invalid feedback.
+- Shader valid/wrong state.
+- Default estimates and post-placement recalculations.
+- Confirm/cancel and persistence through console close/reopen.
+- Editor profile generator output, including overhang percent.
 - Validation for every failure reason.
 - Build volume rejection.
 - Filament sufficiency.
-- Material compatibility.
 
 ### M3
 
 - Full job cycle.
+- Pause/resume and safe service swap.
 - Hard stop at preheat, mid-print, and near-complete.
 - Wear application per part.
 - Spool depletion.
@@ -1348,6 +1562,8 @@ Fill this table during M0 and update it during later milestones.
 ### M4
 
 - Visual reveal at start/mid/end.
+- Auto supports render as columns under overhangs and follow the print height.
+- No supports render when `None`.
 - Bed motion and nozzle path.
 - Spool visual.
 - Partial print freeze and removal.
@@ -1357,9 +1573,8 @@ Fill this table during M0 and update it during later milestones.
 ### M5
 
 - Enclosure thermal/quality effects.
-- Failure modes.
+- Failure modes, including wear-triggered service prompts.
 - Quality and sale value.
-- Pause/resume.
 - Audio/VFX.
 - Save/load, if implemented.
 
@@ -1399,7 +1614,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0 is committed. M1 implementation is complete; the laptop flow has been iterated and approved in play mode. Formal M1 close still needs the other device types and aspect ratios checked (see the manual gate).
+**Status:** M0 and M1 are committed. M1 implementation is complete and the laptop flow is approved; formal M1 close still needs the other device types and aspect ratios checked. M2 is implemented, calibrated against PrusaSlicer and play-mode gated; it is awaiting the M2 commit. Supports selection and the simplified profile/derived sizing are part of M2. M2.5 is planned for interactive bed placement and editor-generated profile seeds; its placement UI is to be authored by the project owner.
 
 
 M1 is code-complete:
@@ -1435,7 +1650,26 @@ Remaining M1 work (manual gate):
 8. Instance the PC, smartphone, and tablet prefabs; verify framing, canvas fit, hover, and bind targeting.
 9. Record any tuning values in §9.
 
-Do not start M2 until the M1 gate passes.
+M2 is implemented:
+
+- `ObjectToPrintPrintProfile` (two baselines + supports) and `ObjectToPrintRequirements` live on `ObjectToPrintMetaSO`; object size is derived by `ObjectToPrintSizing`.
+- `InfillPattern`, `LayerHeightPreset`, `PrintSpeedPreset`, `PrintEstimates`, `PrintQualityEstimator`, `PrintJobRequest`, `PrintJobValidationResult` and `PrintJobValidator` cover settings, estimates, raw quality and rules.
+- `Printer` exposes `PendingJob`, `HasPendingJob`, `HasPartialPrint`, `CriticalPartLocations` and `PrintPlateLocation` references.
+- The console's print-job card has an object picker, layer-height/speed/infill/supports rows, time/filament/raw-quality summary, validation text, and a gated `Start print`.
+- `DeviceConsolePresenter.ObjectCatalog` is wired in `MainScene` to the authored catalog.
+
+Remaining M2 work (manual gate):
+
+1. **Done:** object baseline calibrated against PrusaSlicer: `85.36 m` and `36 720 s` at 100% infill (`0.2 mm`, `80 mm/s`).
+2. **Done:** Grid / Normal / Normal compared with PrusaSlicer (`28.53 m`, `3 h 53 min`) and matched by the console (`28.5 m`, `3 h 53 min`); tuning factor recorded in §9.
+3. **Done:** Draft and Fine spot checks confirmed time and raw quality move in the expected direction.
+4. **Done:** validation matrix verified, including the oversized-object rejection.
+5. **Done:** `Start print` queues `Printer.PendingJob` only when valid; M3 will execute it.
+6. **Done:** `Printer.CriticalPartLocations` / `PrintPlateLocation` references confirmed.
+
+M1's remaining device-type/aspect checks are carried forward; they do not block M2 validation.
+
+Placement code has not started. Before implementing it, **ask the project owner to create the placement UI** (move/rotate/scale hints, valid/invalid feedback, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`.
 
 ---
 
@@ -1513,6 +1747,12 @@ Assets/Scripts/Coursework_Master_Degree/
 │   ├── PrinterJob.cs
 │   ├── PrinterJobValidator.cs
 │   ├── PrinterTemperatureModel.cs
+│   ├── Jobs/
+│   │   ├── InfillPattern.cs
+│   │   ├── PrintEstimates.cs
+│   │   ├── PrintJobRequest.cs
+│   │   ├── PrintJobValidationResult.cs
+│   │   └── PrintJobValidator.cs
 │   ├── PrinterWearIntegrator.cs
 │   ├── PrinterEnvironment.cs
 │   ├── SpoolFilamentState.cs
@@ -1529,17 +1769,31 @@ Assets/Scripts/Coursework_Master_Degree/
 │       ├── PrinterBindTargeting.cs
 │       └── PrinterBindHighlight.cs
 ├── Game/Controller/
-│   └── DeviceController.cs
+│   ├── DeviceController.cs
+│   ├── ObjectPlacementController.cs
+│   └── PrinterBedFocusController.cs
 ├── Game/Logic/Camera/
 │   └── DeviceFocusController.cs
 ├── Game/Logic/Interface/DeviceConsole/
 │   ├── DeviceConsolePresenter.cs
-│   └── DeviceConsoleUI.cs
+│   ├── DeviceConsoleView.cs
+│   ├── DeviceConsoleStyle.cs
+│   ├── DeviceConsoleChip.cs
+│   └── DeviceJobPanel.cs
+├── Game/Logic/Interface/DeviceBind/
+│   └── DeviceBindPanel.cs
 ├── Game/StateMachine/State/
 │   ├── GameStateDeviceInterface.cs   (modify)
 │   └── GameStateDeviceBind.cs        (modify)
-└── ScriptableObjects/ObjectsToPrint/
-    └── ObjectToPrintMetaSO.cs        (modify)
+├── ScriptableObjects/
+│   ├── Items/
+│   │   └── FilamentMaterialProfileSO.cs
+│   └── ObjectsToPrint/
+│       ├── ObjectToPrintMetaSO.cs        (modify)
+│       └── ObjectToPrintPrintProfile.cs
+└── Editor/
+    ├── PrintProfileGeneratorWindow.cs
+    └── DetectPlacedItemsWindow.cs
 ```
 
 ---
@@ -1565,6 +1819,29 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-17 | Key badge images are sliced | A simple image stretches the rounded corners when the badge is wider than the sprite |
 | 2026-11-17 | Console clipped by a screen-shape mask | Rounded phone displays otherwise show a rectangular UI; sprite override covers notches |
 | 2026-11-17 | Console follows screen renderer visibility | Selling/placing ghosts disable the screen renderers, so the UI must hide with them |
+| 2026-11-18 | Critical parts are `PartLocation` references | Stable under renames; `ItemMetaSO.ItemTypes` stores broad paths only, and names are brittle |
+| 2026-11-18 | `Start print` stores `Printer.PendingJob` in M2 | Keeps M2 validation-only while giving M3 a single entry point |
+| 2026-11-18 | Linear infill estimates | Predictable, tunable from a slicer comparison; refine coefficients instead of per-object special cases |
+| 2026-11-18 | Expose layer height and speed only | They are the two settings with clear time/quality trade-offs; nozzle diameter is hardware |
+| 2026-11-18 | Raw quality as a range in M2 | Gives post-processing a target before the full M5 quality model exists |
+| 2026-11-18 | Bed placement as M2.5 | Job setup, not printing; M3/M4 need stored placement before execution/visuals |
+| 2026-11-18 | Uniform scale allowed in placement | Volume matters; scale changes estimates by `scale³`; bounds are dynamic |
+| 2026-11-18 | Scale limits from printer/object | Max must fit `BuildVolume` and plate; min keeps the object at least `2 cm` |
+| 2026-11-18 | `PrintBedAnchor` is the placement reference | One source for surface, size and front direction |
+| 2026-11-18 | Placement is per-job and not persisted | Same as slicing: each print is set up fresh |
+| 2026-11-18 | Scale limits are soft, not clamped | The player sees the shader error and cannot confirm; no silent snapping |
+| 2026-11-18 | Supports visualised in M4 as simple columns | Full support generation is a slicer problem; columns make the abstract supports readable |
+| 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
+| 2026-11-18 | Editor profile generator seeds data | Mesh bounds/volume/overhang are automatable; exact time still needs a slicer reference |
+| 2026-11-18 | Supports are `None`/`Auto`, driven by meta | The model's geometry decides whether supports are needed; the player chooses the cost |
+| 2026-11-18 | Profile split into baseline + requirements; size derived | Two calibratable numbers per object; dimensions come from prefab bounds |
+| 2026-11-18 | Missing required supports is a penalty, not a block | Starting is allowed but raw quality drops by `25` and caps at `55` |
+| 2026-11-18 | Critical wear has a warning band `20–40%` | Gives the player a maintenance warning before a hard block |
+| 2026-11-18 | All installed parts checked at start | Any part at 0% blocks; all parts ≤20% warn; critical parts get an earlier 20–40% warning |
+| 2026-11-18 | Pause can service non-blocked parts | Avoids losing a print to a cheap wear part; bed/plate remains a hard-stop swap |
+| 2026-11-18 | Warnings use a dedicated scroll view | All reasons stay accessible without scrolling away job controls; future warnings fit |
+| 2026-11-18 | Critical defaults cover function groups | Extruder, bed, belts/rotors and filament feed; bearings remain wear-only |
+| 2026-11-18 | Placement uses pointer raycast + modifiers | Direct manipulation feels better than delta-only movement; camera stays on RMB |
 
 ---
 
@@ -1693,3 +1970,264 @@ Repeat for `laptop_root`, `PC_root`, `smartphone_root`, and `tablet_root`.
 ### E.7 Record and stop
 
 Fill §9 with the recorded values, then stop. Do not start M1 until the manual gate passes and the mapping is confirmed. If any axis moves on the wrong node, fix the wiring rather than adding code compensation.
+
+---
+
+## Appendix F — M2 configuration and calibration
+
+This is the M2 counterpart to Appendix E: what to fill in, where, and how to tell the result is believable. Code is already wired; the steps below are data and verification.
+
+### F.1 Catalog and object profiles
+
+The console reads `DeviceConsolePresenter.ObjectCatalog`, which is assigned in `MainScene` to:
+
+`Assets/SOs/ObjectsToPrint/object_to_print_metas_list_SO.asset`
+
+Each entry is an `ObjectToPrintMetaSO`. Add objects to `ObjectToPrintMetasList` in the order they should appear in the console. The console groups entries by the first `ObjectToPrintType`; add a new enum entry to get a new section automatically. Entries with no type fall under `OTHER`.
+
+For every meta, set `PrintProfile`:
+
+| Field | Meaning |
+|---|---|
+| `FilamentMetersAt100PercentInfill` | Filament for a solid print at the global reference profile |
+| `PrintTimeSecondsAt100PercentInfill` | Time for a solid print at the global reference profile |
+| `SupportsRequired` | Geometry needs supports; drives the console default and validation |
+| `SupportOverhangPercent` | Optional generated overhang ratio for future support-cost tuning |
+| `DefaultInfill` (Requirements) | Initial console selection |
+
+Object width/height/depth are **not authored**: `ObjectToPrintSizing` derives them from the catalog prefab bounds. The reference layer height and speed are global (`0.2 mm`, `80 mm/s`).
+
+The estimates shown by the console are:
+
+```
+filament = FilamentMetersAt100PercentInfill * density(infill)
+         * (supports Auto ? 1.06 : 1)
+time     = PrintTimeSecondsAt100PercentInfill
+         * infillTimeFactor
+         * (0.2 / selectedLayerHeight)
+         * (80 / selectedSpeed)^0.8
+         * (supports Auto ? 1.12 : 1)
+```
+
+The job card exposes `LAYER`, `SPEED`, `INFILL` and `SUPPORTS` as four rows. Raw quality is projected from the same settings and shown next to the estimates.
+
+Current coefficients live in `InfillSettings`:
+
+| Infill | Density | Time factor |
+|---|---:|---:|
+| None | 0.1892 | 0.2615 |
+| Grid | 0.3153 | 0.3399 |
+| Gyroid | 0.3531 | 0.3765 |
+
+Model consistency:
+
+- Filament depends only on infill and supports. Layer height and speed do not change the material volume.
+- Time is monotonic: finer layers, slower speed, denser infill and `Auto` supports all increase it.
+- Raw quality depends on layer height, speed, supports and hardware condition. Infill changes strength, not the projected surface quality.
+- Only `Grid` was measured directly against the slicer. `None` and `Gyroid` are proportional extrapolations of the calibrated `Grid` coefficients.
+
+| Setting | Values | Raw-quality delta |
+|---|---|---:|
+| Layer height | Draft / Normal / Fine | `-10 / 0 / +4` |
+| Print speed | Slow / Normal / Fast | `+4 / 0 / -10` |
+
+Raw quality starts at `82`, subtracts up to `10` for the worst installed part condition, subtracts `2` for `Auto` supports, and subtracts `25` (cap `55`) when a model that needs supports is printed with `None`. It is shown as a `min..min+5` range.
+
+Do not tune per object; calibrate the 100% profile and the global coefficients.
+
+### F.2 Printer requirements
+
+Select the printer root (`Prusa_MK4S_printer_root`) and check the `Printer` component:
+
+- `CriticalPartLocations` — direct `PartLocation` references. Defaults:
+  - extruder nozzle, heater, thermistor, fan, filament bearing
+  - print bed, print bed thermistor
+  - X/Y belts, X/Y rotors, Z left/right rotors
+- `PrintPlateLocation` — direct reference to `printer_print_plate_location`.
+- `Auto-Assign Critical Parts` (context menu) fills both from the default names; normal validation uses only the references.
+
+Validation matches locations by name because `ItemMetaSO.ItemTypes` stores only the broad item path (`FFF`, `Printer`, `Part`), not leaf types such as print plate or nozzle. If the hierarchy is renamed, update these strings.
+
+Every installed part is inspected:
+
+- `0%` or worn out → block (`WornOutConditionPercent`);
+- `20%` or less → warning (`LowConditionWarningPercent`);
+- critical parts additionally warn between `20%` and `40%` (`CriticalPartWarningPercent`).
+
+All part conditions feed the raw-quality hardware penalty. Non-critical wear may also affect mid-print failure in M5.
+
+### F.3 Spool
+
+1. Install a spool into `spool_location_1` or `spool_location_2` on the printer.
+2. On the spool's `ItemFFFPrusaMK4SSpoolDataHolder`, set `MaterialType` (PLA/PETG/ABS/TPU) and keep `FilamentLengthSpoolMeters` at the physical spool length (default `300 m`).
+3. Remaining filament is read from the spool's `ItemWearState.CurrentCondition`:
+   `remaining = FilamentLengthSpoolMeters * CurrentCondition / 100`.
+   In play mode use the `ItemWearState` context menu `Debug/Set Condition 100% / 50% / 10%` to test thresholds without editing assets.
+4. Optionally assign a `FilamentMaterialProfileSO` for M3 temperatures. M2 does not use it.
+
+If no spool is installed, the console reports `No filament spool installed.` and disables `Start print`.
+
+### F.4 Start print
+
+`Start print` is enabled only when `PrintJobValidator` returns no errors. The request stores the object, infill, layer height, speed, estimates and raw-quality range in `Printer.PendingJob`; the console shows `Job queued. Printing starts in M3.` Nothing moves until M3.
+
+### F.5 Validation matrix
+
+Check each row in play mode and confirm the console message:
+
+| Setup | Expected |
+|---|---|
+| No active printer | `No printer selected.` |
+| Printer bound to another device | `Printer is not connected to this device.` |
+| Printer printing/heating (M3) | `Printer is busy (...)` |
+| Job already queued | `A job is already queued on this printer.` |
+| Spool location empty | `No filament spool installed.` |
+| Spool condition 0 | `Filament spool is empty.` |
+| Filament below estimate | `Not enough filament: ...` |
+| Critical location empty | `Missing part: ...` |
+| Any installed part at 0% | `Worn out: ... (location, 0%).` |
+| Any installed part at 20% or less | `Low condition: ... (location, n%).` |
+| Critical part at 21–40% | `Critical part condition: ... (location, n%).` |
+| Print plate location empty | `Print plate is missing.` |
+| Oversized test object | `Object does not fit: ...` |
+| Supports required | `Supports are required; ...` warning |
+
+### F.6 Calibration record
+
+Fill these in after the first slicer comparison and copy the final numbers into §9:
+
+| Item | Value |
+|---|---|
+| Bunny size reported by `ObjectToPrintSizing` (not edited) | derived from prefab bounds |
+| Bunny filament at 100% infill | `85.36 m` |
+| Bunny time at 100% infill at `0.2 mm` / `80 mm/s` | `36 720 s` (`10 h 12 min`) |
+| Supports required? | yes |
+| Auto support cost compared with None | filament ×1.06, time ×1.12 |
+| Required + None quality (expect `55-55`) | `55-55` |
+| Slicer estimate at Grid / Normal / Normal | `28.53 m`, `3 h 53 min` |
+| Console estimate at Grid / Normal / Normal | `28.5 m`, `3 h 53 min` |
+| Tuning factor (slicer / console) | `1.00` filament, `1.00` time |
+| Draft time vs Normal | `1 h 22 min` vs `3 h 53 min` |
+| Fine time vs Normal | `12 h 29 min` vs `3 h 53 min` |
+| Raw quality: Draft / Normal / Fine | `70-75 / 80-85 / 84-89` |
+| Raw quality: Slow / Normal / Fast | `84-89 / 80-85 / 70-75` |
+| Spool material used | PrusaSlicer default (PLA) |
+| Critical locations confirmed | yes |
+
+Expected values with the calibrated bunny seed (`85.36 m`, `36 720 s` at 100%) and `Auto` supports:
+
+| Layer / speed / infill (supports Auto) | Filament | Simulated time | Real time at `120×` | Raw quality |
+|---|---:|---:|---:|---:|
+| Draft / Fast / None | `17.1 m` | `1 h 22 min` | `0.7 min` | `60–65` |
+| Draft / Normal / Grid | `28.5 m` | `2 h 46 min` | `1.4 min` | `70–75` |
+| Normal / Fast / Grid | `28.5 m` | `2 h 29 min` | `1.2 min` | `70–75` |
+| Normal / Normal / Grid | `28.5 m` | `3 h 53 min` | `1.9 min` | `80–85` |
+| Fine / Normal / Gyroid | `32.0 m` | `7 h 10 min` | `3.6 min` | `84–89` |
+| Fine / Slow / Gyroid | `32.0 m` | `12 h 29 min` | `6.2 min` | `88–93` |
+
+These are the values to compare against a slicer. Tune `InfillSettings`/`PrintSpeedSettings` globally rather than per object.
+
+### F.7 Bed placement and scale (M2.5)
+
+The plate is `printer_print_plate_location` under `base/print_bed_holder_base/placement_points/print_bed_location/placement_points`. The existing ghost path already has the pieces:
+
+- `ObjectToPrintGhostType.PrinterBedPlacement`
+- `ObjectToPrintGhostPrinterBedPlacementDataHolder` with `CornersList`
+- per-object `*_ghost_printer_bed_placement_root.prefab`
+- `shader_object_to_print_printer_bed_placement_mode.mat`
+
+Configuration:
+
+1. Usable plate area: `PrintBedAnchor.SurfacePosition` / `SurfaceRotation` / `PlateSize` minus `2 mm` margin. Use the plate's local axes, not a world AABB.
+2. Scale is uniform, with soft validity limits; the player is not clamped:
+   - the largest valid scale keeps the rotated footprint inside the usable plate and the scaled height inside `PrinterMotionBase.BuildVolume`;
+   - the smallest valid scale makes the object's largest bounding dimension `2 cm` (exposed `MinimumObjectSizeMeters`);
+   - exceeding either limit sets the ghost to the wrong shader state and disables confirm; no fixed ratio limit is authored.
+3. Ghost feedback: apply a `MaterialPropertyBlock` to all ghost renderers:
+   - `_printer_bed_placement_state = 0` for a valid placement,
+   - `_printer_bed_placement_state = 1` for an invalid placement,
+   - toggle `_PRINTER_BED_PLACEMENT_STATE_WRONG` with the same state.
+   Verify the exact right/wrong look in play mode; the material currently ships with the right state active.
+4. Camera orbit pitch is clamped to `15°–75°` above the plate; zoom distance is clamped too. `PrintBedAnchor` supplies the plate plane, size and the front direction used for the initial yaw.
+5. Estimates:
+   - default console estimates assume centred, yaw `0`, scale `1`;
+   - after a confirmed placement, multiply filament and time by `scale³`;
+   - rotation does not change volume/estimates in M2.5 (it can affect supports/quality later).
+6. Store `localPosition`, `yaw` and `uniformScale` on `PrintJobRequest`; the footprint corners are derived from the ghost bounds and used for validation.
+7. Confirm is disabled while invalid; cancel returns to the console without saving. `Start print` requires a confirmed placement, and placement is required again for the next job.
+
+**UI authoring:** the project owner creates the placement UI. It needs at least:
+- a title/state strip (`Placing object`),
+- movement/rotation/scale hints using the `ObjectPlace` bindings,
+- a valid/invalid description line,
+- confirm and cancel hints.
+
+Do not implement the UI before asking; the controller should expose the state the UI needs.
+
+### F.8 Editor profile generator
+
+Yes, most numeric seeds can be generated in edit mode; exact print time still needs a slicer reference.
+
+Editor tools:
+
+- `Tools/Manufacturing/Print Profile Generator` — profile seeds.
+- `Tools/Asset/Prefab Icon Generator` — batch icon generator for prefabs under a root folder; writes `<prefab>_icon.png` next to each prefab (existing tool in `Assets/Editor`).
+- `Tools/Scene/Detect Placed Items` — lists placed objects/printers/devices/spools in the open scene with Select buttons.
+
+`PrintProfileGenerator` merges metas from:
+
+- the assigned catalog,
+- `ObjectToPrintDataHolder` items placed in the open scene (shown as `Scene`),
+- all `ObjectToPrintMetaSO` assets only when both sources are empty.
+
+Set the optional coefficients, press `Scan`, inspect the `Scene`/`Catalog` labels, then `Apply successful scans`.
+
+It can:
+
+1. Load each catalog meta's prefab with `PrefabUtility.LoadPrefabContents`.
+2. Combine all child `Renderer.bounds` and report the prefab-root-space size. Dimensions are runtime-derived by `ObjectToPrintSizing`; do not write them into the meta.
+3. Compute mesh volume from the triangle soup (signed tetrahedra sum). For a watertight mesh this is the solid volume; for open meshes, report the result as approximate.
+4. Compute the overhang ratio: triangles whose normal is below the overhang angle (`45°` default) relative to the plate up; set `SupportsRequired` above a configurable threshold and write `SupportOverhangPercent`.
+5. Seed 100% infill filament from `volume / (π × (filamentDiameter/2)²)`.
+6. Seed 100% infill time from `volume / referenceFlowMm3PerSecond`, with the flow value exposed in the tool settings.
+7. Write through `SerializedObject`, mark the asset dirty, and report a per-object summary; support batch over the whole catalog.
+
+Model meshes must have **Read/Write enabled** for volume/overhang. The current bunny FBX has it disabled, so the tool will report size only until that import setting is enabled. Defaults: `1.75 mm` filament, `12 mm3/s` reference flow, `45°` overhang, `5%` supports threshold.
+
+Limitations:
+
+- Time from volume is a seed, not a slicer result. Calibrate it with one known print, then keep a single global factor.
+- Automatic orientation selection is not part of the first version; the player rotates on the bed instead. A future version can try candidate yaw/face rotations and pick the lowest overhang score.
+- Default infill stays authored; material is selected by the installed spool and is not inferred.
+- The tool must not touch scenes; it only edits meta assets.
+
+Recommended workflow:
+
+1. Run the generator on the catalog.
+2. Inspect bounds/supports per object.
+3. Print or slice one reference object at Normal/Normal/Grid.
+4. Record the slicer values in F.6 and adjust the global flow/factor, not individual objects unless the mesh is unusual.
+
+### F.9 Supports
+
+Supports are a job setting, not free-form geometry:
+
+1. `ObjectToPrintPrintProfile.SupportsRequired` is the geometric truth: the editor generator sets it from the overhang ratio. `SupportOverhangPercent` records the ratio for later tuning.
+2. The console shows `SUPPORTS: None / Auto`.
+3. Default:
+   - required → `Auto`,
+   - not required → `None`.
+4. Validation and quality:
+   - required + `None` → allowed, device-UI warning `This object needs supports.`, raw quality `-25` and capped at `55`;
+   - not required + `Auto` → warning `Supports are not mandatory here.`, normal extra cost.
+5. Cost (provisional until `SupportOverhangPercent` is wired into the estimate):
+   - filament × `1.06`,
+   - time × `1.12`.
+6. Raw quality: `Auto` subtracts `2` marks for the support contact surfaces; required + `None` applies the severe penalty above.
+7. Post-processing: supports must be removed before sale/quality; leaving them caps the final quality. This is M5 work.
+8. Visualization staging:
+   - M2: words, estimates and validation only;
+   - M4: simple generated columns (Y-scaled cubes or thin cylinders) under overhangs, revealed with the print height;
+   - M5: support removal with the support cutting tool and the quality cap if left on.
+
+Do not let the player paint supports manually; the setting is a slicer-style toggle, not a modelling tool.
