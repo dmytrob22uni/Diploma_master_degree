@@ -20,6 +20,22 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.ItemsMarket.ScrollablePi
         private DragRoute _route = DragRoute.Undecided;
         private Vector2 _accumulatedDelta;
 
+        public override void OnScroll(PointerEventData eventData)
+        {
+            Vector2 delta = eventData.scrollDelta;
+
+            // Wheel/trackpad: vertical-dominant input belongs to the main
+            // vertical view; horizontal-dominant input stays on this row.
+            if (ParentScrollRect != null &&
+                Mathf.Abs(delta.y) >= Mathf.Abs(delta.x))
+            {
+                ParentScrollRect.OnScroll(eventData);
+                return;
+            }
+
+            base.OnScroll(eventData);
+        }
+
         public override void OnInitializePotentialDrag(PointerEventData eventData)
         {
             base.OnInitializePotentialDrag(eventData);

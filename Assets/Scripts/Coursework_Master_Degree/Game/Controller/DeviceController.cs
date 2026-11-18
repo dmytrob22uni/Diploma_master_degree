@@ -6,6 +6,8 @@ using Coursework_Master_Degree.Game.StateMachine;
 using Coursework_Master_Degree.Game.StateMachine.State;
 using Coursework_Master_Degree.Items.Computing;
 using Coursework_Master_Degree.Items.FFF;
+using Coursework_Master_Degree.Items.FFF.Jobs;
+using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
 
 namespace Coursework_Master_Degree.Game.Controller
 {
@@ -325,6 +327,54 @@ namespace Coursework_Master_Degree.Game.Controller
             RequestBindMode(DeviceBindMode.Bind);
         }
 
+        private void HandleStartPrintRequested(
+            Device device,
+            Printer printer,
+            ObjectToPrintMetaSO meta,
+            InfillPattern infill,
+            SupportsMode supports,
+            LayerHeightPreset layerHeight,
+            PrintSpeedPreset speed)
+        {
+            Device targetDevice = device != null ? device : consoleDevice;
+
+            if (!consoleOpen || targetDevice == null || printer == null)
+            {
+                return;
+            }
+
+            PrintJobValidationResult result = PrintJobValidator.Validate(
+                targetDevice,
+                printer,
+                meta,
+                infill,
+                supports,
+                layerHeight,
+                speed);
+
+            if (!result.IsValid)
+            {
+                return;
+            }
+
+            PrintJobRequest request = new PrintJobRequest(
+                printer,
+                meta,
+                infill,
+                supports,
+                layerHeight,
+                speed,
+                result.EstimatedSeconds,
+                result.EstimatedFilamentMeters,
+                result.EstimatedQualityMin,
+                result.EstimatedQualityMax);
+
+            if (printer.TrySetPendingJob(request))
+            {
+                Console?.Refresh(targetDevice);
+            }
+        }
+
         private void HandleDisconnectPrinterRequested()
         {
             if (consoleDevice == null || consoleDevice.ActivePrinter == null)
@@ -444,6 +494,7 @@ namespace Coursework_Master_Degree.Game.Controller
             Console.AddPrinterRequested += HandleAddPrinterRequested;
             Console.DisconnectPrinterRequested += HandleDisconnectPrinterRequested;
             Console.QuitRequested += HandleQuitRequested;
+            Console.StartPrintRequested += HandleStartPrintRequested;
             consoleEventsSubscribed = true;
         }
 
@@ -457,6 +508,7 @@ namespace Coursework_Master_Degree.Game.Controller
             Console.AddPrinterRequested -= HandleAddPrinterRequested;
             Console.DisconnectPrinterRequested -= HandleDisconnectPrinterRequested;
             Console.QuitRequested -= HandleQuitRequested;
+            Console.StartPrintRequested -= HandleStartPrintRequested;
             consoleEventsSubscribed = false;
         }
     }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Coursework_Master_Degree.Items.Computing;
+using Coursework_Master_Degree.Items.FFF;
+using Coursework_Master_Degree.Items.FFF.Jobs;
+using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
 
 namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 {
@@ -23,6 +26,9 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         [Min(0.0001f)]
         public float ScreenOffset = 0.0015f;
 
+        [Tooltip("Catalog shown by the console job picker. M2 uses the authored list.")]
+        public ObjectToPrintMetasListSO ObjectCatalog;
+
         [Header("Refresh")]
         [Min(0.05f)]
         public float RefreshInterval = 0.2f;
@@ -30,6 +36,14 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         public event Action AddPrinterRequested;
         public event Action DisconnectPrinterRequested;
         public event Action QuitRequested;
+        public event Action<
+            Device,
+            Printer,
+            ObjectToPrintMetaSO,
+            InfillPattern,
+            SupportsMode,
+            LayerHeightPreset,
+            PrintSpeedPreset> StartPrintRequested;
 
         private const float BackgroundRefreshFactor = 5.0f;
         private const float SyncInterval = 0.5f;
@@ -147,6 +161,20 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
         }
 
+        public void Refresh(Device device)
+        {
+            if (device == null)
+            {
+                return;
+            }
+
+            if (views.TryGetValue(device, out DeviceConsoleView view) &&
+                view != null)
+            {
+                view.Refresh();
+            }
+        }
+
         // === View management =================================================
 
         private void SyncViews()
@@ -212,7 +240,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 device,
                 Font,
                 BoxSprite,
-                ScreenOffset);
+                ScreenOffset,
+                ObjectCatalog);
 
             if (view == null)
             {
@@ -222,6 +251,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             view.ConnectRequested += HandleViewConnectRequested;
             view.DisconnectRequested += HandleViewDisconnectRequested;
             view.QuitRequested += HandleViewQuitRequested;
+            view.StartPrintRequested += HandleViewStartPrintRequested;
 
             views.Add(device, view);
             return view;
@@ -260,6 +290,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             view.ConnectRequested -= HandleViewConnectRequested;
             view.DisconnectRequested -= HandleViewDisconnectRequested;
             view.QuitRequested -= HandleViewQuitRequested;
+            view.StartPrintRequested -= HandleViewStartPrintRequested;
         }
 
         // === View handlers ===================================================
@@ -277,6 +308,24 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private void HandleViewQuitRequested()
         {
             QuitRequested?.Invoke();
+        }
+
+        private void HandleViewStartPrintRequested(
+            Printer printer,
+            ObjectToPrintMetaSO meta,
+            InfillPattern infill,
+            SupportsMode supports,
+            LayerHeightPreset layerHeight,
+            PrintSpeedPreset speed)
+        {
+            StartPrintRequested?.Invoke(
+                focusedView != null ? focusedView.Device : null,
+                printer,
+                meta,
+                infill,
+                supports,
+                layerHeight,
+                speed);
         }
     }
 }

@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Coursework_Master_Degree.Items.Computing;
 using Coursework_Master_Degree.Items.FFF;
+using Coursework_Master_Degree.Items.FFF.Jobs;
+using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
 
 namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 {
@@ -33,6 +35,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private DeviceScreenAnchor anchor;
         private TMP_FontAsset font;
         private Sprite boxSprite;
+        private ObjectToPrintMetasListSO catalog;
         private float screenOffset;
 
         private Canvas canvas;
@@ -65,7 +68,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private TextMeshProUGUI deviceSubtitleText;
         private TextMeshProUGUI activeNameText;
         private TextMeshProUGUI activeStateText;
-        private TextMeshProUGUI activeDetailsText;
         private TextMeshProUGUI emptyListText;
 
         private Button connectButton;
@@ -78,20 +80,32 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private TextMeshProUGUI powerLabel;
         private TextMeshProUGUI quitLabel;
 
+        private DeviceJobPanel jobPanel;
+
         private RectTransform headerRect;
         private RectTransform footerRect;
 
         private bool bindLayout;
 
+        public Device Device => device;
+
         public event Action ConnectRequested;
         public event Action DisconnectRequested;
         public event Action QuitRequested;
+        public event Action<
+            Printer,
+            ObjectToPrintMetaSO,
+            InfillPattern,
+            SupportsMode,
+            LayerHeightPreset,
+            PrintSpeedPreset> StartPrintRequested;
 
         public static DeviceConsoleView Create(
             Device target,
             TMP_FontAsset fontAsset,
             Sprite sprite,
-            float screenOffsetMeters)
+            float screenOffsetMeters,
+            ObjectToPrintMetasListSO objectCatalog)
         {
             if (target == null)
             {
@@ -122,7 +136,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 screenAnchor,
                 fontAsset,
                 sprite,
-                screenOffsetMeters);
+                screenOffsetMeters,
+                objectCatalog);
 
             return view;
         }
@@ -132,12 +147,14 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             DeviceScreenAnchor screenAnchor,
             TMP_FontAsset fontAsset,
             Sprite sprite,
-            float screenOffsetMeters)
+            float screenOffsetMeters,
+            ObjectToPrintMetasListSO objectCatalog)
         {
             device = target;
             anchor = screenAnchor;
             font = fontAsset;
             boxSprite = sprite;
+            catalog = objectCatalog;
             screenOffset = Mathf.Max(0.0001f, screenOffsetMeters);
 
             canvasTransform = (RectTransform)transform;
@@ -255,26 +272,24 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 activeNameText.text = "No printer selected";
                 activeStateText.text = "Waiting for a printer";
                 activeStateText.color = DeviceConsoleStyle.TextMuted;
-                activeDetailsText.text =
-                    "Connect a printer to this device to control it from here.\n" +
-                    "The list on the left shows every printer connected to " +
-                    "this device.";
             }
             else
             {
                 activeNameText.text = active.DisplayName;
                 activeStateText.text = GetStateLabel(active.OperationalState);
                 activeStateText.color = DeviceConsoleStyle.Text;
-                activeDetailsText.text =
-                    "Connected to this device\n" +
-                    "The printer keeps its job while you are away\n" +
-                    "Job controls arrive in M2";
             }
 
             SetButtonEnabled(connectButton, connectLabel, true);
             SetButtonEnabled(disconnectButton, disconnectLabel, active != null);
             SetButtonEnabled(powerButton, powerLabel, true);
             SetButtonEnabled(quitButton, quitLabel, true);
+
+            if (jobPanel != null)
+            {
+                jobPanel.SetDevice(device);
+                jobPanel.Refresh();
+            }
 
             RefreshRows();
         }
@@ -583,6 +598,12 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             DeviceConsoleStyle.Stretch(viewport);
             viewport.gameObject.AddComponent<RectMask2D>();
 
+            // A transparent target lets the wheel/drag work over empty space,
+            // not only over the row buttons.
+            Image viewportHit = viewport.gameObject.AddComponent<Image>();
+            viewportHit.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+            viewportHit.raycastTarget = true;
+
             printerListContent = DeviceConsoleStyle.CreateRect(
                 "content",
                 viewport);
@@ -634,7 +655,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             card.anchorMax = new Vector2(1.0f, 1.0f);
             card.pivot = new Vector2(0.5f, 1.0f);
             card.anchoredPosition = Vector2.zero;
-            card.sizeDelta = new Vector2(0.0f, 258.0f);
+            card.sizeDelta = new Vector2(0.0f, 96.0f);
 
             Image cardImage = card.gameObject.AddComponent<Image>();
             cardImage.color = DeviceConsoleStyle.BoxGray;
@@ -654,8 +675,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 (RectTransform)label.transform,
                 new Vector2(0.0f, 1.0f),
                 new Vector2(0.0f, 1.0f),
-                new Vector2(DeviceConsoleStyle.Margin, -18.0f),
-                new Vector2(320.0f, 24.0f));
+                new Vector2(DeviceConsoleStyle.Margin, -6.0f),
+                new Vector2(320.0f, 18.0f));
 
             activeNameText = DeviceConsoleStyle.CreateText(
                 "active_name",
@@ -671,8 +692,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 (RectTransform)activeNameText.transform,
                 new Vector2(0.0f, 1.0f),
                 new Vector2(0.0f, 1.0f),
-                new Vector2(DeviceConsoleStyle.Margin, -48.0f),
-                new Vector2(760.0f, 36.0f));
+                new Vector2(DeviceConsoleStyle.Margin, -24.0f),
+                new Vector2(760.0f, 24.0f));
 
             activeStateText = DeviceConsoleStyle.CreateText(
                 "active_state",
@@ -687,25 +708,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 (RectTransform)activeStateText.transform,
                 new Vector2(0.0f, 1.0f),
                 new Vector2(0.0f, 1.0f),
-                new Vector2(DeviceConsoleStyle.Margin, -100.0f),
-                new Vector2(760.0f, 28.0f));
-
-            activeDetailsText = DeviceConsoleStyle.CreateText(
-                "active_details",
-                card,
-                string.Empty,
-                DeviceConsoleStyle.FontSmall,
-                TextAlignmentOptions.TopLeft,
-                DeviceConsoleStyle.TextMuted,
-                font);
-
-            RectTransform detailsRect =
-                (RectTransform)activeDetailsText.transform;
-
-            detailsRect.anchorMin = Vector2.zero;
-            detailsRect.anchorMax = Vector2.one;
-            detailsRect.offsetMin = new Vector2(DeviceConsoleStyle.Margin, 18.0f);
-            detailsRect.offsetMax = new Vector2(-DeviceConsoleStyle.Margin, -142.0f);
+                new Vector2(DeviceConsoleStyle.Margin, -50.0f),
+                new Vector2(760.0f, 20.0f));
 
             RectTransform info = DeviceConsoleStyle.CreateRect(
                 "info_card",
@@ -714,53 +718,15 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             info.anchorMin = Vector2.zero;
             info.anchorMax = Vector2.one;
             info.offsetMin = Vector2.zero;
-            info.offsetMax = new Vector2(0.0f, -278.0f);
+            info.offsetMax = new Vector2(0.0f, -112.0f);
 
             Image infoImage = info.gameObject.AddComponent<Image>();
             infoImage.color = DeviceConsoleStyle.BoxWhite;
             infoImage.raycastTarget = false;
 
-            TextMeshProUGUI infoTitle = DeviceConsoleStyle.CreateText(
-                "info_title",
-                info,
-                "CONSOLE",
-                DeviceConsoleStyle.FontHeading,
-                TextAlignmentOptions.TopLeft,
-                DeviceConsoleStyle.Text,
-                font,
-                true);
-
-            DeviceConsoleStyle.SetRect(
-                (RectTransform)infoTitle.transform,
-                new Vector2(0.0f, 1.0f),
-                new Vector2(0.0f, 1.0f),
-                new Vector2(DeviceConsoleStyle.Margin, -18.0f),
-                new Vector2(320.0f, 24.0f));
-
-            TextMeshProUGUI infoBody = DeviceConsoleStyle.CreateText(
-                "info_body",
-                info,
-                "Connecting a printer binds it to this device.\n" +
-                "A printer keeps its job and state when you disconnect it, " +
-                "and every printer keeps running while you walk away.\n\n" +
-                "One device can control several printers. Select a printer " +
-                "in the list to make it active.",
-                DeviceConsoleStyle.FontSmall,
-                TextAlignmentOptions.TopLeft,
-                DeviceConsoleStyle.TextMuted,
-                font);
-
-            RectTransform infoBodyRect =
-                (RectTransform)infoBody.transform;
-
-            infoBodyRect.anchorMin = Vector2.zero;
-            infoBodyRect.anchorMax = Vector2.one;
-            infoBodyRect.offsetMin = new Vector2(
-                DeviceConsoleStyle.Margin,
-                18.0f);
-            infoBodyRect.offsetMax = new Vector2(
-                -DeviceConsoleStyle.Margin,
-                -52.0f);
+            jobPanel = new DeviceJobPanel(font, boxSprite, catalog);
+            jobPanel.StartRequested += HandleJobStartRequested;
+            jobPanel.Build(info);
         }
 
         private void BuildFooter(RectTransform root)
@@ -1076,6 +1042,23 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private void OnDisconnectClicked()
         {
             DisconnectRequested?.Invoke();
+        }
+
+        private void HandleJobStartRequested(
+            Printer printer,
+            ObjectToPrintMetaSO meta,
+            InfillPattern infill,
+            SupportsMode supports,
+            LayerHeightPreset layerHeight,
+            PrintSpeedPreset speed)
+        {
+            StartPrintRequested?.Invoke(
+                printer,
+                meta,
+                infill,
+                supports,
+                layerHeight,
+                speed);
         }
 
         private void OnQuitClicked()
