@@ -210,6 +210,8 @@ MonoBehaviour:
   PrintingMaterial: {fileID: 0}
   IsHaveQuality: 1
   ObjectToPrintGhostTypesToInstancesList: []
+  IsPlaced: 0
+  ParentSurfaceDataHolder: {fileID: 0}
 --- !u!1 &7958278468699901064
 GameObject:
   m_ObjectHideFlags: 0
