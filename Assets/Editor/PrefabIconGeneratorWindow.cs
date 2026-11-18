@@ -11,7 +11,7 @@ namespace Coursework_Master_Degree.Editor
         private string rootFolder = "Assets/Art/3D/Prefabs/Items";
         private float brightnessBoost = 4.0f;
 
-        [MenuItem("Tools/Prefab Icon Generator")]
+        [MenuItem("Tools/Asset/Prefab Icon Generator")]
         public static void ShowWindow()
         {
             GetWindow<PrefabIconGenerator>("Prefab Icon Generator");
