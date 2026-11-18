@@ -18,7 +18,6 @@ namespace Coursework_Master_Degree.Items.Wear
         public bool IsAllowRandomInitialCondition = true;
 
         [SerializeField]
-        [EnableIf("NotEnabled")]
         [Tooltip("Set on Awake. Exposed for debugging")]
         private float currentCondition;
         public float CurrentCondition { get { return currentCondition; } }
@@ -52,10 +51,42 @@ namespace Coursework_Master_Degree.Items.Wear
             {
                 currentCondition = UnityEngine.Random.Range(95.0f, 100.0f);
             }
-            else
+            else if (currentCondition <= minCondition)
             {
-                currentCondition = 100.0f;
+                // A disabled randomizer is an authored condition; only an
+                // unset (0) value falls back to pristine.
+                currentCondition = maxCondition;
             }
+
+            isWornOut = currentCondition <= minCondition;
+        }
+
+        [ContextMenu("Debug/Set Condition 100%")]
+        private void DebugSetCondition100()
+        {
+            SetConditionForDebug(100.0f);
+        }
+
+        [ContextMenu("Debug/Set Condition 50%")]
+        private void DebugSetCondition50()
+        {
+            SetConditionForDebug(50.0f);
+        }
+
+        [ContextMenu("Debug/Set Condition 10%")]
+        private void DebugSetCondition10()
+        {
+            SetConditionForDebug(10.0f);
+        }
+
+        /// <summary>
+        /// Calibration helper. Not used by gameplay; lets the M2 gate test
+        /// spool and critical-part thresholds without editing assets.
+        /// </summary>
+        public void SetConditionForDebug(float condition)
+        {
+            currentCondition = Mathf.Clamp(condition, minCondition, maxCondition);
+            isWornOut = currentCondition <= minCondition;
         }
 
         public void ApplyWear(WearDelta wearDelta)

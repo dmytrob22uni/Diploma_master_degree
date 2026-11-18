@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Coursework_Master_Degree.ScriptableObjects.Items;
 using Coursework_Master_Degree.ScriptableObjects.Items.Types;
 
 namespace Coursework_Master_Degree.Items.FFF.Spool
@@ -14,6 +15,9 @@ namespace Coursework_Master_Degree.Items.FFF.Spool
 
         public ItemType MaterialType;
         public ItemType ColorType;
+
+        [Tooltip("Optional thermal profile used by M3; M2 checks MaterialType only.")]
+        public FilamentMaterialProfileSO MaterialProfile;
 
         public Material FinalMaterial;
         public Material PrintingMaterial;
