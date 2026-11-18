@@ -63,11 +63,10 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 return;
             }
 
-            if (ItemDataHolder.TryGetGhostInstance(ItemGhostType.Placement, out ItemGhostDataHolder placementGhost) &&
-                placementGhost != null)
-            {
-                placementGhost.gameObject.SetActive(false);
-            }
+            // Combined free-part / regular items show the free-part placement
+            // ghost while carried. Hide both variants so installation never
+            // leaves the preview hovering over the printer.
+            ItemPlacementUtility.HidePlacementGhosts(ItemDataHolder.gameObject);
         }
     }
 }

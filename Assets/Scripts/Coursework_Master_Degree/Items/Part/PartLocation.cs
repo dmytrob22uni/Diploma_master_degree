@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
@@ -208,6 +207,11 @@ namespace Coursework_Master_Degree.Items.Part
                 return;
             }
 
+            // A wearable free part may have moved its PartLocation carrier
+            // while being carried. Put the carrier back to its authored
+            // free-part home before installing the part into it.
+            ResetToFreePartLocation(part);
+
             // The location is the socket: the part must adopt its position,
             // rotation and fitment scale instead of keeping the world scale it
             // had while being carried.
@@ -236,7 +240,29 @@ namespace Coursework_Master_Degree.Items.Part
 
             IsOccupied = false;
 
+            // The free-part carrier can have been moved with the part while
+            // it was used as a free part. Return it to the authored home so
+            // the assembly socket stays where the core item expects it.
+            ResetToFreePartLocation(part);
+
             return part;
+        }
+
+        public void ResetToFreePartLocation(GameObject itemPart)
+        {
+            ItemDataHolder coreItem =
+                GetComponentInParent<ItemDataHolder>(true);
+
+            if (coreItem == null ||
+                !coreItem.TryGetFreePartLocation(itemPart, out Transform location))
+            {
+                return;
+            }
+
+            transform.SetParent(location, true);
+            transform.SetPositionAndRotation(
+                location.position,
+                location.rotation);
         }
     }
 }

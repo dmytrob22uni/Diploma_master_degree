@@ -90,6 +90,73 @@ namespace Coursework_Master_Degree.Items
             return isChanged;
         }
 
+        public void ResetFreePartsToLocations()
+        {
+            if (!IsHaveFreeParts || ItemPartsToLocationsList == null)
+            {
+                return;
+            }
+
+            foreach (ItemPartToLocation mapping in ItemPartsToLocationsList)
+            {
+                if (mapping == null ||
+                    mapping.ItemPart == null ||
+                    mapping.Location == null)
+                {
+                    continue;
+                }
+
+                GameObject itemPart = mapping.ItemPart;
+
+                // A wearable free part is installed into a PartLocation
+                // carrier. Move the carrier, not the part itself, so the
+                // location collider and the installed part travel together.
+                Transform movableTransform =
+                    ItemPlacementUtility.GetFreePartMovableTransform(itemPart);
+
+                if (movableTransform == null)
+                {
+                    continue;
+                }
+
+                movableTransform.SetParent(mapping.Location, true);
+                movableTransform.SetPositionAndRotation(
+                    mapping.Location.position,
+                    mapping.Location.rotation);
+
+                // The free part is no longer resting on its old shelf.
+                ItemPlacementUtility.RemoveFromSurface(itemPart);
+                ItemPlacementUtility.HidePlacementGhosts(itemPart);
+            }
+        }
+
+        public bool TryGetFreePartLocation(GameObject itemPart, out Transform location)
+        {
+            location = default;
+
+            if (!IsHaveFreeParts ||
+                ItemPartsToLocationsList == null ||
+                itemPart == null)
+            {
+                return false;
+            }
+
+            foreach (ItemPartToLocation mapping in ItemPartsToLocationsList)
+            {
+                if (mapping == null ||
+                    mapping.ItemPart != itemPart ||
+                    mapping.Location == null)
+                {
+                    continue;
+                }
+
+                location = mapping.Location;
+                return true;
+            }
+
+            return false;
+        }
+
         public bool RemoveFromSurface()
         {
             bool isChanged = false;

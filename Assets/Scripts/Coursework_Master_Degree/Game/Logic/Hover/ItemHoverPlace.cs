@@ -58,8 +58,22 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 itemPlaceData = value;
 
                 itemGameObject = value.ItemGameObject;
-                ghostPosition = value.ItemGameObject.transform.position;
-                ghostRotation = value.ItemGameObject.transform.rotation;
+
+                Transform movableTransform = value.MovableTransform != null
+                    ? value.MovableTransform
+                    : value.ItemGameObject.transform;
+
+                // A wearable free part is carried through its PartLocation
+                // carrier. Deactivate the carrier so its location collider
+                // cannot block the placement rays; it is restored on
+                // confirm/cancel.
+                if (movableTransform.gameObject != value.ItemGameObject)
+                {
+                    movableTransform.gameObject.SetActive(false);
+                }
+
+                ghostPosition = movableTransform.position;
+                ghostRotation = movableTransform.rotation;
                 itemName = value.ItemName;
 
                 rightPlacementInfo = "Place " + itemName;
@@ -332,6 +346,14 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         {
             SetInstallTarget(default);
 
+            // Leaving placement for installation or another state must not
+            // leave a carried ghost in the world. ShowPlacementGhost restores
+            // it when placement is resumed.
+            if (ghostGameObject != null)
+            {
+                ghostGameObject.SetActive(false);
+            }
+
             ClearPassedData();
             ClearCachedCollider();
             ClearState();
@@ -354,13 +376,27 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return;
             }
 
-            itemPlaceData.SurfacePlaceable?.PlaceOnSurface(surface);
+            // Items which are both a regular item and a free part (e.g. a
+            // wearable printer adapter) must update every root-placeable
+            // component, not only the first one found.
+            ItemPlacementUtility.PlaceOnSurface(itemGameObject, surface);
 
             ghostGameObject.SetActive(false);
 
+            // A wearable free part is moved through its PartLocation carrier,
+            // so the carrier and its collider follow the installed part.
+            Transform movableTransform = itemPlaceData.MovableTransform != null
+                ? itemPlaceData.MovableTransform
+                : itemGameObject.transform;
+
             itemGameObject.SetActive(true);
-            itemGameObject.transform.position = ghostPosition;
-            itemGameObject.transform.rotation = ghostRotation;
+
+            if (movableTransform.gameObject != itemGameObject)
+            {
+                movableTransform.gameObject.SetActive(true);
+            }
+
+            movableTransform.SetPositionAndRotation(ghostPosition, ghostRotation);
 
             GameStateManager.Instance.ChangeState(itemPlaceData.ReturnGameState);
         }
@@ -378,6 +414,15 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             ghostGameObject.SetActive(false);
 
             itemGameObject.SetActive(true);
+
+            Transform movableTransform = itemPlaceData.MovableTransform != null
+                ? itemPlaceData.MovableTransform
+                : itemGameObject.transform;
+
+            if (movableTransform.gameObject != itemGameObject)
+            {
+                movableTransform.gameObject.SetActive(true);
+            }
 
             GameStateManager.Instance.ChangeState(itemPlaceData.ReturnGameState);
         }

@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
-using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
@@ -28,16 +27,22 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
         public GameState ReturnGameState => itemPlaceData.ReturnGameState;
         public PartsAssembly InstallTargetAssembly => itemPlaceData.InstallTargetAssembly;
 
-        public GameStateItemPlace(GameObject itemGameObject)
+        public GameStateItemPlace(
+            GameObject itemGameObject,
+            Transform movableTransform = null)
         {
             playerController = GameStateManager.Instance.PlayerController;
             interfaceController = GameStateManager.Instance.InterfaceController;
 
             ItemDataHolder itemDataHolder = itemGameObject.GetComponent<ItemDataHolder>();
 
+            // A core item owns its free parts (PC monitor, mouse, keyboard,
+            // etc.). Reset them to the authored slots before the ghost is
+            // extracted, so moving the core keeps its parts together.
+            itemDataHolder?.ResetFreePartsToLocations();
+
             ExtractGhostData(
                 itemGameObject,
-                out var surfacePlaceable,
                 out var itemName,
                 out var ghostGameObject,
                 out var ghostMeshRenderers,
@@ -47,10 +52,12 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             itemPlaceData = new ItemPlaceData()
             {
                 ItemGameObject = itemGameObject,
+                MovableTransform = movableTransform != null
+                    ? movableTransform
+                    : itemGameObject.transform,
                 ReturnGameState = GetReturnGameState(),
                 IsCancelAvailable = IsItemPlaceCancelAvailable(),
                 IsInstallModeAvailable = IsInstallablePart(itemDataHolder),
-                SurfacePlaceable = surfacePlaceable,
                 ItemName = itemName,
                 GhostGameObject = ghostGameObject,
                 GhostMeshRenderers = ghostMeshRenderers,
@@ -66,7 +73,11 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
         private static bool IsInstallablePart(ItemDataHolder item)
         {
+            // An installed free part is carried together with its PartLocation
+            // carrier. It is already in an assembly, so offering installation
+            // while it is being moved would detach it from the carrier.
             return item != null &&
+                !item.IsInstalled &&
                 item.ItemGhostMetaSO != null &&
                 item.ItemGhostMetaSO.IsHaveGhostType(ItemGhostType.Installation);
         }
@@ -82,12 +93,17 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 return default;
             }
 
-            // A free part must stay on the surface its core item is placed on,
-            // so e.g. a PC mouse cannot be moved to an unrelated table.
+            // A nested free part must stay on the surface its core item is
+            // placed on, so e.g. a PC mouse cannot be moved to an unrelated
+            // table. A standalone item which also exposes a free-part
+            // component (e.g. a wearable printer adapter) has no core item
+            // above it, so it can be placed freely.
             // The free part is deactivated before this state is created, so
             // inactive parents have to be searched as well.
-            ItemDataHolder coreItem =
-                itemGameObject.GetComponentInParent<ItemDataHolder>(true);
+            Transform parent = itemGameObject.transform.parent;
+            ItemDataHolder coreItem = parent != null
+                ? parent.GetComponentInParent<ItemDataHolder>(true)
+                : default;
 
             if (coreItem == null)
             {
@@ -131,9 +147,8 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                 currentGameState is not GameStatePartsRemove;
         }
 
-        private void ExtractGhostData(GameObject itemGameObject, out ISurfacePlaceable surfacePlaceable, out string itemName, out GameObject hostGameObject, out List<MeshRenderer> ghostMeshRenderers, out List<Transform> ghostCorners)
+        private void ExtractGhostData(GameObject itemGameObject, out string itemName, out GameObject hostGameObject, out List<MeshRenderer> ghostMeshRenderers, out List<Transform> ghostCorners)
         {
-            surfacePlaceable = default;
             itemName = default;
             hostGameObject = default;
             ghostMeshRenderers = default;
@@ -143,7 +158,6 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
             if (itemGameObject.TryGetComponent<ItemFreePartDataHolder>(out var itemFreePart))
             {
-                surfacePlaceable = itemFreePart;
                 itemName = itemFreePart.Name;
 
                 if (!itemFreePart.TryGetGhostInstance(out var itemFreePartGhost))
@@ -167,7 +181,6 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             }
             else if (itemGameObject.TryGetComponent<ItemDataHolder>(out var item))
             {
-                surfacePlaceable = item;
                 itemName = item.ItemMetaData.Name;
 
                 if (!item.TryGetGhostInstance(ItemGhostType.Placement, out var itemGhost))
@@ -192,7 +205,6 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             }
             else if (itemGameObject.TryGetComponent<ObjectToPrintDataHolder>(out var objectToPrint))
             {
-                surfacePlaceable = objectToPrint;
                 itemName = objectToPrint.ObjectToPrintMetaData.Name;
 
                 if (!objectToPrint.TryGetGhostInstance(ObjectToPrintGhostType.Placement, out var objectToPrintGhost))

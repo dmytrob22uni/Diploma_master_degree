@@ -22,9 +22,8 @@ namespace Coursework_Master_Degree.Game.Helper
         [Tooltip(
             "Layers of shelf colliders that can hold an item. " +
             "Only colliders registered in ItemSurfaceDataHolder are accepted, " +
-            "so the floor layer can be included for surfaces such as the hangar floor. " +
-            "Defaults to 'surface' + 'floor' when left empty.")]
-        public LayerMask SurfaceLayer = (1 << 14) | (1 << 12);
+            "so broad masks are safe. Defaults to all default raycast layers.")]
+        public LayerMask SurfaceLayer = Physics.DefaultRaycastLayers;
 
         [Tooltip("Distance vertically up from each bounds corner to start the down raycast")]
         [Min(0.0f)]
@@ -63,7 +62,7 @@ namespace Coursework_Master_Degree.Game.Helper
         {
             int shelfMask = SurfaceLayer.value != 0
                 ? SurfaceLayer.value
-                : (1 << 14) | (1 << 12);
+                : Physics.DefaultRaycastLayers;
 
             var processed = new HashSet<GameObject>();
             var behaviours = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude);
@@ -91,10 +90,14 @@ namespace Coursework_Master_Degree.Game.Helper
 
                 var result = EvaluatePlacement(itemGameObject, shelfMask);
 
+                // A free part can also carry a regular ItemDataHolder on the
+                // same GameObject, so update every root placeable component.
                 bool isChanged;
+
                 if (result.Surface != null)
                 {
-                    isChanged = placeable.PlaceOnSurface(result.Surface);
+                    isChanged = ItemPlacementUtility.PlaceOnSurface(itemGameObject, result.Surface);
+
                     if (isChanged)
                     {
                         placedCount++;
@@ -102,7 +105,8 @@ namespace Coursework_Master_Degree.Game.Helper
                 }
                 else
                 {
-                    isChanged = placeable.RemoveFromSurface();
+                    isChanged = ItemPlacementUtility.RemoveFromSurface(itemGameObject);
+
                     if (isChanged)
                     {
                         removedCount++;
@@ -136,7 +140,10 @@ namespace Coursework_Master_Degree.Game.Helper
         {
             // Parts already installed into a PartLocation are handled by the installation system.
             // Free parts / items nested inside another item (e.g. PC free parts reset points)
-            // are also not independent scene placements.
+            // are also not independent scene placements — unless the item is sitting on a
+            // surface owned by that parent item (a printer/enclosure on a table item).
+            bool passedSurface = false;
+
             for (Transform parent = behaviour.transform.parent; parent != null; parent = parent.parent)
             {
                 if (parent.GetComponent<PartLocation>() != null)
@@ -144,9 +151,15 @@ namespace Coursework_Master_Degree.Game.Helper
                     return true;
                 }
 
-                if (parent.GetComponent<ItemDataHolder>() != null ||
-                    parent.GetComponent<ItemFreePartDataHolder>() != null ||
-                    parent.GetComponent<ObjectToPrintDataHolder>() != null)
+                if (parent.GetComponent<ItemSurfaceDataHolder>() != null)
+                {
+                    passedSurface = true;
+                }
+
+                if (!passedSurface &&
+                    (parent.GetComponent<ItemDataHolder>() != null ||
+                     parent.GetComponent<ItemFreePartDataHolder>() != null ||
+                     parent.GetComponent<ObjectToPrintDataHolder>() != null))
                 {
                     return true;
                 }

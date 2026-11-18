@@ -578,11 +578,14 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private static void HidePlacementGhost(ItemDataHolder item)
         {
-            if (item.TryGetGhostInstance(ItemGhostType.Placement, out ItemGhostDataHolder placementGhost) &&
-                placementGhost != null)
+            if (item == null)
             {
-                placementGhost.gameObject.SetActive(false);
+                return;
             }
+
+            // Combined free-part / regular items show the free-part placement
+            // ghost while carried, so hide every placement variant.
+            ItemPlacementUtility.HidePlacementGhosts(item.gameObject);
         }
 
         private static void SetText(TextMeshProUGUI text, string value)
@@ -829,6 +832,11 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             ItemDataHolder partsAssemblyItem = partsAssembly != null
                 ? partsAssembly.GetComponent<ItemDataHolder>()
                 : default;
+
+            // A combined free-part item may still be registered on a shelf.
+            // Installing it moves it into the assembly, so clear both its
+            // free-part and regular item surface states first.
+            ItemPlacementUtility.RemoveFromSurface(targetItem.gameObject);
 
             targetPartLocation.Install(targetItem.gameObject);
 

@@ -99,6 +99,15 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                     cachedItemGameObject = itemFreePart.gameObject;
 
+                    // A free part can also be a wearable standalone item
+                    // (e.g. the printer battery closet adapter), so its wear
+                    // inspection must remain available while it is detached.
+                    cachedWearItem =
+                        itemFreePart.TryGetComponent(out ItemDataHolder freePartItem) &&
+                        IsWearInspectAvailable(freePartItem)
+                            ? freePartItem
+                            : default;
+
                     string info = itemFreePart.Name;
                     SetupInfoAndTake(info);
                 }
@@ -247,8 +256,18 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return;
             }
 
+            // A wearable free part is carried together with its PartLocation
+            // carrier. Regular free parts are their own movable transform.
+            Transform movableTransform =
+                ItemPlacementUtility.GetFreePartMovableTransform(
+                    cachedItemGameObject);
+
             cachedItemGameObject.SetActive(false);
-            GameStateManager.Instance.ChangeState(new GameStateItemPlace(cachedItemGameObject));
+
+            GameStateManager.Instance.ChangeState(
+                new GameStateItemPlace(
+                    cachedItemGameObject,
+                    movableTransform));
         }
 
         public void ApplyInspectWear()

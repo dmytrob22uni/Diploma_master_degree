@@ -661,6 +661,11 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 removedPart.ParentItemDataHolder = default;
             }
 
+            // A combined free-part item could still have a stale surface
+            // registration, e.g. when it was authored as installed. Clear it
+            // before the part is carried and placed again.
+            ItemPlacementUtility.RemoveFromSurface(removedPartGameObject);
+
             // Parts are authored to be placed with their prefab pivot.
             // Drop the part location rotation, so Item Place starts from
             // the canonical orientation instead of the installed one.
