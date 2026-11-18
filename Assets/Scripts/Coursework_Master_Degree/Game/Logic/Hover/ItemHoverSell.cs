@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
+using Coursework_Master_Degree.Items.Computing;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
@@ -52,6 +53,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private const string WornPartsReason = "Worn parts";
         private const string WornOutReason = "Too worn out";
         private const string LowQualityReason = "Low quality";
+        private const string ConnectedToPrinterReason = "Connected to a printer";
 
         private static readonly int SellingStatePropertyID = Shader.PropertyToID("_selling_state");
 
@@ -204,6 +206,16 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 Name = item.ItemMetaData != null ? item.ItemMetaData.Name : item.name,
                 Description = item.ItemMetaData != null ? item.ItemMetaData.Description : default,
             };
+
+            Device device = item.GetComponent<Device>();
+
+            if (device != null && device.BoundPrinters.Count > 0)
+            {
+                target.State = SellingState.Wrong;
+                target.Reason = ConnectedToPrinterReason;
+
+                return target;
+            }
 
             if (item.IsSurface)
             {
