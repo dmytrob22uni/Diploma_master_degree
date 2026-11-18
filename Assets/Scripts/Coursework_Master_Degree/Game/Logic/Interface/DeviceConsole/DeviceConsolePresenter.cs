@@ -167,7 +167,9 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             foreach (KeyValuePair<Device, DeviceConsoleView> pair in views)
             {
-                if (pair.Key == null || pair.Value == null)
+                if (pair.Key == null ||
+                    pair.Value == null ||
+                    !pair.Key.gameObject.activeInHierarchy)
                 {
                     if (stale == null)
                     {
@@ -227,6 +229,11 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
         private void RemoveView(Device device)
         {
+            if (device == null)
+            {
+                return;
+            }
+
             if (!views.TryGetValue(device, out DeviceConsoleView view))
             {
                 return;
