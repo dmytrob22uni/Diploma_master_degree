@@ -3,13 +3,20 @@ using UnityEngine;
 namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
-    /// Thermal context for a printer. M0 only stores the values; M5 uses them
-    /// to model chamber heat retention, drafts, and print quality.
+    /// Thermal context for a printer. M3 uses enclosure presence for chamber
+    /// heat retention, cooling slowdown and raw quality. M5 adds draft,
+    /// particulate, warping and long-pause adhesion effects.
     /// </summary>
     public class PrinterEnvironment : MonoBehaviour
     {
         [Header("Enclosure")]
         public bool HasEnclosure;
+
+        [Tooltip("Detect a PrinterEnclosure around this printer at runtime.")]
+        public bool DetectEnclosure = true;
+
+        [Tooltip("Optional explicit enclosure; auto-filled by containment detection.")]
+        public PrinterEnclosure Enclosure;
 
         [Header("Environment")]
         [Tooltip("Room temperature in degrees Celsius")]
@@ -36,12 +43,56 @@ namespace Coursework_Master_Degree.Items.FFF
             ? Mathf.Max(AmbientTemperature, ChamberTemperature)
             : AmbientTemperature;
 
+        private void Awake()
+        {
+            if (DetectEnclosure)
+            {
+                Enclosure = FindEnclosure();
+
+                if (!HasEnclosure)
+                {
+                    HasEnclosure = Enclosure != null;
+                }
+            }
+
+            if (!HasEnclosure)
+            {
+                ChamberTemperature = AmbientTemperature;
+            }
+        }
+
         private void OnValidate()
         {
             if (!HasEnclosure)
             {
                 ChamberTemperature = AmbientTemperature;
             }
+        }
+
+        private PrinterEnclosure FindEnclosure()
+        {
+            PrinterEnclosure[] enclosures =
+                FindObjectsByType<PrinterEnclosure>(
+                    FindObjectsInactive.Exclude);
+
+            for (int i = 0; i < enclosures.Length; i++)
+            {
+                if (enclosures[i] != null &&
+                    enclosures[i].Contains(transform.position))
+                {
+                    Printer owner = GetComponent<Printer>();
+
+                    if (owner == null)
+                    {
+                        owner = GetComponentInParent<Printer>();
+                    }
+
+                    enclosures[i].BindPrinter(owner);
+                    return enclosures[i];
+                }
+            }
+
+            return null;
         }
     }
 }
