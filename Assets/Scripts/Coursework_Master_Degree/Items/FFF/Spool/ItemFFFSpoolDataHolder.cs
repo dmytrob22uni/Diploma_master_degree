@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Coursework_Master_Degree.Items.Wear;
 using Coursework_Master_Degree.ScriptableObjects.Items;
 using Coursework_Master_Degree.ScriptableObjects.Items.Types;
 
 namespace Coursework_Master_Degree.Items.FFF.Spool
 {
-    public class ItemFFFPrusaMK4SSpoolDataHolder : MonoBehaviour
+    public class ItemFFFSpoolDataHolder : MonoBehaviour
     {
         [Range(0.0f, 1.0f)]
         public float MaterialHardness;

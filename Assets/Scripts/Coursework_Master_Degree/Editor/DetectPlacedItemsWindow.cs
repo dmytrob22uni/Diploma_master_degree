@@ -152,8 +152,8 @@ namespace Coursework_Master_Degree.Editor
                 });
             }
 
-            ItemFFFPrusaMK4SSpoolDataHolder[] spools =
-                Object.FindObjectsByType<ItemFFFPrusaMK4SSpoolDataHolder>(
+            ItemFFFSpoolDataHolder[] spools =
+                Object.FindObjectsByType<ItemFFFSpoolDataHolder>(
                     FindObjectsInactive.Include);
 
             for (int i = 0; i < spools.Length; i++)

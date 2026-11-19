@@ -195,7 +195,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 // by CheckSpool. An unselected empty/worn spool must not block
                 // the job.
                 if (location.InstalledPart
-                        .GetComponentInChildren<ItemFFFPrusaMK4SSpoolDataHolder>(true) != null)
+                        .GetComponentInChildren<ItemFFFSpoolDataHolder>(true) != null)
                 {
                     continue;
                 }
@@ -293,9 +293,9 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 return;
             }
 
-            ItemFFFPrusaMK4SSpoolDataHolder spool =
+            ItemFFFSpoolDataHolder spool =
                 location.InstalledPart.GetComponentInChildren<
-                    ItemFFFPrusaMK4SSpoolDataHolder>(true);
+                    ItemFFFSpoolDataHolder>(true);
 
             if (spool == null)
             {
@@ -366,7 +366,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 }
 
                 if (location.InstalledPart
-                        .GetComponentInChildren<ItemFFFPrusaMK4SSpoolDataHolder>(true) != null)
+                        .GetComponentInChildren<ItemFFFSpoolDataHolder>(true) != null)
                 {
                     continue;
                 }
