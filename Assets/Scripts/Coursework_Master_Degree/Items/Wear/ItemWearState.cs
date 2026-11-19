@@ -91,26 +91,35 @@ namespace Coursework_Master_Degree.Items.Wear
 
         public void ApplyWear(WearDelta wearDelta)
         {
-            if (isWornOut)
+            if (isWornOut || ItemWearLogicSO == null)
             {
                 return;
             }
 
-            float wearValue = ItemWearLogicSO.CalculateWear(wearDelta);
+            ApplyConditionLoss(ItemWearLogicSO.CalculateWearByRatio(wearDelta));
+        }
+
+        /// <summary>
+        /// Applies a direct condition loss. Used by batch wear and one-off
+        /// penalties such as a hard stop.
+        /// </summary>
+        public void ApplyConditionLoss(float amount)
+        {
+            if (isWornOut || amount <= 0.0f)
+            {
+                return;
+            }
 
             currentCondition = Mathf.Clamp(
-                currentCondition - wearValue,
+                currentCondition - amount,
                 minCondition,
-                maxCondition
-            );
+                maxCondition);
 
-            if (currentCondition == minCondition)
+            if (currentCondition <= minCondition)
             {
+                currentCondition = minCondition;
                 isWornOut = true;
-
                 OnItemWornOut?.Invoke();
-
-                return;
             }
         }
     }
