@@ -13,6 +13,14 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         private const float Variance = 5.0f;
         private const float MinimumQuality = 20.0f;
 
+        /// <summary>
+        /// Raw prints cap at 90 even with an enclosure. Post-processing can
+        /// improve the final object beyond this raw ceiling.
+        /// </summary>
+        public const float MaximumRawQuality = 90.0f;
+        public const float EnclosureQualityBonus = 5.0f;
+        public const float NoEnclosurePenalty = 9.0f;
+
         public static void Calculate(
             ObjectToPrintPrintProfile profile,
             LayerHeightPreset layerHeight,
@@ -21,12 +29,16 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             bool supportsRequired,
             float hardwarePenalty,
             out float minimum,
-            out float maximum)
+            out float maximum,
+            bool hasEnclosure = false)
         {
             float score = BaseQuality +
                 LayerHeightSettings.QualityDelta(layerHeight) +
                 PrintSpeedSettings.QualityDelta(speed) -
-                Mathf.Max(0.0f, hardwarePenalty);
+                Mathf.Max(0.0f, hardwarePenalty) +
+                (hasEnclosure
+                    ? EnclosureQualityBonus
+                    : -NoEnclosurePenalty);
 
             if (supports == SupportsMode.Auto)
             {
@@ -43,7 +55,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
             float cap = missingRequiredSupports
                 ? SupportsSettings.MissingRequiredQualityCap
-                : 100.0f;
+                : MaximumRawQuality;
 
             minimum = Mathf.Clamp(score, MinimumQuality, cap);
             maximum = Mathf.Clamp(score + Variance, MinimumQuality, cap);

@@ -86,7 +86,10 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 profile.SupportsRequired,
                 hardwarePenalty,
                 out result.EstimatedQualityMin,
-                out result.EstimatedQualityMax);
+                out result.EstimatedQualityMax,
+                printer != null &&
+                printer.Environment != null &&
+                printer.Environment.HasEnclosure);
 
             if (profile.PrintTimeSecondsAt100PercentInfill <= 0.0f ||
                 profile.FilamentMetersAt100PercentInfill <= 0.0f)
@@ -116,8 +119,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 result.Errors.Add("Printer is not connected to this device.");
             }
 
-            if (printer.OperationalState != PrinterOperationalState.Idle &&
-                printer.OperationalState != PrinterOperationalState.Finished)
+            if (printer.OperationalState != PrinterOperationalState.Idle)
             {
                 result.Errors.Add(
                     $"Printer is busy ({printer.OperationalState}).");

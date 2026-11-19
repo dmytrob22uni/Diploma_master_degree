@@ -1902,6 +1902,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrinterEnvironment
   HasEnclosure: 0
+  DetectEnclosure: 1
+  Enclosure: {fileID: 0}
   AmbientTemperature: 21
   ChamberTemperature: 21
   DraftFactor: 0.5
@@ -1976,6 +1978,28 @@ MonoBehaviour:
   PrintPlateLocation: {fileID: 3042372913035685079}
   LeftSpoolLocation: {fileID: 8626608670176291238}
   RightSpoolLocation: {fileID: 2198933648768292544}
+  ServiceBlockedDuringPrint:
+  - {fileID: 8560630339366317379}
+  - {fileID: 8193525627608041013}
+  - {fileID: 3042372913035685079}
+  SafeServiceTemperatureC: 50
+  ServicePosition: {x: 0, y: 0.05, z: -0.08}
+  PrintSpeedMultiplier: 120
+  TemperatureToleranceC: 2
+  PreheatTimeoutSimulatedSeconds: 900
+  PauseQualityPenalty: 4
+  AxisTravelMetersPerSecond: 0.15
+  FanRPM: 3000
+  FumesDensity: 1
+  HardStopNozzleBase: 0.2
+  HardStopNozzleScale: 0.8
+  HardStopHeaterBase: 0.1
+  HardStopHeaterScale: 0.4
+  HardStopBedBase: 0.1
+  HardStopBedScale: 0.3
+  CalibrationGridSize: 5
+  CalibrationPointDwellSeconds: 0.15
+  CalibrationPaddingMeters: 0.01
 --- !u!114 &459495362381015763
 MonoBehaviour:
   m_ObjectHideFlags: 0
