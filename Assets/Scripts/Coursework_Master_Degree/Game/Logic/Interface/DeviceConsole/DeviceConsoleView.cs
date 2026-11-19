@@ -98,7 +98,18 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             InfillPattern,
             SupportsMode,
             LayerHeightPreset,
-            PrintSpeedPreset> StartPrintRequested;
+            PrintSpeedPreset,
+            SpoolSlot,
+            PrintPlacement> StartPrintRequested;
+
+        public event Action<
+            Printer,
+            ObjectToPrintMetaSO,
+            InfillPattern,
+            SupportsMode,
+            LayerHeightPreset,
+            PrintSpeedPreset,
+            PrintPlacement> PlaceOnBedRequested;
 
         public static DeviceConsoleView Create(
             Device target,
@@ -726,6 +737,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             jobPanel = new DeviceJobPanel(font, boxSprite, catalog);
             jobPanel.StartRequested += HandleJobStartRequested;
+            jobPanel.PlaceOnBedRequested += HandlePlaceOnBedRequested;
             jobPanel.Build(info);
         }
 
@@ -1050,7 +1062,9 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             InfillPattern infill,
             SupportsMode supports,
             LayerHeightPreset layerHeight,
-            PrintSpeedPreset speed)
+            PrintSpeedPreset speed,
+            SpoolSlot spoolSlot,
+            PrintPlacement placement)
         {
             StartPrintRequested?.Invoke(
                 printer,
@@ -1058,7 +1072,36 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 infill,
                 supports,
                 layerHeight,
-                speed);
+                speed,
+                spoolSlot,
+                placement);
+        }
+
+        private void HandlePlaceOnBedRequested(
+            Printer printer,
+            ObjectToPrintMetaSO meta,
+            InfillPattern infill,
+            SupportsMode supports,
+            LayerHeightPreset layerHeight,
+            PrintSpeedPreset speed,
+            PrintPlacement placement)
+        {
+            PlaceOnBedRequested?.Invoke(
+                printer,
+                meta,
+                infill,
+                supports,
+                layerHeight,
+                speed,
+                placement);
+        }
+
+        public void SetPlacement(PrintPlacement placement)
+        {
+            if (jobPanel != null)
+            {
+                jobPanel.SetPlacement(placement);
+            }
         }
 
         private void OnQuitClicked()

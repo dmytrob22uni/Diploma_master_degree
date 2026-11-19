@@ -49,6 +49,13 @@ namespace Coursework_Master_Degree.Items.FFF
         [Tooltip("Part location that holds the removable print plate.")]
         public PartLocation PrintPlateLocation;
 
+        [Header("Spool slots")]
+        [Tooltip("Part location for the left spool (spool_location_1).")]
+        public PartLocation LeftSpoolLocation;
+
+        [Tooltip("Part location for the right spool (spool_location_2).")]
+        public PartLocation RightSpoolLocation;
+
         private static readonly string[] DefaultCriticalLocationNames =
         {
             "extruder_nozzle_location",
@@ -110,6 +117,13 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public PrintBedAnchor ResolvedBedAnchor =>
             BedAnchor != null ? BedAnchor : Motion != null ? Motion.BedAnchor : null;
+
+        public PartLocation GetSpoolLocation(SpoolSlot slot)
+        {
+            return slot == SpoolSlot.Right
+                ? RightSpoolLocation
+                : LeftSpoolLocation;
+        }
 
         private void Reset()
         {

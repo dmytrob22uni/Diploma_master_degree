@@ -532,7 +532,7 @@ namespace Coursework_Master_Degree.Input
                 {
                     ""name"": """",
                     ""id"": ""b8fec61b-8a8e-4c09-83ac-06e4a6748640"",
-                    ""path"": ""<Keyboard>/i"",
+                    ""path"": ""<Mouse>/middleButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
@@ -1001,7 +1001,7 @@ namespace Coursework_Master_Degree.Input
                 {
                     ""name"": """",
                     ""id"": ""5ffd6e6a-392c-4d6f-a3f2-5f5a0a71ef36"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""path"": ""<Pointer>/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
@@ -1034,7 +1034,7 @@ namespace Coursework_Master_Degree.Input
                 {
                     ""name"": """",
                     ""id"": ""0e55adfa-1f44-425c-a6dc-a5a98cb7d854"",
-                    ""path"": ""<Keyboard>/g"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",
@@ -1045,7 +1045,7 @@ namespace Coursework_Master_Degree.Input
                 {
                     ""name"": """",
                     ""id"": ""4c1bf99c-a67f-4880-9e1e-8579e792bcec"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";keyboard&mouse"",

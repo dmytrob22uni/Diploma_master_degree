@@ -75,11 +75,11 @@ namespace Coursework_Master_Degree.Input
         public event Action<bool> OnInitiateCameraRotationAroundPlateEvent = delegate { };
         public event Action<Vector2> OnRotateCameraAroundPlateEvent = delegate { };
         public event Action<float> OnZoomCameraOnPlateEvent = delegate { };
-        public event Action OnObjectRotationModifierOnPlateEvent = delegate { };
+        public event Action<bool> OnObjectRotationModifierOnPlateEvent = delegate { };
         public event Action<Vector2> OnRotateObjectOnPlateEvent = delegate { };
-        public event Action OnObjectScaleModifierOnPlateEvent = delegate { };
+        public event Action<bool> OnObjectScaleModifierOnPlateEvent = delegate { };
         public event Action<Vector2> OnScaleObjectOnPlateEvent = delegate { };
-        public event Action OnObjectPlacementModifierOnPlateEvent = delegate { };
+        public event Action<bool> OnObjectPlacementModifierOnPlateEvent = delegate { };
         public event Action<Vector2> OnObjectPlacementOnPlateEvent = delegate { };
         public event Action OnConfirmObjectPlacementOnPlateEvent = delegate { };
 
@@ -492,8 +492,8 @@ namespace Coursework_Master_Degree.Input
 
         public void OnZoomCameraOnObject(InputAction.CallbackContext context)
         {
-            float value = context.ReadValue<float>();
-            OnZoomCameraOnObjectEvent?.Invoke(value);
+            Vector2 value = context.ReadValue<Vector2>();
+            OnZoomCameraOnObjectEvent?.Invoke(value.y);
         }
 
         public void OnInitiateObjectRotation(InputAction.CallbackContext context)
@@ -554,15 +554,19 @@ namespace Coursework_Master_Degree.Input
 
         public void OnZoomCameraOnPlate(InputAction.CallbackContext context)
         {
-            float value = context.ReadValue<float>();
-            OnZoomCameraOnPlateEvent?.Invoke(value);
+            Vector2 value = context.ReadValue<Vector2>();
+            OnZoomCameraOnPlateEvent?.Invoke(value.y);
         }
 
         public void OnObjectRotationModifierOnPlate(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.started)
             {
-                OnObjectRotationModifierOnPlateEvent?.Invoke();
+                OnObjectRotationModifierOnPlateEvent?.Invoke(true);
+            }
+            else if (context.canceled)
+            {
+                OnObjectRotationModifierOnPlateEvent?.Invoke(false);
             }
         }
 
@@ -574,9 +578,13 @@ namespace Coursework_Master_Degree.Input
 
         public void OnObjectScaleModifierOnPlate(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.started)
             {
-                OnObjectScaleModifierOnPlateEvent?.Invoke();
+                OnObjectScaleModifierOnPlateEvent?.Invoke(true);
+            }
+            else if (context.canceled)
+            {
+                OnObjectScaleModifierOnPlateEvent?.Invoke(false);
             }
         }
 
@@ -588,9 +596,13 @@ namespace Coursework_Master_Degree.Input
 
         public void OnObjectPlacementModifierOnPlate(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.started)
             {
-                OnObjectPlacementModifierOnPlateEvent?.Invoke();
+                OnObjectPlacementModifierOnPlateEvent?.Invoke(true);
+            }
+            else if (context.canceled)
+            {
+                OnObjectPlacementModifierOnPlateEvent?.Invoke(false);
             }
         }
 

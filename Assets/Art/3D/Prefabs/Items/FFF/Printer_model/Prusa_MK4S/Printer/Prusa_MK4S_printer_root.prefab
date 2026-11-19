@@ -1974,6 +1974,8 @@ MonoBehaviour:
   - {fileID: 1923395181610000019}
   - {fileID: 3554641083262955466}
   PrintPlateLocation: {fileID: 3042372913035685079}
+  LeftSpoolLocation: {fileID: 8626608670176291238}
+  RightSpoolLocation: {fileID: 2198933648768292544}
 --- !u!114 &459495362381015763
 MonoBehaviour:
   m_ObjectHideFlags: 0

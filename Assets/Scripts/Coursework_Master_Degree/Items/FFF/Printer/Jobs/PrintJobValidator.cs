@@ -27,7 +27,9 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             InfillPattern infill,
             SupportsMode supports,
             LayerHeightPreset layerHeight,
-            PrintSpeedPreset speed)
+            PrintSpeedPreset speed,
+            SpoolSlot spoolSlot,
+            PrintPlacement placement = null)
         {
             PrintJobValidationResult result = new PrintJobValidationResult();
 
@@ -45,14 +47,32 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 return result;
             }
 
+            float uniformScale = placement != null
+                ? placement.UniformScale
+                : 1.0f;
+
             result.EstimatedSeconds = PrintEstimates.TimeSeconds(
                 profile,
                 infill,
                 layerHeight,
                 speed,
-                supports);
+                supports,
+                uniformScale);
             result.EstimatedFilamentMeters =
-                PrintEstimates.FilamentMeters(profile, infill, supports);
+                PrintEstimates.FilamentMeters(
+                    profile,
+                    infill,
+                    supports,
+                    uniformScale);
+
+            if (placement == null)
+            {
+                result.Errors.Add("Object is not placed on the bed.");
+            }
+            else if (!placement.IsValid || placement.UniformScale <= 0.0f)
+            {
+                result.Errors.Add("Object placement is invalid.");
+            }
 
             float hardwarePenalty = printer != null
                 ? HardwareQualityPenalty(printer)
@@ -122,7 +142,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 result.Errors.Add("Print plate is missing.");
             }
 
-            CheckSpool(printer, speed, result);
+            CheckSpool(printer, spoolSlot, speed, result);
             CheckBuildVolume(printer, objectToPrint, result);
 
             return result;
@@ -168,6 +188,15 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                             $"Missing critical part: {Friendly(locationName)}.");
                     }
 
+                    continue;
+                }
+
+                // Spools are consumables; only the selected spool is checked
+                // by CheckSpool. An unselected empty/worn spool must not block
+                // the job.
+                if (location.InstalledPart
+                        .GetComponentInChildren<ItemFFFPrusaMK4SSpoolDataHolder>(true) != null)
+                {
                     continue;
                 }
 
@@ -244,17 +273,39 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
         private static void CheckSpool(
             Printer printer,
+            SpoolSlot spoolSlot,
             PrintSpeedPreset speed,
             PrintJobValidationResult result)
         {
-            if (!TryFindSpool(
-                    printer,
-                    out ItemFFFPrusaMK4SSpoolDataHolder spool,
-                    out ItemWearState wear))
+            PartLocation location = printer.GetSpoolLocation(spoolSlot);
+            string side = SpoolSlotSettings.Label(spoolSlot);
+
+            if (location == null)
             {
-                result.Errors.Add("No filament spool installed.");
+                result.Errors.Add($"Spool slot is not configured ({side}).");
                 return;
             }
+
+            if (!location.IsOccupied || location.InstalledPart == null)
+            {
+                result.Errors.Add(
+                    $"No filament spool installed on the {side} side.");
+                return;
+            }
+
+            ItemFFFPrusaMK4SSpoolDataHolder spool =
+                location.InstalledPart.GetComponentInChildren<
+                    ItemFFFPrusaMK4SSpoolDataHolder>(true);
+
+            if (spool == null)
+            {
+                result.Errors.Add(
+                    $"The {side} spool slot does not contain a filament spool.");
+                return;
+            }
+
+            ItemWearState wear =
+                spool.GetComponentInChildren<ItemWearState>(true);
 
             float condition = wear != null
                 ? Mathf.Clamp(wear.CurrentCondition, 0.0f, wear.MaxCondition)
@@ -265,20 +316,26 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
             if (remainingMeters <= 0.001f)
             {
-                result.Errors.Add("Filament spool is empty.");
+                result.Errors.Add($"The {side} filament spool is empty.");
             }
             else if (result.EstimatedFilamentMeters > remainingMeters)
             {
                 result.Errors.Add(
-                    $"Not enough filament: {result.EstimatedFilamentMeters:0.0} m " +
-                    $"needed, {remainingMeters:0.0} m left.");
+                    $"Not enough filament on the {side} spool: " +
+                    $"{result.EstimatedFilamentMeters:0.0} m needed, " +
+                    $"{remainingMeters:0.0} m left.");
             }
             else if (condition > 0.0f &&
                 result.EstimatedFilamentMeters > 0.0f &&
                 remainingMeters < result.EstimatedFilamentMeters * 1.10f)
             {
                 result.Warnings.Add(
-                    $"Low filament: only {remainingMeters:0.0} m left.");
+                    $"Low filament on the {side} spool: only {remainingMeters:0.0} m left.");
+            }
+            else if (condition <= LowConditionWarningPercent)
+            {
+                result.Warnings.Add(
+                    $"Low condition on the {side} spool ({condition:0}%).");
             }
 
             if (speed == PrintSpeedPreset.Fast &&
@@ -367,40 +424,6 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                     $"{size.z:0.00} m, build volume " +
                     $"{volume.x:0.00} x {volume.y:0.00} x {volume.z:0.00} m.");
             }
-        }
-
-        private static bool TryFindSpool(
-            Printer printer,
-            out ItemFFFPrusaMK4SSpoolDataHolder spool,
-            out ItemWearState wear)
-        {
-            spool = null;
-            wear = null;
-
-            foreach (PartLocation location in PartLocations(printer))
-            {
-                if (location == null ||
-                    !location.IsOccupied ||
-                    location.InstalledPart == null)
-                {
-                    continue;
-                }
-
-                ItemFFFPrusaMK4SSpoolDataHolder candidate =
-                    location.InstalledPart
-                        .GetComponentInChildren<ItemFFFPrusaMK4SSpoolDataHolder>(true);
-
-                if (candidate == null)
-                {
-                    continue;
-                }
-
-                spool = candidate;
-                wear = candidate.GetComponentInChildren<ItemWearState>(true);
-                return true;
-            }
-
-            return false;
         }
 
         private static IEnumerable<PartLocation> PartLocations(Printer printer)

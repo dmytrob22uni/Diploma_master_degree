@@ -1,3 +1,4 @@
+using UnityEngine;
 using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
 
 namespace Coursework_Master_Degree.Items.FFF.Jobs
@@ -11,7 +12,8 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         public static float FilamentMeters(
             ObjectToPrintPrintProfile profile,
             InfillPattern infill,
-            SupportsMode supports)
+            SupportsMode supports,
+            float uniformScale = 1.0f)
         {
             if (profile == null)
             {
@@ -21,9 +23,12 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             float filament = profile.FilamentMetersAt100PercentInfill *
                 InfillSettings.Density(infill);
 
-            return supports == SupportsMode.Auto
-                ? filament * SupportsSettings.FilamentMultiplier
-                : filament;
+            if (supports == SupportsMode.Auto)
+            {
+                filament *= SupportsSettings.FilamentMultiplier;
+            }
+
+            return filament * VolumeScale(uniformScale);
         }
 
         public static float TimeSeconds(
@@ -31,7 +36,8 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             InfillPattern infill,
             LayerHeightPreset layerHeight,
             PrintSpeedPreset speed,
-            SupportsMode supports)
+            SupportsMode supports,
+            float uniformScale = 1.0f)
         {
             if (profile == null)
             {
@@ -47,9 +53,18 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                     speed,
                     PrintSpeedSettings.ReferenceMillimetersPerSecond);
 
-            return supports == SupportsMode.Auto
-                ? time * SupportsSettings.TimeMultiplier
-                : time;
+            if (supports == SupportsMode.Auto)
+            {
+                time *= SupportsSettings.TimeMultiplier;
+            }
+
+            return time * VolumeScale(uniformScale);
+        }
+
+        private static float VolumeScale(float uniformScale)
+        {
+            float scale = Mathf.Max(0.0f, uniformScale);
+            return scale * scale * scale;
         }
     }
 }

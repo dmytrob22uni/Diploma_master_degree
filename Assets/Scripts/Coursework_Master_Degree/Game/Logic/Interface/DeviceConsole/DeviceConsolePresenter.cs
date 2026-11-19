@@ -43,7 +43,19 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             InfillPattern,
             SupportsMode,
             LayerHeightPreset,
-            PrintSpeedPreset> StartPrintRequested;
+            PrintSpeedPreset,
+            SpoolSlot,
+            PrintPlacement> StartPrintRequested;
+
+        public event Action<
+            Device,
+            Printer,
+            ObjectToPrintMetaSO,
+            InfillPattern,
+            SupportsMode,
+            LayerHeightPreset,
+            PrintSpeedPreset,
+            PrintPlacement> PlaceOnBedRequested;
 
         private const float BackgroundRefreshFactor = 5.0f;
         private const float SyncInterval = 0.5f;
@@ -196,8 +208,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             foreach (KeyValuePair<Device, DeviceConsoleView> pair in views)
             {
                 if (pair.Key == null ||
-                    pair.Value == null ||
-                    !pair.Key.gameObject.activeInHierarchy)
+                    pair.Value == null)
                 {
                     if (stale == null)
                     {
@@ -252,9 +263,19 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             view.DisconnectRequested += HandleViewDisconnectRequested;
             view.QuitRequested += HandleViewQuitRequested;
             view.StartPrintRequested += HandleViewStartPrintRequested;
+            view.PlaceOnBedRequested += HandleViewPlaceOnBedRequested;
 
             views.Add(device, view);
             return view;
+        }
+
+        /// <summary>
+        /// Removes and destroys the cached view for a device that will not be
+        /// reactivated, e.g. after it is sold.
+        /// </summary>
+        public void DisposeView(Device device)
+        {
+            RemoveView(device);
         }
 
         private void RemoveView(Device device)
@@ -291,6 +312,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             view.DisconnectRequested -= HandleViewDisconnectRequested;
             view.QuitRequested -= HandleViewQuitRequested;
             view.StartPrintRequested -= HandleViewStartPrintRequested;
+            view.PlaceOnBedRequested -= HandleViewPlaceOnBedRequested;
         }
 
         // === View handlers ===================================================
@@ -316,7 +338,9 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             InfillPattern infill,
             SupportsMode supports,
             LayerHeightPreset layerHeight,
-            PrintSpeedPreset speed)
+            PrintSpeedPreset speed,
+            SpoolSlot spoolSlot,
+            PrintPlacement placement)
         {
             StartPrintRequested?.Invoke(
                 focusedView != null ? focusedView.Device : null,
@@ -325,7 +349,39 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 infill,
                 supports,
                 layerHeight,
-                speed);
+                speed,
+                spoolSlot,
+                placement);
+        }
+
+        private void HandleViewPlaceOnBedRequested(
+            Printer printer,
+            ObjectToPrintMetaSO meta,
+            InfillPattern infill,
+            SupportsMode supports,
+            LayerHeightPreset layerHeight,
+            PrintSpeedPreset speed,
+            PrintPlacement placement)
+        {
+            PlaceOnBedRequested?.Invoke(
+                focusedView != null ? focusedView.Device : null,
+                printer,
+                meta,
+                infill,
+                supports,
+                layerHeight,
+                speed,
+                placement);
+        }
+
+        public void SetPlacement(Device device, PrintPlacement placement)
+        {
+            if (device != null &&
+                views.TryGetValue(device, out DeviceConsoleView view) &&
+                view != null)
+            {
+                view.SetPlacement(placement);
+            }
         }
     }
 }

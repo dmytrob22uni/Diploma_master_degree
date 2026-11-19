@@ -334,7 +334,9 @@ namespace Coursework_Master_Degree.Game.Controller
             InfillPattern infill,
             SupportsMode supports,
             LayerHeightPreset layerHeight,
-            PrintSpeedPreset speed)
+            PrintSpeedPreset speed,
+            SpoolSlot spoolSlot,
+            PrintPlacement placement)
         {
             Device targetDevice = device != null ? device : consoleDevice;
 
@@ -350,7 +352,9 @@ namespace Coursework_Master_Degree.Game.Controller
                 infill,
                 supports,
                 layerHeight,
-                speed);
+                speed,
+                spoolSlot,
+                placement);
 
             if (!result.IsValid)
             {
@@ -367,12 +371,51 @@ namespace Coursework_Master_Degree.Game.Controller
                 result.EstimatedSeconds,
                 result.EstimatedFilamentMeters,
                 result.EstimatedQualityMin,
-                result.EstimatedQualityMax);
+                result.EstimatedQualityMax,
+                spoolSlot,
+                placement);
 
             if (printer.TrySetPendingJob(request))
             {
+                Console?.SetPlacement(targetDevice, null);
                 Console?.Refresh(targetDevice);
             }
+        }
+
+        private void HandlePlaceOnBedRequested(
+            Device device,
+            Printer printer,
+            ObjectToPrintMetaSO meta,
+            InfillPattern infill,
+            SupportsMode supports,
+            LayerHeightPreset layerHeight,
+            PrintSpeedPreset speed,
+            PrintPlacement previousPlacement)
+        {
+            Device targetDevice = device != null ? device : consoleDevice;
+
+            if (!consoleOpen ||
+                targetDevice == null ||
+                printer == null ||
+                meta == null)
+            {
+                return;
+            }
+
+            GameState returnState = new GameStateDeviceInterface(targetDevice);
+
+            GameStateManager.Instance.ChangeState(
+                new GameStateObjectPlace(
+                    targetDevice,
+                    printer,
+                    meta,
+                    infill,
+                    supports,
+                    layerHeight,
+                    speed,
+                    previousPlacement,
+                    returnState,
+                    placement => Console?.SetPlacement(targetDevice, placement)));
         }
 
         private void HandleDisconnectPrinterRequested()
@@ -495,6 +538,7 @@ namespace Coursework_Master_Degree.Game.Controller
             Console.DisconnectPrinterRequested += HandleDisconnectPrinterRequested;
             Console.QuitRequested += HandleQuitRequested;
             Console.StartPrintRequested += HandleStartPrintRequested;
+            Console.PlaceOnBedRequested += HandlePlaceOnBedRequested;
             consoleEventsSubscribed = true;
         }
 
@@ -509,6 +553,7 @@ namespace Coursework_Master_Degree.Game.Controller
             Console.DisconnectPrinterRequested -= HandleDisconnectPrinterRequested;
             Console.QuitRequested -= HandleQuitRequested;
             Console.StartPrintRequested -= HandleStartPrintRequested;
+            Console.PlaceOnBedRequested -= HandlePlaceOnBedRequested;
             consoleEventsSubscribed = false;
         }
     }

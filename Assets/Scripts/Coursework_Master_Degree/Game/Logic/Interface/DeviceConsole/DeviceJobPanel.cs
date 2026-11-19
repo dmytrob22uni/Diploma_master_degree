@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Coursework_Master_Degree.Items.Computing;
+using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Items.FFF.Jobs;
 using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
@@ -36,6 +37,10 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private readonly List<ObjectRow> rows = new List<ObjectRow>();
 
         private Device device;
+        private Printer lastPrinter;
+        private PrintPlacement placement;
+        private SpoolSlot spoolSlot = SpoolSlot.Left;
+        private bool spoolInitialized;
         private int selectedIndex;
         private InfillPattern infill = InfillPattern.Grid;
         private SupportsMode supports = SupportsMode.None;
@@ -50,6 +55,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private RectTransform validationContent;
         private Button startButton;
         private TextMeshProUGUI startLabel;
+        private Button placeButton;
+        private TextMeshProUGUI placeLabel;
 
         private readonly List<Button> infillButtons = new List<Button>();
         private readonly List<TextMeshProUGUI> infillLabels =
@@ -62,6 +69,9 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             new List<TextMeshProUGUI>();
         private readonly List<Button> supportsButtons = new List<Button>();
         private readonly List<TextMeshProUGUI> supportsLabels =
+            new List<TextMeshProUGUI>();
+        private readonly List<Button> spoolButtons = new List<Button>();
+        private readonly List<TextMeshProUGUI> spoolLabels =
             new List<TextMeshProUGUI>();
         private string lastValidationSignature = string.Empty;
         private string lastValidationUiSignature = string.Empty;
@@ -82,7 +92,18 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             InfillPattern,
             SupportsMode,
             LayerHeightPreset,
-            PrintSpeedPreset> StartRequested;
+            PrintSpeedPreset,
+            SpoolSlot,
+            PrintPlacement> StartRequested;
+
+        public event System.Action<
+            Printer,
+            ObjectToPrintMetaSO,
+            InfillPattern,
+            SupportsMode,
+            LayerHeightPreset,
+            PrintSpeedPreset,
+            PrintPlacement> PlaceOnBedRequested;
 
         public void Build(RectTransform card)
         {
@@ -118,7 +139,20 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
         public void SetDevice(Device target)
         {
+            if (device != target)
+            {
+                placement = null;
+                lastPrinter = null;
+                spoolInitialized = false;
+            }
+
             device = target;
+        }
+
+        public void SetPlacement(PrintPlacement value)
+        {
+            placement = value;
+            Refresh();
         }
 
         public void Refresh()
@@ -127,6 +161,20 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             ObjectToPrintMetaSO meta = CurrentMeta;
             Printer printer = device != null ? device.ActivePrinter : null;
+
+            if (printer != lastPrinter)
+            {
+                placement = null;
+                lastPrinter = printer;
+                spoolInitialized = false;
+            }
+
+            if (!spoolInitialized)
+            {
+                spoolSlot = ChooseDefaultSpoolSlot(printer);
+                spoolInitialized = true;
+            }
+
             ObjectToPrintPrintProfile profile = meta != null
                 ? meta.PrintProfile
                 : null;
@@ -152,16 +200,22 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                     : "Size unavailable";
             }
 
+            float uniformScale = placement != null
+                ? placement.UniformScale
+                : 1.0f;
+
             float filament = PrintEstimates.FilamentMeters(
                 profile,
                 infill,
-                supports);
+                supports,
+                uniformScale);
             float seconds = PrintEstimates.TimeSeconds(
                 profile,
                 infill,
                 layerHeight,
                 speed,
-                supports);
+                supports,
+                uniformScale);
 
             PrintJobValidationResult result = PrintJobValidator.Validate(
                 device,
@@ -170,7 +224,9 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 infill,
                 supports,
                 layerHeight,
-                speed);
+                speed,
+                spoolSlot,
+                placement);
 
             if (estimateText != null)
             {
@@ -185,6 +241,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             bool canStart = printer != null &&
                 !printer.HasPendingJob &&
+                placement != null &&
                 result.IsValid;
 
             if (startButton != null)
@@ -195,6 +252,24 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             if (startLabel != null)
             {
                 startLabel.color = canStart
+                    ? DeviceConsoleStyle.Text
+                    : DeviceConsoleStyle.TextDisabled;
+            }
+
+            bool canPlace = printer != null &&
+                meta != null &&
+                !printer.HasPendingJob &&
+                printer.Motion != null &&
+                printer.ResolvedBedAnchor != null;
+
+            if (placeButton != null)
+            {
+                placeButton.interactable = canPlace;
+            }
+
+            if (placeLabel != null)
+            {
+                placeLabel.color = canPlace
                     ? DeviceConsoleStyle.Text
                     : DeviceConsoleStyle.TextDisabled;
             }
@@ -211,6 +286,10 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 supportsButtons,
                 supportsLabels,
                 (int)supports);
+            RefreshPresetStyles(
+                spoolButtons,
+                spoolLabels,
+                (int)spoolSlot);
             RefreshPresetStyles(
                 infillButtons,
                 infillLabels,
@@ -639,6 +718,19 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 supportsButtons,
                 supportsLabels);
 
+            BuildPresetRow(
+                details,
+                "SPOOL",
+                -186.0f,
+                new[]
+                {
+                    SpoolSlotSettings.Label(SpoolSlot.Left),
+                    SpoolSlotSettings.Label(SpoolSlot.Right)
+                },
+                index => spoolSlot = (SpoolSlot)index,
+                spoolButtons,
+                spoolLabels);
+
             estimateText = DeviceConsoleStyle.CreateText(
                 "estimates",
                 details,
@@ -652,10 +744,27 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 (RectTransform)estimateText.transform,
                 new Vector2(0.0f, 1.0f),
                 new Vector2(0.0f, 1.0f),
-                new Vector2(0.0f, -188.0f),
+                new Vector2(0.0f, -220.0f),
                 new Vector2(700.0f, 24.0f));
 
             BuildValidationViewport(details);
+
+            placeButton = DeviceConsoleStyle.CreateButton(
+                "place_button",
+                details,
+                "Place on bed",
+                font,
+                boxSprite,
+                out placeLabel);
+
+            DeviceConsoleStyle.SetRect(
+                (RectTransform)placeButton.transform,
+                new Vector2(1.0f, 0.0f),
+                new Vector2(1.0f, 0.0f),
+                new Vector2(-210.0f, 0.0f),
+                new Vector2(180.0f, 44.0f));
+
+            placeButton.onClick.AddListener(HandlePlaceOnBedClicked);
 
             startButton = DeviceConsoleStyle.CreateButton(
                 "start_button",
@@ -749,7 +858,29 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 infill,
                 supports,
                 layerHeight,
-                speed);
+                speed,
+                spoolSlot,
+                placement);
+        }
+
+        private void HandlePlaceOnBedClicked()
+        {
+            Printer printer = device != null ? device.ActivePrinter : null;
+            ObjectToPrintMetaSO meta = CurrentMeta;
+
+            if (printer == null || meta == null)
+            {
+                return;
+            }
+
+            PlaceOnBedRequested?.Invoke(
+                printer,
+                meta,
+                infill,
+                supports,
+                layerHeight,
+                speed,
+                placement);
         }
 
         private void RefreshRows()
@@ -834,6 +965,28 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
         }
 
+        private static SpoolSlot ChooseDefaultSpoolSlot(Printer printer)
+        {
+            if (printer == null)
+            {
+                return SpoolSlot.Left;
+            }
+
+            PartLocation left = printer.GetSpoolLocation(SpoolSlot.Left);
+            if (left != null && left.IsOccupied)
+            {
+                return SpoolSlot.Left;
+            }
+
+            PartLocation right = printer.GetSpoolLocation(SpoolSlot.Right);
+            if (right != null && right.IsOccupied)
+            {
+                return SpoolSlot.Right;
+            }
+
+            return SpoolSlot.Left;
+        }
+
         private void ApplyProfileDefaults(ObjectToPrintPrintProfile profile)
         {
             if (profile == null)
@@ -851,6 +1004,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 : SupportsMode.None;
             layerHeight = LayerHeightPreset.Normal;
             speed = PrintSpeedPreset.Normal;
+            placement = null;
         }
 
         private static void RefreshPresetStyles(
@@ -886,7 +1040,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             scrollRectTransform.anchorMin = Vector2.zero;
             scrollRectTransform.anchorMax = Vector2.one;
             scrollRectTransform.offsetMin = new Vector2(0.0f, 48.0f);
-            scrollRectTransform.offsetMax = new Vector2(0.0f, -212.0f);
+            scrollRectTransform.offsetMax = new Vector2(0.0f, -244.0f);
 
             Image background =
                 scrollRectTransform.gameObject.AddComponent<Image>();
@@ -906,7 +1060,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             rule.anchorMin = new Vector2(0.0f, 1.0f);
             rule.anchorMax = new Vector2(1.0f, 1.0f);
             rule.pivot = new Vector2(0.5f, 1.0f);
-            rule.anchoredPosition = new Vector2(0.0f, -210.0f);
+            rule.anchoredPosition = new Vector2(0.0f, -242.0f);
             rule.sizeDelta = new Vector2(0.0f, 2.0f);
 
             Image ruleImage = rule.gameObject.AddComponent<Image>();

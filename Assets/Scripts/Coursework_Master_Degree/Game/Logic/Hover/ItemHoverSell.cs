@@ -694,6 +694,19 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (target.Item != null)
             {
+                Device device = target.Item.GetComponent<Device>();
+
+                if (device == null)
+                {
+                    device = target.Item.GetComponentInChildren<Device>(true);
+                }
+
+                if (device != null)
+                {
+                    GameStateManager.Instance.DeviceController?
+                        .Console?.DisposeView(device);
+                }
+
                 target.Item.RemoveFromSurface();
                 RemoveNestedFreePartPlacements(target.Item);
                 DestroyItemGhosts(target.Item);

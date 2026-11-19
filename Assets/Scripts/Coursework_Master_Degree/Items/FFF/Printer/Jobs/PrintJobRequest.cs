@@ -18,7 +18,9 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             float estimatedSeconds,
             float estimatedFilamentMeters,
             float qualityMin,
-            float qualityMax)
+            float qualityMax,
+            SpoolSlot spoolSlot,
+            PrintPlacement placement = null)
         {
             Printer = printer;
             ObjectToPrint = objectToPrint;
@@ -30,6 +32,8 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             EstimatedFilamentMeters = estimatedFilamentMeters;
             QualityMin = qualityMin;
             QualityMax = qualityMax;
+            SpoolSlot = spoolSlot;
+            Placement = placement;
         }
 
         public Printer Printer { get; }
@@ -51,5 +55,9 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         public float QualityMin { get; }
 
         public float QualityMax { get; }
+
+        public SpoolSlot SpoolSlot { get; }
+
+        public PrintPlacement Placement { get; }
     }
 }
