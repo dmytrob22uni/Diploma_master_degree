@@ -68,6 +68,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private TextMeshProUGUI deviceSubtitleText;
         private TextMeshProUGUI activeNameText;
         private TextMeshProUGUI activeStateText;
+        private TextMeshProUGUI activeStatusText;
         private TextMeshProUGUI emptyListText;
 
         private Button connectButton;
@@ -283,12 +284,22 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 activeNameText.text = "No printer selected";
                 activeStateText.text = "Waiting for a printer";
                 activeStateText.color = DeviceConsoleStyle.TextMuted;
+
+                if (activeStatusText != null)
+                {
+                    activeStatusText.text = string.Empty;
+                }
             }
             else
             {
                 activeNameText.text = active.DisplayName;
                 activeStateText.text = GetStateLabel(active.OperationalState);
                 activeStateText.color = DeviceConsoleStyle.Text;
+
+                if (activeStatusText != null)
+                {
+                    activeStatusText.text = active.StatusSummary;
+                }
             }
 
             SetButtonEnabled(connectButton, connectLabel, true);
@@ -666,7 +677,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             card.anchorMax = new Vector2(1.0f, 1.0f);
             card.pivot = new Vector2(0.5f, 1.0f);
             card.anchoredPosition = Vector2.zero;
-            card.sizeDelta = new Vector2(0.0f, 96.0f);
+            card.sizeDelta = new Vector2(0.0f, 128.0f);
 
             Image cardImage = card.gameObject.AddComponent<Image>();
             cardImage.color = DeviceConsoleStyle.BoxGray;
@@ -722,6 +733,22 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 new Vector2(DeviceConsoleStyle.Margin, -50.0f),
                 new Vector2(760.0f, 20.0f));
 
+            activeStatusText = DeviceConsoleStyle.CreateText(
+                "active_status",
+                card,
+                string.Empty,
+                DeviceConsoleStyle.FontSmall,
+                TextAlignmentOptions.TopLeft,
+                DeviceConsoleStyle.TextMuted,
+                font);
+
+            DeviceConsoleStyle.SetRect(
+                (RectTransform)activeStatusText.transform,
+                new Vector2(0.0f, 1.0f),
+                new Vector2(0.0f, 1.0f),
+                new Vector2(DeviceConsoleStyle.Margin, -76.0f),
+                new Vector2(1100.0f, 20.0f));
+
             RectTransform info = DeviceConsoleStyle.CreateRect(
                 "info_card",
                 right);
@@ -729,7 +756,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             info.anchorMin = Vector2.zero;
             info.anchorMax = Vector2.one;
             info.offsetMin = Vector2.zero;
-            info.offsetMax = new Vector2(0.0f, -112.0f);
+            info.offsetMax = new Vector2(0.0f, -144.0f);
 
             Image infoImage = info.gameObject.AddComponent<Image>();
             infoImage.color = DeviceConsoleStyle.BoxWhite;
@@ -1397,6 +1424,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                     return "Cooling";
                 case PrinterOperationalState.Finished:
                     return "Finished";
+                case PrinterOperationalState.Calibrating:
+                    return "Calibrating";
                 case PrinterOperationalState.Maintenance:
                     return "Maintenance";
                 case PrinterOperationalState.Fault:

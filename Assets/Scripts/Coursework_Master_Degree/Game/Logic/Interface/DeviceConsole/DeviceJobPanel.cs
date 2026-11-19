@@ -40,6 +40,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private Printer lastPrinter;
         private PrintPlacement placement;
         private SpoolSlot spoolSlot = SpoolSlot.Left;
+        private SimulationSpeedPreset simulationSpeed =
+            SimulationSpeedPreset.Default;
         private bool spoolInitialized;
         private int selectedIndex;
         private InfillPattern infill = InfillPattern.Grid;
@@ -57,6 +59,16 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private TextMeshProUGUI startLabel;
         private Button placeButton;
         private TextMeshProUGUI placeLabel;
+        private Button pauseButton;
+        private TextMeshProUGUI pauseLabel;
+        private Button hardStopButton;
+        private TextMeshProUGUI hardStopLabel;
+        private Button calibrateButton;
+        private TextMeshProUGUI calibrateLabel;
+        private Button clearBedButton;
+        private TextMeshProUGUI clearBedLabel;
+        private bool hardStopArmed;
+        private float hardStopArmedUntil;
 
         private readonly List<Button> infillButtons = new List<Button>();
         private readonly List<TextMeshProUGUI> infillLabels =
@@ -72,6 +84,10 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             new List<TextMeshProUGUI>();
         private readonly List<Button> spoolButtons = new List<Button>();
         private readonly List<TextMeshProUGUI> spoolLabels =
+            new List<TextMeshProUGUI>();
+        private readonly List<Button> simulationSpeedButtons =
+            new List<Button>();
+        private readonly List<TextMeshProUGUI> simulationSpeedLabels =
             new List<TextMeshProUGUI>();
         private string lastValidationSignature = string.Empty;
         private string lastValidationUiSignature = string.Empty;
@@ -144,6 +160,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 placement = null;
                 lastPrinter = null;
                 spoolInitialized = false;
+                hardStopArmed = false;
             }
 
             device = target;
@@ -167,12 +184,23 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 placement = null;
                 lastPrinter = printer;
                 spoolInitialized = false;
+                hardStopArmed = false;
+                simulationSpeed = printer != null
+                    ? SimulationSpeedSettings.Closest(
+                        printer.PrintSpeedMultiplier)
+                    : SimulationSpeedPreset.Default;
             }
 
             if (!spoolInitialized)
             {
                 spoolSlot = ChooseDefaultSpoolSlot(printer);
                 spoolInitialized = true;
+            }
+
+            if (hardStopArmed &&
+                Time.unscaledTime >= hardStopArmedUntil)
+            {
+                hardStopArmed = false;
             }
 
             ObjectToPrintPrintProfile profile = meta != null
@@ -240,7 +268,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             RefreshValidationUi(result, printer);
 
             bool canStart = printer != null &&
-                !printer.HasPendingJob &&
+                printer.OperationalState == PrinterOperationalState.Idle &&
+                !printer.IsBusy &&
                 placement != null &&
                 result.IsValid;
 
@@ -258,7 +287,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             bool canPlace = printer != null &&
                 meta != null &&
-                !printer.HasPendingJob &&
+                printer.OperationalState == PrinterOperationalState.Idle &&
+                !printer.IsBusy &&
                 printer.Motion != null &&
                 printer.ResolvedBedAnchor != null;
 
@@ -273,6 +303,52 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                     ? DeviceConsoleStyle.Text
                     : DeviceConsoleStyle.TextDisabled;
             }
+
+            bool canPause = printer != null &&
+                (printer.OperationalState == PrinterOperationalState.Printing ||
+                 printer.OperationalState == PrinterOperationalState.Paused);
+
+            SetControl(
+                pauseButton,
+                pauseLabel,
+                canPause,
+                printer != null &&
+                printer.OperationalState == PrinterOperationalState.Paused
+                    ? "Resume"
+                    : "Pause");
+
+            bool canHardStop = printer != null &&
+                (printer.OperationalState == PrinterOperationalState.Preheating ||
+                 printer.OperationalState == PrinterOperationalState.Printing ||
+                 printer.OperationalState == PrinterOperationalState.Paused ||
+                 printer.OperationalState == PrinterOperationalState.Calibrating);
+
+            SetControl(
+                hardStopButton,
+                hardStopLabel,
+                canHardStop,
+                hardStopArmed ? "Confirm stop" : "Hard stop");
+
+            bool canCalibrate = printer != null &&
+                printer.OperationalState == PrinterOperationalState.Idle &&
+                !printer.IsBusy &&
+                printer.Motion != null &&
+                printer.ResolvedBedAnchor != null;
+
+            SetControl(
+                calibrateButton,
+                calibrateLabel,
+                canCalibrate,
+                "Calibrate");
+
+            bool canClearBed = printer != null &&
+                (printer.HasPartialPrint || printer.HasCompletedPrint);
+
+            SetControl(
+                clearBedButton,
+                clearBedLabel,
+                canClearBed,
+                "Clear bed");
 
             RefreshPresetStyles(
                 layerButtons,
@@ -290,6 +366,10 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 spoolButtons,
                 spoolLabels,
                 (int)spoolSlot);
+            RefreshPresetStyles(
+                simulationSpeedButtons,
+                simulationSpeedLabels,
+                (int)simulationSpeed);
             RefreshPresetStyles(
                 infillButtons,
                 infillLabels,
@@ -731,6 +811,25 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 spoolButtons,
                 spoolLabels);
 
+            BuildPresetRow(
+                details,
+                "SIM SPEED",
+                -218.0f,
+                new[]
+                {
+                    SimulationSpeedSettings.Label(
+                        SimulationSpeedPreset.RealTime),
+                    SimulationSpeedSettings.Label(
+                        SimulationSpeedPreset.Fast),
+                    SimulationSpeedSettings.Label(
+                        SimulationSpeedPreset.Quick),
+                    SimulationSpeedSettings.Label(
+                        SimulationSpeedPreset.Default)
+                },
+                SelectSimulationSpeed,
+                simulationSpeedButtons,
+                simulationSpeedLabels);
+
             estimateText = DeviceConsoleStyle.CreateText(
                 "estimates",
                 details,
@@ -744,7 +843,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 (RectTransform)estimateText.transform,
                 new Vector2(0.0f, 1.0f),
                 new Vector2(0.0f, 1.0f),
-                new Vector2(0.0f, -220.0f),
+                new Vector2(0.0f, -252.0f),
                 new Vector2(700.0f, 24.0f));
 
             BuildValidationViewport(details);
@@ -765,6 +864,74 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 new Vector2(180.0f, 44.0f));
 
             placeButton.onClick.AddListener(HandlePlaceOnBedClicked);
+
+            pauseButton = DeviceConsoleStyle.CreateButton(
+                "pause_button",
+                details,
+                "Pause",
+                font,
+                boxSprite,
+                out pauseLabel);
+
+            DeviceConsoleStyle.SetRect(
+                (RectTransform)pauseButton.transform,
+                new Vector2(0.0f, 0.0f),
+                new Vector2(0.0f, 0.0f),
+                new Vector2(0.0f, 50.0f),
+                new Vector2(118.0f, 38.0f));
+
+            pauseButton.onClick.AddListener(HandlePauseClicked);
+
+            hardStopButton = DeviceConsoleStyle.CreateButton(
+                "hard_stop_button",
+                details,
+                "Hard stop",
+                font,
+                boxSprite,
+                out hardStopLabel);
+
+            DeviceConsoleStyle.SetRect(
+                (RectTransform)hardStopButton.transform,
+                new Vector2(0.0f, 0.0f),
+                new Vector2(0.0f, 0.0f),
+                new Vector2(126.0f, 50.0f),
+                new Vector2(132.0f, 38.0f));
+
+            hardStopButton.onClick.AddListener(HandleHardStopClicked);
+
+            calibrateButton = DeviceConsoleStyle.CreateButton(
+                "calibrate_button",
+                details,
+                "Calibrate",
+                font,
+                boxSprite,
+                out calibrateLabel);
+
+            DeviceConsoleStyle.SetRect(
+                (RectTransform)calibrateButton.transform,
+                new Vector2(0.0f, 0.0f),
+                new Vector2(0.0f, 0.0f),
+                new Vector2(266.0f, 50.0f),
+                new Vector2(122.0f, 38.0f));
+
+            calibrateButton.onClick.AddListener(HandleCalibrateClicked);
+
+            clearBedButton = DeviceConsoleStyle.CreateButton(
+                "clear_bed_button",
+                details,
+                "Clear bed",
+                font,
+                boxSprite,
+                out clearBedLabel);
+
+            DeviceConsoleStyle.SetRect(
+                (RectTransform)clearBedButton.transform,
+                new Vector2(0.0f, 0.0f),
+                new Vector2(0.0f, 0.0f),
+                new Vector2(396.0f, 50.0f),
+                new Vector2(122.0f, 38.0f));
+
+            clearBedButton.onClick.AddListener(HandleClearBedClicked);
 
             startButton = DeviceConsoleStyle.CreateButton(
                 "start_button",
@@ -840,6 +1007,97 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 buttons.Add(button);
                 texts.Add(buttonLabel);
             }
+        }
+
+        private void SelectSimulationSpeed(int index)
+        {
+            simulationSpeed = (SimulationSpeedPreset)index;
+
+            Printer printer = device != null ? device.ActivePrinter : null;
+
+            if (printer != null)
+            {
+                printer.PrintSpeedMultiplier =
+                    SimulationSpeedSettings.Multiplier(simulationSpeed);
+            }
+
+            Refresh();
+        }
+
+        private void HandlePauseClicked()
+        {
+            Printer printer = device != null ? device.ActivePrinter : null;
+
+            if (printer == null)
+            {
+                return;
+            }
+
+            if (printer.OperationalState == PrinterOperationalState.Paused)
+            {
+                if (!printer.TryResume(out string reason))
+                {
+                    Debug.LogWarning($"[DeviceJobPanel] {reason}", printer);
+                }
+            }
+            else if (!printer.TryPause(out string reason))
+            {
+                Debug.LogWarning($"[DeviceJobPanel] {reason}", printer);
+            }
+
+            Refresh();
+        }
+
+        private void HandleHardStopClicked()
+        {
+            Printer printer = device != null ? device.ActivePrinter : null;
+
+            if (printer == null)
+            {
+                return;
+            }
+
+            if (!hardStopArmed ||
+                Time.unscaledTime >= hardStopArmedUntil)
+            {
+                hardStopArmed = true;
+                hardStopArmedUntil = Time.unscaledTime + 3.0f;
+                Refresh();
+                return;
+            }
+
+            hardStopArmed = false;
+            printer.HardStop();
+            Refresh();
+        }
+
+        private void HandleCalibrateClicked()
+        {
+            Printer printer = device != null ? device.ActivePrinter : null;
+
+            if (printer == null)
+            {
+                return;
+            }
+
+            if (!printer.TryStartCalibration(out string reason))
+            {
+                Debug.LogWarning($"[DeviceJobPanel] {reason}", printer);
+            }
+
+            Refresh();
+        }
+
+        private void HandleClearBedClicked()
+        {
+            Printer printer = device != null ? device.ActivePrinter : null;
+
+            if (printer == null || !printer.ClearBed())
+            {
+                return;
+            }
+
+            Refresh();
         }
 
         private void HandleStartClicked()
@@ -965,6 +1223,26 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
         }
 
+        private static void SetControl(
+            Button button,
+            TextMeshProUGUI label,
+            bool enabled,
+            string text)
+        {
+            if (button != null)
+            {
+                button.interactable = enabled;
+            }
+
+            if (label != null)
+            {
+                label.text = text;
+                label.color = enabled
+                    ? DeviceConsoleStyle.Text
+                    : DeviceConsoleStyle.TextDisabled;
+            }
+        }
+
         private static SpoolSlot ChooseDefaultSpoolSlot(Printer printer)
         {
             if (printer == null)
@@ -1039,8 +1317,8 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             scrollRectTransform.anchorMin = Vector2.zero;
             scrollRectTransform.anchorMax = Vector2.one;
-            scrollRectTransform.offsetMin = new Vector2(0.0f, 48.0f);
-            scrollRectTransform.offsetMax = new Vector2(0.0f, -244.0f);
+            scrollRectTransform.offsetMin = new Vector2(0.0f, 96.0f);
+            scrollRectTransform.offsetMax = new Vector2(0.0f, -276.0f);
 
             Image background =
                 scrollRectTransform.gameObject.AddComponent<Image>();
@@ -1060,7 +1338,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             rule.anchorMin = new Vector2(0.0f, 1.0f);
             rule.anchorMax = new Vector2(1.0f, 1.0f);
             rule.pivot = new Vector2(0.5f, 1.0f);
-            rule.anchoredPosition = new Vector2(0.0f, -242.0f);
+            rule.anchoredPosition = new Vector2(0.0f, -274.0f);
             rule.sizeDelta = new Vector2(0.0f, 2.0f);
 
             Image ruleImage = rule.gameObject.AddComponent<Image>();
@@ -1126,9 +1404,26 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             System.Text.StringBuilder signature = new System.Text.StringBuilder();
 
-            if (printer != null && printer.HasPendingJob)
+            if (printer != null)
             {
-                signature.Append("PENDING");
+                signature.Append("STATE:")
+                    .Append(printer.OperationalState)
+                    .Append('|');
+
+                if (printer.HasPendingJob)
+                {
+                    signature.Append("PENDING|");
+                }
+
+                if (printer.HasPartialPrint)
+                {
+                    signature.Append("PARTIAL|");
+                }
+
+                if (printer.HasCompletedPrint)
+                {
+                    signature.Append("COMPLETED|");
+                }
             }
 
             for (int i = 0; i < result.Errors.Count; i++)
@@ -1160,8 +1455,33 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             if (printer != null && printer.HasPendingJob)
             {
                 CreateValidationRow(
-                    "Job queued. Printing starts in M3.",
+                    "Starting print...",
                     DeviceConsoleStyle.TextMuted);
+            }
+            else if (printer != null && printer.OperationalState ==
+                PrinterOperationalState.Calibrating)
+            {
+                CreateValidationRow(
+                    "Calibration in progress. Use Hard stop to cancel.",
+                    DeviceConsoleStyle.TextMuted);
+            }
+            else if (printer != null && printer.IsPrintActive)
+            {
+                CreateValidationRow(
+                    "Print in progress. Use Pause or Hard stop above.",
+                    DeviceConsoleStyle.TextMuted);
+            }
+            else if (printer != null && printer.HasPartialPrint)
+            {
+                CreateValidationRow(
+                    "Partial print on the bed. Clear the bed before starting another job.",
+                    DeviceConsoleStyle.Text);
+            }
+            else if (printer != null && printer.HasCompletedPrint)
+            {
+                CreateValidationRow(
+                    "Print finished. Clear the bed before starting another job.",
+                    DeviceConsoleStyle.Text);
             }
             else if (result.Errors.Count > 0)
             {
