@@ -96,7 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Wear.ItemWearState
   currentCondition: 93.11437
   isWornOut: 0
-  ItemWearLogicSO: {fileID: 11400000, guid: 97098b721994a6ea9a9570f8c7889862, type: 2}
+  ItemWearLogicSO: {fileID: 11400000, guid: 282b72d0ec41489c961737fa350b811b, type: 2}
 --- !u!1 &5297667207181911845
 GameObject:
   m_ObjectHideFlags: 0

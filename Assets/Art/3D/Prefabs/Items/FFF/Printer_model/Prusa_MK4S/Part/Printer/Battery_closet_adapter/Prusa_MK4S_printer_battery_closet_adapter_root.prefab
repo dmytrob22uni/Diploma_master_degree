@@ -227,4 +227,4 @@ MonoBehaviour:
   IsAllowRandomInitialCondition: 1
   currentCondition: 95.5503
   isWornOut: 0
-  ItemWearLogicSO: {fileID: 11400000, guid: 69c3b2fd5717224059dcb39e920eb396, type: 2}
+  ItemWearLogicSO: {fileID: 11400000, guid: 589576a6661c4cc7974f02fc8718d32f, type: 2}
