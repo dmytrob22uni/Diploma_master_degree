@@ -27,7 +27,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         public LayerMask PartLocationLayer;
 
         [Header("Blocked Install Settings")]
-        [Tooltip("Seconds to show the installation ghosts of the missing dependency parts")]
+        [Tooltip("Seconds to show the installation ghosts of the missing prerequisite parts")]
         public float BlockedDependenciesGhostDuration = 2.0f;
 
         [Header("Interface Units")]
@@ -40,7 +40,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private static readonly int InstallationStatePropertyID = Shader.PropertyToID("_installation_state");
 
-        private readonly List<ItemGhostDataHolder> blockedDependencyGhosts = new();
+        private readonly List<ItemGhostDataHolder> blockedPrerequisiteGhosts = new();
         private readonly List<PartLocation> hoveredPartLocations = new();
 
         private RaycastHit[] cachedHits = new RaycastHit[32];
@@ -335,13 +335,13 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 lastBlockedPartLocation = default;
             }
 
-            List<PartLocation> missingDependencies = GetUninstalledDependencyLocations(partLocation);
+            List<PartLocation> missingPrerequisites = GetUninstalledInstallPrerequisites(partLocation);
 
-            if (missingDependencies.Count > 0)
+            if (missingPrerequisites.Count > 0)
             {
                 if (lastBlockedPartLocation != partLocation)
                 {
-                    ShowBlockedDependencies(partLocation, missingDependencies);
+                    ShowBlockedPrerequisites(partLocation, missingPrerequisites);
                     lastBlockedPartLocation = partLocation;
 
                     return;
@@ -377,61 +377,61 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             ShowGhostAtWorld(ray.GetPoint(HoverDistance));
         }
 
-        private void ShowBlockedDependencies(
+        private void ShowBlockedPrerequisites(
             PartLocation partLocation,
-            List<PartLocation> missingDependencies)
+            List<PartLocation> missingPrerequisites)
         {
-            ClearBlockedDependencyGhosts();
+            ClearBlockedPrerequisiteGhosts();
             ClearTargetLocation();
 
             ShowGhostAtLocation(partLocation);
             SetInstallHintVisible(false);
 
-            foreach (PartLocation dependencyLocation in missingDependencies)
+            foreach (PartLocation prerequisiteLocation in missingPrerequisites)
             {
-                ItemGhostDataHolder dependencyGhost = InstantiateDependencyGhost(dependencyLocation);
-                if (dependencyGhost == null)
+                ItemGhostDataHolder prerequisiteGhost = InstantiatePrerequisiteGhost(prerequisiteLocation);
+                if (prerequisiteGhost == null)
                 {
                     continue;
                 }
 
-                blockedDependencyGhosts.Add(dependencyGhost);
+                blockedPrerequisiteGhosts.Add(prerequisiteGhost);
             }
 
             blockedUntilTime = Time.time + Mathf.Max(0.0f, BlockedDependenciesGhostDuration);
         }
 
-        private ItemGhostDataHolder InstantiateDependencyGhost(PartLocation dependencyLocation)
+        private ItemGhostDataHolder InstantiatePrerequisiteGhost(PartLocation prerequisiteLocation)
         {
-            ItemMetaSO dependencyMetaData = GetExpectedPartMetaData(dependencyLocation);
-            if (dependencyMetaData == null || dependencyMetaData.Prefab == null)
+            ItemMetaSO prerequisiteMetaData = GetExpectedPartMetaData(prerequisiteLocation);
+            if (prerequisiteMetaData == null || prerequisiteMetaData.Prefab == null)
             {
                 return null;
             }
 
-            ItemDataHolder dependencyPrefab = dependencyMetaData.Prefab.GetComponent<ItemDataHolder>();
-            if (dependencyPrefab == null ||
-                !IsGhostTypeAvailable(dependencyPrefab.ItemGhostMetaSO, ItemGhostType.Installation))
+            ItemDataHolder prerequisitePrefab = prerequisiteMetaData.Prefab.GetComponent<ItemDataHolder>();
+            if (prerequisitePrefab == null ||
+                !IsGhostTypeAvailable(prerequisitePrefab.ItemGhostMetaSO, ItemGhostType.Installation))
             {
                 return null;
             }
 
-            Transform dependencyTransform = dependencyLocation.transform;
+            Transform prerequisiteTransform = prerequisiteLocation.transform;
 
-            ItemGhostDataHolder dependencyGhost = GameStateManager.Instance.ItemInstancer.InstantiateItemGhost(
-                dependencyPrefab.ItemGhostMetaSO,
+            ItemGhostDataHolder prerequisiteGhost = GameStateManager.Instance.ItemInstancer.InstantiateItemGhost(
+                prerequisitePrefab.ItemGhostMetaSO,
                 ItemGhostType.Installation,
-                dependencyTransform.position,
-                dependencyTransform.rotation,
-                dependencyTransform);
+                prerequisiteTransform.position,
+                prerequisiteTransform.rotation,
+                prerequisiteTransform);
 
             GameStateManager.Instance.ItemInstancer.SnapItemGhostToAnchor(
-                dependencyGhost,
-                dependencyTransform);
+                prerequisiteGhost,
+                prerequisiteTransform);
 
-            SetupInstallationState(dependencyGhost, 1.0f);
+            SetupInstallationState(prerequisiteGhost, 1.0f);
 
-            return dependencyGhost;
+            return prerequisiteGhost;
         }
 
         private static ItemMetaSO GetExpectedPartMetaData(PartLocation partLocation)
@@ -449,15 +449,14 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             return partLocation.PartMetaDatasList[0];
         }
 
-        private static List<PartLocation> GetUninstalledDependencyLocations(PartLocation partLocation)
+        private static List<PartLocation> GetUninstalledInstallPrerequisites(PartLocation partLocation)
         {
             List<PartLocation> list = new List<PartLocation>();
 
-            // PartLocation.CanInstall() verifies DependentLocationsList, while
-            // DependencyLocationsList describes the reverse relation. Both are
-            // treated as required parts for a consistent installation preview.
-            AddUnoccupiedLocations(partLocation.DependentLocationsList, list);
-            AddUnoccupiedLocations(partLocation.DependencyLocationsList, list);
+            // Only install prerequisites block installation. Removal blockers
+            // are the reverse relation: they must be removed before this part
+            // can be removed, but they are installed after this part.
+            AddUnoccupiedLocations(partLocation.InstallPrerequisiteLocations, list);
 
             return list;
         }
@@ -638,20 +637,20 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             ClearPartLocationHover();
         }
 
-        private void ClearBlockedDependencyGhosts()
+        private void ClearBlockedPrerequisiteGhosts()
         {
-            foreach (ItemGhostDataHolder dependencyGhost in blockedDependencyGhosts)
+            foreach (ItemGhostDataHolder prerequisiteGhost in blockedPrerequisiteGhosts)
             {
-                if (dependencyGhost == null)
+                if (prerequisiteGhost == null)
                 {
                     continue;
                 }
 
-                dependencyGhost.gameObject.SetActive(false);
-                Destroy(dependencyGhost.gameObject);
+                prerequisiteGhost.gameObject.SetActive(false);
+                Destroy(prerequisiteGhost.gameObject);
             }
 
-            blockedDependencyGhosts.Clear();
+            blockedPrerequisiteGhosts.Clear();
         }
 
         private void ClearHover()
@@ -664,7 +663,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         {
             blockedUntilTime = -1.0f;
 
-            ClearBlockedDependencyGhosts();
+            ClearBlockedPrerequisiteGhosts();
 
             isHoverRefreshRequested = true;
         }
@@ -673,7 +672,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         {
             ClearTargetLocation();
             ClearHoveredPartLocations();
-            ClearBlockedDependencyGhosts();
+            ClearBlockedPrerequisiteGhosts();
             ClearHover();
 
             if (installationGhost != null)
@@ -707,7 +706,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         {
             ClearTargetLocation();
             ClearHoveredPartLocations();
-            ClearBlockedDependencyGhosts();
+            ClearBlockedPrerequisiteGhosts();
             ClearHover();
 
             if (installationGhost != null && installationGhost != GetExistingInstallationGhost(item))
@@ -801,7 +800,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             scrollIndex =
                 (scrollIndex + direction + hoveredPartLocations.Count) % hoveredPartLocations.Count;
 
-            // Switching layers must be able to replay the blocked dependency
+            // Switching layers must be able to replay the blocked prerequisite
             // ghosts before the installation hint is shown again.
             lastHoveredPartLocation = default;
             lastBlockedPartLocation = default;
@@ -849,7 +848,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 installationGhost.gameObject.SetActive(false);
             }
 
-            ClearBlockedDependencyGhosts();
+            ClearBlockedPrerequisiteGhosts();
             ClearHover();
 
             GameStateManager.Instance.ChangeState(GetReturnGameState());

@@ -11,17 +11,19 @@ namespace Coursework_Master_Degree.Items.Part
         private bool NotEnabled => false;
         private bool Enabled => true;
 
-        // Dependent itself to
-        [Tooltip("Does any parts define this part as dependency")]
-        public bool IsDependency = false;
-        [ShowIf("IsDependency")]
-        public List<PartLocation> DependentLocationsList;
+        // Install prerequisites. CanInstall() requires every location in
+        // this list to be occupied.
+        [Tooltip("Locations that must be installed before this part can be installed")]
+        public bool HasInstallPrerequisites = false;
+        [ShowIf("HasInstallPrerequisites")]
+        public List<PartLocation> InstallPrerequisiteLocations;
 
-        // Dependency parts of it
-        [Tooltip("Does this part have any dependency parts")]
-        public bool IsHaveDependencies = false;
-        [ShowIf("IsHaveDependencies")]
-        public List<PartLocation> DependencyLocationsList;
+        // Removal blockers. CanRemove() requires every location in this list
+        // to be empty.
+        [Tooltip("Locations that must be removed before this part can be removed")]
+        public bool HasRemovalBlockers = false;
+        [ShowIf("HasRemovalBlockers")]
+        public List<PartLocation> RemovalBlockerLocations;
 
         // Meta data reference(-s)
         public bool IsSingleMetaDataReference = true;
@@ -100,11 +102,16 @@ namespace Coursework_Master_Degree.Items.Part
             }
         }
 
-        public bool IsHaveFreeDependentLocations()
+        public bool HasFreeInstallPrerequisites()
         {
-            foreach (PartLocation dependent in DependentLocationsList)
+            if (InstallPrerequisiteLocations == null)
             {
-                if (!dependent.IsOccupied)
+                return false;
+            }
+
+            foreach (PartLocation prerequisite in InstallPrerequisiteLocations)
+            {
+                if (!prerequisite.IsOccupied)
                 {
                     return true;
                 }
@@ -113,15 +120,20 @@ namespace Coursework_Master_Degree.Items.Part
             return false;
         }
 
-        public List<PartLocation> GetFreeDependentLocations()
+        public List<PartLocation> GetFreeInstallPrerequisites()
         {
             List<PartLocation> list = new List<PartLocation>();
 
-            foreach (PartLocation dependent in DependentLocationsList)
+            if (InstallPrerequisiteLocations == null)
             {
-                if (!dependent.IsOccupied)
+                return list;
+            }
+
+            foreach (PartLocation prerequisite in InstallPrerequisiteLocations)
+            {
+                if (!prerequisite.IsOccupied)
                 {
-                    list.Add(dependent);
+                    list.Add(prerequisite);
                 }
             }
 
@@ -136,9 +148,9 @@ namespace Coursework_Master_Degree.Items.Part
                 return false;
             }
 
-            if (IsHaveFreeDependentLocations())
+            if (HasFreeInstallPrerequisites())
             {
-                Debug.Log("Trying to install part with no dependent part(-s) installed. Can't do that");
+                Debug.Log("Trying to install a part with missing install prerequisites. Can't do that");
                 return false;
             }
 
@@ -153,11 +165,16 @@ namespace Coursework_Master_Degree.Items.Part
 
         // Removing checks
 
-        public bool IsHaveOccupiedDependencyLocations()
+        public bool HasOccupiedRemovalBlockers()
         {
-            foreach (PartLocation dependency in DependencyLocationsList)
+            if (RemovalBlockerLocations == null)
             {
-                if (dependency.IsOccupied)
+                return false;
+            }
+
+            foreach (PartLocation blocker in RemovalBlockerLocations)
+            {
+                if (blocker.IsOccupied)
                 {
                     return true;
                 }
@@ -166,15 +183,20 @@ namespace Coursework_Master_Degree.Items.Part
             return false;
         }
 
-        public List<PartLocation> GetOccupiedDependencyLocations()
+        public List<PartLocation> GetOccupiedRemovalBlockers()
         {
             List<PartLocation> list = new List<PartLocation>();
 
-            foreach (PartLocation dependency in DependencyLocationsList)
+            if (RemovalBlockerLocations == null)
             {
-                if (dependency.IsOccupied)
+                return list;
+            }
+
+            foreach (PartLocation blocker in RemovalBlockerLocations)
+            {
+                if (blocker.IsOccupied)
                 {
-                    list.Add(dependency);
+                    list.Add(blocker);
                 }
             }
 
@@ -183,9 +205,9 @@ namespace Coursework_Master_Degree.Items.Part
 
         public bool CanRemove()
         {
-            if (IsHaveOccupiedDependencyLocations())
+            if (HasOccupiedRemovalBlockers())
             {
-                Debug.Log("This part has dependency locations occupied. Can't remove it");
+                Debug.Log("This part has removal blockers installed. Can't remove it");
                 return false;
             }
 

@@ -67,10 +67,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 9250c56a34620b1f99490fe737c4060e, type: 2}
   PartMetaDatasList: []
@@ -708,10 +708,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 38702aa7a5aa94949a29a9d96acf2edb, type: 2}
   PartMetaDatasList: []
@@ -787,10 +787,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 6f80c54421cd4db0fa2e96cf9714ed1d, type: 2}
   PartMetaDatasList: []
@@ -866,10 +866,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 0
   PartMetaData: {fileID: 0}
   PartMetaDatasList:
@@ -1072,10 +1072,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 38702aa7a5aa94949a29a9d96acf2edb, type: 2}
   PartMetaDatasList: []
@@ -1151,10 +1151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 7440c7af9d07d24e3bbff4760f761771, type: 2}
   PartMetaDatasList: []
@@ -1231,10 +1231,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 290f47244bfbc1195833528f4f68d7d6, type: 2}
   PartMetaDatasList: []
@@ -1591,10 +1591,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 5a47405be14b5addc9b5ee9362c3f003, type: 2}
   PartMetaDatasList: []
@@ -1820,10 +1820,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 9250c56a34620b1f99490fe737c4060e, type: 2}
   PartMetaDatasList: []
@@ -1899,10 +1899,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 833c10a16dd26458db190a189ad48633, type: 2}
   PartMetaDatasList: []
@@ -2704,10 +2704,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 38702aa7a5aa94949a29a9d96acf2edb, type: 2}
   PartMetaDatasList: []

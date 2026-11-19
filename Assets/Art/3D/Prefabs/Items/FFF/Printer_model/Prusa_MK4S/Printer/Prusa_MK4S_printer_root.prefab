@@ -395,10 +395,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 454191578216812911}
   - {fileID: 8006427015743997764}
   IsSingleMetaDataReference: 1
@@ -727,10 +727,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 0
   PartMetaData: {fileID: 0}
   PartMetaDatasList:
@@ -827,11 +827,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 3047565319230773674}
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: a86a32aade530a64099cedd6544f904a, type: 2}
   PartMetaDatasList: []
@@ -961,15 +961,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 8560630339366317379}
-  - {fileID: 4627156345535188069}
-  - {fileID: 3033740999998310539}
-  - {fileID: 1528126658582584594}
-  - {fileID: 7240094474426307080}
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 3042372913035685079}
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: aeb8d54ba63ac6d0f866ee80275e048d, type: 2}
@@ -1047,10 +1043,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 6301d19a97faeb1ca86ac2a6e2dc523c, type: 2}
   PartMetaDatasList: []
@@ -1500,12 +1496,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 8575026248251683232}
   - {fileID: 5305997462981515754}
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: a86a32aade530a64099cedd6544f904a, type: 2}
   PartMetaDatasList: []
@@ -1582,10 +1578,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: d00709d90962ccc818c5d07fc4c7e5cd, type: 2}
   PartMetaDatasList: []
@@ -1662,10 +1658,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 1343756595571857698}
   - {fileID: 5851453670568498479}
   IsSingleMetaDataReference: 1
@@ -2083,10 +2079,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 0fd58343fbb89eae19767688b43d75aa, type: 2}
   PartMetaDatasList: []
@@ -2269,11 +2265,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 5305997462981515754}
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: a86a32aade530a64099cedd6544f904a, type: 2}
   PartMetaDatasList: []
@@ -2440,10 +2436,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 6301d19a97faeb1ca86ac2a6e2dc523c, type: 2}
   PartMetaDatasList: []
@@ -2696,10 +2692,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 4359bb3716a3d2ef6905ddca2334f2bd, type: 2}
   PartMetaDatasList: []
@@ -2911,10 +2907,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 8560630339366317379}
   - {fileID: 8193525627608041013}
   - {fileID: 3042372913035685079}
@@ -3100,10 +3096,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 833c10a16dd26458db190a189ad48633, type: 2}
   PartMetaDatasList: []
@@ -3329,14 +3325,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 4627156345535188069}
   - {fileID: 3033740999998310539}
   - {fileID: 1528126658582584594}
   - {fileID: 7240094474426307080}
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 8193525627608041013}
   - {fileID: 3042372913035685079}
   IsSingleMetaDataReference: 1
@@ -3506,10 +3502,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 1343756595571857698}
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 4359bb3716a3d2ef6905ddca2334f2bd, type: 2}
@@ -3587,10 +3583,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 8560630339366317379}
   - {fileID: 8193525627608041013}
   - {fileID: 3042372913035685079}
@@ -3839,10 +3835,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 6301d19a97faeb1ca86ac2a6e2dc523c, type: 2}
   PartMetaDatasList: []
@@ -4111,10 +4107,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 5206867590390325306}
   - {fileID: 8058943898992592167}
   IsSingleMetaDataReference: 1
@@ -4310,12 +4306,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 3101614061098862216}
   - {fileID: 4177194986401116277}
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 5e89eae06a31ad051a66a7945535d8d8, type: 2}
   PartMetaDatasList: []
@@ -4478,10 +4474,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 454191578216812911}
   - {fileID: 8006427015743997764}
   IsSingleMetaDataReference: 1
@@ -4704,10 +4700,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 4359bb3716a3d2ef6905ddca2334f2bd, type: 2}
   PartMetaDatasList: []
@@ -4901,10 +4897,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 6301d19a97faeb1ca86ac2a6e2dc523c, type: 2}
   PartMetaDatasList: []
@@ -5251,12 +5247,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 4464787457696044930}
   - {fileID: 3047565319230773674}
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: a86a32aade530a64099cedd6544f904a, type: 2}
   PartMetaDatasList: []
@@ -5439,12 +5435,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
   - {fileID: 3101614061098862216}
   - {fileID: 4177194986401116277}
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 684fe16628d5bbd2eba8baeb5c1d677a, type: 2}
   PartMetaDatasList: []
@@ -5892,10 +5888,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 0
   PartMetaData: {fileID: 0}
   PartMetaDatasList:
@@ -5993,16 +5989,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 1
-  DependentLocationsList:
-  - {fileID: 3042372913035685079}
+  HasInstallPrerequisites: 1
+  InstallPrerequisiteLocations:
+  - {fileID: 8560630339366317379}
   - {fileID: 8193525627608041013}
-  - {fileID: 4627156345535188069}
-  - {fileID: 3033740999998310539}
-  - {fileID: 1528126658582584594}
-  - {fileID: 7240094474426307080}
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 9cc199e90796c15fb89e90fd6de7b3c3, type: 2}
   PartMetaDatasList: []
@@ -6260,10 +6252,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 8560630339366317379}
   - {fileID: 8193525627608041013}
   - {fileID: 3042372913035685079}
@@ -6427,10 +6419,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 0fd58343fbb89eae19767688b43d75aa, type: 2}
   PartMetaDatasList: []
@@ -6507,10 +6499,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 6301d19a97faeb1ca86ac2a6e2dc523c, type: 2}
   PartMetaDatasList: []
@@ -6588,10 +6580,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 5206867590390325306}
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 4359bb3716a3d2ef6905ddca2334f2bd, type: 2}
@@ -6669,10 +6661,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 1
-  DependencyLocationsList:
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 1
+  RemovalBlockerLocations:
   - {fileID: 8560630339366317379}
   - {fileID: 8193525627608041013}
   - {fileID: 3042372913035685079}
@@ -7244,10 +7236,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e1041e8e6ddf0b3ad829fe71b1a60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.Part.PartLocation
-  IsDependency: 0
-  DependentLocationsList: []
-  IsHaveDependencies: 0
-  DependencyLocationsList: []
+  HasInstallPrerequisites: 0
+  InstallPrerequisiteLocations: []
+  HasRemovalBlockers: 0
+  RemovalBlockerLocations: []
   IsSingleMetaDataReference: 1
   PartMetaData: {fileID: 11400000, guid: 6f80c54421cd4db0fa2e96cf9714ed1d, type: 2}
   PartMetaDatasList: []
@@ -7316,7 +7308,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 98.76376
+      value: 95.703026
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7391,7 +7383,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4362880129686507579, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: currentCondition
-      value: 95.04431
+      value: 97.06152
       objectReference: {fileID: 0}
     - target: {fileID: 5257129896252028014, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7458,7 +7450,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 98.610695
+      value: 95.143745
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7529,7 +7521,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 99.36604
+      value: 98.12012
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7600,7 +7592,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 98.543976
+      value: 97.20279
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7671,7 +7663,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2905673419552696122, guid: 8c3af6893c8f7550b9f2e84404ca9f78, type: 3}
       propertyPath: currentCondition
-      value: 99.234695
+      value: 99.792984
       objectReference: {fileID: 0}
     - target: {fileID: 4049438005437718146, guid: 8c3af6893c8f7550b9f2e84404ca9f78, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7742,7 +7734,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 99.99369
+      value: 99.1429
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7817,7 +7809,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4362880129686507579, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: currentCondition
-      value: 98.70439
+      value: 97.22153
       objectReference: {fileID: 0}
     - target: {fileID: 5257129896252028014, guid: 3634e61f278b56983adc0b84899edf06, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7884,7 +7876,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 95.98741
+      value: 97.37912
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7955,7 +7947,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4680362671032482624, guid: 714cd5edc2c45d543be0970c6718d8a7, type: 3}
       propertyPath: currentCondition
-      value: 95.51792
+      value: 96.8466
       objectReference: {fileID: 0}
     - target: {fileID: 6451301900532140921, guid: 714cd5edc2c45d543be0970c6718d8a7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8026,7 +8018,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 95.06554
+      value: 99.05249
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8097,7 +8089,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9171363840408459907, guid: 31b42235223621067aaaae8ac3d453d1, type: 3}
       propertyPath: currentCondition
-      value: 95.30255
+      value: 99.33343
       objectReference: {fileID: 0}
     - target: {fileID: 668414684030049243, guid: 31b42235223621067aaaae8ac3d453d1, type: 3}
       propertyPath: m_Name
@@ -8208,7 +8200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5832130009404411871, guid: 71cb72765373f5726b1b13ee399b5f89, type: 3}
       propertyPath: currentCondition
-      value: 95.554565
+      value: 96.48686
       objectReference: {fileID: 0}
     - target: {fileID: 6833195417905576227, guid: 71cb72765373f5726b1b13ee399b5f89, type: 3}
       propertyPath: m_Name
@@ -8239,7 +8231,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1233996786831135776, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: currentCondition
-      value: 96.93379
+      value: 98.975876
       objectReference: {fileID: 0}
     - target: {fileID: 1973382296447776213, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8310,7 +8302,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -5458089755390511375, guid: 0c091b76e1000934c96f4438efdf7049, type: 3}
       propertyPath: currentCondition
-      value: 98.7641
+      value: 97.16657
       objectReference: {fileID: 0}
     - target: {fileID: 211306764670282936, guid: 0c091b76e1000934c96f4438efdf7049, type: 3}
       propertyPath: m_Name
@@ -8381,7 +8373,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 98.183235
+      value: 99.66301
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8452,7 +8444,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 96.939575
+      value: 98.180115
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8523,7 +8515,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -4039818837015392770, guid: 1b852a6e5ebeead4a880f8d00c11d476, type: 3}
       propertyPath: currentCondition
-      value: 98.56377
+      value: 96.915344
       objectReference: {fileID: 0}
     - target: {fileID: 3932243388753963879, guid: 1b852a6e5ebeead4a880f8d00c11d476, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8594,7 +8586,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 95.347435
+      value: 95.364265
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8665,7 +8657,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 95.39624
+      value: 98.766075
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8736,7 +8728,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3914380257251111164, guid: aac0c65da7958a97a8431c0ff6233550, type: 3}
       propertyPath: currentCondition
-      value: 98.04313
+      value: 99.89544
       objectReference: {fileID: 0}
     - target: {fileID: 5844603926950214662, guid: aac0c65da7958a97a8431c0ff6233550, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8807,7 +8799,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5929423488161446829, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: currentCondition
-      value: 98.704056
+      value: 99.52135
       objectReference: {fileID: 0}
     - target: {fileID: 6421322382786133876, guid: 6c9405fda16f1a278b74aded636c9eb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8878,7 +8870,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 99.50213
+      value: 98.9688
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8953,7 +8945,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1996776196795890854, guid: be5221e054609233aa7c72e7ba28f31c, type: 3}
       propertyPath: currentCondition
-      value: 96.11084
+      value: 98.45459
       objectReference: {fileID: 0}
     - target: {fileID: 2179562271081893665, guid: be5221e054609233aa7c72e7ba28f31c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9020,7 +9012,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 97.5686
+      value: 97.68422
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9091,7 +9083,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 99.292755
+      value: 95.365486
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9162,7 +9154,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9093101916175773791, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: currentCondition
-      value: 98.14136
+      value: 97.11543
       objectReference: {fileID: 0}
     - target: {fileID: 1032842756230286244, guid: 6e0c4858269afccf6b5828aa18d12a43, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9233,7 +9225,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3560122817263848684, guid: 99976572be37cef739a5f6e3fe418b4e, type: 3}
       propertyPath: currentCondition
-      value: 99.5193
+      value: 95.30971
       objectReference: {fileID: 0}
     - target: {fileID: 4135518511695718182, guid: 99976572be37cef739a5f6e3fe418b4e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9304,7 +9296,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1233996786831135776, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: currentCondition
-      value: 97.893654
+      value: 98.675674
       objectReference: {fileID: 0}
     - target: {fileID: 1973382296447776213, guid: 826607416d697e7ea9941f5203aada6f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9375,7 +9367,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -7871893048717240610, guid: dfc9d8b7aa9fbaa2fae4a7e22509aa92, type: 3}
       propertyPath: currentCondition
-      value: 99.57992
+      value: 95.85747
       objectReference: {fileID: 0}
     - target: {fileID: 2443230663885379228, guid: dfc9d8b7aa9fbaa2fae4a7e22509aa92, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9446,7 +9438,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 956556756900355494, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: currentCondition
-      value: 98.56308
+      value: 95.38926
       objectReference: {fileID: 0}
     - target: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
       propertyPath: m_LocalPosition.x

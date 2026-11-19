@@ -285,7 +285,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 hasShownHoveredPart = true;
             }
 
-            bool isBlocked = GetOccupiedDependencyPartLocations(part.PartLocation).Count > 0;
+            bool isBlocked = GetOccupiedRemovalBlockers(part.PartLocation).Count > 0;
 
             SetupInfo(part, isBlocked);
         }
@@ -453,16 +453,16 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             hasShownHoveredPart = false;
         }
 
-        private static List<PartLocation> GetOccupiedDependencyPartLocations(PartLocation partLocation)
+        private static List<PartLocation> GetOccupiedRemovalBlockers(PartLocation partLocation)
         {
             if (partLocation == null ||
-                !partLocation.IsHaveDependencies ||
-                partLocation.DependencyLocationsList == null)
+                !partLocation.HasRemovalBlockers ||
+                partLocation.RemovalBlockerLocations == null)
             {
                 return new List<PartLocation>();
             }
 
-            return partLocation.GetOccupiedDependencyLocations();
+            return partLocation.GetOccupiedRemovalBlockers();
         }
 
         private static bool IsGhostTypeAvailable(ItemGhostMetaSO itemGhostMeta, ItemGhostType type)
@@ -636,10 +636,10 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return;
             }
 
-            List<PartLocation> occupiedDependencies = GetOccupiedDependencyPartLocations(partLocation);
-            if (occupiedDependencies.Count > 0)
+            List<PartLocation> occupiedBlockers = GetOccupiedRemovalBlockers(partLocation);
+            if (occupiedBlockers.Count > 0)
             {
-                ShowBlockedDependencies(occupiedDependencies);
+                ShowBlockedDependencies(occupiedBlockers);
                 return;
             }
 
@@ -679,11 +679,11 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             GameStateManager.Instance.ChangeState(new GameStateItemPlace(removedPartGameObject));
         }
 
-        private void ShowBlockedDependencies(List<PartLocation> occupiedDependencies)
+        private void ShowBlockedDependencies(List<PartLocation> occupiedBlockers)
         {
             ClearHover();
 
-            foreach (PartLocation dependency in occupiedDependencies)
+            foreach (PartLocation dependency in occupiedBlockers)
             {
                 if (dependency.InstalledPart == null)
                 {
