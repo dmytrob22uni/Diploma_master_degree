@@ -72,7 +72,7 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 | Device-to-printer model | One device → many printers; one printer → one device |
 | Printer ownership of job | Printer owns the job and keeps printing if the device is unbound |
 | Screen-off behavior | Screen/display only; device and printer continue running |
-| Enclosure | Architecture hooks now; gameplay effects in M5 |
+| Enclosure | Basic thermal/quality effects in M3; advanced effects in M5 |
 | New global game states | None; reuse `GameStateDeviceInterface` and `GameStateDeviceBind` with context |
 
 ---
@@ -98,12 +98,12 @@ The console shows:
 - Bound printer list with status indicators.
 - Active printer status card.
 - Job picker from the `ObjectsToPrint` catalog.
-- Layer-height, print-speed, infill and supports selectors.
+- Layer-height, print-speed, infill, supports, spool and simulation-speed selectors.
 - Estimated print time and filament use.
-- Validation messages.
-- `Start print`, `Hard stop`, `Connect printer`, `Disconnect`, `Screen off`, and `Quit`.
+- Validation messages and live printer status.
+- `Start print`, `Place on bed`, `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate`, `Clear bed`, `Connect printer`, `Disconnect`, `Screen off`, and `Quit`.
 
-M1 ships only the binding and power controls; the job controls arrive in M2. M2.5 adds `Place on bed` between job setup and starting.
+M1 ships only the binding and power controls; the job controls arrive in M2. M2.5 adds `Place on bed` between job setup and starting. M3 adds the live run controls and calibration.
 
 ### 4.3 Binding a printer
 
@@ -156,12 +156,12 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 
 ### 4.7 Hard stop
 
-1. Player clicks `Hard stop` and confirms.
+1. Player clicks `Hard stop`; the button becomes `Confirm stop` for three seconds, and the second click confirms.
 2. The printer immediately stops motion and turns heaters off.
-3. A partial print remains on the bed.
+3. Printing leaves a partial print on the bed; stopping during preheat leaves no partial print.
 4. A one-off condition penalty is applied to the nozzle/heater/bed/plate.
-5. The printer cools down and returns to `Idle` with `HasPartialPrint = true`.
-6. No new job can start until the partial print is removed.
+5. The printer cools down and returns to `Idle` (`HasPartialPrint = true` when printing had started).
+6. No new job can start until the partial print is removed with `Clear bed`.
 
 ### 4.8 Leaving the console
 
@@ -169,6 +169,14 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 - The console stops accepting pointer input and stays visible on the device screen; the camera blends back to the player, movement/look is restored, and the cursor is hidden/locked.
 - Printers continue running while the player walks away.
 - The screen-off state is preserved in the world.
+
+### 4.9 Calibration
+
+1. With an idle printer and a clear bed, click `Calibrate` in the console.
+2. The nozzle visits every point of an `N × N` grid on the plate (`CalibrationGridSize`, default `5`), touching height `0` at each point. Calibration uses real time so the visual check stays readable regardless of `SIM SPEED`.
+3. The grid is inset by `CalibrationPaddingMeters`.
+4. Calibration completes by homing the motion. `Hard stop` cancels it.
+5. Calibration does not consume a job and is blocked while a print is queued, partial or finished.
 
 ---
 
@@ -209,37 +217,29 @@ UI consequence:
 
 ### 5.2 Does the plan include a printer enclosure?
 
-**Decision: include the enclosure in the architecture now, but deliver its gameplay effects in M5.**
+**Decision: basic enclosure effects arrive in M3; advanced effects remain M5.**
 
-Why defer:
+M3 enclosure behavior:
 
-- The base printing loop, job validation, wear, and visuals must be stable first.
-- The enclosure mainly changes thermal and quality parameters; it does not change the printer FSM or binding model.
-- Adding enclosure gameplay too early would mix tuning with core plumbing.
-
-Design hooks to add early:
-
-- `PrinterEnvironment` component on the printer:
+- `PrinterEnvironment` on the printer:
   - `bool HasEnclosure`
+  - `bool DetectEnclosure`
   - `float AmbientTemperature`
   - `float ChamberTemperature`
   - `float DraftFactor`
   - `float ParticulateFactor`
-- `PrinterTemperatureModel` reads chamber temperature from this component.
-- `PrintQualityModel` (M5) computes warping/quality from:
-  - material shrink factor
-  - chamber temperature vs material recommendation
-  - cooling rate
-  - draft
-  - part wear
-  - temperature deviation
-- The console can display `Chamber: ambient` or `Chamber: enclosed` from M3 onward, even before quality effects exist.
+- `PrinterEnclosure` marks the physical enclosure and binds the printer inside its bounds.
+- `PrinterTemperatureModel` reads chamber temperature and slows cooling when enclosed.
+- `PrintQualityEstimator` applies an enclosure bonus / no-enclosure penalty; raw quality caps at `90`.
+- Enclosure parts join the printer wear scan, so fans, filters, thermometers and fire-suppression parts wear during a job.
+- The console shows live nozzle/bed temperatures and enclosure-derived quality.
 
-M5 enclosure effects:
+M5 enclosure effects still to add:
 
-- Better temperature maintenance for ABS/ASA-like materials.
-- Reduced warping risk.
-- Reduced draft sensitivity.
+- Draft and particulate effects.
+- Warping and long-pause adhesion risk.
+- Advanced material-specific chamber targets.
+- Post-process quality beyond the raw `90` ceiling.
 - Optional filtration/particulate effect.
 - Quality score affects `ObjectToPrintDataHolder.IsHaveQuality` and sale value.
 
@@ -439,23 +439,27 @@ Printer
   - PrinterMotionBase Motion
   - PrintBedAnchor BedAnchor
   - PrinterEnvironment Environment
+  - PrinterEnclosure Enclosure (detected through Environment)
   - PrinterStateMachine StateMachine
-  - PrintJob ActiveJob
+  - PrinterJob ActiveJob / CompletedJob / PartialJob
+  - PrinterTemperatureModel Temperature
+  - PrinterWearIntegrator Wear
+  - SpoolFilamentState ActiveSpool
+  - float PrintSpeedMultiplier
+  - float SafeServiceTemperatureC
+  - PartLocation[] ServiceBlockedDuringPrint
+  - int CalibrationGridSize
   - Device BoundDevice
-  - event Action<PrinterState> OnStateChanged
-  - event Action<PrintProgress> OnProgress
-  - event Action<PrintResult> OnJobFinished
+  - string StatusSummary
 
-PrintJob
-  - ObjectToPrintMetaSO Object
-  - InfillPattern Infill
-  - float TotalPrintSeconds
-  - float TotalFilamentMeters
-  - float ElapsedPrintSeconds
+PrinterJob
+  - PrintJobRequest Request (object, settings, spool, placement)
+  - float ElapsedSeconds
   - float ConsumedFilamentMeters
-  - float NozzleTargetTemperature
-  - float BedTargetTemperature
-  - bool IsPartial
+  - int PauseCount / float PauseQualityPenalty
+  - float QualityMin / QualityMax (after pause penalty)
+  - bool IsPartial / bool WasHardStopped / bool UsesApplied
+  - float Progress01 / RemainingSeconds / RemainingFilamentMeters
 
 PrinterStateMachine
   - Idle
@@ -464,8 +468,9 @@ PrinterStateMachine
   - Paused        (pause/resume and safe service)
   - Cooling
   - Finished
-  - Maintenance
-  - Fault         (reserved for M5 failures)
+  - Calibrating   (N × N plate touch grid)
+  - Maintenance   (validation/data driven in M3)
+  - Fault         (preheat timeout in M3; full failures in M5)
 ```
 
 The printer is a self-contained `MonoBehaviour` that ticks every frame, regardless of whether a device is open or bound.
@@ -611,10 +616,19 @@ States and transitions:
 | `Preheating` | nozzle and bed at target | `Printing` |
 | `Preheating` | hard stop | `Cooling` (partial = false) |
 | `Printing` | progress reaches 100% | `Cooling` |
-| `Printing` | hard stop | `Cooling` (partial = true) |
+| `Printing` | pause | `Paused` |
+| `Paused` | resume, target reached | `Printing` |
+| `Paused` | resume, below target | `Preheating` |
+| `Printing` / `Paused` | hard stop | `Cooling` (partial = true) |
+| `Preheating` | hard stop | `Cooling` (no partial) |
 | `Printing` | fatal fault (M5) | `Cooling` / `Fault` |
-| `Cooling` | temperatures near ambient | `Finished` or `Idle` |
-| `Finished` | print removed | `Idle` |
+| `Cooling` | temperatures near ambient, complete | `Finished` |
+| `Cooling` | temperatures near ambient, partial | `Idle` (partial print remains) |
+| `Cooling` | temperatures near ambient, preheat stop | `Idle` (clear bed) |
+| `Finished` | print removed / clear bed | `Idle` |
+| `Idle` | calibration requested | `Calibrating` |
+| `Calibrating` | grid complete | `Idle` |
+| `Calibrating` | hard stop | `Idle` |
 | `Idle` / `Finished` | any part at 0% / missing critical part | `Maintenance` |
 | `Maintenance` | parts repaired | `Idle` |
 
@@ -624,7 +638,9 @@ Rules:
 - `Idle` means the bed is clear.
 - A hard-stopped partial print sets `HasPartialPrint = true`; the printer returns to `Idle` after cooling but rejects new jobs until the partial print is removed.
 - `Paused` is used for player pause and safe part service; it does not consume print progress.
-- `Fault` is reserved for M5 failure modes.
+- `Calibrating` moves the nozzle to every point of an `N × N` plate grid and does not consume a job.
+- `Maintenance` is data/validation-driven in M3; live automatic transitions and repair scheduling remain M5.
+- `Fault` is reserved for M5 failure modes; M3 uses it only for a preheat timeout.
 
 The printer ticks with simulated time:
 
@@ -650,7 +666,7 @@ PrintJobValidationResult
 Validation rules:
 
 - A printer is selected and bound.
-- Printer is `Idle` or `Finished` with no partial print.
+- Printer is `Idle`; `Finished` means a completed print is still on the bed and blocks a new job until the bed is cleared. `HasPartialPrint` blocks separately.
 - Printer has all critical parts installed.
 - No installed part is completely worn out (`0%`); any installed part at `0%` blocks.
 - Every installed part at `20%` or less warns; critical parts additionally warn between `20%` and `40%`.
@@ -660,6 +676,7 @@ Validation rules:
 - Object fits the build volume.
 - Print plate is present.
 - No job is already active or queued on that printer.
+- The printer is not calibrating.
 - The object has a confirmed placement inside the usable plate area and within the build volume.
 - Supports match the object: a model that needs supports can start with `None`, but receives a severe raw-quality penalty and a warning. `Auto` on a model that does not need it is allowed with a "not mandatory" warning and extra cost.
 
@@ -689,13 +706,14 @@ PrinterTemperatureState
   - Bed
 ```
 
-- Targets come from the filament material profile.
+- Targets come from the selected spool's `FilamentMaterialProfileSO`; when it is null, fall back by `MaterialType` (PLA/PETG/ABS/TPU).
 - Preheat uses a linear heating rate toward target.
 - Printing holds targets; small deviations are allowed.
 - Cooling uses an exponential decay toward ambient.
-- Enclosure (M5) slows cooling and raises chamber temperature.
+- An enclosure is detected through `PrinterEnclosure` bounds. It slows cooling, lets the chamber hold heat and improves the quality estimate. Draft, particulate and warp effects remain M5.
 - Preheat completes when both nozzle and bed are within tolerance (default ±2 °C).
-- In M3, a failure to reach target logs a warning and eventually faults; full thermal-failure gameplay is M5.
+- In M3, a preheat timeout logs a warning and enters `Fault`; full thermal-failure gameplay is M5.
+- Raw quality is capped at `90` even with an enclosure. The post-process state can polish the finished object later.
 
 ### 6.6 Wear and filament
 
@@ -703,16 +721,23 @@ Use the existing wear system and the correct delta types:
 
 | Part | Delta | Notes |
 |---|---|---|
-| Nozzle | `WearDeltaFilamentTemperatureAbrasiveness` | filament length, nozzle temp, spool abrasiveness |
-| Bed / plate / heater / thermistor | `WearDeltaTimeTemperature` | simulated seconds at operating temperature |
+| Nozzle / filament bearing | `WearDeltaFilamentTemperatureAbrasiveness` | filament length, nozzle temp, spool abrasiveness |
+| Heater / thermistors / enclosure fire tube / thermometer | `WearDeltaTimeTemperature` | simulated seconds at operating temperature |
 | Spool | `WearDeltaFilament` | consumed metres / spool length |
-| Axes (optional) | `WearDeltaDistanceTemperature` | estimated path distance, ambient/chamber temp |
+| Axes / belts / rotors / bearings | `WearDeltaDistanceTemperature` | distance approximated from simulated time until M4 paths exist |
+| Extruder fan / HEPA fan | `WearDeltaTimeRPM` | simulated seconds at `FanRPM` |
+| HEPA filter trap | `WearDeltaTimeFumes` | simulated seconds at `FumesDensity` |
+| Battery closet adapter | `WearDeltaTime` | powered/print time |
+| Print plate | `WearDeltaUses` | one use per completed/partial print |
+| Print bed | `WearDeltaUsesHardness` | one use per completed/partial print, scaled by spool hardness |
 
 Rules:
 
 - Batch wear application about once per simulated second, not every frame.
 - Use simulated process time, not wall-clock time.
-- Note: `ItemWearState.ApplyWear` currently calls `CalculateWear`, not `CalculateWearByRatio`, so the wear logic's private `WearRatio` is not applied. Either switch `ApplyWear` to `CalculateWearByRatio` (a global behaviour change) or tune the per-SO wear rates directly. Decide this in M3 and document the choice.
+- Enclosure parts are scanned from `PrinterEnclosure` as well as the printer assembly.
+- The selected spool rotates by `consumedMetres / (2π × EffectiveRadiusMeters) × 360°`; its visible child is chosen by nearest `SpoolWearLevelsToGameObjectsDictionary` threshold.
+- `ItemWearState.ApplyWear` calls `CalculateWearByRatio`, so the authored `WearRatio` is honored. Existing assets use `1`, so the change does not alter their current values.
 - Spool remaining filament:
 
 ```
@@ -802,10 +827,11 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 
 #### Spool
 
-- Rotate the spool proportional to consumed filament (axis calibrated in M0).
-- Drive the spool shader's `_reveal_height` from the remaining filament ratio.
-- The spool property is normalized `0..1`; calibrate what visually reads as full vs empty.
-- If the vertical reveal looks wrong, fall back to swapping spool wear-level prefabs in M5.
+- Rotation arrives in M3: `degrees = consumedMetres / (2π × EffectiveRadiusMeters) × 360`, with a serialized local axis and direction.
+- The rotation uses simulated consumption, so it follows `PrintSpeedMultiplier`.
+- The visible filament child is chosen from `SpoolWearLevelsToGameObjectsDictionary` by nearest condition threshold.
+- M4 adds shader reveal polish (`_reveal_height`) and visual verification with the printed object present.
+- If the vertical reveal looks wrong, fall back to the M3 wear-level children rather than new prefabs in M5.
 
 #### Completion and removal
 
@@ -847,7 +873,10 @@ Layout:
 
 - Header: device name, connection count, `Screen off`, `Quit`.
 - Left column: bound printer list with active selection.
-- Main area: a compact active-printer strip and a print-job card with the object list grouped by `ObjectToPrintType`, layer-height/speed/infill/supports/spool selectors, estimates, raw-quality range, a scrollable validation/warnings list and `Start print`.
+- Main area: a compact active-printer strip and a print-job card with the object list grouped by `ObjectToPrintType`, layer-height/speed/infill/supports/spool/simulation-speed selectors, estimates, raw-quality range, a scrollable validation/warnings list and `Start print`.
+- Active-printer strip: state, progress, nozzle/bed temperatures and remaining filament through `Printer.StatusSummary`.
+- Job-card controls: `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate` and `Clear bed`. `Clear bed` is a temporary M3 removal action; M4 replaces it with the real completed/partial print.
+- `SIM SPEED` presets `1×`, `4×`, `64×`, `120×`; the selected value is stored on the active printer.
 - Validation rows show every block and warning; the list scrolls independently so the selectors and `Start print` stay fixed. The job card itself is not a scroll view. The validation block has a subtle inset background and a thin top rule to separate it from the card.
 - The printer list and object list are `ScrollRect` views with `RectMask2D`; mouse wheel and drag work over the full viewport, including empty space, and content grows with the number of entries.
 - Footer: `Q Quit` chip, `Connect printer`, `Disconnect`. The `Q Quit` chip and the screen-off `Q Quit` chip share the same bottom-left anchor (`Margin`, `Margin`) so the badge does not jump between power states.
@@ -869,6 +898,7 @@ Behavior:
 - Disable buttons with reasons rather than hiding them.
 - Confirm hard stop and unbind-while-printing.
 - Do not show a printer as “connected” if its binding was removed.
+- While a printer is busy, FreeWalk hover shows `Printer.StatusSummary` instead of take/sell prompts. The dedicated hover-status layout is an owner-authored UI demand.
 
 ### 6.9 Camera controller
 
@@ -1021,7 +1051,7 @@ Add a `FilamentMaterialProfileSO` (one asset per material) with:
 - `WarpFactor`
 - `CoolingRateMultiplier`
 
-`ItemFFFPrusaMK4SSpoolDataHolder` gains an optional `MaterialProfile` reference. Any spool material can print any catalog object; `MaterialType` and the thermal profile are consumed in M3/M5 for temperatures, shrink, warp and quality. Assets for PLA/PETG/ABS/TPU are not created yet.
+`ItemFFFSpoolDataHolder` gains an optional `MaterialProfile` reference. Any spool material can print any catalog object; `MaterialType` and the thermal profile are consumed in M3/M5 for temperatures, shrink, warp and quality. Assets for PLA/PETG/ABS/TPU are not created yet.
 
 ### Printer runtime state
 
@@ -1051,9 +1081,9 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 | **M1** | Console + binding | Open/close console, bind/unbind multiple printers, camera flow feels right |
 | **M2** | Jobs + validation | Object/infill selection, believable estimates, clear rejection reasons |
 | **M2.5** | Bed placement + profile tooling | Place/rotate/scale on the plate, live validity, estimates recalculated, editor profile generator |
-| **M3** | FSM + temperatures + wear | Full job cycle, hard stop, wear/filament applied correctly |
+| **M3** | FSM + temperatures + wear + enclosure | Full job cycle, pause/service/hard stop, calibration, wear/filament applied correctly |
 | **M4** | Print visuals | Object reveal, motion, spool, partial print, performance |
-| **M5** | Failure + enclosure + polish | Enclosure effects, failures, quality, audio/VFX |
+| **M5** | Failure + advanced enclosure + polish | Failures, warp/draft/particulate effects, post-process quality, audio/VFX |
 
 ---
 
@@ -1311,42 +1341,72 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 ---
 
-### M3 — Printer FSM, temperatures, and wear
+### M3 — Printer FSM, temperatures, wear, and enclosure loop
 
-**Goal:** A job actually runs through preheat, print, cool, and finish; wear and filament are consumed.
+**Goal:** A job actually runs through preheat, print, cool, and finish; wear and filament are consumed; the player can pause, service, hard-stop and calibrate through the console.
 
 **Deliverables**
 
-- `PrinterStateMachine` with the states and transitions in section 6.3.
-- Simulated-time ticking with `PrintSpeedMultiplier`.
-- `PrinterTemperatureModel`.
-- `PrinterWearIntegrator`.
-- `ItemWearState.ApplyConditionLoss`.
-- `SpoolFilamentState` or equivalent remaining-filament wrapper for the selected `SpoolSlot`.
-- Hard-stop flow with partial-print flag.
-- Console live status binding.
+- `PrinterStateMachine` with the states and transitions in section 6.3, including `Calibrating`.
+- Simulated-time ticking with a per-printer `PrintSpeedMultiplier`.
+- Console `SIM SPEED` preset row: `1×`, `4×`, `64×`, `120×` (default `120×`). The value is stored on the printer, not globally, and can be changed while idle or printing.
+- `PrinterTemperatureModel` with ambient/chamber/nozzle/bed, linear heating, hold, exponential cooling and a preheat timeout.
+- Material targets from `FilamentMaterialProfileSO`; fallback profile by `MaterialType` because current spool assets have no profile assigned.
+- `PrinterWearIntegrator`:
+  - nozzle: `WearDeltaFilamentTemperatureAbrasiveness`
+  - spool: `WearDeltaFilament`
+  - heater/thermistors/fire tube/thermometer: `WearDeltaTimeTemperature`
+  - battery closet adapter: `WearDeltaTime`
+  - axes/belts/rotors: `WearDeltaDistanceTemperature` (distance approximated until M4 paths)
+  - fans: `WearDeltaTimeRPM`
+  - HEPA filter trap: `WearDeltaTimeFumes`
+  - print plate: `WearDeltaUses` once per print
+  - print bed: `WearDeltaUsesHardness` once per print, scaled by spool material hardness
+- `ItemWearState.ApplyConditionLoss` and `ApplyWear` routed through it.
+- `SpoolFilamentState` for the selected `SpoolSlot`, including remaining metres, spool rotation and wear-level child sync.
+- Rename `ItemFFFPrusaMK4SSpoolDataHolder` to `ItemFFFSpoolDataHolder`.
+- Spool rotation from consumed filament:
+  - `degrees = consumedMetres / (2π × EffectiveRadiusMeters) × 360`;
+  - rotation follows simulated consumption, so the visual speed follows `PrintSpeedMultiplier`;
+  - `SpoolWearLevelsToGameObjectsDictionary` shows the nearest authored condition level.
+- Enclosure integration:
+  - `PrinterEnclosure` marker and automatic containment detection;
+  - enclosure slows cooling, lets the chamber hold heat, and reduces/removes the no-enclosure quality penalty;
+  - raw quality is capped at `90` even with an enclosure; post-processing can polish beyond that later.
+- Hard-stop flow with partial-print flag, one-off condition penalties and console confirmation.
+- Console live status binding: state, progress, nozzle/bed temperatures, remaining filament.
+- Console controls for `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate` and `Clear bed` (temporary M3 removal action).
 - Printer continues ticking when unbound.
-- Player pause/resume using the existing `PausePrint` input (no new InputAction):
-  - pause stops motion and print progress, moves the nozzle to a service position and lets the nozzle/bed cool;
+- Pause/resume through the console, not a new InputAction:
+  - pause stops print progress, moves the nozzle to a service position and lets the nozzle/bed cool;
   - service swap is allowed only after the nozzle and bed are below `SafeServiceTemperatureC` (default `50 °C`);
   - parts may be swapped while paused, except `Printer.ServiceBlockedDuringPrint` references (default: print bed, print bed thermistor, print plate);
-  - resume requires every critical part to be installed again; if a blocked part must change, the print can only be hard-stopped;
+  - resume requires every critical part and the selected spool to be installed again; if a blocked part must change, the print can only be hard-stopped;
   - a pause leaves a seam/quality penalty and a long pause may add adhesion risk in M5.
-- `Printer.ServiceBlockedDuringPrint` is a `PartLocation[]` reference list, like the critical list.
+- Calibration state:
+  - console `Calibrate` button starts an `N × N` grid, with `N` exposed as `CalibrationGridSize`;
+  - the nozzle visually touches every point on the plate at height `0`, then homes;
+  - `Hard stop` cancels calibration.
+- Interaction protection while a printer is busy:
+  - sell, take and free-walk interaction are blocked for the printer and its enclosure;
+  - hovering shows `Printer.StatusSummary` instead of take/sell prompts.
+- **Owner UI demand:** the dedicated FreeWalk hover-status section for busy printers/enclosures is authored by the project owner; the code exposes `Printer.StatusSummary` and blocks the existing interactions.
 
 **Acceptance criteria**
 
 - Start job → `Preheating` → `Printing` → `Cooling` → `Finished` using the stored placement/scale.
 - Preheat completes at target temperature within tolerance.
 - Print progress reaches 100% at the expected simulated duration.
-- Cooling returns temperatures toward ambient.
-- Nozzle, bed/plate/heater/thermistor, and selected-spool wear are applied to the correct parts.
+- Cooling returns temperatures toward ambient; enclosure cooling is visibly slower.
+- Nozzle, bed/plate/heater/thermistor, enclosure parts and selected-spool wear are applied to the correct parts.
+- Every existing wear delta type is exercised by at least one installed printer/enclosure part or by the completed-print use pass.
 - The selected spool's condition and remaining filament decrease consistently; the unselected spool is untouched.
+- The selected spool rotates proportionally to consumed filament and its visible wear-level child follows its condition.
 - Hard stop at any point:
   - stops motion and heaters
   - applies the one-off penalty
-  - leaves a partial print
-  - blocks new jobs until removal
+  - leaves a partial print only after printing starts
+  - blocks new jobs until the bed is cleared
 - Unbinding the device during a print does not stop the printer.
 - Rebinding shows the correct live state.
 - A worn-out part blocks a new job; low parts warn.
@@ -1356,25 +1416,33 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - swapping a `ServiceBlockedDuringPrint` part is refused;
   - resume applies the pause seam/quality penalty;
   - the print does not fail merely because it was paused.
+- Calibration with `N` grid points touches the plate at every point and returns to idle.
+- The console shows the chosen simulation multiplier and live printer status.
+- A busy printer/enclosure cannot be sold, taken or freely interacted with.
+- Raw quality tops out at `90`; the post-process state can improve the finished object later.
 
 **Manual gate**
 
 1. Run a short job and compare condition loss to the configured wear logic; tune `WearPerHour` / `WearPerFilamentLength`.
-2. Record preheat, print, and cooling times at `120×`; adjust the multiplier if it feels too fast/slow.
+2. Record preheat, print, and cooling times at `1×`, `4×`, `64×` and `120×`; confirm the multiplier changes simulated speed only.
 3. Tune the hard-stop penalty so it is noticeable but not catastrophic.
 4. Profile 2–4 printers printing simultaneously; check CPU and GC.
 5. Verify no NaN/Inf in temperatures, progress, or condition.
-6. Verify partial print blocks the next job.
+6. Verify partial print blocks the next job and `Clear bed` releases it.
 7. Pause, wait for cooling, swap a nozzle/fan/belt, resume and confirm the seam penalty.
 8. Attempt to swap a print-bed part while paused and confirm it is refused.
+9. Run calibration with `N = 3` and `N = 5`; confirm every point is touched and the nozzle homes afterwards.
+10. Verify the spool rotates in the correct direction and the visible filament level follows the wear dictionary.
+11. Check enclosure and no-enclosure quality differences; confirm the raw maximum is `90`.
+12. Try to sell/take/interact with a busy printer and enclosure; confirm the status-only hover and blocked actions.
 
-**Do not proceed to M4 until the numbers and timing feel right and wear is applied to the intended parts.**
+**Do not proceed to M4 until the numbers and timing feel right, wear is applied to the intended parts, and pause/service/calibration are stable.**
 
 ---
 
 ### M4 — Print visualization
 
-**Goal:** The print looks convincing: object reveal, nozzle/bed motion, spool consumption, and removal.
+**Goal:** The print looks convincing: object reveal, nozzle/bed motion, support columns, and removal. Spool rotation and wear-level sync already arrive in M3.
 
 **Deliverables**
 
@@ -1383,7 +1451,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - `PrintRevealController`.
 - `PrinterMotionSimulator`.
 - `CartesianPrinterMotion` integration.
-- Spool rotation/reveal.
+- Spool reveal polish; rotation and wear-level child sync already arrive in M3.
 - Completion material restore and collider enable.
 - Partial-print removal.
 - If printing ghosts are reused, fix the existing `ObjectToPrintGhostPrintingDataHolder` bug: its `OnValidate`/`Awake` currently assign `ObjectToPrintGhostType.Quality` instead of `Printing`. Prefer instantiating the real object prefab for prints and bypassing this ghost path.
@@ -1396,7 +1464,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Reveal follows the moving bed correctly.
 - The nozzle appears to work over the printed area.
 - Axis motion stays within soft limits and does not clip.
-- The spool visually consumes filament.
+- The M3 spool rotation continues to read correctly during the full print.
 - Hard stop freezes the partial object at the correct height.
 - Completed object is fully visible and removable.
 - No per-frame material instancing or GC spikes.
@@ -1407,7 +1475,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 2. Check bed movement direction and speed.
 3. Check the object from several player angles; no popping or z-fighting.
 4. Check multi-mesh objects; all renderers reveal consistently.
-5. Check the spool visual at 100%, 50%, 10%, and 0%.
+5. Re-check the M3 spool visual at 100%, 50%, 10%, and 0% with the printed object present.
 6. Check partial print height and removal.
 7. Check completed object materials, colliders, and selling/placement behavior.
 
@@ -1415,14 +1483,13 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 ---
 
-### M5 — Failure, enclosure, and polish
+### M5 — Failure, advanced enclosure, and polish
 
 **Goal:** Add depth and edge cases after the core loop is stable.
 
 **Candidate deliverables**
 
-- `PrinterEnvironment` enclosure integration.
-- Chamber temperature, draft, and cooling effects.
+- Advanced enclosure effects: draft, particulate filtration, warp and long-pause adhesion risk. Basic chamber temperature, cooling slowdown and enclosure quality are already in M3.
 - `PrintQualityModel` expanding the M2 `PrintQualityEstimator` range, and a real quality value on `IsHaveQuality`.
 - Failure modes:
   - filament runout
@@ -1500,7 +1567,7 @@ Fill this table during M0 and update it during later milestones.
 | Infill time factor | None `0.2615`, Grid `0.3399`, Gyroid `0.3765` | `InfillSettings.TimeFactor` |
 | Layer height | `0.28` / `0.20` / `0.12` mm | `LayerHeightSettings`; time scales `reference / selected` |
 | Print speed | `40` / `80` / `140` mm/s | `PrintSpeedSettings`; time scales `(reference / selected)^0.8` |
-| Raw quality | base `82`, range width `5` | `PrintQualityEstimator`; M5 expands the model |
+| Raw quality | base `82`, range width `5`, raw cap `90` | `PrintQualityEstimator`; enclosure `+5`, no enclosure `-9`; post-process can polish beyond 90 later |
 | Part wear (all installed) | block `0%`, warn `≤20%`; critical warn `20–40%` | `WornOutConditionPercent` / `LowConditionWarningPercent` / `CriticalPartWarningPercent` |
 | Job catalog | `Assets/SOs/ObjectsToPrint/object_to_print_metas_list_SO.asset` | assigned to `DeviceConsolePresenter.ObjectCatalog` |
 | Placement scale | soft limits: largest dimension ≥ `2 cm`; footprint/height within plate/`BuildVolume` | overscale/underscale is allowed but invalid; no clamp |
@@ -1513,8 +1580,13 @@ Fill this table during M0 and update it during later milestones.
 | Bunny baseline (calibrated) | `85.36 m` at 100%, `36 720 s` at 100% | PrusaSlicer, `0.2 mm` / `80 mm/s`; dimensions derived |
 | Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
 | Console camera idle priority | `-1` | player camera stays at implicit `0` |
-| Print speed multiplier | 120× |  |
-| Hard-stop penalty |  | deferred to M3 |
+| Print speed multiplier | `1×` / `4×` / `64×` / `120×` | console `SIM SPEED`; default `120×`, stored per printer |
+| Temperature tolerance | `±2 °C` | preheat completes when nozzle and bed are in tolerance |
+| Preheat timeout | `900` simulated seconds | logs a warning and enters `Fault` |
+| Safe service temperature | `50 °C` | pause service gate |
+| Hard-stop penalty | nozzle `0.2 + 0.8 × normalized`, heater `0.1 + 0.4 × normalized`, bed/plate `0.1 + 0.3 × normalized` | tune in the M3 gate |
+| Calibration grid | `5 × 5`, `0.15 s` dwell, `10 mm` padding | `CalibrationGridSize` / `CalibrationPointDwellSeconds` / `CalibrationPaddingMeters` |
+| Spool rotation | `degrees = metres / (2π × 0.1 m) × 360` | `EffectiveRadiusMeters`, local axis and invert flag on `ItemFFFSpoolDataHolder` |
 
 ---
 
@@ -1566,10 +1638,14 @@ Fill this table during M0 and update it during later milestones.
 ### M3
 
 - Full job cycle.
+- Simulation speeds `1×`, `4×`, `64×`, `120×`.
 - Pause/resume and safe service swap.
 - Hard stop at preheat, mid-print, and near-complete.
-- Wear application per part.
-- Spool depletion.
+- Wear application per part, including enclosure parts and every delta type.
+- Selected spool depletion, rotation and wear-level child sync.
+- Enclosure vs no-enclosure thermal behavior and quality cap.
+- Calibration grid at `N = 3` and `N = 5`.
+- Busy printer/enclosure blocks sell/take/interact and shows status-only hover.
 - Unbind/rebind during print.
 - Worn-out part blocks job.
 - Multiple printers simultaneously.
@@ -1580,7 +1656,7 @@ Fill this table during M0 and update it during later milestones.
 - Auto supports render as columns under overhangs and follow the print height.
 - No supports render when `None`.
 - Bed motion and nozzle path.
-- Spool visual.
+- M3 spool visual with the printed object present.
 - Partial print freeze and removal.
 - Completed object material/collider restore.
 - Performance profile.
@@ -1630,7 +1706,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0 and M1 are committed. M1 implementation is complete and the laptop flow is approved; formal M1 close still needs the other device types and aspect ratios checked. M2 is committed and pushed, calibrated against PrusaSlicer and play-mode gated. M2.5 is complete: the authored `object_place_canvas` UI is wired to the placement state, controller, build-volume-centred camera, ghost validation and console job flow, and the play-mode gate passed.
+**Status:** M0 and M1 are committed. M1 implementation is complete and the laptop flow is approved; formal M1 close still needs the other device types and aspect ratios checked. M2 is committed and pushed, calibrated against PrusaSlicer and play-mode gated. M2.5 is committed and complete. The first M3 iteration is implemented: the printer owns the job FSM, temperature/wear simulation, pause/service/hard-stop controls, calibration state, enclosure loop and spool visuals. The M3 play-mode gate is still pending.
 
 
 M1 is code-complete:
@@ -1680,12 +1756,14 @@ Remaining M2 work (manual gate):
 2. **Done:** Grid / Normal / Normal compared with PrusaSlicer (`28.53 m`, `3 h 53 min`) and matched by the console (`28.5 m`, `3 h 53 min`); tuning factor recorded in §9.
 3. **Done:** Draft and Fine spot checks confirmed time and raw quality move in the expected direction.
 4. **Done:** validation matrix verified, including the oversized-object rejection.
-5. **Done:** `Start print` queues `Printer.PendingJob` only when valid; M3 will execute it.
+5. **Done:** `Start print` queues `Printer.PendingJob` only when valid; M3 consumes it on the next printer tick.
 6. **Done:** `Printer.CriticalPartLocations` / `PrintPlateLocation` references confirmed.
 
 M1's remaining device-type/aspect checks are carried forward; they do not block M2 validation.
 
-M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add console `Left`/`Right` spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The manual gate passed with the authored tuning values; the next milestone is M3.
+M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add console `Left`/`Right` spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The manual gate passed with the authored tuning values.
+
+The M3 first iteration is ready for its manual gate. The remaining owner-authored UI demand is the dedicated FreeWalk printer-status hover section; the code already blocks take/sell/interact and exposes `Printer.StatusSummary`.
 
 ---
 
@@ -1758,21 +1836,21 @@ Assets/Scripts/Coursework_Master_Degree/
 │   └── DeviceScreenAnchor.cs
 ├── Items/FFF/Printer/
 │   ├── Printer.cs
-│   ├── PrinterState.cs
 │   ├── PrinterStateMachine.cs
 │   ├── PrinterJob.cs
-│   ├── PrinterJobValidator.cs
 │   ├── PrinterTemperatureModel.cs
+│   ├── PrinterWearIntegrator.cs
+│   ├── PrinterEnvironment.cs
+│   ├── PrinterEnclosure.cs
+│   ├── SpoolFilamentState.cs
 │   ├── Jobs/
 │   │   ├── InfillPattern.cs
 │   │   ├── PrintEstimates.cs
 │   │   ├── PrintJobRequest.cs
 │   │   ├── PrintJobValidationResult.cs
 │   │   ├── PrintJobValidator.cs
+│   │   ├── SimulationSpeedPreset.cs
 │   │   └── SpoolSlot.cs
-│   ├── PrinterWearIntegrator.cs
-│   ├── PrinterEnvironment.cs
-│   ├── SpoolFilamentState.cs
 │   ├── Motion/
 │   │   ├── PrinterMotionBase.cs
 │   │   ├── CartesianPrinterMotion.cs
@@ -1820,7 +1898,7 @@ Assets/Scripts/Coursework_Master_Degree/
 |---|---|---|
 | 2026-11-16 | Device → many printers; printer → one device | Realistic, future-proof, avoids refactor |
 | 2026-11-16 | Printer owns job and keeps printing when unbound | Physical printer autonomy |
-| 2026-11-16 | Enclosure hooks now, gameplay in M5 | Keep core loop stable |
+| 2026-11-16 | Enclosure hooks now, basic gameplay in M3, advanced effects in M5 | Thermal stability and quality matter as soon as jobs run; warp/draft/particulate stay polish |
 | 2026-11-16 | `PrinterMotionBase` + `CartesianPrinterMotion` | Supports future printer constructions |
 | 2026-11-16 | Dedicated Cinemachine console camera | Consistent framing, clean blend |
 | 2026-11-16 | Screen-only power-off | Prints continue; no full power simulation |
@@ -1848,6 +1926,12 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-18 | Scale limits are soft, not clamped | The player sees the shader error and cannot confirm; no silent snapping |
 | 2026-11-18 | Supports visualised in M4 as simple columns | Full support generation is a slicer problem; columns make the abstract supports readable |
 | 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
+| 2026-11-19 | Simulation speed is a per-printer console preset | The printer owns the job; presets match existing console rows and avoid slider UI work |
+| 2026-11-19 | All wear delta types are mapped to printer/enclosure parts or print-use actions | Existing assets and SOs already define the intended wear kinds; no parallel wear model |
+| 2026-11-19 | Raw print quality caps at 90 | Leaves room for the post-process state to improve the final object |
+| 2026-11-19 | Spool rotation and wear-level child sync move to M3 | The loop already knows consumed metres; M4 only polishes reveal |
+| 2026-11-19 | Calibration is a printer state, not a console overlay | Reuses motion and the existing status/controls; no new global state |
+| 2026-11-19 | Busy printer/enclosure blocks sell/take/interact | Protects a running job; hover status is an owner-authored UI section |
 | 2026-11-18 | Editor profile generator seeds data | Mesh bounds/volume/overhang are automatable; exact time still needs a slicer reference |
 | 2026-11-18 | Supports are `None`/`Auto`, driven by meta | The model's geometry decides whether supports are needed; the player chooses the cost |
 | 2026-11-18 | Profile split into baseline + requirements; size derived | Two calibratable numbers per object; dimensions come from prefab bounds |
@@ -1877,7 +1961,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | `.../Visuals/PrintRevealDebug.cs` | Drives `_reveal_height` with an in-game slider and Empty/Mid/Full buttons |
 | `.../Binding/PrinterBindHighlight.cs` | Runtime translucent sphere sized to printer bounds; state colours |
 | `.../Debug/PrinterMotionDebug.cs` | Play-mode per-axis sliders; shows normalized value and local offset |
-| `.../PrinterEnvironment.cs` | Enclosure/ambient/draft/particulate data (M5 uses it) |
+| `.../PrinterEnvironment.cs` | Enclosure/ambient/draft/particulate data; M3 uses enclosure cooling/quality and M5 adds advanced effects |
 | `.../Printer.cs` | Printer root hardware references and configuration validation |
 | `Assets/Scripts/Coursework_Master_Degree/Items/Computing/Device.cs` | `IInteractable` entry point, `Use device`, screen helpers, `UseRequested` |
 | `.../Computing/DeviceScreenDisplay.cs` | Swaps display materials for screen-off, restores on power-on |
@@ -2087,11 +2171,11 @@ This gives the installation order: Y-axis bearings → print bed → bed thermis
 
 1. Install one or both spools into `spool_location_1` / `spool_location_2` on the printer. The optional spool group requires at least one.
 2. `Printer.LeftSpoolLocation` / `RightSpoolLocation` map those locations to the console's `SPOOL: Left / Right` row. The console defaults to an occupied side; the player chooses the active side explicitly.
-3. On the spool's `ItemFFFPrusaMK4SSpoolDataHolder`, set `MaterialType` (PLA/PETG/ABS/TPU) and keep `FilamentLengthSpoolMeters` at the physical spool length (default `300 m`).
+3. On the spool's `ItemFFFSpoolDataHolder`, set `MaterialType` (PLA/PETG/ABS/TPU) and keep `FilamentLengthSpoolMeters` at the physical spool length (default `300 m`).
 4. Remaining filament is read from the selected spool's `ItemWearState.CurrentCondition`:
    `remaining = FilamentLengthSpoolMeters * CurrentCondition / 100`.
    In play mode use the `ItemWearState` context menu `Debug/Set Condition 100% / 50% / 10%` to test thresholds without editing assets.
-5. Optionally assign a `FilamentMaterialProfileSO` for M3 temperatures. M2 does not use it.
+5. Optionally assign a `FilamentMaterialProfileSO` for M3 temperatures. If it is null, M3 falls back by `MaterialType`.
 
 If the selected slot is empty, the console reports `No filament spool installed on the Left side.` / `... Right side.` and disables `Start print`. The other side can be selected from the `SPOOL` row.
 
@@ -2099,7 +2183,7 @@ Only the selected spool participates in spool validation and wear/quality checks
 
 ### F.4 Start print
 
-`Start print` is enabled only when `PrintJobValidator` returns no errors. The request stores the object, infill, layer height, speed, selected `SpoolSlot`, estimates and raw-quality range in `Printer.PendingJob`; the console shows `Job queued. Printing starts in M3.` Nothing moves until M3.
+`Start print` is enabled only when `PrintJobValidator` returns no errors. The request stores the object, infill, layer height, speed, selected `SpoolSlot`, placement, estimates and raw-quality range in `Printer.PendingJob`. The printer consumes it on the next tick, enters `Preheating`, and the console switches to live status. Nothing is instantiated on the bed until M4.
 
 ### F.5 Validation matrix
 
@@ -2109,7 +2193,9 @@ Check each row in play mode and confirm the console message:
 |---|---|
 | No active printer | `No printer selected.` |
 | Printer bound to another device | `Printer is not connected to this device.` |
-| Printer printing/heating (M3) | `Printer is busy (...)` |
+| Printer printing/heating/paused/cooling/calibrating | `Printer is busy (...)` |
+| Completed print still on bed | `Printer is busy (Finished).` |
+| Partial print on bed | `A partial print is still on the bed.` |
 | Job already queued | `A job is already queued on this printer.` |
 | Selected spool slot empty | `No filament spool installed on the Left/Right side.` |
 | Selected slot has non-spool item | `The Left/Right spool slot does not contain a filament spool.` |
