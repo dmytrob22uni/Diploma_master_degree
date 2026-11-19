@@ -4,6 +4,7 @@ using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
 using Coursework_Master_Degree.Items.Wear;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.ObjectsToPrint;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
 using Coursework_Master_Degree.Game.StateMachine.State;
@@ -109,6 +110,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                             : default;
 
                     string info = itemFreePart.Name;
+
+                    if (ShowBusyPrinterStatus(itemFreePart.gameObject))
+                    {
+                        return;
+                    }
+
                     SetupInfoAndTake(info);
                 }
                 else if (hit.collider.attachedRigidbody.TryGetComponent<ItemDataHolder>(out var item))
@@ -142,6 +149,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                         : default;
 
                     string info = item.ItemMetaData.Name;
+
+                    if (ShowBusyPrinterStatus(item.gameObject))
+                    {
+                        return;
+                    }
+
                     SetupInfoAndTake(info);
                 }
                 else if (hit.collider.attachedRigidbody.TryGetComponent<ObjectToPrintDataHolder>(out var objectToPrint))
@@ -154,6 +167,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                     cachedItemGameObject = objectToPrint.gameObject;
 
                     string info = objectToPrint.ObjectToPrintMetaData.Name;
+
+                    if (ShowBusyPrinterStatus(objectToPrint.gameObject))
+                    {
+                        return;
+                    }
+
                     SetupInfoAndTake(info);
                 }
 
@@ -187,6 +206,24 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             }
 
             return item.GetComponent<ItemWearState>() != null;
+        }
+
+        private bool ShowBusyPrinterStatus(GameObject target)
+        {
+            Printer printer = Printer.FindFor(target);
+
+            if (printer == null || !printer.IsBusy)
+            {
+                return false;
+            }
+
+            ItemHoverInfoText.text = printer.StatusSummary;
+            ItemHoverInfoText.gameObject.SetActive(true);
+
+            TakeRoot.SetActive(false);
+            SetupInspectWear(false);
+            isHoverClear = false;
+            return true;
         }
 
         private void SetupInfoAndTake(string info)
@@ -252,6 +289,13 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         public void ApplyTakeItem()
         {
             if (cachedItemGameObject == default)
+            {
+                return;
+            }
+
+            Printer printer = Printer.FindFor(cachedItemGameObject);
+
+            if (printer != null && printer.IsBusy)
             {
                 return;
             }

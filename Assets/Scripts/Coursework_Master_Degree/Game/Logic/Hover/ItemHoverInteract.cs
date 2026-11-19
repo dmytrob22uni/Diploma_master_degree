@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.Computing;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Game.StateMachine;
 using Coursework_Master_Degree.Game.StateMachine.State;
 using System.Numerics;
@@ -76,6 +77,19 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 if (hit.collider == cachedCollider)
                 {
+                    return;
+                }
+
+                Printer busyPrinter = Printer.FindFor(hit.collider.gameObject);
+
+                if (busyPrinter != null && busyPrinter.IsBusy)
+                {
+                    cachedCollider = hit.collider;
+                    cachedDevice = null;
+                    cachedInteractable = null;
+                    cachedInteractions = null;
+                    cachedAction = null;
+                    SetupInteract(busyPrinter.StatusSummary);
                     return;
                 }
 

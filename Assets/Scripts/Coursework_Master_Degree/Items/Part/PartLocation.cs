@@ -1,4 +1,5 @@
 using UnityEngine;
+using Coursework_Master_Degree.Items.FFF;
 using NaughtyAttributes;
 using System.Collections.Generic;
 using Coursework_Master_Degree.ScriptableObjects.Items;
@@ -142,6 +143,17 @@ namespace Coursework_Master_Degree.Items.Part
 
         public bool CanInstall(GameObject part)
         {
+            Printer printer = Printer.FindFor(gameObject);
+            string serviceBlock = printer != null
+                ? printer.GetPartServiceBlockReason(this)
+                : null;
+
+            if (!string.IsNullOrEmpty(serviceBlock))
+            {
+                Debug.Log(serviceBlock);
+                return false;
+            }
+
             if (!IsExpectedItemMetaData(part))
             {
                 Debug.Log("Meta Data object of the passed part is not among expected");
@@ -205,6 +217,17 @@ namespace Coursework_Master_Degree.Items.Part
 
         public bool CanRemove()
         {
+            Printer printer = Printer.FindFor(gameObject);
+            string serviceBlock = printer != null
+                ? printer.GetPartServiceBlockReason(this)
+                : null;
+
+            if (!string.IsNullOrEmpty(serviceBlock))
+            {
+                Debug.Log(serviceBlock);
+                return false;
+            }
+
             if (HasOccupiedRemovalBlockers())
             {
                 Debug.Log("This part has removal blockers installed. Can't remove it");

@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Computing;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Surface;
@@ -213,6 +214,16 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 target.State = SellingState.Wrong;
                 target.Reason = ConnectedToPrinterReason;
+
+                return target;
+            }
+
+            Printer printer = Printer.FindFor(item.gameObject);
+
+            if (printer != null && printer.IsBusy)
+            {
+                target.State = SellingState.Wrong;
+                target.Reason = "Printer is busy";
 
                 return target;
             }
@@ -694,6 +705,13 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (target.Item != null)
             {
+                Printer printer = Printer.FindFor(target.Item.gameObject);
+
+                if (printer != null && printer.IsBusy)
+                {
+                    return;
+                }
+
                 Device device = target.Item.GetComponent<Device>();
 
                 if (device == null)

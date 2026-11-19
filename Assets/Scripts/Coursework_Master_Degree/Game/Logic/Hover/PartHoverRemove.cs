@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Part;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.ScriptableObjects.Items;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts;
@@ -286,8 +287,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             }
 
             bool isBlocked = GetOccupiedRemovalBlockers(part.PartLocation).Count > 0;
+            string serviceBlock = GetServiceBlockReason(part.PartLocation);
 
-            SetupInfo(part, isBlocked);
+            SetupInfo(part, isBlocked || !string.IsNullOrEmpty(serviceBlock));
         }
 
         private void SetupInfo(HoveredPart part, bool isBlocked)
@@ -451,6 +453,19 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             shownHoveredPartKey = default;
             hasShownHoveredPart = false;
+        }
+
+        private static string GetServiceBlockReason(PartLocation partLocation)
+        {
+            if (partLocation == null)
+            {
+                return null;
+            }
+
+            Printer printer = Printer.FindFor(partLocation.gameObject);
+            return printer != null
+                ? printer.GetPartServiceBlockReason(partLocation)
+                : null;
         }
 
         private static List<PartLocation> GetOccupiedRemovalBlockers(PartLocation partLocation)
@@ -633,6 +648,17 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (partLocation == null)
             {
+                return;
+            }
+
+            string serviceBlock = GetServiceBlockReason(partLocation);
+
+            if (!string.IsNullOrEmpty(serviceBlock))
+            {
+                SetText(ItemHoverRemoveText, serviceBlock);
+                blockedUntilTime = Time.time + Mathf.Max(
+                    0.0f,
+                    BlockedDependenciesGhostDuration);
                 return;
             }
 
