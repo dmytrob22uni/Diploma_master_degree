@@ -280,13 +280,19 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
             for (int i = 0; i < criticalLocations.Length; i++)
             {
+                // Empty list entries are authored placeholders, not missing
+                // parts. A genuinely unassigned reference is reported by the
+                // editor configuration check instead of blocking every job.
+                if (criticalLocations[i] == null)
+                {
+                    continue;
+                }
+
                 if (!criticalFound[i])
                 {
-                    string name = criticalLocations[i] != null
-                        ? Friendly(criticalLocations[i].gameObject.name)
-                        : "unassigned reference";
                     result.Errors.Add(
-                        $"Missing critical part location: {name}.");
+                        $"Missing critical part location: " +
+                        $"{Friendly(criticalLocations[i].gameObject.name)}.");
                 }
             }
         }

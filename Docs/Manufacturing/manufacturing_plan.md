@@ -1,8 +1,8 @@
 # Manufacturing Plan — Device-Controlled FFF Printing
 
 **Status:** Draft for implementation  
-**Last updated:** 2026-11-17  
-**Scope:** Laptop / PC / Smartphone / Tablet controlling one or more Prusa MK4S printers  
+**Last updated:** 2026-11-20
+**Scope:** Laptop / PC / Smartphone / Tablet controlling one or more FFF printers. Prusa MK4S is the first model; rectangular XYZ printers, including CoreXY, are supported by the shared architecture.
 **Document type:** Living design spec + milestone checklist
 
 ---
@@ -19,6 +19,12 @@ Add a manufacturing loop to the game:
 6. Consumables and wear are integrated with the existing `ItemWearState` system.
 
 The feature is intentionally a **gameplay abstraction** of 3D printing, not a slicer or a physical simulator.
+
+> **HIGH PRIORITY — printer/enclosure features must stay printer-agnostic**
+>
+> Do not hardcode model names, MK4S-specific GameObject names, fixed spool sides, or per-model conditionals into shared runtime code. Use serialized `PartLocation` references, `SpoolSlotDefinition` data, role-based docking sources/targets, `PrinterMotionBase` subclasses, authored wear data, and per-prefab critical/reference lists.
+>
+> If a requested printer/enclosure feature cannot be expressed through those contracts, generalize the shared contract first rather than adding a model-specific branch. New rectangular XYZ models should normally be added through prefabs/data; CoreXY uses `CoreXYPrinterMotion`, independent XYZ uses `CartesianPrinterMotion`. Delta/polar volumes and multi-material printing are out of scope until explicitly approved.
 
 ---
 
@@ -2106,6 +2112,8 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-19 | Installed printers are inspected through the enclosure | One interaction surface; integrity/remove use the printer root, wear includes printer internals |
 | 2026-11-19 | Enclosure-installed printers get a larger bind sphere | `EnclosureRadiusMultiplier` (default `1.5×`) keeps the enclosure printer easy to target |
 | 2026-11-19 | Bind occlusion ignores the installed enclosure assembly | Resolved through `PartsAssembly.FindEnclosingPrinterEnclosure`, so runtime install/uninstall does not rely on stale environment state; enclosure colliders still block other printers |
+| 2026-11-20 | Printer/enclosure features must stay printer-agnostic | Shared runtime uses serialized references, spool definitions, role-based docking and `PrinterMotionBase`; model-specific data belongs in prefabs/assets, never runtime name/type branches |
+| 2026-11-20 | Critical-list placeholders are ignored at runtime | Empty `CriticalPartLocations` entries do not block jobs or print "unassigned reference"; the editor configuration check reports genuinely unassigned entries |
 | 2026-11-20 | Enclosure docking uses the existing `PartLocation` sockets | Printer, spool, battery closet and adapter are installed parts; plug reset points stay free-part transforms because plugs are not installed parts |
 | 2026-11-20 | Docking relocates printer accessories and hides `spool_holder` | Keeps the installed printer visually consistent with the enclosure and restores the standalone layout on removal |
 | 2026-11-20 | Installed and free-part docking are role-based | `DockingSources`/`DockingTargets` handle installed accessories; `FreePartDockingSources`/`FreePartDockingTargets` handle plugs and other loose parts without hardcoded roles |

@@ -2016,6 +2016,40 @@ namespace Coursework_Master_Degree.Items.FFF
                     "[Printer] Hard-stop wear locations are not fully assigned.",
                     this);
             }
+
+            WarnAboutUnassignedCriticalEntries(
+                CriticalPartLocations,
+                "Printer");
+
+            PrinterEnclosure enclosure = DockedEnclosure;
+
+            if (enclosure != null)
+            {
+                WarnAboutUnassignedCriticalEntries(
+                    enclosure.CriticalPartLocations,
+                    "PrinterEnclosure");
+            }
+        }
+
+        private void WarnAboutUnassignedCriticalEntries(
+            PartLocation[] locations,
+            string owner)
+        {
+            if (locations == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < locations.Length; i++)
+            {
+                if (locations[i] == null)
+                {
+                    Debug.LogWarning(
+                        $"[Printer] {owner}.CriticalPartLocations has an " +
+                        $"unassigned entry at index {i}. It is ignored at runtime.",
+                        this);
+                }
+            }
         }
 
         private void AutoAssign()
