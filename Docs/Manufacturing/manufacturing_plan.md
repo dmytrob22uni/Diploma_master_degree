@@ -915,10 +915,14 @@ Important:
 `PrinterMotionSimulator` generates cheap procedural print-space positions:
 
 - Layer count from model height / layer height.
-- Each layer follows a small Lissajous or zigzag path inside the placed object's bed-local bounding box, not over the whole plate.
+- Precompute conservative XZ bounds per layer from the captured mesh once at job start; empty bands inherit the nearest populated layer.
+- Each layer follows a small Lissajous path inside its layer bounds, not over the whole plate or the full object box on every layer.
+- Use a continuous global layer parameter so X/Z do not reset phase at layer boundaries; interpolate adjacent layer bounds for a smooth silhouette transition.
+- Add a continuous Z-hop bump that is zero at both layer boundaries.
+- Visual pace follows `EstimatedSeconds`, which already includes the console SPEED preset (`80 / 160 / 240`); do not scale it again in the path.
+- Per-frame work is O(1): no mesh reads, capping or allocations during `Tick`.
 - `ApplyNozzlePosition` takes X/Z in bed-local metres and Y as nozzle height above the bed.
 - MK4S implements X on the extruder, Z on the bed carriage, and Y on the gantry. A dropping-bed printer implements the same roles differently.
-- Add a small Z-hop on layer changes.
 - Do not attempt real perimeter/infill geometry.
 - Use a seeded pattern so the motion is deterministic per job.
 - Respect the rectangular build volume / soft limits.
@@ -1642,7 +1646,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - `PrintedObjectDataHolder`: runtime quality, partial/completed state, printer ownership and `IsOnPrintBed`.
 - `PrintRevealController`: per-renderer `_reveal_height` through `MaterialPropertyBlock`, quantized to layer height and updated at ~15 Hz.
 - `PrintedSupportPresenter`: sample overhang triangles for the placed object, cluster them to a capped number of points (`48`), and spawn thin vertical support columns. Columns reveal with print height and remain attached to the finished object; M5 adds support removal.
-- `PrinterMotionSimulator`: seeded procedural path inside the placed object's bed-local bounding box, layer changes and a small Z-hop. It never moves outside the rectangular build volume.
+- `PrinterMotionSimulator`: seeded procedural path inside precomputed per-layer bed-local bounds, with a continuous layer-to-layer path and a continuous Z-hop. Bounds are built once at job start; it never moves outside the rectangular build volume.
 - `CartesianPrinterMotion` integration through `PrinterMotionBase`; CoreXY uses the same contract when its model prefab exists.
 - Spool integration: use the selected spool's `PrintingMaterial` (the shader with `_reveal_height` and backface lighting) during live printing; completed prints apply the spool's regular `FinalMaterial`.
 - No live layer cap: printing keeps the shader reveal and backface lighting.
@@ -1663,8 +1667,9 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - With `Auto` supports, visible support columns appear under the overhangs and reveal with the print; `None` prints no supports. Supports remain attached after completion.
 - Reveal starts empty and grows bottom-up; live printing has no cap.
 - Reveal follows the moving bed correctly.
-- The nozzle moves inside the placed object's bounding box, not over the whole plate.
+- The nozzle moves inside the per-layer object bounds, not over the whole plate or the full object box on every layer.
 - The nozzle appears to work over the printed area; axes stay within soft limits and do not clip.
+- Layer transitions are continuous; the head does not teleport between layers.
 - The selected spool's printing shader drives the reveal; completion switches the object to the spool's regular material.
 - Pause and hard stop move the head smoothly to `HomePositionNormalized`.
 - Pause settled: after cooling and parking, the print shows a sliced capped surface with final material; resume removes it and restores the printing shader/reveal.
@@ -1968,7 +1973,7 @@ Fill this table during M0 and update it during later milestones.
 - Spool printing material during the print; regular final material for completed and partial surfaces.
 - Auto supports render as columns under overhangs, follow print height, and remain attached.
 - No supports render when `None`.
-- Nozzle path stays inside the placed object's bounding box.
+- Nozzle path stays inside each layer's bounds at `0.5x` / `1x` / `2x` scale and with rotation; Slow/Normal/Fast visibly change pace; layer transitions are continuous.
 - Bed motion and nozzle path.
 - M3 spool visual with the printed object present.
 - Pause and hard stop park at `HomePositionNormalized`.
@@ -2187,10 +2192,11 @@ Assets/Scripts/Coursework_Master_Degree/
 │   │   ├── PrinterMotionBase.cs
 │   │   ├── CartesianPrinterMotion.cs
 │   │   ├── CoreXYPrinterMotion.cs
-│   │   ├── PrinterMotionSimulator.cs
 │   │   └── AxisBinding.cs
 │   ├── Visuals/
 │   │   ├── PrintedObjectPresenter.cs
+│   │   ├── PrinterMotionSimulator.cs
+│   │   ├── PrintLayerBounds.cs
 │   │   ├── PrintRevealController.cs
 │   │   └── PrintBedAnchor.cs
 │   └── Binding/
@@ -2309,6 +2315,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | Enclosure continuity is a one-way job flag | Continuous enclosure keeps `+5`; resuming outside applies `-9` once; reinstalling does not restore the bonus and toggles never stack |
 | 2026-11-20 | Time calibration lives in the profile baseline, not a global factor | Exact editor calibration `5.88922 mm3/s` reproduces the bunny `36 720 s`; runtime layer/speed/infill/support multipliers are `1.0` at the reference |
 | 2026-11-21 | Editor seed defaults are round | Reference flow `12 x 0.5 = 6.0 mm3/s` and packing `1.0`; exact bunny calibration `5.88922 / 0.94943` stays available |
+| 2026-11-21 | Nozzle path uses per-layer bounds and a continuous layer parameter | Bounds precomputed once from the mesh; X/Z phase and Z-hop stay continuous across layers; SPEED stays duration-driven and is not scaled again |
 | 2026-11-20 | Filament seed is calibrated like the time seed | Editor filament packing `0.94943` (`85.36 / 89.90716`) restores the bunny `85.36 m`; Grid/Auto matches the slicer `28.53 m` |
 | 2026-11-20 | Shell diagnostics share the runtime formula | `PrintEstimates.MaterialShellShare` drives both the scale rule and the editor tool; the bunny reports `14.0%` solid shell, `44.4%` Grid material shell and `6.22x` at scale 2 |
 | 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |
