@@ -141,6 +141,11 @@ namespace Coursework_Master_Degree.Items.FFF
         [Tooltip("Real-world head travel speed during calibration.")]
         public float CalibrationMoveSpeedMetersPerSecond = 0.25f;
 
+        [Tooltip(
+            "Part locations whose install or removal invalidates calibration. " +
+            "Use mechanical/geometry-affecting parts only.")]
+        public PartLocation[] CalibrationSensitiveLocations;
+
         [SerializeField]
         private PrinterTemperatureModel temperatureModel =
             new PrinterTemperatureModel();
@@ -1290,11 +1295,22 @@ namespace Coursework_Master_Degree.Items.FFF
             return null;
         }
 
-        public void NotifyPartChanged()
+        public void NotifyPartChanged(PartLocation location)
         {
-            if (activeJob != null)
+            if (!isCalibrated ||
+                location == null ||
+                CalibrationSensitiveLocations == null)
             {
-                isCalibrated = false;
+                return;
+            }
+
+            for (int i = 0; i < CalibrationSensitiveLocations.Length; i++)
+            {
+                if (CalibrationSensitiveLocations[i] == location)
+                {
+                    isCalibrated = false;
+                    return;
+                }
             }
         }
 
@@ -2020,6 +2036,15 @@ namespace Coursework_Master_Degree.Items.FFF
             WarnAboutUnassignedCriticalEntries(
                 CriticalPartLocations,
                 "Printer");
+
+            if (CalibrationSensitiveLocations == null ||
+                CalibrationSensitiveLocations.Length == 0)
+            {
+                Debug.LogWarning(
+                    "[Printer] CalibrationSensitiveLocations is empty; " +
+                    "part changes will not invalidate calibration.",
+                    this);
+            }
 
             PrinterEnclosure enclosure = DockedEnclosure;
 

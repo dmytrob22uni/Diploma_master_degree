@@ -187,7 +187,7 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 3. The grid is inset by `CalibrationPaddingMeters`; movement speed is `CalibrationMoveSpeedMetersPerSecond`.
 4. Calibration returns smoothly to the global `HomePositionNormalized` and marks the printer calibrated. `Hard stop` cancels it and also moves to the global home. Calibration travel and dwell follow the printer's `PrintSpeedMultiplier`; use `1×` when visually inspecting the grid.
 5. Calibration does not consume a job and is blocked while a print is queued, partial or finished.
-6. Calibration quality is evaluated when printing ends. A calibrated printer applies `1.0×`; an uncalibrated printer applies a random `0.7–1.0×` at the end. Changing a part while the printer is paused invalidates calibration for that job, so it finishes with the random factor. The console warning stays visible until the finished/partial print is removed.
+6. Calibration quality is evaluated when printing ends. A calibrated printer applies `1.0×`; an uncalibrated printer applies a random `0.7–1.0×` at the end. Changing a **calibration-sensitive** part (nozzle, heater, extruder thermistor, print bed/thermistor/plate, axis belts, rotors or bearings) invalidates calibration in both idle and active states. Spool, battery closet/adapter and enclosure-accessory changes do not invalidate calibration. A job whose calibration is invalidated finishes with the random factor; the console warning stays visible until the finished/partial print is removed.
 6. `HomePositionNormalized` lives on `PrinterMotionBase` and is drawn as an orange gizmo. By default it is top-left with the moving bed 3/4 forward (`0, 1, 0.75`). Enable `UseCustomHomePosition` to reveal the `0..1` X/Y/Z sliders (`HomeX`, `HomeY`, `HomeZ`). X/Z map across the usable build volume; Y maps from the plate to the build-volume top. The same position also sets the bed home on bed-slinger printers because the bed is one of those print-space axes; fixed-bed printers simply do not use a bed axis. This is preferred over manually posing a head transform on the prefab because it stays valid across axis mappings, printer variants and build volumes. A child marker transform can feed the same normalized value later if visual authoring is needed.
 7. Calibration has an optional height-only override: enable `UseCustomCalibrationHomeHeight` and set `CalibrationHomeY`. X/Z always follow the global home; after calibration the head returns to the full global home. The height override is drawn as a green gizmo and does not change spawn, pause, hard-stop or post-print home.
 
@@ -480,6 +480,7 @@ Printer
   - PartLocation NozzleWearLocation
   - PartLocation HeaterWearLocation
   - PartLocation PrintBedWearLocation
+  - PartLocation[] CalibrationSensitiveLocations
   - List<SpoolSlotDefinition> SpoolSlots
   - List<PrinterDockingSource> DockingSources
   - List<PrinterFreePartDockingSource> FreePartDockingSources
@@ -788,7 +789,7 @@ PrinterTemperatureState
 - Preheat completes when both nozzle and bed are within tolerance (default ±2 °C).
 - In M3, a preheat timeout logs a warning and enters `Fault`; full thermal-failure gameplay is M5.
 - Raw quality is capped at `90` even with an enclosure. The post-process state can polish the finished object later.
-- Calibration quality is finalized when printing completes. A calibrated printer uses `1.0×`; an uncalibrated printer uses a random `0.7–1.0×`. A part changed while the job is paused invalidates calibration, so that job also finishes uncalibrated. The warning remains in the console until the bed is cleared.
+- Calibration quality is finalized when printing completes. A calibrated printer uses `1.0×`; an uncalibrated printer uses a random `0.7–1.0×`. A calibration-sensitive part change invalidates calibration in idle or active states, so the job finishes uncalibrated. Spool/battery/adapter/enclosure-accessory changes do not. The warning remains in the console until the bed is cleared.
 
 ### 6.6 Wear and filament
 
@@ -1506,7 +1507,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - `CalibrationLiftHeightMeters`, `CalibrationMoveSpeedMetersPerSecond` and `CalibrationPointDwellSeconds` are exposed;
   - calibration travel and dwell use the active `PrintSpeedMultiplier`; use `1×` to inspect the grid visually;
   - successful calibration marks the printer calibrated; uncalibrated jobs get a random `0.7–1.0×` quality factor at the end of printing and a console warning;
-  - changing a part while paused sets `IsCalibrated = false` and keeps the warning visible until the finished/partial print is removed;
+  - changing a calibration-sensitive part sets `IsCalibrated = false` whether the printer is idle or on a job; the warning stays visible until the finished/partial print is removed. Spool and enclosure-accessory changes do not invalidate calibration;
   - `Hard stop` cancels calibration and moves to the global home.
 - `PrinterMotionBase.HomePositionNormalized` is the global start position for spawn, pause, hard stop and post-print parking. It is drawn as an orange gizmo; `UseCustomHomePosition` exposes the normalized X/Y/Z sliders, and the same normalized X/Z also defines the moving bed home on bed-slinger printers.
 - Calibration has a height-only override via `UseCustomCalibrationHomeHeight` + `CalibrationHomeY` (green gizmo). X/Z and the return position always use the global home.
@@ -1543,7 +1544,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - resume applies the pause seam/quality penalty;
   - the print does not fail merely because it was paused.
 - Calibration with `N` grid points moves smoothly at the selected `SIM SPEED`, touches the plate at every point, and returns to the global home.
-- An uncalibrated printer starts with a warning but is not blocked; its final quality uses a random `0.7–1.0×` factor at print completion. Changing a part while paused invalidates calibration and keeps the warning visible until the bed is cleared.
+- An uncalibrated printer starts with a warning but is not blocked; its final quality uses a random `0.7–1.0×` factor at print completion. Changing a calibration-sensitive part invalidates calibration in idle or active states and keeps the warning visible until the bed is cleared; spool/enclosure-accessory changes do not.
 - The console shows the chosen simulation multiplier and live printer status.
 - A printer can expose zero, one, two, three or four selectable spool slots; the console hides the selector for zero/one and shows the rest dynamically.
 - A CoreXY prefab using `CoreXYPrinterMotion` reaches the same print-space positions as the Cartesian implementation; belt/motor dynamics are not simulated.
@@ -1564,7 +1565,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 5. Verify no NaN/Inf in temperatures, progress, or condition.
 6. Verify partial print blocks the next job and `Clear bed` releases it.
 7. Pause, wait for cooling, swap a nozzle/fan/belt, resume and confirm the seam penalty.
-8. Attempt to swap a print-bed part while paused and confirm it is refused.
+8. Attempt to swap a print-bed part while paused and confirm it is refused. After calibration, change a spool or enclosure accessory in idle and during a paused job and confirm calibration remains; change a nozzle/plate/axis part in both states and confirm it invalidates.
 9. Run calibration with `N = 3` and `N = 5`; confirm the head moves smoothly from its current position, lifts, touches every point, returns to `HomePositionNormalized`, and `Hard stop` cancels/homes. Repeat at more than one `SIM SPEED` value; toggle the calibration height override and confirm it affects only the calibration start/lift.
 10. Verify the spool rotates in the correct direction and the visible filament level follows the wear dictionary.
 11. Check enclosure and no-enclosure quality differences; confirm the raw maximum is `90`.
@@ -2127,7 +2128,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | CoreXY uses a coupled horizontal carriage | `CoreXYPrinterMotion` composes X/Z onto one carriage; rectangular XYZ volumes remain shared with `CartesianPrinterMotion` and no belt/motor simulation is added |
 | 2026-11-19 | Spool wear visuals use the upper condition threshold | Avoids showing the empty child while usable filament remains |
 | 2026-11-19 | Calibration is recommended, not required | Uncalibrated prints warn and use a random `0.7–1.0×` quality factor at completion; calibrated prints use `1.0×` |
-| 2026-11-19 | Part changes during pause invalidate calibration | The current job keeps a warning and finalizes with the uncalibrated factor until the print is removed |
+| 2026-11-19 | Only calibration-sensitive part changes invalidate calibration | Nozzle/heater/thermistors, bed/plate and axis mechanics invalidate in idle and active states; spool and enclosure accessories do not |
 | 2026-11-18 | Editor profile generator seeds data | Mesh bounds/volume/overhang are automatable; exact time still needs a slicer reference |
 | 2026-11-18 | Supports are `None`/`Auto`, driven by meta | The model's geometry decides whether supports are needed; the player chooses the cost |
 | 2026-11-18 | Profile split into baseline + requirements; size derived | Two calibratable numbers per object; dimensions come from prefab bounds |

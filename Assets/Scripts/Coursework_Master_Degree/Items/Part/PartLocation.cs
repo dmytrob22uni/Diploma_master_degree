@@ -273,7 +273,7 @@ namespace Coursework_Master_Degree.Items.Part
 
             part.GetComponent<Printer>()?.DockToEnclosure();
 
-            Printer.FindFor(gameObject)?.NotifyPartChanged();
+            Printer.FindFor(gameObject)?.NotifyPartChanged(this);
         }
 
         public GameObject Remove()
@@ -289,7 +289,7 @@ namespace Coursework_Master_Degree.Items.Part
 
             DetachPart();
 
-            Printer.FindFor(gameObject)?.NotifyPartChanged();
+            Printer.FindFor(gameObject)?.NotifyPartChanged(this);
 
             // The free-part carrier can have been moved with the part while
             // it was used as a free part. Return it to the authored home so
