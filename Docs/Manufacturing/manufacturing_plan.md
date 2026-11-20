@@ -244,6 +244,10 @@ M3 enclosure behavior:
   - `float DraftFactor`
   - `float ParticulateFactor`
 - `PrinterEnclosure` marks the physical enclosure and binds the printer inside its bounds.
+- `PrinterEnclosure.Doors` auto-finds child `Door` components. All doors must be closed and settled before a print starts or resumes; an animating door counts as not closed.
+- Door interactions are available while idle, paused, cooling or finished. During preheating, printing or calibration they return a clear interlock reason instead of opening. If a door is opened by another path during preheating/printing, the printer pauses automatically.
+- `PrintJobValidator`, `Printer.TryResume` and `Printer.TryStartPendingJob` enforce the closed-door requirement. The console validation list and printer status show the warning; `TryStartPendingJob` keeps the queued job until the doors close.
+- Doors implement `IPrinterBusyInteraction`, so the busy-printer hover gate does not suppress their interaction prompt. The door itself explains whether it is locked, interlocked or ready.
 - `PrinterTemperatureModel` reads chamber temperature and slows cooling when enclosed.
 - `PrintQualityEstimator` applies an enclosure bonus / no-enclosure penalty; raw quality caps at `90`.
 - Enclosure parts join the printer wear scan, so fans, filters, thermometers and fire-suppression parts wear during a job.
@@ -494,6 +498,8 @@ Printer
   - bool IsCalibrated
   - bool IsPausedServiceReady
   - bool CanOpenInteractions
+  - bool CanOpenEnclosureDoors
+  - float HeatingProgress01 / CoolingProgress01
   - Device BoundDevice
   - string StatusSummary
   - PrintedObjectPresenter PrintedObject
@@ -746,7 +752,7 @@ Validation rules:
 - A printer is selected and bound.
 - Printer is `Idle`; `Finished` means a completed print is still on the bed and blocks a new job until the bed is cleared. `HasPartialPrint` blocks separately.
 - Printer has all critical printer parts installed.
-- When the printer is installed in a `PrinterEnclosure`, the enclosure's required parts are installed as well.
+- When the printer is installed in a `PrinterEnclosure`, the enclosure's required parts are installed as well, and all enclosure doors are closed and settled.
 - No installed part is completely worn out (`0%`); any installed part at `0%` blocks.
 - Every installed part at `20%` or less warns; critical parts additionally warn between `20%` and `40%`.
 - All installed part conditions feed the raw-quality hardware penalty.
@@ -801,6 +807,7 @@ PrinterTemperatureState
 - Preheat uses a linear heating rate toward target.
 - Printing holds targets; small deviations are allowed.
 - Cooling uses an exponential decay toward ambient.
+- Hover/console state progress uses the temperatures captured at the state transition: `Heating 0–100%` and `Cooling 0–100%` follow the actual interval; printing and paused states use job progress.
 - An enclosure is detected through `PrinterEnclosure` bounds. It slows cooling, lets the chamber hold heat and improves the quality estimate. Draft, particulate and warp effects remain M5.
 - Preheat completes when both nozzle and bed are within tolerance (default ±2 °C).
 - In M3, a preheat timeout logs a warning and enters `Fault`; full thermal-failure gameplay is M5.
@@ -916,7 +923,9 @@ Important:
 
 - Layer count from model height / layer height.
 - Precompute conservative XZ bounds per layer from the captured mesh once at job start; empty bands inherit the nearest populated layer.
+- Transform those bounds through the actual printed-object-to-bed matrix (bed-anchor inverse x object local-to-world), so position, yaw, scale and bed-anchor rotation are handled together instead of reconstructed from placement fields.
 - Each layer follows a small Lissajous path inside its layer bounds, not over the whole plate or the full object box on every layer.
+- Each job selects a seeded motion profile: randomized Lissajous frequencies/phases, a secondary harmonic and low-frequency Perlin drift. The path stays inside the layer bounds and is deterministic for that job.
 - Use a continuous global layer parameter so X/Z do not reset phase at layer boundaries; interpolate adjacent layer bounds for a smooth silhouette transition.
 - Add a continuous Z-hop bump that is zero at both layer boundaries.
 - Visual pace follows `EstimatedSeconds`, which already includes the console SPEED preset (`80 / 160 / 240`); do not scale it again in the path.
@@ -928,6 +937,15 @@ Important:
 - Respect the rectangular build volume / soft limits.
 - Pause and hard stop both move the head smoothly to `HomePositionNormalized`.
 - After cooling, normal completion moves the head smoothly to `HomePositionNormalized`; the print becomes removable only when both cooling and parking finish. Calibration may start/lift from `CalibrationHomePrintPosition` (X/Z global, optional height). `Home()` remains the mechanical axis-home primitive for debug/mechanical use only.
+
+**Path diversity model**
+
+- The job seed mixes the object id, printer hash and a random per-job salt, so the same object does not repeat the exact same path on every print.
+- Primary X/Z Lissajous frequencies are randomized in `1.3–2.7` and `2.0–3.8` cycles per layer, with random phases.
+- A secondary harmonic at `35–65%` of the primary frequency is mixed at `0.10–0.32` weight to break up the simple figure-eight.
+- Low-frequency Perlin drift (`0.29–0.37` per layer) shifts phase and position gradually across the object.
+- All terms are continuous in the global layer parameter; the result is clamped to the current layer bounds. Pause/resume keeps the same seed and path.
+- This is cosmetic path variety, not a real slicer perimeter/infill path.
 
 The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S transforms directly.
 
@@ -1034,8 +1052,10 @@ Behavior:
   - `printer_spool_meters_text`
   - `printer_pause_penalty_text`
 - The five fields are only active for a busy printer or its enclosure. Empty spool/pause fields are hidden; normal take/inspect prompts return when the printer is idle.
+- `printer_state_progress_text` uses `Heating 0–100%` / `Cooling 0–100%` from the interval start temperatures. Printing and paused states use job progress.
 - `ItemHoverInfo` refreshes the five fields while the same printer collider stays hovered.
-- While the printer is running or calibrating, `ItemHoverInteract` suppresses its prompt so it does not duplicate the status.
+- `Printer.FindFor` follows `ISurfacePlaceable.ParentSurfaceDataHolder`, so items placed on enclosure shelves still resolve to the printer and show its busy status. `ItemHoverInfo` applies the same check when hovering an enclosure surface that has items on it.
+- While the printer is running or calibrating, `ItemHoverInteract` suppresses its prompt so it does not duplicate the status; door interactables are exempt so they can show their interlock reason.
 - Once the printer is `Paused`, cooled below `SafeServiceTemperatureC` and the head is parked, `Printer.IsPausedServiceReady` / `CanOpenInteractions` become true: the name and five status fields remain visible, and `interact_root` also appears with `Parts wear`, `Parts integrity` and `Parts remove`. Individual parts can still be refused by `ServiceBlockedDuringPrint`.
 - Resuming or hard-stopping the job closes the interaction list again.
 - In `ItemsSell`, a busy or bound printer/enclosure is `Wrong`, uses the selling ghost, cannot be sold, and puts the concise reason in `item_hover_sell_description`. Busy takes priority over connected.
@@ -1573,6 +1593,9 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Preheat completes at target temperature within tolerance.
 - Print progress reaches 100% at the expected simulated duration.
 - Cooling returns temperatures toward ambient; enclosure cooling is visibly slower.
+- Heating and cooling percentages track the actual temperature interval and update in the console and FreeWalk hover.
+- Items placed on enclosure shelves or surfaces still show the busy printer name and status.
+- All enclosure doors must be closed and settled before start/resume. Open doors show a console warning, remain interactable when idle/paused/cooling/finished, and interlock during preheating/printing/calibration.
 - Nozzle, bed/plate/heater/thermistor, enclosure parts and selected-spool wear are applied to the correct parts.
 - Every existing wear delta type is exercised by at least one installed printer/enclosure part or by the completed-print use pass.
 - The selected spool's condition and remaining filament decrease consistently; the unselected spool is untouched.
@@ -1627,8 +1650,12 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 18. Start a print on an uncalibrated printer; confirm the warning appears and final quality is in the `0.7–1.0×` range. Run calibration, then start again and confirm the warning disappears and quality is `1.0×`.
 19. With multiple printers connected, change object/settings/placement on printer A, switch to printer B, change them there, then switch back; confirm A's draft is restored. Switch objects on one printer and confirm each object's settings and placement return.
 20. Instantiate a rectangular CoreXY prefab with `CoreXYPrinterMotion`; run the motion debug and calibration checks. Confirm X/Z compose onto the shared carriage, the bed/gantry Y role maps correctly, placement/validation still use the rectangular build volume, and no `Printer`/job code changes are needed.
+21. Hover printer and enclosure through preheat, printing, cooling and resume-heating; confirm the state percentage moves from 0 to 100 and matches the temperature interval rather than job progress.
+22. Place a spool or part on an enclosure shelf while the printer is printing; confirm hovering it still shows the printer name and all five status fields.
+23. Start with one door open; confirm `Start print` is blocked with the console warning. Close both doors and confirm the job starts. Pause, open both doors, confirm they open and `Resume` is blocked with the warning; close and resume.
+24. Finish a print and wait for cooling and homing. Confirm both doors open, the finished object can be removed, and the enclosure/printer service interactions remain blocked until the object is removed. Print the same object twice and confirm the head paths differ while staying inside the layer bounds; test rotated and scaled placements.
 
-**Sign-off (2026-11-20):** The MK4S M3 manual gate passed, including the calibration-sensitive part check. Deferred until the relevant assets exist: CoreXY play-mode validation (no CoreXY model/prefab) and 3/4-slot console presentation (no authored printer with that configuration).
+**Sign-off (2026-11-20):** The MK4S M3 manual gate passed, including the calibration-sensitive part check. The 2026-11-21 thermal/door/head-path checks were added afterward and remain pending. Deferred until the relevant assets exist: CoreXY play-mode validation (no CoreXY model/prefab) and 3/4-slot console presentation (no authored printer with that configuration).
 
 **M3 gate passed; M4 may proceed. The deferred variant checks remain acceptance items for when those printer configurations are authored.**
 
@@ -1668,6 +1695,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Reveal starts empty and grows bottom-up; live printing has no cap.
 - Reveal follows the moving bed correctly.
 - The nozzle moves inside the per-layer object bounds, not over the whole plate or the full object box on every layer.
+- The path follows the actual placed object after rotation, scale and position changes.
+- Repeating the same object produces a different seeded path while staying inside the same layer bounds.
 - The nozzle appears to work over the printed area; axes stay within soft limits and do not clip.
 - Layer transitions are continuous; the head does not teleport between layers.
 - The selected spool's printing shader drives the reveal; completion switches the object to the spool's regular material.
@@ -1974,6 +2003,7 @@ Fill this table during M0 and update it during later milestones.
 - Auto supports render as columns under overhangs, follow print height, and remain attached.
 - No supports render when `None`.
 - Nozzle path stays inside each layer's bounds at `0.5x` / `1x` / `2x` scale and with rotation; Slow/Normal/Fast visibly change pace; layer transitions are continuous.
+- Repeat the same object on the same printer and confirm the seeded path differs without leaving the layers.
 - Bed motion and nozzle path.
 - M3 spool visual with the printed object present.
 - Pause and hard stop park at `HomePositionNormalized`.
@@ -2043,7 +2073,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
 
 
 M1 is code-complete:
@@ -2315,7 +2345,11 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | Enclosure continuity is a one-way job flag | Continuous enclosure keeps `+5`; resuming outside applies `-9` once; reinstalling does not restore the bonus and toggles never stack |
 | 2026-11-20 | Time calibration lives in the profile baseline, not a global factor | Exact editor calibration `5.88922 mm3/s` reproduces the bunny `36 720 s`; runtime layer/speed/infill/support multipliers are `1.0` at the reference |
 | 2026-11-21 | Editor seed defaults are round | Reference flow `12 x 0.5 = 6.0 mm3/s` and packing `1.0`; exact bunny calibration `5.88922 / 0.94943` stays available |
-| 2026-11-21 | Nozzle path uses per-layer bounds and a continuous layer parameter | Bounds precomputed once from the mesh; X/Z phase and Z-hop stay continuous across layers; SPEED stays duration-driven and is not scaled again |
+| 2026-11-21 | Nozzle path uses per-layer bounds and a continuous layer parameter | Bounds precomputed once from the mesh through the actual object-to-bed matrix; X/Z phase and Z-hop stay continuous across layers; SPEED stays duration-driven and is not scaled again |
+| 2026-11-21 | Head path varies per job | Object/printer hash plus a random salt seeds Lissajous frequencies, a secondary harmonic and low-frequency Perlin drift; layer bounds remain authoritative |
+| 2026-11-21 | Enclosure doors are a shared interlock | `PrinterEnclosure.Doors` auto-finds generic `Door` components; closed doors are required for start/resume and opening during active printing pauses the job |
+| 2026-11-21 | Thermal percentages are interval-based | Heating/cooling progress is measured from the temperatures captured at the state transition, not from job progress |
+| 2026-11-21 | Surface placement still resolves printer status | `Printer.FindFor` follows `ISurfacePlaceable.ParentSurfaceDataHolder`; items on enclosure shelves show the busy printer status |
 | 2026-11-20 | Filament seed is calibrated like the time seed | Editor filament packing `0.94943` (`85.36 / 89.90716`) restores the bunny `85.36 m`; Grid/Auto matches the slicer `28.53 m` |
 | 2026-11-20 | Shell diagnostics share the runtime formula | `PrintEstimates.MaterialShellShare` drives both the scale rule and the editor tool; the bunny reports `14.0%` solid shell, `44.4%` Grid material shell and `6.22x` at scale 2 |
 | 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |

@@ -69,10 +69,13 @@ The final setup guide must cover, in order:
    - wire enclosure `SpoolSockets`, including optional slot ids and overflow validation;
    - verify only the selected spool feeds a job. Multi-material is not part of this setup.
 
-6. **Enclosure docking**
+6. **Enclosure docking and doors**
    - wire installed-accessory roles;
    - wire free-part roles and reset transforms;
    - verify dock/undock, part occupancy and free-part reset behavior;
+   - add a generic `Door` component to each enclosure door; `PrinterEnclosure` auto-finds child doors, so no printer-model branch is needed;
+   - verify start/resume is blocked until all doors are closed and settled, and that door interactions are available when idle, paused, cooling or finished;
+   - verify opening a door during active heating/printing pauses the printer and shows the console warning;
    - do not hardcode battery-closet, adapter, spool or plug categories outside the role data.
 
 7. **Metadata and catalog**
@@ -88,6 +91,8 @@ The final setup guide must cover, in order:
    - 0/1/2–4 spool layouts;
    - enclosure socket overflow and role-based docking;
    - start, pause, resume, hard stop, paused-safe Wear/Integrity/Remove interactions, manual completed/partial removal and sale blocking;
+   - heating/cooling percentages during preheat, cooling and resume-heating; occupancy status from items on enclosure shelves;
+   - closed-door start/resume, open-door console warning, door interaction while idle/paused/cooling/finished, and auto-pause when a door opens during active printing;
    - wear-coefficient approval in `wear_coefficients_manual_gate.md`;
    - no model-specific assumptions leaked into shared runtime code.
 
