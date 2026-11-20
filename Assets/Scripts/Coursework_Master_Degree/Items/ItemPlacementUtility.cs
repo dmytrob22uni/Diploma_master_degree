@@ -106,5 +106,33 @@ namespace Coursework_Master_Degree.Items
 
             return itemPart.transform;
         }
+
+        /// <summary>
+        /// Returns a free part to its authored reset point. A wearable free
+        /// part moves its PartLocation carrier so the socket travels with it.
+        /// </summary>
+        public static void ResetFreePart(GameObject itemPart, Transform location)
+        {
+            if (itemPart == null || location == null)
+            {
+                return;
+            }
+
+            Transform movableTransform =
+                GetFreePartMovableTransform(itemPart);
+
+            if (movableTransform == null)
+            {
+                return;
+            }
+
+            movableTransform.SetParent(location, true);
+            movableTransform.SetPositionAndRotation(
+                location.position,
+                location.rotation);
+
+            RemoveFromSurface(itemPart);
+            HidePlacementGhosts(itemPart);
+        }
     }
 }

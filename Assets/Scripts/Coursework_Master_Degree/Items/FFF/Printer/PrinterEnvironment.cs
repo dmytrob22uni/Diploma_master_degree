@@ -61,6 +61,31 @@ namespace Coursework_Master_Degree.Items.FFF
             }
         }
 
+        /// <summary>
+        /// Applies the enclosure state determined by printer docking. This
+        /// keeps runtime install/remove authoritative instead of relying on
+        /// the awake-time bounds detection.
+        /// </summary>
+        public void SetEnclosure(PrinterEnclosure enclosure, Printer printer)
+        {
+            if (Enclosure != null && Enclosure != enclosure)
+            {
+                Enclosure.UnbindPrinter(printer);
+            }
+
+            Enclosure = enclosure;
+
+            if (Enclosure != null)
+            {
+                Enclosure.BindPrinter(printer);
+                HasEnclosure = true;
+                return;
+            }
+
+            HasEnclosure = false;
+            ChamberTemperature = AmbientTemperature;
+        }
+
         private void OnValidate()
         {
             if (!HasEnclosure)

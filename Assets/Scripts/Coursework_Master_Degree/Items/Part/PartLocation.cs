@@ -160,6 +160,18 @@ namespace Coursework_Master_Degree.Items.Part
                 return false;
             }
 
+            ItemDataHolder partItem = part.GetComponent<ItemDataHolder>();
+            string enclosureBlockReason =
+                Printer.GetPrinterEnclosureInstallBlockReason(
+                    partItem,
+                    GetComponentInParent<PartsAssembly>());
+
+            if (!string.IsNullOrEmpty(enclosureBlockReason))
+            {
+                Debug.Log(enclosureBlockReason);
+                return false;
+            }
+
             if (HasFreeInstallPrerequisites())
             {
                 Debug.Log("Trying to install a part with missing install prerequisites. Can't do that");
@@ -257,18 +269,11 @@ namespace Coursework_Master_Degree.Items.Part
             // free-part home before installing the part into it.
             ResetToFreePartLocation(part);
 
-            // The location is the socket: the part must adopt its position,
-            // rotation and fitment scale instead of keeping the world scale it
-            // had while being carried.
-            part.transform.SetParent(gameObject.transform, false);
-            part.transform.SetAsFirstSibling();
-            part.transform.localPosition = Vector3.zero;
-            part.transform.localRotation = Quaternion.identity;
-            part.transform.localScale = Vector3.one;
+            AttachPart(part);
 
-            InstalledPart = part;
+            part.GetComponent<Printer>()?.DockToEnclosure();
 
-            IsOccupied = true;
+            Printer.FindFor(gameObject)?.NotifyPartChanged();
         }
 
         public GameObject Remove()
@@ -280,10 +285,11 @@ namespace Coursework_Master_Degree.Items.Part
 
             GameObject part = InstalledPart;
 
-            InstalledPart.transform.SetParent(null);
-            InstalledPart = null;
+            part.GetComponent<Printer>()?.UndockFromEnclosure();
 
-            IsOccupied = false;
+            DetachPart();
+
+            Printer.FindFor(gameObject)?.NotifyPartChanged();
 
             // The free-part carrier can have been moved with the part while
             // it was used as a free part. Return it to the authored home so
@@ -291,6 +297,56 @@ namespace Coursework_Master_Degree.Items.Part
             ResetToFreePartLocation(part);
 
             return part;
+        }
+
+        /// <summary>
+        /// Moves the currently installed part into another empty socket.
+        /// Used by enclosure docking to relocate printer accessories without
+        /// running player-facing installation validation or free-part resets.
+        /// </summary>
+        public bool MoveInstalledPartTo(PartLocation target)
+        {
+            if (target == null ||
+                target == this ||
+                !IsOccupied ||
+                InstalledPart == null ||
+                target.IsOccupied)
+            {
+                return false;
+            }
+
+            GameObject part = InstalledPart;
+
+            DetachPart();
+            target.AttachPart(part);
+
+            return true;
+        }
+
+        private void AttachPart(GameObject part)
+        {
+            // The location is the socket: the part must adopt its position,
+            // rotation and fitment scale instead of keeping the world scale it
+            // had while being carried.
+            part.transform.SetParent(gameObject.transform, false);
+            part.transform.SetAsFirstSibling();
+            part.transform.localPosition = Vector3.zero;
+            part.transform.localRotation = Quaternion.identity;
+            part.transform.localScale = Vector3.one;
+
+            InstalledPart = part;
+            IsOccupied = true;
+        }
+
+        private void DetachPart()
+        {
+            if (InstalledPart != null)
+            {
+                InstalledPart.transform.SetParent(null);
+            }
+
+            InstalledPart = null;
+            IsOccupied = false;
         }
 
         public void ResetToFreePartLocation(GameObject itemPart)

@@ -2,6 +2,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
 using Coursework_Master_Degree.ScriptableObjects.Items;
+using Coursework_Master_Degree.Items.FFF;
 
 namespace Coursework_Master_Degree.Items.Part
 {
@@ -49,6 +50,81 @@ namespace Coursework_Master_Degree.Items.Part
                     item.ParentItemDataHolder = localItem;
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns the enclosure assembly that owns this item when the item is
+        /// an installed printer (or one of its internal parts). Returns null
+        /// for a standalone printer or a non-enclosure parent.
+        /// </summary>
+        public static PartsAssembly FindEnclosingPrinterEnclosure(
+            ItemDataHolder item)
+        {
+            return item != null
+                ? FindEnclosingPrinterEnclosure(
+                    item.GetComponentInParent<Printer>())
+                : null;
+        }
+
+        /// <summary>
+        /// Returns the enclosure assembly that owns this printer when it is
+        /// installed in one. Returns null for a standalone printer.
+        /// </summary>
+        public static PartsAssembly FindEnclosingPrinterEnclosure(
+            Printer printer)
+        {
+            if (printer == null)
+            {
+                return null;
+            }
+
+            PartLocation location =
+                printer.GetComponentInParent<PartLocation>();
+
+            if (location == null)
+            {
+                return null;
+            }
+
+            PartsAssembly assembly =
+                location.GetComponentInParent<PartsAssembly>();
+
+            if (assembly == null ||
+                assembly == printer.Assembly ||
+                assembly.GetComponentInParent<PrinterEnclosure>() == null)
+            {
+                return null;
+            }
+
+            return assembly;
+        }
+
+        /// <summary>
+        /// Resolves a part inside an installed printer to the printer root when
+        /// the inspected assembly is its enclosure.
+        /// </summary>
+        public static bool TryGetInstalledPrinterItem(
+            ItemDataHolder item,
+            PartsAssembly targetAssembly,
+            out ItemDataHolder printerItem)
+        {
+            printerItem = null;
+
+            if (item == null || targetAssembly == null ||
+                FindEnclosingPrinterEnclosure(item) != targetAssembly)
+            {
+                return false;
+            }
+
+            Printer printer = item.GetComponentInParent<Printer>();
+
+            if (printer == null)
+            {
+                return false;
+            }
+
+            printerItem = printer.GetComponent<ItemDataHolder>();
+            return printerItem != null;
         }
 
         // assembly parts

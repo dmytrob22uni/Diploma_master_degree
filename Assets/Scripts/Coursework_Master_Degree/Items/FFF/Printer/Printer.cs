@@ -59,6 +59,22 @@ namespace Coursework_Master_Degree.Items.FFF
         [Tooltip("Part location for the right spool (spool_location_2).")]
         public PartLocation RightSpoolLocation;
 
+        [Header("Enclosure docking")]
+        [Tooltip("Printer socket for the battery closet.")]
+        public PartLocation BatteryClosetLocation;
+
+        [Tooltip("Printer socket for the battery closet adapter.")]
+        public PartLocation BatteryClosetAdapterLocation;
+
+        [Tooltip("Visual spool holder hidden while the printer is docked.")]
+        public GameObject SpoolHolder;
+
+        [Tooltip("Battery closet free part that follows the installed printer.")]
+        public ItemFreePartDataHolder BatteryClosetPlug;
+
+        [Tooltip("Wall socket free part that follows the installed printer.")]
+        public ItemFreePartDataHolder WallSocketPlug;
+
         [Header("Service")]
         [Tooltip("Parts that cannot be swapped while a print is paused.")]
         public PartLocation[] ServiceBlockedDuringPrint;
@@ -66,9 +82,6 @@ namespace Coursework_Master_Degree.Items.FFF
         [Min(0.0f)]
         [Tooltip("Nozzle and bed must be at or below this temperature for service.")]
         public float SafeServiceTemperatureC = 50.0f;
-
-        [Tooltip("Print-space point where the nozzle parks while paused.")]
-        public Vector3 ServicePosition = new Vector3(0.0f, 0.05f, -0.08f);
 
         [Header("Simulation")]
         [Min(1.0f)]
@@ -111,6 +124,14 @@ namespace Coursework_Master_Degree.Items.FFF
         [Min(0.0f)]
         public float CalibrationPaddingMeters = 0.01f;
 
+        [Min(0.01f)]
+        [Tooltip("Vertical clearance above the head start position while moving between points.")]
+        public float CalibrationLiftHeightMeters = 0.03f;
+
+        [Min(0.01f)]
+        [Tooltip("Real-world head travel speed during calibration.")]
+        public float CalibrationMoveSpeedMetersPerSecond = 0.25f;
+
         [SerializeField]
         private PrinterTemperatureModel temperatureModel =
             new PrinterTemperatureModel();
@@ -133,6 +154,27 @@ namespace Coursework_Master_Degree.Items.FFF
         private float wearFilamentAccumulator;
         private int calibrationIndex;
         private float calibrationTimer;
+        private CalibrationPhase calibrationPhase;
+        private Vector3 calibrationCurrentPosition;
+        private Vector3 calibrationTargetPosition;
+
+        private bool isMovingHome;
+        private Vector3 homeMovePosition;
+        private bool isCalibrated;
+
+        private PrinterEnclosure dockedEnclosure;
+        private PartLocation dockedSpoolLocation;
+        private SpoolSlot dockedSpoolSlot;
+
+        private enum CalibrationPhase
+        {
+            MoveToStart,
+            MoveToPoint,
+            Lower,
+            Dwell,
+            Raise,
+            ReturnToStart
+        }
 
         private static readonly string[] DefaultCriticalLocationNames =
         {
@@ -182,6 +224,14 @@ namespace Coursework_Master_Degree.Items.FFF
         public bool IsPaused =>
             OperationalState == PrinterOperationalState.Paused;
 
+        public bool IsCalibrated => isCalibrated;
+
+        public string CalibrationWarningText =>
+            !isCalibrated &&
+            (activeJob != null || completedJob != null || partialJob != null)
+                ? "Printer is not calibrated; final quality may be 70–100% of the estimate."
+                : string.Empty;
+
         public bool IsAtSafeServiceTemperature =>
             temperatureModel.IsBelow(SafeServiceTemperatureC);
 
@@ -214,44 +264,272 @@ namespace Coursework_Master_Degree.Items.FFF
         public PrintBedAnchor ResolvedBedAnchor =>
             BedAnchor != null ? BedAnchor : Motion != null ? Motion.BedAnchor : null;
 
+        public PrinterEnclosure DockedEnclosure =>
+            dockedEnclosure != null ? dockedEnclosure : FindDockedEnclosure();
+
+        public int InstalledSpoolCount
+        {
+            get
+            {
+                int count = 0;
+
+                if (LeftSpoolLocation != null && LeftSpoolLocation.IsOccupied)
+                {
+                    count++;
+                }
+
+                if (RightSpoolLocation != null && RightSpoolLocation.IsOccupied)
+                {
+                    count++;
+                }
+
+                return count;
+            }
+        }
+
         public PartLocation GetSpoolLocation(SpoolSlot slot)
         {
+            if (dockedSpoolLocation != null && slot == dockedSpoolSlot)
+            {
+                return dockedSpoolLocation;
+            }
+
             return slot == SpoolSlot.Right
                 ? RightSpoolLocation
                 : LeftSpoolLocation;
         }
 
+        public static string GetPrinterEnclosureInstallBlockReason(
+            ItemDataHolder item,
+            PartsAssembly targetAssembly)
+        {
+            if (item == null || targetAssembly == null)
+            {
+                return null;
+            }
+
+            Printer printer = item.GetComponent<Printer>();
+
+            if (printer == null)
+            {
+                return null;
+            }
+
+            PrinterEnclosure enclosure =
+                targetAssembly.GetComponentInParent<PrinterEnclosure>();
+
+            return enclosure != null
+                ? enclosure.GetPrinterInstallBlockReason(printer)
+                : null;
+        }
+
+        /// <summary>
+        /// Moves the printer's spool, battery closet, adapter and free parts
+        /// onto the enclosure sockets. PartLocation triggers this after the
+        /// printer itself has been attached to an enclosure socket.
+        /// </summary>
+        public void DockToEnclosure()
+        {
+            if (dockedEnclosure != null)
+            {
+                return;
+            }
+
+            PrinterEnclosure enclosure = FindDockedEnclosure();
+
+            if (enclosure == null ||
+                InstalledSpoolCount > 1)
+            {
+                return;
+            }
+
+            dockedEnclosure = enclosure;
+            Environment?.SetEnclosure(enclosure, this);
+
+            // The enclosure exposes one spool socket. Preserve the printer's
+            // original side when it had a spool; otherwise show the socket on
+            // the left so it can be used later.
+            dockedSpoolSlot = SpoolSlot.Left;
+            dockedSpoolLocation = enclosure.SpoolLocation;
+
+            if (TryGetSingleInstalledSpool(
+                    out SpoolSlot spoolSlot,
+                    out PartLocation spoolLocation))
+            {
+                dockedSpoolSlot = spoolSlot;
+                spoolLocation.MoveInstalledPartTo(enclosure.SpoolLocation);
+            }
+
+            if (BatteryClosetLocation != null)
+            {
+                BatteryClosetLocation.MoveInstalledPartTo(
+                    enclosure.BatteryClosetLocation);
+            }
+
+            if (BatteryClosetAdapterLocation != null)
+            {
+                BatteryClosetAdapterLocation.MoveInstalledPartTo(
+                    enclosure.BatteryClosetAdapterLocation);
+            }
+
+            ItemDataHolder enclosureItem =
+                enclosure.GetComponent<ItemDataHolder>();
+
+            DockFreePart(
+                BatteryClosetPlug,
+                enclosure.BatteryClosetPlugLocation,
+                enclosureItem);
+
+            DockFreePart(
+                WallSocketPlug,
+                enclosure.WallSocketPlugLocation,
+                enclosureItem);
+
+            if (SpoolHolder != null)
+            {
+                SpoolHolder.SetActive(false);
+            }
+
+            wearIntegrator.Refresh(this);
+        }
+
+        /// <summary>
+        /// Returns docked accessories to the printer before it leaves the
+        /// enclosure. Called by PartLocation while the printer still has its
+        /// enclosure parent, so the enclosure can be resolved reliably.
+        /// </summary>
+        public void UndockFromEnclosure()
+        {
+            if (dockedEnclosure == null)
+            {
+                return;
+            }
+
+            PrinterEnclosure enclosure = dockedEnclosure;
+            dockedEnclosure = null;
+            Environment?.SetEnclosure(null, this);
+
+            if (SpoolHolder != null)
+            {
+                SpoolHolder.SetActive(true);
+            }
+
+            if (dockedSpoolLocation != null &&
+                dockedSpoolLocation.IsOccupied)
+            {
+                PartLocation target = dockedSpoolSlot == SpoolSlot.Right
+                    ? RightSpoolLocation
+                    : LeftSpoolLocation;
+
+                dockedSpoolLocation.MoveInstalledPartTo(target);
+            }
+
+            dockedSpoolLocation = null;
+
+            if (enclosure.BatteryClosetLocation != null &&
+                enclosure.BatteryClosetLocation.IsOccupied)
+            {
+                enclosure.BatteryClosetLocation.MoveInstalledPartTo(
+                    BatteryClosetLocation);
+            }
+
+            if (enclosure.BatteryClosetAdapterLocation != null &&
+                enclosure.BatteryClosetAdapterLocation.IsOccupied &&
+                enclosure.BatteryClosetAdapterLocation.transform.IsChildOf(
+                    enclosure.transform))
+            {
+                enclosure.BatteryClosetAdapterLocation.MoveInstalledPartTo(
+                    BatteryClosetAdapterLocation);
+            }
+
+            ItemDataHolder enclosureItem =
+                enclosure.GetComponent<ItemDataHolder>();
+
+            enclosureItem?.ClearFreePartLocation(
+                BatteryClosetPlug != null ? BatteryClosetPlug.gameObject : null);
+
+            enclosureItem?.ClearFreePartLocation(
+                WallSocketPlug != null ? WallSocketPlug.gameObject : null);
+
+            ItemData?.ResetFreePartsToLocations();
+            wearIntegrator.Refresh(this);
+        }
+
+        private PrinterEnclosure FindDockedEnclosure()
+        {
+            PartsAssembly enclosureAssembly =
+                PartsAssembly.FindEnclosingPrinterEnclosure(this);
+
+            return enclosureAssembly != null
+                ? enclosureAssembly.GetComponent<PrinterEnclosure>()
+                : null;
+        }
+
+        private bool TryGetSingleInstalledSpool(
+            out SpoolSlot slot,
+            out PartLocation location)
+        {
+            slot = SpoolSlot.Left;
+            location = null;
+
+            if (LeftSpoolLocation != null && LeftSpoolLocation.IsOccupied)
+            {
+                slot = SpoolSlot.Left;
+                location = LeftSpoolLocation;
+            }
+
+            if (RightSpoolLocation != null && RightSpoolLocation.IsOccupied)
+            {
+                if (location != null)
+                {
+                    location = null;
+                    return false;
+                }
+
+                slot = SpoolSlot.Right;
+                location = RightSpoolLocation;
+            }
+
+            return location != null;
+        }
+
+        private static void DockFreePart(
+            ItemFreePartDataHolder freePart,
+            Transform location,
+            ItemDataHolder enclosureItem)
+        {
+            if (freePart == null || location == null)
+            {
+                return;
+            }
+
+            ItemPlacementUtility.ResetFreePart(
+                freePart.gameObject,
+                location);
+
+            enclosureItem?.SetFreePartLocation(
+                freePart.gameObject,
+                location);
+        }
+
         public PrinterOperationalState OperationalState =>
             stateMachine.State;
 
-        public string StatusSummary
+        public string StateProgressText
         {
             get
             {
                 if (activeJob != null)
                 {
-                    string filament = ActiveSpool != null
-                        ? $" · {ActiveSpool.RemainingMeters:0.0} m left"
-                        : string.Empty;
-                    string pausePenalty = activeJob.PauseQualityPenalty > 0.0f
-                        ? $" · pause -{activeJob.PauseQualityPenalty:0}"
-                        : string.Empty;
-
                     return $"{StateLabel(OperationalState)} " +
-                        $"{activeJob.Progress01 * 100.0f:0}% · " +
-                        $"N {Temperature.Nozzle:0}°C · " +
-                        $"B {Temperature.Bed:0}°C" +
-                        filament +
-                        pausePenalty;
+                        $"{activeJob.Progress01 * 100.0f:0}%";
                 }
 
                 if (OperationalState == PrinterOperationalState.Calibrating)
                 {
-                    int total = Mathf.Max(
-                        1,
-                        calibrationPoints.Count);
-                    return $"Calibrating {Mathf.Min(calibrationIndex + 1, total)}" +
-                        $"/{total}";
+                    int total = Mathf.Max(1, calibrationPoints.Count);
+                    return $"Calibrating " +
+                        $"{Mathf.Min(calibrationIndex + 1, total)}/{total}";
                 }
 
                 if (HasPartialPrint)
@@ -264,9 +542,53 @@ namespace Coursework_Master_Degree.Items.FFF
                     return "Finished print on the bed";
                 }
 
-                return $"{StateLabel(OperationalState)} · " +
-                    $"N {Temperature.Nozzle:0}°C · " +
-                    $"B {Temperature.Bed:0}°C";
+                return StateLabel(OperationalState);
+            }
+        }
+
+        public string NozzleTemperatureText =>
+            $"N {Temperature.Nozzle:0}°C";
+
+        public string BedTemperatureText =>
+            $"B {Temperature.Bed:0}°C";
+
+        public string SpoolMetersText =>
+            ActiveSpool != null
+                ? $"{ActiveSpool.RemainingMeters:0.0} m left"
+                : string.Empty;
+
+        public string PausePenaltyText =>
+            activeJob != null && activeJob.PauseQualityPenalty > 0.0f
+                ? $"pause -{activeJob.PauseQualityPenalty:0}"
+                : string.Empty;
+
+        public string StatusSummary
+        {
+            get
+            {
+                string summary = StateProgressText;
+
+                if (!string.IsNullOrEmpty(NozzleTemperatureText))
+                {
+                    summary += $" · {NozzleTemperatureText}";
+                }
+
+                if (!string.IsNullOrEmpty(BedTemperatureText))
+                {
+                    summary += $" · {BedTemperatureText}";
+                }
+
+                if (!string.IsNullOrEmpty(SpoolMetersText))
+                {
+                    summary += $" · {SpoolMetersText}";
+                }
+
+                if (!string.IsNullOrEmpty(PausePenaltyText))
+                {
+                    summary += $" · {PausePenaltyText}";
+                }
+
+                return summary;
             }
         }
 
@@ -288,10 +610,21 @@ namespace Coursework_Master_Degree.Items.FFF
             wearIntegrator.Refresh(this);
         }
 
+        private void Start()
+        {
+            DockToEnclosure();
+            Motion?.ApplyHomePosition();
+        }
+
         private void Update()
         {
             float simulatedDelta = Mathf.Min(Time.deltaTime, 0.1f) *
                 Mathf.Max(1.0f, PrintSpeedMultiplier);
+
+            if (isMovingHome)
+            {
+                TickHomeMove(simulatedDelta);
+            }
 
             switch (OperationalState)
             {
@@ -316,7 +649,7 @@ namespace Coursework_Master_Degree.Items.FFF
                     break;
 
                 case PrinterOperationalState.Calibrating:
-                    TickCalibration(Time.deltaTime);
+                    TickCalibration(simulatedDelta);
                     break;
             }
         }
@@ -384,11 +717,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
             SetState(PrinterOperationalState.Paused);
 
-            if (Motion != null)
-            {
-                Motion.ApplyNozzlePosition(ServicePosition);
-            }
-
+            BeginHomeMove();
             return true;
         }
 
@@ -475,13 +804,18 @@ namespace Coursework_Master_Degree.Items.FFF
                 HardStopBedBase,
                 HardStopBedScale);
 
-            if (Motion != null)
-            {
-                Motion.Home();
-            }
-
+            Motion?.ApplyHomePosition();
             SetState(PrinterOperationalState.Cooling);
             return true;
+        }
+
+        public void EnsureHomePosition()
+        {
+            if (activeJob == null &&
+                OperationalState != PrinterOperationalState.Calibrating)
+            {
+                Motion?.ApplyHomePosition();
+            }
         }
 
         public bool TryStartCalibration(out string reason)
@@ -508,9 +842,12 @@ namespace Coursework_Master_Degree.Items.FFF
             BuildCalibrationPoints(anchor);
             calibrationIndex = 0;
             calibrationTimer = 0.0f;
+            isMovingHome = false;
+            calibrationPhase = CalibrationPhase.MoveToStart;
+            calibrationCurrentPosition = Motion.GetNozzlePrintPosition();
+            calibrationTargetPosition = ClampCalibrationPosition(
+                Motion.CalibrationHomePrintPosition);
             SetState(PrinterOperationalState.Calibrating);
-
-            MoveToCalibrationPoint();
             return true;
         }
 
@@ -521,7 +858,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
-            Motion?.Home();
+            Motion?.ApplyHomePosition();
             calibrationPoints.Clear();
             calibrationIndex = 0;
             SetState(PrinterOperationalState.Idle);
@@ -540,6 +877,31 @@ namespace Coursework_Master_Degree.Items.FFF
             HasPartialPrint = false;
             SetState(PrinterOperationalState.Idle);
             return true;
+        }
+
+        public string GetPartInstallBlockReason()
+        {
+            if (!IsPrintActive)
+            {
+                return null;
+            }
+
+            if (OperationalState == PrinterOperationalState.Calibrating)
+            {
+                return "Printer is calibrating";
+            }
+
+            if (OperationalState != PrinterOperationalState.Paused)
+            {
+                return "Printer is on its job";
+            }
+
+            if (!IsAtSafeServiceTemperature)
+            {
+                return "Wait for the printer to cool";
+            }
+
+            return null;
         }
 
         public string GetPartServiceBlockReason(PartLocation location)
@@ -572,6 +934,14 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             return null;
+        }
+
+        public void NotifyPartChanged()
+        {
+            if (activeJob != null)
+            {
+                isCalibrated = false;
+            }
         }
 
         public bool IsServiceBlocked(PartLocation location)
@@ -625,16 +995,31 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public bool HasAllCriticalParts(out string reason)
         {
+            if (!HasAllCriticalParts(CriticalPartLocations, out reason))
+            {
+                return false;
+            }
+
+            PrinterEnclosure enclosure = DockedEnclosure;
+
+            return enclosure == null ||
+                HasAllCriticalParts(enclosure.CriticalPartLocations, out reason);
+        }
+
+        private static bool HasAllCriticalParts(
+            PartLocation[] criticalLocations,
+            out string reason)
+        {
             reason = null;
 
-            if (CriticalPartLocations == null)
+            if (criticalLocations == null)
             {
                 return true;
             }
 
-            for (int i = 0; i < CriticalPartLocations.Length; i++)
+            for (int i = 0; i < criticalLocations.Length; i++)
             {
-                PartLocation location = CriticalPartLocations[i];
+                PartLocation location = criticalLocations[i];
 
                 if (location == null)
                 {
@@ -667,6 +1052,15 @@ namespace Coursework_Master_Degree.Items.FFF
                 HasPartialPrint ||
                 HasCompletedPrint)
             {
+                return;
+            }
+
+            if (!HasAllCriticalParts(out string criticalReason))
+            {
+                Debug.LogWarning(
+                    $"[Printer] {DisplayName} cannot start: {criticalReason}",
+                    this);
+                PendingJob = null;
                 return;
             }
 
@@ -791,6 +1185,7 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             FlushWear();
+            BeginHomeMove();
 
             if (activeJob != null && activeJob.IsPartial)
             {
@@ -814,6 +1209,44 @@ namespace Coursework_Master_Degree.Items.FFF
             ActiveSpool = null;
         }
 
+        private void BeginHomeMove()
+        {
+            if (Motion == null)
+            {
+                return;
+            }
+
+            isMovingHome = true;
+            homeMovePosition = Motion.GetNozzlePrintPosition();
+        }
+
+        private void TickHomeMove(float delta)
+        {
+            if (Motion == null)
+            {
+                isMovingHome = false;
+                return;
+            }
+
+            Vector3 target = Motion.HomePrintPosition;
+            float speed = Mathf.Max(
+                0.01f,
+                CalibrationMoveSpeedMetersPerSecond);
+
+            homeMovePosition = Vector3.MoveTowards(
+                homeMovePosition,
+                target,
+                speed * Mathf.Max(0.0f, delta));
+
+            Motion.ApplyNozzlePosition(homeMovePosition);
+
+            if ((homeMovePosition - target).sqrMagnitude <= 0.000001f)
+            {
+                Motion.ApplyHomePosition();
+                isMovingHome = false;
+            }
+        }
+
         private void TickCalibration(float delta)
         {
             if (calibrationPoints.Count == 0)
@@ -822,26 +1255,134 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
-            calibrationTimer += delta;
+            switch (calibrationPhase)
+            {
+                case CalibrationPhase.MoveToStart:
+                    if (MoveCalibrationToward(calibrationTargetPosition, delta))
+                    {
+                        BeginCalibrationPoint();
+                    }
+                    break;
 
-            if (calibrationTimer < CalibrationPointDwellSeconds)
+                case CalibrationPhase.MoveToPoint:
+                    if (MoveCalibrationToward(calibrationTargetPosition, delta))
+                    {
+                        Vector3 point = calibrationPoints[calibrationIndex];
+                        calibrationTargetPosition = new Vector3(
+                            point.x,
+                            0.0f,
+                            point.z);
+                        calibrationPhase = CalibrationPhase.Lower;
+                    }
+                    break;
+
+                case CalibrationPhase.Lower:
+                    if (MoveCalibrationToward(calibrationTargetPosition, delta))
+                    {
+                        calibrationTimer = 0.0f;
+                        calibrationPhase = CalibrationPhase.Dwell;
+                    }
+                    break;
+
+                case CalibrationPhase.Dwell:
+                    calibrationTimer += delta;
+
+                    if (calibrationTimer >= CalibrationPointDwellSeconds)
+                    {
+                        Vector3 point = calibrationPoints[calibrationIndex];
+                        calibrationTargetPosition = new Vector3(
+                            point.x,
+                            CalibrationLiftY,
+                            point.z);
+                        calibrationPhase = CalibrationPhase.Raise;
+                    }
+                    break;
+
+                case CalibrationPhase.Raise:
+                    if (MoveCalibrationToward(calibrationTargetPosition, delta))
+                    {
+                        calibrationIndex++;
+
+                        if (calibrationIndex >= calibrationPoints.Count)
+                        {
+                            calibrationTargetPosition =
+                                ClampCalibrationPosition(
+                                    Motion.HomePrintPosition);
+                            calibrationPhase =
+                                CalibrationPhase.ReturnToStart;
+                        }
+                        else
+                        {
+                            BeginCalibrationPoint();
+                        }
+                    }
+                    break;
+
+                case CalibrationPhase.ReturnToStart:
+                    if (MoveCalibrationToward(calibrationTargetPosition, delta))
+                    {
+                        calibrationPoints.Clear();
+                        calibrationIndex = 0;
+                        isCalibrated = true;
+                        SetState(PrinterOperationalState.Idle);
+                    }
+                    break;
+            }
+        }
+
+        private float CalibrationLiftY
+        {
+            get
+            {
+                float volumeHeight = Motion.BuildVolume.y;
+                float lift = Motion.CalibrationHomePrintPosition.y +
+                    Mathf.Max(0.005f, CalibrationLiftHeightMeters);
+
+                return Mathf.Clamp(lift, 0.005f, Mathf.Max(0.005f, volumeHeight));
+            }
+        }
+
+        private Vector3 ClampCalibrationPosition(Vector3 position)
+        {
+            Vector3 volume = Motion.BuildVolume;
+
+            return new Vector3(
+                Mathf.Clamp(position.x, -volume.x * 0.5f, volume.x * 0.5f),
+                Mathf.Clamp(position.y, 0.0f, Mathf.Max(0.0f, volume.y)),
+                Mathf.Clamp(position.z, -volume.z * 0.5f, volume.z * 0.5f));
+        }
+
+        private void BeginCalibrationPoint()
+        {
+            if (calibrationIndex < 0 ||
+                calibrationIndex >= calibrationPoints.Count)
             {
                 return;
             }
 
-            calibrationTimer = 0.0f;
-            calibrationIndex++;
+            Vector3 point = calibrationPoints[calibrationIndex];
+            calibrationTargetPosition = ClampCalibrationPosition(new Vector3(
+                point.x,
+                CalibrationLiftY,
+                point.z));
+            calibrationPhase = CalibrationPhase.MoveToPoint;
+        }
 
-            if (calibrationIndex >= calibrationPoints.Count)
-            {
-                Motion?.Home();
-                calibrationPoints.Clear();
-                calibrationIndex = 0;
-                SetState(PrinterOperationalState.Idle);
-                return;
-            }
+        private bool MoveCalibrationToward(Vector3 target, float delta)
+        {
+            float speed = Mathf.Max(
+                0.01f,
+                CalibrationMoveSpeedMetersPerSecond);
 
-            MoveToCalibrationPoint();
+            calibrationCurrentPosition = Vector3.MoveTowards(
+                calibrationCurrentPosition,
+                target,
+                speed * Mathf.Max(0.0f, delta));
+
+            Motion.ApplyNozzlePosition(calibrationCurrentPosition);
+
+            return (calibrationCurrentPosition - target).sqrMagnitude <=
+                0.000001f;
         }
 
         private void AdvancePrint(float simulatedDelta)
@@ -939,6 +1480,13 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private void CompletePrint()
         {
+            activeJob.CalibrationQualityMultiplier = IsCalibrated
+                ? 1.0f
+                : UnityEngine.Random.Range(0.7f, 1.0f);
+            activeJob.FinalQuality = UnityEngine.Random.Range(
+                activeJob.QualityMin,
+                activeJob.QualityMax);
+
             FlushWear();
             activeJob.ElapsedSeconds = activeJob.Request.EstimatedSeconds;
             activeJob.ConsumedFilamentMeters =
@@ -983,18 +1531,6 @@ namespace Coursework_Master_Degree.Items.FFF
                         Mathf.Lerp(-depth * 0.5f, depth * 0.5f, tz)));
                 }
             }
-        }
-
-        private void MoveToCalibrationPoint()
-        {
-            if (Motion == null ||
-                calibrationIndex < 0 ||
-                calibrationIndex >= calibrationPoints.Count)
-            {
-                return;
-            }
-
-            Motion.ApplyNozzlePosition(calibrationPoints[calibrationIndex]);
         }
 
         private void SetState(PrinterOperationalState state)

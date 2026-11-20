@@ -1,4 +1,5 @@
 using UnityEngine;
+using NaughtyAttributes;
 
 namespace Coursework_Master_Degree.Items.FFF
 {
@@ -14,6 +15,76 @@ namespace Coursework_Master_Degree.Items.FFF
     /// </summary>
     public abstract class PrinterMotionBase : MonoBehaviour
     {
+        public static readonly Vector3 DefaultHomeNormalized =
+            new Vector3(0.0f, 1.0f, 0.75f);
+
+        [Header("Home / start position")]
+        [Tooltip(
+            "Off = default top-left head with the moving bed 3/4 forward. " +
+            "On = use the custom normalized X/Y/Z below.")]
+        public bool UseCustomHomePosition;
+
+        [ShowIf("UseCustomHomePosition")]
+        [Range(0.0f, 1.0f)]
+        [Tooltip("Normalized X across the usable build volume. 0 = left edge, 1 = right.")]
+        public float HomeX = 0.0f;
+
+        [ShowIf("UseCustomHomePosition")]
+        [Range(0.0f, 1.0f)]
+        [Tooltip("Normalized Y from the plate (0) to the top of the build volume (1).")]
+        public float HomeY = 1.0f;
+
+        [ShowIf("UseCustomHomePosition")]
+        [Range(0.0f, 1.0f)]
+        [Tooltip("Normalized Z across the usable build volume; the moving bed sits about 3/4 forward.")]
+        public float HomeZ = 0.75f;
+
+        public Vector3 HomePositionNormalized => UseCustomHomePosition
+            ? new Vector3(HomeX, HomeY, HomeZ)
+            : DefaultHomeNormalized;
+
+        [Header("Calibration height override")]
+        [Tooltip(
+            "Off = calibration uses the global home height. On = use the " +
+            "custom calibration start/lift height.")]
+        public bool UseCustomCalibrationHomeHeight;
+
+        [ShowIf("UseCustomCalibrationHomeHeight")]
+        [Range(0.0f, 1.0f)]
+        [Tooltip(
+            "Normalized calibration start/lift height. Calibration returns " +
+            "to the global home position afterwards.")]
+        public float CalibrationHomeY = 1.0f;
+
+        public Vector3 CalibrationHomePositionNormalized => new Vector3(
+            HomePositionNormalized.x,
+            UseCustomCalibrationHomeHeight
+                ? CalibrationHomeY
+                : HomePositionNormalized.y,
+            HomePositionNormalized.z);
+
+        public Vector3 HomePrintPosition =>
+            ToPrintPosition(HomePositionNormalized);
+
+        public Vector3 CalibrationHomePrintPosition =>
+            ToPrintPosition(CalibrationHomePositionNormalized);
+
+        private Vector3 ToPrintPosition(Vector3 normalized)
+        {
+            Vector3 volume = BuildVolume;
+
+            return new Vector3(
+                Mathf.Lerp(
+                    -volume.x * 0.5f,
+                    volume.x * 0.5f,
+                    normalized.x),
+                volume.y * normalized.y,
+                Mathf.Lerp(
+                    -volume.z * 0.5f,
+                    volume.z * 0.5f,
+                    normalized.z));
+        }
+
         /// <summary>Usable build volume in metres (X width, Y height, Z depth).</summary>
         public abstract Vector3 BuildVolume { get; }
 
@@ -46,6 +117,20 @@ namespace Coursework_Master_Degree.Items.FFF
 
         /// <summary>Moves the nozzle to a point in print space.</summary>
         public abstract void ApplyNozzlePosition(Vector3 printSpacePosition);
+
+        /// <summary>Moves the nozzle to the configured single home position.</summary>
+        public void ApplyHomePosition()
+        {
+            ApplyNozzlePosition(HomePrintPosition);
+        }
+
+        public void ApplyCalibrationHomePosition()
+        {
+            ApplyNozzlePosition(CalibrationHomePrintPosition);
+        }
+
+        /// <summary>Current nozzle position in print space.</summary>
+        public abstract Vector3 GetNozzlePrintPosition();
 
         /// <summary>
         /// Sets the vertical nozzle-to-bed separation.
@@ -80,6 +165,15 @@ namespace Coursework_Master_Degree.Items.FFF
             Gizmos.DrawWireCube(
                 new Vector3(0.0f, volume.y * 0.5f, 0.0f),
                 volume);
+
+            Gizmos.color = new Color(1.0f, 0.6f, 0.1f, 1.0f);
+            Gizmos.DrawWireSphere(HomePrintPosition, 0.01f);
+
+            if (UseCustomCalibrationHomeHeight)
+            {
+                Gizmos.color = new Color(0.3f, 1.0f, 0.7f, 1.0f);
+                Gizmos.DrawWireSphere(CalibrationHomePrintPosition, 0.008f);
+            }
 
             Gizmos.matrix = previous;
         }

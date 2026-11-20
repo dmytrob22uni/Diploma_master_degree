@@ -10,12 +10,14 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         RealTime,
         Fast,
         Quick,
-        Default
+        Turbo
     }
 
     public static class SimulationSpeedSettings
     {
-        public const float DefaultMultiplier = 120.0f;
+        public const float DefaultMultiplier = 1.0f;
+        public const SimulationSpeedPreset DefaultPreset =
+            SimulationSpeedPreset.RealTime;
 
         public static float Multiplier(SimulationSpeedPreset preset)
         {
@@ -28,7 +30,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 case SimulationSpeedPreset.Quick:
                     return 64.0f;
                 default:
-                    return DefaultMultiplier;
+                    return 120.0f;
             }
         }
 
@@ -39,7 +41,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
         public static SimulationSpeedPreset Closest(float multiplier)
         {
-            SimulationSpeedPreset best = SimulationSpeedPreset.Default;
+            SimulationSpeedPreset best = DefaultPreset;
             float bestDelta = float.MaxValue;
 
             foreach (SimulationSpeedPreset preset in System.Enum.GetValues(

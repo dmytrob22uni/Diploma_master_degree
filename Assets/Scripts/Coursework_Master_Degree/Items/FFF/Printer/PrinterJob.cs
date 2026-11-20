@@ -21,6 +21,8 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public int PauseCount;
         public float PauseQualityPenalty;
+        public float CalibrationQualityMultiplier = 1.0f;
+        public float FinalQuality = -1.0f;
 
         public bool IsPartial;
         public bool WasHardStopped;
@@ -62,12 +64,20 @@ namespace Coursework_Master_Degree.Items.FFF
             }
         }
 
-        public float QualityMin => Request != null
-            ? Mathf.Max(0.0f, Request.QualityMin - PauseQualityPenalty)
-            : 0.0f;
+        public float QualityMin => CalculateFinalQuality(Request != null
+            ? Request.QualityMin
+            : 0.0f);
 
-        public float QualityMax => Request != null
-            ? Mathf.Max(0.0f, Request.QualityMax - PauseQualityPenalty)
-            : 0.0f;
+        public float QualityMax => CalculateFinalQuality(Request != null
+            ? Request.QualityMax
+            : 0.0f);
+
+        private float CalculateFinalQuality(float value)
+        {
+            return Mathf.Clamp(
+                value * CalibrationQualityMultiplier - PauseQualityPenalty,
+                0.0f,
+                90.0f);
+        }
     }
 }

@@ -75,6 +75,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
             }
 
             controller.Begin(this);
+            Printer?.EnsureHomePosition();
         }
 
         public override void OnExit()

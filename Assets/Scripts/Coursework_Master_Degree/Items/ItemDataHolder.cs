@@ -106,27 +106,100 @@ namespace Coursework_Master_Degree.Items
                     continue;
                 }
 
-                GameObject itemPart = mapping.ItemPart;
+                // A wearable free part is only part of this core item while
+                // its carrier is still under it. A removed or separately
+                // placed wearable item must stay where the player left it.
+                // Regular free parts (plugs) have no ItemDataHolder and still
+                // reset normally.
+                ItemDataHolder itemPart = mapping.ItemPart.GetComponent<ItemDataHolder>();
 
-                // A wearable free part is installed into a PartLocation
-                // carrier. Move the carrier, not the part itself, so the
-                // location collider and the installed part travel together.
-                Transform movableTransform =
-                    ItemPlacementUtility.GetFreePartMovableTransform(itemPart);
+                if (itemPart != null)
+                {
+                    if (!itemPart.IsInstalled)
+                    {
+                        continue;
+                    }
 
-                if (movableTransform == null)
+                    Transform movableTransform =
+                        ItemPlacementUtility.GetFreePartMovableTransform(
+                            mapping.ItemPart);
+
+                    if (movableTransform == null ||
+                        !movableTransform.IsChildOf(transform))
+                    {
+                        continue;
+                    }
+                }
+
+                ItemPlacementUtility.ResetFreePart(
+                    mapping.ItemPart,
+                    mapping.Location);
+            }
+        }
+
+        /// <summary>
+        /// Adds or updates a runtime free-part reset mapping. Existing empty
+        /// entries for the same location are reused instead of duplicated.
+        /// </summary>
+        public void SetFreePartLocation(
+            GameObject itemPart,
+            Transform location)
+        {
+            if (itemPart == null || location == null)
+            {
+                return;
+            }
+
+            IsHaveFreeParts = true;
+            ItemPartsToLocationsList ??= new List<ItemPartToLocation>();
+
+            foreach (ItemPartToLocation mapping in ItemPartsToLocationsList)
+            {
+                if (mapping == null || mapping.ItemPart != itemPart)
                 {
                     continue;
                 }
 
-                movableTransform.SetParent(mapping.Location, true);
-                movableTransform.SetPositionAndRotation(
-                    mapping.Location.position,
-                    mapping.Location.rotation);
+                mapping.Location = location;
+                return;
+            }
 
-                // The free part is no longer resting on its old shelf.
-                ItemPlacementUtility.RemoveFromSurface(itemPart);
-                ItemPlacementUtility.HidePlacementGhosts(itemPart);
+            foreach (ItemPartToLocation mapping in ItemPartsToLocationsList)
+            {
+                if (mapping == null ||
+                    mapping.ItemPart != null ||
+                    mapping.Location != location)
+                {
+                    continue;
+                }
+
+                mapping.ItemPart = itemPart;
+                return;
+            }
+
+            ItemPartsToLocationsList.Add(new ItemPartToLocation
+            {
+                ItemPart = itemPart,
+                Location = location
+            });
+        }
+
+        /// <summary>
+        /// Removes a runtime mapping without deleting the authored reset point.
+        /// </summary>
+        public void ClearFreePartLocation(GameObject itemPart)
+        {
+            if (itemPart == null || ItemPartsToLocationsList == null)
+            {
+                return;
+            }
+
+            foreach (ItemPartToLocation mapping in ItemPartsToLocationsList)
+            {
+                if (mapping != null && mapping.ItemPart == itemPart)
+                {
+                    mapping.ItemPart = null;
+                }
             }
         }
 

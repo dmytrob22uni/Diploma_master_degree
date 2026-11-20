@@ -137,6 +137,23 @@ namespace Coursework_Master_Degree.Items.FFF
             SetBedHeight(printSpacePosition.y);
         }
 
+        public override Vector3 GetNozzlePrintPosition()
+        {
+            float halfWidth = buildVolume.x * 0.5f;
+            float halfDepth = buildVolume.z * 0.5f;
+
+            return new Vector3(
+                Mathf.Lerp(
+                    -halfWidth,
+                    halfWidth,
+                    horizontalX.Normalized),
+                buildVolume.y * verticalY.Normalized,
+                Mathf.Lerp(
+                    -halfDepth,
+                    halfDepth,
+                    horizontalZ.Normalized));
+        }
+
         public override void SetBedHeight(float height)
         {
             float normalizedHeight = buildVolume.y > 0.0001f

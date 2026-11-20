@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using NaughtyAttributes;
 using Coursework_Master_Degree.Items.Contracts;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.Items.Surface;
 
@@ -16,6 +17,30 @@ namespace Coursework_Master_Degree.Items
         public string Name;
 
         public GameObject ItemFreePartGhostPlacementPrefab;
+
+        /// <summary>
+        /// A free part installed under an enclosure is a fixed enclosure part,
+        /// not a loose item. The adapter is the combined free/wearable case:
+        /// it remains installed until removed through the parts flow.
+        /// </summary>
+        public bool IsFreePartActive
+        {
+            get
+            {
+                if (!enabled)
+                {
+                    return false;
+                }
+
+                if (!TryGetComponent(out ItemDataHolder item) ||
+                    !item.IsInstalled)
+                {
+                    return true;
+                }
+
+                return GetComponentInParent<PrinterEnclosure>(true) == null;
+            }
+        }
 
         [EnableIf("NotEnabled")]
         [Tooltip("Set via script")]

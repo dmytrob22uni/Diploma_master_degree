@@ -114,6 +114,12 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 return result;
             }
 
+            if (!printer.IsCalibrated)
+            {
+                result.Warnings.Add(
+                    "Printer is not calibrated; final quality may be 70–100% of the estimate.");
+            }
+
             if (device != null && printer.BoundDevice != device)
             {
                 result.Errors.Add("Printer is not connected to this device.");
@@ -160,14 +166,36 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 return;
             }
 
-            PartLocation[] criticalLocations =
-                printer.CriticalPartLocations ??
-                System.Array.Empty<PartLocation>();
+            CheckAssemblyParts(
+                printer.Assembly,
+                printer.CriticalPartLocations,
+                result);
+
+            PrinterEnclosure enclosure = printer.DockedEnclosure;
+            PartsAssembly enclosureAssembly = enclosure != null
+                ? enclosure.GetComponent<PartsAssembly>()
+                : null;
+
+            if (enclosureAssembly != null)
+            {
+                CheckAssemblyParts(
+                    enclosureAssembly,
+                    enclosure.CriticalPartLocations,
+                    result);
+            }
+        }
+
+        private static void CheckAssemblyParts(
+            PartsAssembly assembly,
+            PartLocation[] criticalLocations,
+            PrintJobValidationResult result)
+        {
+            criticalLocations ??= System.Array.Empty<PartLocation>();
             bool[] criticalFound = criticalLocations.Length > 0
                 ? new bool[criticalLocations.Length]
                 : System.Array.Empty<bool>();
 
-            foreach (PartLocation location in PartLocations(printer))
+            foreach (PartLocation location in PartLocations(assembly))
             {
                 if (location == null)
                 {
@@ -190,6 +218,14 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                             $"Missing critical part: {Friendly(locationName)}.");
                     }
 
+                    continue;
+                }
+
+                // The installed printer is the job target, not a scanned
+                // consumable part. Its own assembly is checked separately.
+                if (location.InstalledPart
+                        .GetComponentInChildren<Printer>(true) != null)
+                {
                     continue;
                 }
 
@@ -368,6 +404,12 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 }
 
                 if (location.InstalledPart
+                        .GetComponentInChildren<Printer>(true) != null)
+                {
+                    continue;
+                }
+
+                if (location.InstalledPart
                         .GetComponentInChildren<ItemFFFSpoolDataHolder>(true) != null)
                 {
                     continue;
@@ -430,8 +472,31 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
         private static IEnumerable<PartLocation> PartLocations(Printer printer)
         {
-            PartsAssembly assembly = printer.Assembly;
+            foreach (PartLocation location in PartLocations(printer.Assembly))
+            {
+                yield return location;
+            }
 
+            PrinterEnclosure enclosure = printer.DockedEnclosure;
+            PartsAssembly enclosureAssembly = enclosure != null
+                ? enclosure.GetComponent<PartsAssembly>()
+                : null;
+
+            if (enclosureAssembly == null ||
+                enclosureAssembly == printer.Assembly)
+            {
+                yield break;
+            }
+
+            foreach (PartLocation location in PartLocations(enclosureAssembly))
+            {
+                yield return location;
+            }
+        }
+
+        private static IEnumerable<PartLocation> PartLocations(
+            PartsAssembly assembly)
+        {
             if (assembly == null)
             {
                 yield break;
@@ -480,6 +545,24 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                     return "Print bed thermistor";
                 case "printer_print_plate_location":
                     return "Print plate";
+                case "battery_closet_location":
+                    return "Battery closet";
+                case "battery_closet_adapter_location":
+                    return "Battery closet adapter";
+                case "thermometer_location":
+                    return "Thermometer";
+                case "HEPA_filter_fan_left_location":
+                    return "HEPA filter fan (left)";
+                case "HEPA_filter_fan_right_location":
+                    return "HEPA filter fan (right)";
+                case "HEPA_filter_trap_location":
+                    return "HEPA filter trap";
+                case "fire_suppression_tube_1_location":
+                    return "Fire suppression tube 1";
+                case "fire_suppression_tube_2_location":
+                    return "Fire suppression tube 2";
+                case "fire_suppression_tube_3_location":
+                    return "Fire suppression tube 3";
                 default:
                     return locationName.Replace('_', ' ');
             }
