@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Part;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.Items.Wear;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts.Types;
@@ -22,8 +23,10 @@ namespace Coursework_Master_Degree.Game.Helper
         private static readonly int WearLevelPercentPropertyID = Shader.PropertyToID("_wear_level_percent");
 
         private readonly List<ItemGhostDataHolder> wearPartGhostInstances = new();
+        private readonly HashSet<PartsAssembly> inspectedAssemblies = new();
         private readonly List<MeshRenderer> partMeshRenderers = new();
         private readonly List<bool> partMeshRenderersStates = new();
+        private readonly HashSet<MeshRenderer> hiddenPartMeshRenderers = new();
 
         private MaterialPropertyBlock wearLevelPropertyBlock;
 
@@ -77,12 +80,21 @@ namespace Coursework_Master_Degree.Game.Helper
                 wearPartGhost.gameObject.SetActive(false);
             }
             wearPartGhostInstances.Clear();
+            inspectedAssemblies.Clear();
         }
 
         private void SetupWearPartGhosts(PartsAssembly partsAssembly)
         {
+            if (partsAssembly == null ||
+                !inspectedAssemblies.Add(partsAssembly))
+            {
+                return;
+            }
+
             SetupWearPartGhosts(partsAssembly.GetOccupiedRegularPartLocations());
             SetupWearPartGhosts(partsAssembly.GetOccupiedOptionalPartLocations());
+
+            SetupNestedPrinterAssemblies(partsAssembly);
         }
 
         private void SetupWearPartGhosts(List<PartLocation> partLocations)
@@ -98,6 +110,50 @@ namespace Coursework_Master_Degree.Game.Helper
             }
         }
 
+        private void SetupNestedPrinterAssemblies(PartsAssembly partsAssembly)
+        {
+            SetupNestedPrinterAssemblies(
+                partsAssembly.GetOccupiedRegularPartLocations());
+            SetupNestedPrinterAssemblies(
+                partsAssembly.GetOccupiedOptionalPartLocations());
+        }
+
+        private void SetupNestedPrinterAssemblies(
+            List<PartLocation> partLocations)
+        {
+            if (partLocations == null)
+            {
+                return;
+            }
+
+            foreach (PartLocation partLocation in partLocations)
+            {
+                if (partLocation == null || partLocation.InstalledPart == null)
+                {
+                    continue;
+                }
+
+                Printer printer =
+                    partLocation.InstalledPart.GetComponent<Printer>();
+
+                if (printer != null && printer.Assembly != null)
+                {
+                    ItemDataHolder printerItem =
+                        printer.GetComponent<ItemDataHolder>();
+
+                    if (printerItem != null)
+                    {
+                        // The printer is represented by its internal wear
+                        // ghosts while inspecting the enclosure. Hide the
+                        // printer root so its frame does not obscure them.
+                        HidePartMeshRenderers(printerItem);
+                    }
+
+                    SetupWearPartGhosts(printer.Assembly);
+                }
+            }
+        }
+
         private void SetupWearPartGhost(PartLocation partLocation)
         {
             if (partLocation.InstalledPart == null)
@@ -105,8 +161,10 @@ namespace Coursework_Master_Degree.Game.Helper
                 return;
             }
 
-            ItemDataHolder part = partLocation.InstalledPart.GetComponent<ItemDataHolder>();
-            if (part == null)
+            ItemDataHolder part =
+                partLocation.InstalledPart.GetComponent<ItemDataHolder>();
+
+            if (part == null || part.GetComponent<Printer>() != null)
             {
                 return;
             }
@@ -204,7 +262,8 @@ namespace Coursework_Master_Degree.Game.Helper
 
                 // The item may be its own inspection target; never hide the
                 // ghost which is currently replacing its renderers.
-                if (meshRenderer.GetComponentInParent<ItemGhostDataHolder>() != null)
+                if (meshRenderer.GetComponentInParent<ItemGhostDataHolder>() != null ||
+                    !hiddenPartMeshRenderers.Add(meshRenderer))
                 {
                     continue;
                 }
@@ -231,6 +290,7 @@ namespace Coursework_Master_Degree.Game.Helper
 
             partMeshRenderers.Clear();
             partMeshRenderersStates.Clear();
+            hiddenPartMeshRenderers.Clear();
         }
     }
 }

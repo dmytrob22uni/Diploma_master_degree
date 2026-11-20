@@ -244,6 +244,16 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return false;
             }
 
+            // Inside an enclosure, any hit on the printer or its internals
+            // resolves to the printer root so removal treats it as one part.
+            if (PartsAssembly.TryGetInstalledPrinterItem(
+                    item,
+                    targetAssembly,
+                    out ItemDataHolder printerItem))
+            {
+                item = printerItem;
+            }
+
             PartLocation partLocation = item.GetComponentInParent<PartLocation>();
 
             if (partLocation == null || !partLocation.IsOccupied)

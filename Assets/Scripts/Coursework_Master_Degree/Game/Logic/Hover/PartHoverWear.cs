@@ -43,6 +43,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private int lastScrollFrame = -1;
         private float lastScrollValue;
+        private float lastInfoRefreshTime;
+        private const float InfoRefreshInterval = 0.2f;
 
         private PartsAssembly targetAssembly;
         private ItemDataHolder targetItem;
@@ -73,6 +75,13 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         {
             if (!IsEyesChanged())
             {
+                if (cachedHoveredParts.Count > 0 &&
+                    Time.unscaledTime - lastInfoRefreshTime >= InfoRefreshInterval)
+                {
+                    lastInfoRefreshTime = Time.unscaledTime;
+                    SetupInfo(cachedHoveredParts[scrollIndex]);
+                }
+
                 return;
             }
 
@@ -245,7 +254,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             return new HoveredPart(
                 new PartCacheKey(item.gameObject, item.ItemMetaData),
                 item.ItemMetaData,
-                item.GetComponent<ItemWearState>(),
+                item.GetComponentInChildren<ItemWearState>(true),
                 closestHit);
         }
 

@@ -14,6 +14,24 @@ namespace Coursework_Master_Degree.Items.FFF
             PartsAssembly partsAssembly = GetComponent<PartsAssembly>();
             ItemDataHolder itemDataHolder = GetComponent<ItemDataHolder>();
 
+            // A printer installed in an enclosure is controlled through the
+            // enclosure interaction list, not its own internal assembly.
+            PartsAssembly enclosure =
+                PartsAssembly.FindEnclosingPrinterEnclosure(itemDataHolder);
+
+            if (enclosure != null)
+            {
+                partsAssembly = enclosure;
+                itemDataHolder = enclosure.GetComponent<ItemDataHolder>();
+            }
+
+            Printer printer = Printer.FindFor(partsAssembly.gameObject);
+
+            if (printer != null && printer.IsBusy)
+            {
+                return System.Array.Empty<InteractionOption>();
+            }
+
             var options = new List<InteractionOption>
             {
                 new() {

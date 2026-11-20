@@ -204,6 +204,16 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                     return false;
                 }
 
+                // Inside an enclosure, the installed printer is one part.
+                // Resolve any internal printer hit to the printer root.
+                if (PartsAssembly.TryGetInstalledPrinterItem(
+                        item,
+                        targetAssembly,
+                        out ItemDataHolder printerItem))
+                {
+                    item = printerItem;
+                }
+
                 ItemMetaSO metaData = item.ItemMetaData;
                 hoveredPart = new HoveredPart(
                     new PartCacheKey(item.gameObject, metaData),
