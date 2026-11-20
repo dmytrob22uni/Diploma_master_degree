@@ -18,6 +18,7 @@ Use the existing contracts instead:
 - role-based `DockingSources` / `DockingTargets`;
 - role-based `FreePartDockingSources` / `FreePartDockingTargets`;
 - `PrinterMotionBase`, with `CartesianPrinterMotion` or `CoreXYPrinterMotion` where appropriate;
+- `PrintedObjectPresenter`, which the `Printer` auto-adds; it uses only `PrintBedAnchor`, `PrinterMotionBase`, `PrintPlacement` and the object prefab;
 - authored wear logic, temperature sources and hard-stop targets;
 - per-prefab critical, calibration-sensitive and service-blocked lists.
 
@@ -35,6 +36,7 @@ The final setup guide must cover, in order:
    - `PrinterBindHighlight`
    - `PrinterMotionBase` implementation
    - `PrintBedAnchor`
+   - `PrintedObjectPresenter` is auto-added by `Printer`; no per-model wiring is required, but verify it exists at runtime.
 
 2. **Motion**
    - choose `CartesianPrinterMotion` for independent axes;
@@ -43,37 +45,46 @@ The final setup guide must cover, in order:
    - wire `BuildVolume`, axis directions/ranges, `BedAnchor`, `HomePositionNormalized`, calibration height and gizmos;
    - verify print-space X/Z/Y maps correctly before wiring the FSM.
 
-3. **Parts and service**
+3. **Printed-object visuals**
+   - verify the object prefab has a readable mesh, a pivot at the bottom centre and an original collider;
+   - confirm the selected spool has a `PrintingMaterial` with `_reveal_height` and a regular `FinalMaterial`;
+   - verify the reveal, layer cap and partial sliced collider follow the bed;
+   - verify supports use only the object mesh and stay attached until M5;
+   - verify completed and partial prints are taken off the bed manually; there is no `Clear bed`;
+   - verify selling is blocked on the bed and partial prints give no income.
+
+4. **Parts and service**
    - author `PartLocation`s and metadata;
    - wire `CriticalPartLocations`, `PrintPlateLocation`, wear targets and `CalibrationSensitiveLocations`;
    - author `ServiceBlockedDuringPrint`;
    - verify missing-part validation, wear, integrity and remove/install flows.
 
-4. **Spools**
+5. **Spools**
    - author one to four `SpoolSlotDefinition` entries with stable ids, labels and locations;
    - verify 0/1-slot selector hiding and 2–4-slot dynamic selection;
    - wire enclosure `SpoolSockets`, including optional slot ids and overflow validation;
    - verify only the selected spool feeds a job. Multi-material is not part of this setup.
 
-5. **Enclosure docking**
+6. **Enclosure docking**
    - wire installed-accessory roles;
    - wire free-part roles and reset transforms;
    - verify dock/undock, part occupancy and free-part reset behavior;
    - do not hardcode battery-closet, adapter, spool or plug categories outside the role data.
 
-6. **Metadata and catalog**
+7. **Metadata and catalog**
    - add the printer/model metadata and any required `ItemType` entry;
    - wire the prefab into the scene/catalog where needed;
    - verify device binding, console selection and save/draft behavior if applicable.
 
-7. **Verification**
+8. **Verification**
    - compile and scene audit;
    - motion debug and rectangular build-volume checks;
    - calibration, home and calibration-sensitive part changes;
    - missing/worn/critical part validation;
    - 0/1/2–4 spool layouts;
    - enclosure socket overflow and role-based docking;
-   - start, pause, resume, hard stop and clear-bed flows;
+   - start, pause, resume, hard stop, manual completed/partial removal and sale blocking;
+   - wear-coefficient approval in `wear_coefficients_manual_gate.md`;
    - no model-specific assumptions leaked into shared runtime code.
 
 ## Reminder

@@ -1,6 +1,6 @@
 # Manufacturing Plan — Device-Controlled FFF Printing
 
-**Status:** In progress — M3 complete; M4 next
+**Status:** In progress — M4 implemented; manual gate pending
 **Last updated:** 2026-11-20
 **Scope:** Laptop / PC / Smartphone / Tablet controlling one or more FFF printers. Prusa MK4S is the first model; rectangular XYZ printers, including CoreXY, are supported by the shared architecture.
 **Document type:** Living design spec + milestone checklist
@@ -109,7 +109,7 @@ The console shows:
 - Layer-height, print-speed, infill, supports, spool and simulation-speed selectors.
 - Estimated print time and filament use.
 - Validation messages and live printer status.
-- `Start print`, `Place on bed`, `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate`, `Clear bed`, `Connect printer`, `Disconnect`, `Screen off`, and `Quit`.
+- `Start print`, `Place on bed`, `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate`, `Connect printer`, `Disconnect`, `Screen off`, and `Quit`. Completed and partial prints are removed manually by hovering them; there is no `Clear bed` action.
 
 M1 ships only the binding and power controls; the job controls arrive in M2. M2.5 adds `Place on bed` between job setup and starting. M3 adds the live run controls and calibration.
 
@@ -141,7 +141,7 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 5. `Start print` becomes available only when the job is valid.
 5. Printer transitions `Idle → Preheating → Printing → Cooling → Finished`.
 6. Console shows live state, temperatures, progress, remaining time, and filament use.
-7. When finished, the object is fully revealed on the bed and can be removed.
+7. When finished, the object is fully revealed on the bed. Once cooling reaches ambient + tolerance and the head is parked at home, the object can be taken off the bed and placed.
 
 ### 4.6 Placing, rotating and scaling the object
 
@@ -169,7 +169,7 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 3. Printing leaves a partial print on the bed; stopping during preheat leaves no partial print.
 4. A one-off condition penalty is applied to the nozzle/heater/bed/plate.
 5. The printer cools down and returns to `Idle` (`HasPartialPrint = true` when printing had started).
-6. No new job can start until the partial print is removed with `Clear bed`.
+6. No new job can start until the partial print is removed by taking it off the bed and placing it.
 
 ### 4.8 Leaving the console
 
@@ -494,6 +494,8 @@ Printer
   - bool IsCalibrated
   - Device BoundDevice
   - string StatusSummary
+  - PrintedObjectPresenter PrintedObject
+  - bool TryReleasePrintedObject(GameObject)
 
 PrinterJob
   - PrintJobRequest Request (object, settings, spool, placement)
@@ -504,6 +506,12 @@ PrinterJob
   - float QualityMin / QualityMax (after pause penalty and calibration)
   - bool IsPartial / bool WasHardStopped / bool UsesApplied
   - float Progress01 / RemainingSeconds / RemainingFilamentMeters
+
+PrintedObjectDataHolder
+  - Printer / PrinterJob
+  - float Quality (0..90; -1 for partial)
+  - bool IsPartial / IsCompleted / IsFinalized / IsReleased
+  - bool IsOnPrintBed
 
 PrinterStateMachine
   - Idle
@@ -517,7 +525,7 @@ PrinterStateMachine
   - Fault         (preheat timeout in M3; full failures in M5)
 ```
 
-The printer is a self-contained `MonoBehaviour` that ticks every frame, regardless of whether a device is open or bound.
+The printer is a self-contained `MonoBehaviour` that ticks every frame, regardless of whether a device is open or bound. `PrintedObjectPresenter`, `PrintRevealController`, `PrintedSupportPresenter` and `PrinterMotionSimulator` are printer-agnostic helpers; they use only the bed anchor, motion contract, placement and object prefab.
 
 ### 6.2 Existing code integration
 
@@ -685,10 +693,10 @@ States and transitions:
 | `Printing` / `Paused` | hard stop | `Cooling` (partial = true) |
 | `Preheating` | hard stop | `Cooling` (no partial) |
 | `Printing` | fatal fault (M5) | `Cooling` / `Fault` |
-| `Cooling` | temperatures near ambient, complete | `Finished` |
-| `Cooling` | temperatures near ambient, partial | `Idle` (partial print remains) |
-| `Cooling` | temperatures near ambient, preheat stop | `Idle` (clear bed) |
-| `Finished` | print removed / clear bed | `Idle` |
+| `Cooling` | temperatures near ambient + head parked, complete | `Finished` |
+| `Cooling` | temperatures near ambient + head parked, partial | `Idle` (partial print remains) |
+| `Cooling` | temperatures near ambient + head parked, preheat stop | `Idle` (no print) |
+| `Finished` | print taken from the bed | `Idle` |
 | `Idle` | calibration requested | `Calibrating` |
 | `Calibrating` | grid complete | `Idle` |
 | `Calibrating` | hard stop | `Idle` |
@@ -697,10 +705,12 @@ States and transitions:
 
 Rules:
 
-- `Finished` means a completed print is still on the bed.
-- `Idle` means the bed is clear.
+- `Finished` means a completed print is still on the bed and the head is parked.
+- `Idle` has no completed print; a partial print may still be on the bed.
 - On spawn, after finishing a print, after a hard stop and after calibration cancel/return, move to `PrinterMotionBase.HomePositionNormalized`. Calibration may start/lift from its optional height override, but always returns to global home. M4 smooths the post-print move; there is no separate service/park position.
-- A hard-stopped partial print sets `HasPartialPrint = true`; the printer returns to `Idle` after cooling but rejects new jobs until the partial print is removed.
+- Completion and partial finalization happen only after cooling reaches ambient + tolerance and the head reaches home. Colliders/removal are enabled only then.
+- Pause parks the head at home. Resume returns smoothly to the current print path.
+- A hard-stopped partial print sets `HasPartialPrint = true`; the printer returns to `Idle` after cooling + parking but rejects new jobs until the partial print is manually removed.
 - `Paused` is used for player pause and safe part service; it does not consume print progress.
 - `Calibrating` moves the nozzle to every point of an `N × N` plate grid and does not consume a job.
 - `Maintenance` is data/validation-driven in M3; live automatic transitions and repair scheduling remain M5.
@@ -852,12 +862,14 @@ These are one-off condition points, not `WearDelta` values. The nozzle, heater, 
 
 #### Object instantiation
 
-- Instantiate the object prefab under `PrintBedAnchor`.
-- Center its bottom on the bed.
-- Use the selected spool's `PrintingMaterial`.
-- Disable colliders and physics during printing.
-- Keep the object on the `object_to_print` layer for later hover/removal.
-- Remove any ghost components from the instance.
+- Instantiate the real object prefab under `PrintBedAnchor`; do not use the legacy printing ghost.
+- Place it with the stored M2.5 local position, yaw and uniform scale.
+- Use the selected spool's `PrintingMaterial` while printing; it exposes `_reveal_height`.
+- Add a runtime `PrintedObjectDataHolder` for quality, partial/completed state and bed ownership.
+- Disable colliders and physics during printing. The object remains on the `object_to_print` layer for later hover/removal.
+- Generate a horizontal cap mesh at the current top layer so the clipped object does not expose its inside faces. The cap uses the spool's regular `FinalMaterial`.
+- Build a sliced, capped collider mesh when a partial print is finalized. Completed prints use the prefab's original collider.
+- Do not use the `ObjectToPrintGhostPrintingDataHolder` path; the real prefab is the single source of visual/collider truth.
 
 #### Layer reveal
 
@@ -888,20 +900,24 @@ Important:
 - Use a `MaterialPropertyBlock` per renderer with `_reveal_height`.
 - Quantize the reveal to the layer height.
 - Update the reveal at ~15 Hz, not every frame.
+- Update the layer cap only when the quantized printed layer changes, and throttle it independently (about 10 Hz).
+- The cap must follow the bed with the object; build it in object-root local space.
+- The cap and sliced collider are display/gameplay approximations, not a real slicer.
 
 #### Motion
 
 `PrinterMotionSimulator` generates cheap procedural print-space positions:
 
 - Layer count from model height / layer height.
-- Each layer follows a small Lissajous or zigzag path inside the object footprint.
+- Each layer follows a small Lissajous or zigzag path inside the placed object's bed-local bounding box, not over the whole plate.
 - `ApplyNozzlePosition` takes X/Z in bed-local metres and Y as nozzle height above the bed.
 - MK4S implements X on the extruder, Z on the bed carriage, and Y on the gantry. A dropping-bed printer implements the same roles differently.
 - Add a small Z-hop on layer changes.
 - Do not attempt real perimeter/infill geometry.
-- Use a seeded random pattern so the motion is deterministic per job.
-- Respect configured axis speeds and soft limits.
-- Move to `HomePositionNormalized` after finishing, hard stop and calibration return. Calibration may start/lift from `CalibrationHomePrintPosition` (X/Z global, optional height). `Home()` remains the mechanical axis-home primitive for debug/mechanical use only.
+- Use a seeded pattern so the motion is deterministic per job.
+- Respect the rectangular build volume / soft limits.
+- Pause and hard stop both move the head smoothly to `HomePositionNormalized`.
+- After cooling, normal completion moves the head smoothly to `HomePositionNormalized`; the print becomes removable only when both cooling and parking finish. Calibration may start/lift from `CalibrationHomePrintPosition` (X/Z global, optional height). `Home()` remains the mechanical axis-home primitive for debug/mechanical use only.
 
 The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S transforms directly.
 
@@ -923,27 +939,31 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 - The rotation uses simulated consumption, so it follows `PrintSpeedMultiplier`.
 - The visible filament child uses the upper authored threshold: `91..100 → 100`, `81..90 → 90`, … `1..10 → 10`, and only `0` shows the empty child. This keeps the spool visually fuller for longer.
 - `SpoolFilamentState` reads the installed spool's live `ItemWearState.CurrentCondition`; the visible child and remaining metres are derived from that same value. If a spool has unexpected wear logic, consumption falls back to direct condition loss so the wear state still moves.
-- M4 adds shader reveal polish (`_reveal_height`) and visual verification with the printed object present.
-- If the vertical reveal looks wrong, fall back to the M3 wear-level children rather than new prefabs in M5.
+- M4 applies the spool-bound printing shader (`_reveal_height`) to the printed object and restores the spool's regular `FinalMaterial` on completion.
+- Partial prints keep the printing shader and their frozen reveal/cap after removal and placement.
+- If the vertical reveal looks wrong, verify the renderer-pivot/cutoff formula and cap before changing artwork.
 
 #### Completion and removal
 
 - On normal completion:
   - Fully reveal the object.
-  - Restore the object's final materials.
-  - Re-enable colliders/surface placement.
-  - Move the head smoothly to `PrinterMotionBase.HomePositionNormalized` before/while entering `Finished`.
-  - Mark it as a completed print.
+  - Restore the spool's regular `FinalMaterial`.
+  - Keep generated supports attached; M5 adds support removal.
+  - Wait for cooling and head parking at `PrinterMotionBase.HomePositionNormalized`.
+  - After both complete, enable the original colliders/surface placement and mark it as a completed print.
 - On hard stop:
-  - Freeze the reveal at the partial height.
-  - Keep the printing material.
-  - Mark it as a partial print.
+  - Freeze the reveal, cap and supports at the partial height.
+  - Keep the printing material and printing-shader state.
+  - Wait for cooling and head parking, then build the sliced/capped partial collider.
+  - Mark it as a partial print. Partial prints are removable, placed and sellable, but give no income.
 - Removal:
-  - Hover the finished object and enter `GameStateItemPlace` directly, with no `Cancel` option.
-  - Removing the object clears the printer's bed slot and lets the player place it like a normal item.
-  - The head is already at `HomePositionNormalized`, so removal needs no extra head motion.
-  - M3 keeps `Clear bed` as a temporary logical removal action; M4 replaces it with the hover flow.
-  - Partial prints are discarded, not resumed.
+  - Hover a completed or partial print and enter `GameStateItemPlace` directly, with no `Cancel` option.
+  - Release the object from the printer before entering placement; it becomes a normal item.
+  - Removing the object clears the printer's bed slot. The head is already at `HomePositionNormalized`, so removal needs no extra head motion.
+  - There is no `Clear bed` action in M4.
+  - Do not allow selling while the print is on the bed. Take it off and place it first.
+  - Supports stay attached to the finished object until M5 adds a removal interaction.
+  - Partial prints are not resumed.
 
 ### 6.8 Console UI
 
@@ -971,7 +991,7 @@ Layout:
 - Left column: bound printer list with active selection.
 - Main area: a compact active-printer strip and a print-job card with the object list grouped by `ObjectToPrintType`, layer-height/speed/infill/supports/spool/simulation-speed selectors, estimates, raw-quality range, a scrollable validation/warnings list and `Start print`.
 - Active-printer strip: state, progress, nozzle/bed temperatures and remaining filament through `Printer.StatusSummary`.
-- Job-card controls: `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate` and `Clear bed`. `Clear bed` is a temporary M3 removal action; M4 replaces it with the real completed/partial print.
+- Job-card controls: `Pause`/`Resume`, `Hard stop`/`Confirm stop` and `Calibrate`. Completed and partial prints are removed by hovering the object; there is no `Clear bed` button.
 - `SIM SPEED` presets `1×`, `4×`, `64×`, `120×`; the selected value is stored on the active printer.
 - Validation rows show every block and warning; the list scrolls independently so the selectors and `Start print` stay fixed. The job card itself is not a scroll view. The validation block has a subtle inset background and a thin top rule to separate it from the card.
 - The printer list and object list are `ScrollRect` views with `RectMask2D`; mouse wheel and drag work over the full viewport, including empty space, and content grows with the number of entries.
@@ -1496,11 +1516,11 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - raw quality is capped at `90` even with an enclosure; post-processing can polish beyond that later.
 - Hard-stop flow with partial-print flag, one-off condition penalties and console confirmation.
 - Console live status binding: state, progress, nozzle/bed temperatures, remaining filament.
-- Console controls for `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate` and `Clear bed` (temporary M3 removal action).
+- Console controls for `Pause`/`Resume`, `Hard stop`/`Confirm stop` and `Calibrate`. There is no `Clear bed`; finalized completed and partial prints are removed manually in M4.
 - Console job drafts are keyed by printer, with per-object settings and placement, so switching printers/objects restores the prior draft.
 - Printer continues ticking when unbound.
 - Pause/resume through the console, not a new InputAction:
-  - pause stops print progress, moves the nozzle to a service position and lets the nozzle/bed cool;
+  - pause stops print progress, moves the nozzle to `HomePositionNormalized` and lets the nozzle/bed cool;
   - service swap is allowed only after the nozzle and bed are below `SafeServiceTemperatureC` (default `50 °C`);
   - parts may be swapped while paused, except `Printer.ServiceBlockedDuringPrint` references (default: print bed, print bed thermistor, print plate);
   - resume requires every critical part and the selected spool to be installed again; if a blocked part must change, the print can only be hard-stopped;
@@ -1567,7 +1587,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 3. Tune the hard-stop penalty so it is noticeable but not catastrophic.
 4. Profile 2–4 printers printing simultaneously; check CPU and GC.
 5. Verify no NaN/Inf in temperatures, progress, or condition.
-6. Verify partial print blocks the next job and `Clear bed` releases it.
+6. Verify a partial print blocks the next job and can be taken off the bed and placed.
 7. Pause, wait for cooling, swap a nozzle/fan/belt, resume and confirm the seam penalty.
 8. Attempt to swap a print-bed part while paused and confirm it is refused. After calibration, change a spool or enclosure accessory in idle and during a paused job and confirm calibration remains; change a nozzle/plate/axis part in both states and confirm it invalidates.
 9. Run calibration with `N = 3` and `N = 5`; confirm the head moves smoothly from its current position, lifts, touches every point, returns to `HomePositionNormalized`, and `Hard stop` cancels/homes. Repeat at more than one `SIM SPEED` value; toggle the calibration height override and confirm it affects only the calibration start/lift.
@@ -1591,51 +1611,65 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 ### M4 — Print visualization
 
-**Goal:** The print looks convincing: object reveal, nozzle/bed motion, support columns, and removal. Spool rotation and wear-level sync already arrive in M3.
+**Goal:** The print looks convincing: object reveal, nozzle/bed motion, support columns, and manual removal. Spool rotation and wear-level child sync already arrive in M3.
+
+**Status:** Implementation is in place; the manual gate and the wear-coefficient approval in §10 are pending. M4 is not marked done yet.
 
 **Deliverables**
 
-- `PrintedObjectPresenter`.
-- `PrintedSupportPresenter`: sample overhang triangles for the placed object, cluster them to a capped number of points (e.g. `48`), and spawn thin vertical support columns to the plate. Simple Y-scaled cubes or cylinders are enough; reveal them with print height and hide them after completion.
-- `PrintRevealController`.
-- `PrinterMotionSimulator`.
-- `CartesianPrinterMotion` integration.
-- Spool reveal polish; rotation and wear-level child sync already arrive in M3.
-- Completion material restore and collider enable.
-- Apply `PrinterJob.FinalQuality` to the instantiated printed object's quality value. M3 stores the finalized value on the completed/partial job; M4 owns the visible object.
-- Post-print parking: after cooling, move the head smoothly to `PrinterMotionBase.HomePositionNormalized` before/while `Finished`. This is the global position used for spawn and pause/service; calibration can override it separately.
-- Partial-print removal.
-- **Owner demand:** manual removal of a finished print. The player hovers the finished object and enters `GameStateItemPlace` directly, with no `Cancel` option. Removing it clears the printer bed and lets the object be placed like a normal item.
-- If printing ghosts are reused, fix the existing `ObjectToPrintGhostPrintingDataHolder` bug: its `OnValidate`/`Awake` currently assign `ObjectToPrintGhostType.Quality` instead of `Printing`. Prefer instantiating the real object prefab for prints and bypassing this ghost path.
+- `PrintedObjectPresenter`: instantiate the real object prefab under `PrintBedAnchor`, apply the M2.5 placement, own the printed-object lifecycle and release it to `GameStateItemPlace`.
+- `PrintedObjectDataHolder`: runtime quality, partial/completed state, printer ownership and `IsOnPrintBed`.
+- `PrintRevealController`: per-renderer `_reveal_height` through `MaterialPropertyBlock`, quantized to layer height and updated at ~15 Hz.
+- `PrintedSupportPresenter`: sample overhang triangles for the placed object, cluster them to a capped number of points (`48`), and spawn thin vertical support columns. Columns reveal with print height and remain attached to the finished object; M5 adds support removal.
+- `PrinterMotionSimulator`: seeded procedural path inside the placed object's bed-local bounding box, layer changes and a small Z-hop. It never moves outside the rectangular build volume.
+- `CartesianPrinterMotion` integration through `PrinterMotionBase`; CoreXY uses the same contract when its model prefab exists.
+- Spool integration: use the selected spool's `PrintingMaterial` (the shader with `_reveal_height`) while printing; on completion apply the spool's regular `FinalMaterial`.
+- Layer-cap mesh: generate a horizontal cap for the current top layer so the clipped object does not expose inside faces. The cap uses the spool's final material and follows the bed with the object.
+- Partial collider mesh: build a sliced, capped mesh at the partial height and use it as the partial object's collider. Completed prints use the prefab's original collider.
+- Completion material restore and collider enable only after cooling and head parking.
+- Apply `PrinterJob.FinalQuality` to `PrintedObjectDataHolder.Quality`; completed prints are sellable, partial prints are sellable with no income.
+- Post-print parking: after cooling, move the head smoothly to `PrinterMotionBase.HomePositionNormalized`. Pause and hard stop also park the head at home.
+- Manual removal of completed **and** partial prints. The player hovers the print and enters `GameStateItemPlace` directly, with no `Cancel` option. Removing it clears the printer bed and lets the object be placed like a normal item.
+- No `Clear bed` action. Selling a print while it is still on the printer bed is blocked with a clear reason; take it off and place it first.
+- Real object prefab, not the legacy printing ghost. The `ObjectToPrintGhostPrintingDataHolder` type bug is fixed, but the real prefab path is preferred.
+- `Printer` owns the presenter through `PrintedObject` and auto-adds it for printer prefabs that do not author one, so new models do not need model-specific code.
 
 **Acceptance criteria**
 
 - The object appears where the M2.5 placement put it: position, yaw and uniform scale.
-- With `Auto` supports, visible support columns appear under the overhangs and are revealed with the print; `None` prints no supports.
-- Reveal starts empty and grows bottom-up.
-- Reveal follows the moving bed correctly.
-- The nozzle appears to work over the printed area.
-- Axis motion stays within soft limits and does not clip.
-- The M3 spool rotation continues to read correctly during the full print.
-- Hard stop freezes the partial object at the correct height.
-- Completed object is fully visible and removable.
-- The object's quality value comes from `CompletedJob.FinalQuality`.
-- The head parks at `HomePositionNormalized` before/while `Finished`; removal needs no extra head motion.
-- Hovering the finished print transitions directly to placement with no cancel path, and the printer bed is released.
+- With `Auto` supports, visible support columns appear under the overhangs and reveal with the print; `None` prints no supports. Supports remain attached after completion.
+- Reveal starts empty and grows bottom-up; the layer cap hides inside faces at the current top layer.
+- Reveal and cap follow the moving bed correctly.
+- The nozzle moves inside the placed object's bounding box, not over the whole plate.
+- The nozzle appears to work over the printed area; axes stay within soft limits and do not clip.
+- The selected spool's printing shader drives the reveal; completion switches the object to the spool's regular material.
+- Pause and hard stop move the head smoothly to `HomePositionNormalized`.
+- Hard stop freezes the partial object, cap and supports at the correct height.
+- Completed and partial objects are fully removable only after cooling and the head is settled at home.
+- Partial prints use a sliced/capped collider; completed prints use the original collider.
+- The object's quality value comes from `CompletedJob.FinalQuality`; partial prints expose no quality value and give no income.
+- Hovering a finalized print transitions directly to placement with no cancel path, and the printer bed is released.
+- Selling is blocked while the object is on the printer bed.
 - No per-frame material instancing or GC spikes.
 
 **Manual gate**
 
-1. Compare the reveal top to the nozzle height; adjust the offset.
+1. Compare the reveal top and cap height to the nozzle height; adjust the offset if needed.
 2. Check bed movement direction and speed.
-3. Check the object from several player angles; no popping or z-fighting.
-4. Check multi-mesh objects; all renderers reveal consistently.
+3. Check the object from several player angles; no popping, holes or z-fighting; the cap covers the cut cross-section.
+4. Use a temporary multi-mesh test prefab (only Stanford bunny exists in the catalog); confirm all renderers reveal and cap consistently. Remove test assets in M5.
 5. Re-check the M3 spool visual at 100%, 50%, 10%, and 0% with the printed object present.
-6. Check partial print height and removal.
-7. Check completed object materials, colliders, and selling/placement behavior.
-8. Confirm the head parks at `HomePositionNormalized` after cooling and before finished-object removal.
+6. Check `Auto` vs `None` supports; columns follow the print height and stay attached after completion.
+7. Check partial print height, cap, sliced collider and manual removal.
+8. Check completed object materials, original collider, placement and sale.
+9. Confirm the head parks at `HomePositionNormalized` after cooling and before completed/partial removal.
+10. Confirm pause and hard stop park the head at home; resume returns to the print path.
+11. Confirm a print on the bed cannot be sold, and that a placed partial print sells with no income while a placed completed print sells normally.
+12. Confirm no-cancel removal and bed release.
+13. Profile reveal/cap updates, supports and multiple printers; verify no per-frame material instancing or GC spikes.
+14. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed.
 
-**Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance.**
+**Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance and the wear-coefficient gate is approved.**
 
 ---
 
@@ -1646,7 +1680,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 **Candidate deliverables**
 
 - Advanced enclosure effects: draft, particulate filtration, warp and long-pause adhesion risk. Basic chamber temperature, cooling slowdown and enclosure quality are already in M3.
-- `PrintQualityModel` expanding the M2 `PrintQualityEstimator` range, and a real quality value on `IsHaveQuality`.
+- Support removal from completed/partial prints; M4 keeps generated supports attached.
+- `PrintQualityModel` expanding the M2 `PrintQualityEstimator` range, and a real quality value on `IsHaveQuality`. M4 stores the numeric value on `PrintedObjectDataHolder`; M5 turns it into sale value and post-processing.
 - Failure modes:
   - filament runout
   - clog
@@ -1820,15 +1855,22 @@ Fill this table during M0 and update it during later milestones.
 
 ### M4
 
-- Visual reveal at start/mid/end.
-- Auto supports render as columns under overhangs and follow the print height.
+- Exact placement match: position, yaw and scale.
+- Visual reveal at start/mid/end; the cap closes the current top layer.
+- Spool printing material during the print; regular final material after completion.
+- Auto supports render as columns under overhangs, follow print height, and remain attached.
 - No supports render when `None`.
+- Nozzle path stays inside the placed object's bounding box.
 - Bed motion and nozzle path.
 - M3 spool visual with the printed object present.
-- Post-print parking at `HomePositionNormalized`.
-- Partial print freeze and removal.
+- Pause and hard stop park at `HomePositionNormalized`.
+- Post-print parking at `HomePositionNormalized`; finalize only after cooling and parking.
+- Partial print freeze, cap, sliced collider and manual removal.
 - Completed object material/collider restore.
+- No selling while the object is on the bed.
+- No `Clear bed`; completed/partial removal uses hover placement with no cancel.
 - Performance profile.
+- Wear-coefficient approval in `wear_coefficients_manual_gate.md`.
 
 ### M5
 
@@ -1855,7 +1897,10 @@ Fill this table during M0 and update it during later milestones.
 | UI scope creep | One generic console; defer dashboards and fancy animations to M5 |
 | Multiple printers cause CPU spikes | Update budgets; no per-frame allocations; reveal at 15 Hz |
 | No save/load | Document in-memory scope; add persistence later if needed |
-| Partial print blocks the player with no way out | Always provide removal interaction/console action |
+| Partial print blocks the player with no way out | Completed and partial prints share the hover-to-place removal flow; no `Clear bed` action |
+| Layer-cap rebuild cost at high simulation speed | Cap only when the quantized layer changes, throttle to ~10 Hz, and fall back to a bounds quad |
+| Object removal races the printer busy rule | `PrintedObjectDataHolder` owns `IsOnPrintBed`; `Printer.TryReleasePrintedObject` clears the bed before placement |
+| Selling a print while it is on the bed | `ItemHoverSell` returns a wrong-state reason until the object is released and placed |
 
 ---
 
@@ -1876,7 +1921,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated. M3 is marked done on 2026-11-20: the printer owns the job FSM, temperature/wear simulation, pause/service/hard-stop controls, calibration state, enclosure loop, spool visuals and the calibration-sensitive part policy; its MK4S manual gate passed. CoreXY play-mode validation and 3/4-slot console presentation are deferred until those printer models/configurations are authored. M4 is next and has not started.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound reveal material, layer caps, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
 
 
 M1 is code-complete:
@@ -2096,7 +2141,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-18 | `PrintBedAnchor` is the placement reference | One source for surface, size and front direction |
 | 2026-11-18 | Placement is per-job and not persisted | Same as slicing: each print is set up fresh |
 | 2026-11-18 | Scale limits are soft, not clamped | The player sees the shader error and cannot confirm; no silent snapping |
-| 2026-11-18 | Supports visualised in M4 as simple columns | Full support generation is a slicer problem; columns make the abstract supports readable |
+| 2026-11-18 | Supports visualised in M4 as simple columns | Full support generation is a slicer problem; columns make the abstract supports readable and stay attached until M5 removal |
 | 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
 | 2026-11-19 | Simulation speed is a per-printer console preset | The printer owns the job; presets match existing console rows and avoid slider UI work |
 | 2026-11-19 | All wear delta types are mapped to printer/enclosure parts or print-use actions | Existing assets and SOs already define the intended wear kinds; no parallel wear model |
@@ -2137,6 +2182,15 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | Enclosure spool sockets map to printer slots | `PrinterEnclosureSpoolSocket` supports explicit slot ids or any free slot and blocks when the printer has more installed spools than free sockets |
 | 2026-11-20 | CoreXY uses a coupled horizontal carriage | `CoreXYPrinterMotion` composes X/Z onto one carriage; rectangular XYZ volumes remain shared with `CartesianPrinterMotion` and no belt/motor simulation is added |
 | 2026-11-20 | M3 is complete with variant checks deferred | MK4S manual gate passed; CoreXY play-mode validation and 3/4-slot presentation wait for authored models, with no shared-contract changes |
+| 2026-11-20 | M4 uses the real object prefab | The spool-bound printing material, runtime data and original collider all attach to the real prefab; the legacy printing ghost is not used |
+| 2026-11-20 | Printed objects use a spool-bound reveal and final material | Printing uses the spool's `_reveal_height` shader; completion restores its regular `FinalMaterial` |
+| 2026-11-20 | Layer caps and sliced partial colliders are generated | A horizontal cap closes the current top layer; a sliced/capped mesh is the partial collider |
+| 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |
+| 2026-11-20 | No `Clear bed`; selling on the bed is blocked | The player must take the object off the printer and place it before selling |
+| 2026-11-20 | Supports stay attached until M5 | Generated columns reveal with the print and remain on the finished/partial object |
+| 2026-11-20 | Finalize only after cooling and parking | Completed and partial objects become removable only when temperatures are back to ambient and the head is at home |
+| 2026-11-20 | Presentation is auto-wired per printer | `Printer` gets/creates its `PrintedObjectPresenter`, so new printer prefabs need no model-specific visuals code |
+| 2026-11-20 | Wear coefficients are a manual approval gate | M4 is not done until the project owner signs off `wear_coefficients_manual_gate.md` for every wear path |
 | 2026-11-19 | Spool wear visuals use the upper condition threshold | Avoids showing the empty child while usable filament remains |
 | 2026-11-19 | Calibration is recommended, not required | Uncalibrated prints warn and use a random `0.7–1.0×` quality factor at completion; calibrated prints use `1.0×` |
 | 2026-11-19 | Only calibration-sensitive part changes invalidate calibration | Nozzle/heater/thermistors, bed/plate and axis mechanics invalidate in idle and active states; spool and enclosure accessories do not |
