@@ -43,6 +43,9 @@ namespace Coursework_Master_Degree.Items.FFF
         [Header("Binding visuals")]
         public PrinterBindHighlight BindHighlight;
 
+        [Header("Print visuals")]
+        public PrintedObjectPresenter PrintedObject;
+
         [Header("Job requirements")]
         [Tooltip(
             "Part locations that must be occupied before printing and that get " +
@@ -175,6 +178,7 @@ namespace Coursework_Master_Degree.Items.FFF
         private bool isMovingHome;
         private Vector3 homeMovePosition;
         private bool isCalibrated;
+        private bool isFinalizingPrint;
 
         private PrinterEnclosure dockedEnclosure;
         private readonly Dictionary<string, PartLocation> dockedSpoolLocations =
@@ -912,6 +916,18 @@ namespace Coursework_Master_Degree.Items.FFF
             AutoAssign();
             NormalizeSpoolSlots();
 
+            if (PrintedObject == null)
+            {
+                PrintedObject = GetComponent<PrintedObjectPresenter>();
+            }
+
+            if (PrintedObject == null)
+            {
+                PrintedObject = gameObject.AddComponent<PrintedObjectPresenter>();
+            }
+
+            PrintedObject.Bind(this);
+
             if (temperatureModel == null)
             {
                 temperatureModel = new PrinterTemperatureModel();
@@ -1010,6 +1026,11 @@ namespace Coursework_Master_Degree.Items.FFF
                 case PrinterOperationalState.Calibrating:
                     TickCalibration(simulatedDelta);
                     break;
+            }
+
+            if (isFinalizingPrint && !isMovingHome)
+            {
+                FinalizePrintJob();
             }
         }
 
@@ -1116,6 +1137,16 @@ namespace Coursework_Master_Degree.Items.FFF
                     PauseQualityPenalty);
             }
 
+            // Pause parks the head. If the player resumes before the park
+            // move finishes, snap to the finished home pose and let the
+            // simulator return to the print path smoothly.
+            if (isMovingHome)
+            {
+                isMovingHome = false;
+                Motion?.ApplyHomePosition();
+            }
+
+            PrintedObject?.Resume();
             SetTargetsFromJob();
             preheatElapsedSimulated = 0.0f;
             wearIntegrator.Refresh(this);
@@ -1143,16 +1174,18 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             bool leavesPartial =
-                OperationalState == PrinterOperationalState.Printing ||
-                (OperationalState == PrinterOperationalState.Paused &&
-                 activeJob != null &&
-                 activeJob.Progress01 > 0.0f);
+                (OperationalState == PrinterOperationalState.Printing ||
+                 OperationalState == PrinterOperationalState.Paused) &&
+                activeJob != null &&
+                activeJob.Progress01 > 0.0f;
 
             if (activeJob != null)
             {
                 activeJob.IsPartial = leavesPartial;
                 activeJob.WasHardStopped = true;
             }
+
+            PrintedObject?.HardStop(activeJob);
 
             wearIntegrator.ApplyHardStopPenalty(
                 this,
@@ -1163,7 +1196,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 HardStopBedBase,
                 HardStopBedScale);
 
-            Motion?.ApplyHomePosition();
+            BeginHomeMove();
             SetState(PrinterOperationalState.Cooling);
             return true;
         }
@@ -1223,10 +1256,24 @@ namespace Coursework_Master_Degree.Items.FFF
             SetState(PrinterOperationalState.Idle);
         }
 
-        public bool ClearBed()
+        /// <summary>
+        /// Detaches a finalized completed or partial print from the bed. The
+        /// object becomes a normal item; the caller decides whether to place
+        /// or sell it. Returns false while the printer is still running.
+        /// </summary>
+        public bool TryReleasePrintedObject(GameObject objectToRelease)
         {
-            if (OperationalState != PrinterOperationalState.Finished &&
-                !HasPartialPrint)
+            if (OperationalState == PrinterOperationalState.Preheating ||
+                OperationalState == PrinterOperationalState.Printing ||
+                OperationalState == PrinterOperationalState.Paused ||
+                OperationalState == PrinterOperationalState.Cooling ||
+                OperationalState == PrinterOperationalState.Calibrating)
+            {
+                return false;
+            }
+
+            if (PrintedObject == null ||
+                !PrintedObject.TryRelease(objectToRelease))
             {
                 return false;
             }
@@ -1234,7 +1281,12 @@ namespace Coursework_Master_Degree.Items.FFF
             completedJob = null;
             partialJob = null;
             HasPartialPrint = false;
-            SetState(PrinterOperationalState.Idle);
+
+            if (OperationalState == PrinterOperationalState.Finished)
+            {
+                SetState(PrinterOperationalState.Idle);
+            }
+
             return true;
         }
 
@@ -1439,6 +1491,8 @@ namespace Coursework_Master_Degree.Items.FFF
             completedJob = null;
             partialJob = null;
             HasPartialPrint = false;
+            isFinalizingPrint = false;
+            PrintedObject?.ClearObject();
             preheatElapsedSimulated = 0.0f;
             wearTimeAccumulator = 0.0f;
             wearFilamentAccumulator = 0.0f;
@@ -1499,6 +1553,7 @@ namespace Coursework_Master_Degree.Items.FFF
             {
                 preheatElapsedSimulated = 0.0f;
                 SetState(PrinterOperationalState.Printing);
+                PrintedObject?.BeginJob(activeJob);
                 return;
             }
 
@@ -1521,6 +1576,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 true);
 
             AdvancePrint(simulatedDelta);
+            PrintedObject?.Tick(activeJob, simulatedDelta);
 
             if (activeJob != null && activeJob.Progress01 >= 1.0f)
             {
@@ -1555,24 +1611,71 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             FlushWear();
-            BeginHomeMove();
 
-            if (activeJob != null && activeJob.IsPartial)
+            if (isFinalizingPrint)
             {
-                partialJob = activeJob;
+                return;
+            }
+
+            isFinalizingPrint = true;
+
+            if (!isMovingHome)
+            {
+                BeginHomeMove();
+            }
+        }
+
+        private void FinalizePrintJob()
+        {
+            if (!isFinalizingPrint)
+            {
+                return;
+            }
+
+            isFinalizingPrint = false;
+
+            if (activeJob == null)
+            {
+                return;
+            }
+
+            PrinterJob finalJob = activeJob;
+
+            if (PrintedObject == null || !PrintedObject.HasObject)
+            {
+                if (finalJob.IsPartial || !finalJob.WasHardStopped)
+                {
+                    Debug.LogWarning(
+                        $"[Printer] {DisplayName} finished without a visible " +
+                        "print object; clearing the job.",
+                        this);
+                }
+
+                activeJob = null;
+                ActiveSpool = null;
+                SetState(PrinterOperationalState.Idle);
+                return;
+            }
+
+            if (finalJob.IsPartial)
+            {
+                partialJob = finalJob;
                 activeJob = null;
                 HasPartialPrint = true;
+                PrintedObject.FinalizePartial(finalJob);
                 SetState(PrinterOperationalState.Idle);
             }
-            else if (activeJob != null && activeJob.WasHardStopped)
+            else if (finalJob.WasHardStopped)
             {
                 activeJob = null;
+                PrintedObject.ClearObject();
                 SetState(PrinterOperationalState.Idle);
             }
             else
             {
-                completedJob = activeJob;
+                completedJob = finalJob;
                 activeJob = null;
+                PrintedObject.FinalizeCompleted(finalJob);
                 SetState(PrinterOperationalState.Finished);
             }
 
@@ -1867,6 +1970,8 @@ namespace Coursework_Master_Degree.Items.FFF
                 ActiveSpool.Refresh();
             }
 
+            PrintedObject?.Complete(activeJob);
+
             SetState(PrinterOperationalState.Cooling);
         }
 
@@ -2102,6 +2207,11 @@ namespace Coursework_Master_Degree.Items.FFF
             if (BindHighlight == null)
             {
                 BindHighlight = GetComponent<PrinterBindHighlight>();
+            }
+
+            if (PrintedObject == null)
+            {
+                PrintedObject = GetComponent<PrintedObjectPresenter>();
             }
 
             if (Environment == null)

@@ -69,8 +69,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private TextMeshProUGUI hardStopLabel;
         private Button calibrateButton;
         private TextMeshProUGUI calibrateLabel;
-        private Button clearBedButton;
-        private TextMeshProUGUI clearBedLabel;
         private bool hardStopArmed;
         private float hardStopArmedUntil;
 
@@ -352,15 +350,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 calibrateLabel,
                 canCalibrate,
                 "Calibrate");
-
-            bool canClearBed = printer != null &&
-                (printer.HasPartialPrint || printer.HasCompletedPrint);
-
-            SetControl(
-                clearBedButton,
-                clearBedLabel,
-                canClearBed,
-                "Clear bed");
 
             RefreshPresetStyles(
                 layerButtons,
@@ -1008,23 +997,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             calibrateButton.onClick.AddListener(HandleCalibrateClicked);
 
-            clearBedButton = DeviceConsoleStyle.CreateButton(
-                "clear_bed_button",
-                details,
-                "Clear bed",
-                font,
-                boxSprite,
-                out clearBedLabel);
-
-            DeviceConsoleStyle.SetRect(
-                (RectTransform)clearBedButton.transform,
-                new Vector2(0.0f, 0.0f),
-                new Vector2(0.0f, 0.0f),
-                new Vector2(396.0f, 50.0f),
-                new Vector2(122.0f, 38.0f));
-
-            clearBedButton.onClick.AddListener(HandleClearBedClicked);
-
             startButton = DeviceConsoleStyle.CreateButton(
                 "start_button",
                 details,
@@ -1205,18 +1177,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             if (!printer.TryStartCalibration(out string reason))
             {
                 Debug.LogWarning($"[DeviceJobPanel] {reason}", printer);
-            }
-
-            Refresh();
-        }
-
-        private void HandleClearBedClicked()
-        {
-            Printer printer = device != null ? device.ActivePrinter : null;
-
-            if (printer == null || !printer.ClearBed())
-            {
-                return;
             }
 
             Refresh();
@@ -1625,14 +1585,14 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             else if (printer != null && printer.HasPartialPrint)
             {
                 CreateValidationRow(
-                    "Partial print on the bed. Clear the bed before starting another job.",
+                    "Partial print on the bed. Remove it before starting another job.",
                     DeviceConsoleStyle.Text);
                 CreateCalibrationWarningRow(printer);
             }
             else if (printer != null && printer.HasCompletedPrint)
             {
                 CreateValidationRow(
-                    "Print finished. Clear the bed before starting another job.",
+                    "Print finished. Remove it from the bed before starting another job.",
                     DeviceConsoleStyle.Text);
                 CreateCalibrationWarningRow(printer);
             }

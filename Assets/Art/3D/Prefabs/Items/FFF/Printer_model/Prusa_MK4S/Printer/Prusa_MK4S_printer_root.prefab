@@ -1692,6 +1692,7 @@ GameObject:
   - component: {fileID: 3248404705524490586}
   - component: {fileID: 459495362381015763}
   - component: {fileID: 2224377703605105773}
+  - component: {fileID: 1788309066380613}
   m_Layer: 15
   m_Name: Prusa_MK4S_printer_root
   m_TagString: Untagged
@@ -1967,6 +1968,7 @@ MonoBehaviour:
   BedAnchor: {fileID: 5635780204267657346}
   Environment: {fileID: 4454626548426163925}
   BindHighlight: {fileID: 459495362381015763}
+  PrintedObject: {fileID: 1788309066380613}
   CriticalPartLocations:
   - {fileID: 3101614061098862216}
   - {fileID: 454191578216812911}
@@ -9595,3 +9597,21 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1051905917795685819, guid: 0f68ffe7c7b64cef0abf1c151fe10a0e, type: 3}
   m_PrefabInstance: {fileID: 9055347079492126233}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1788309066380613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2321595096870056498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5608fcb4919c46179178cf3ebc7cfbda, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrintedObjectPresenter
+  RevealUpdatesPerSecond: 15
+  CapUpdateIntervalSeconds: 0.1
+  MaxSupportColumns: 48
+  SupportClusterSizeMeters: 0.02
+  SupportOverhangThreshold: 0.35
+  SupportColumnRadiusMeters: 0.0015
