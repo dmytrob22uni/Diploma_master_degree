@@ -53,7 +53,7 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 - Multiplayer, networking, or remote printing.
 - Save/load persistence.
 - Auto-generated print profiles from mesh volume (manual authored profiles first).
-- Delta / CoreXY printer prefabs (architecture leaves room, but only MK4S is implemented).
+- Delta printer prefabs and non-rectangular volumes; CoreXY motion support exists, but no CoreXY model prefab is authored yet.
 
 ---
 
@@ -241,11 +241,13 @@ M3 enclosure behavior:
 - Enclosure parts join the printer wear scan, so fans, filters, thermometers and fire-suppression parts wear during a job.
 - Enclosure inspection keeps the enclosure interaction list and treats the printer as one part for integrity/removal. Wear inspection includes the printer's internal parts and hides the printer root so only the wear ghosts remain visible.
 - Installing a printer in the enclosure docks its accessories:
-  - one spool moves from `spool_location_1` / `spool_location_2` to the enclosure `spool_location`;
-  - two installed spools block the install with `Remove one spool before installing the printer in the enclosure.`;
-  - the battery closet and adapter move to the matching enclosure sockets;
-  - the printer `spool_holder` is hidden and restored on removal;
-  - the battery-closet and wall-socket plugs move to the enclosure free-part reset points.
+  - installed printer spools move to matching enclosure spool sockets; a printer can expose up to four selectable slots;
+  - the install is blocked when the enclosure does not have enough free spool sockets;
+  - installed accessories are matched by role: `Printer.DockingSources` roles find `PrinterEnclosure.DockingTargets` roles. The MK4S wires `battery_closet` and `battery_closet_adapter`;
+  - free parts are matched separately by role: `Printer.FreePartDockingSources` roles find `PrinterEnclosure.FreePartDockingTargets` transforms. The MK4S wires `battery_closet_plug` and `wall_socket_plug`;
+  - the printer `spool_holder` is hidden when spools are docked and restored on removal.
+- Printer spool slots are `SpoolSlotDefinition` data (`Id`, `Label`, `Location`). The console exposes 0/1 spools without a selector and up to four with a dynamic selector; only one selected slot feeds a job.
+- Enclosure spool sockets are `PrinterEnclosureSpoolSocket` data. A socket may name a specific printer slot id or accept any free slot.
 - The printer, spool, battery closet and adapter sockets are `PartLocation`s because they are installed parts. The two plug reset points remain plain transforms registered through `ItemPartsToLocationsList`, because plugs are free parts.
 - Docking updates `PrinterEnvironment` directly, so enclosure thermal/quality/wear behavior applies after a runtime install rather than relying on awake-time renderer-bounds detection.
 - The console shows live nozzle/bed temperatures and enclosure-derived quality.
@@ -275,14 +277,23 @@ PrinterMotionBase (abstract MonoBehaviour)
   - GetBedAnchor()
 ```
 
-MK4S implementation:
+Implementations:
 
 ```
 CartesianPrinterMotion : PrinterMotionBase
   - AxisBinding HorizontalX
   - AxisBinding HorizontalZ
   - AxisBinding VerticalY
+
+CoreXYPrinterMotion : PrinterMotionBase
+  - Transform Carriage
+  - Vector3 HorizontalXLocal / HorizontalZLocal
+  - float HorizontalXMinLocal / MaxLocal
+  - float HorizontalZMinLocal / MaxLocal
+  - AxisBinding VerticalY
 ```
+
+`CartesianPrinterMotion` covers independent-axis Cartesian printers. `CoreXYPrinterMotion` composes print-space X and Z onto one carriage; belt/motor dynamics are not simulated. Both use the same print-space job, placement, calibration and bed-anchor contracts.
 
 `AxisBinding` contains:
 
@@ -293,14 +304,14 @@ CartesianPrinterMotion : PrinterMotionBase
 - `bool Invert`
 - `float Speed`
 
-This keeps the door open for:
+This supports:
 
-- bedslinger printers
-- CoreXY printers
-- delta printers
-- future printers with different axis construction
+- bedslinger printers;
+- fixed-bed Cartesian printers;
+- CoreXY printers through the coupled-carriage implementation;
+- future XYZ printers with a different build volume or axis wiring.
 
-The job/visual layer only asks for a print-space position. A `CartesianPrinterMotion` maps it to independent axes. A future `DeltaPrinterMotion` would map the same position to three tower axes.
+The current scope is rectangular XYZ print volumes. Delta, polar and other non-rectangular volumes are deliberately out of scope. The job/visual layer only asks for a print-space position; new motion classes map it without touching `Printer`, placement or validation.
 
 #### MK4S hierarchy and mapping
 
@@ -460,6 +471,12 @@ Printer
   - PrinterJob ActiveJob / CompletedJob / PartialJob
   - PrinterTemperatureModel Temperature
   - PrinterWearIntegrator Wear
+  - PartLocation NozzleWearLocation
+  - PartLocation HeaterWearLocation
+  - PartLocation PrintBedWearLocation
+  - List<SpoolSlotDefinition> SpoolSlots
+  - List<PrinterDockingSource> DockingSources
+  - List<PrinterFreePartDockingSource> FreePartDockingSources
   - SpoolFilamentState ActiveSpool
   - float PrintSpeedMultiplier
   - float SafeServiceTemperatureC
@@ -641,7 +658,7 @@ Some parts are both a free part and a regular item (e.g. `Prusa_MK4S_printer_bat
 - Entering installation hides both the regular placement ghost and the free-part placement ghost.
 - A free part with its own `ItemDataHolder` that is installed under a `PrinterEnclosure` is a fixed installed part, not a loose take. The battery closet adapter uses this rule while the printer is docked; it becomes a free part again once removed or after the printer leaves the enclosure.
 - Hovering a detached combined part still offers wear inspection through its `ItemDataHolder`.
-- Printer docking moves the plugs into the enclosure free-part reset points and registers them on the enclosure item. Taking the enclosure resets them there; undocking clears those runtime mappings and returns them to the printer.
+- Printer docking matches free-part roles to enclosure reset targets. It moves those parts, registers them on the enclosure item, and clears those runtime mappings on undock before restoring the printer’s own free-part mappings.
 
 ### 6.3 Printer state machine
 
@@ -774,7 +791,7 @@ Use the existing wear system and the correct delta types:
 | Part | Delta | Notes |
 |---|---|---|
 | Nozzle / filament bearing | `WearDeltaFilamentTemperatureAbrasiveness` | filament length, nozzle temp, spool abrasiveness |
-| Heater / thermistors / enclosure fire tube / thermometer | `WearDeltaTimeTemperature` | simulated seconds at operating temperature |
+| Heater / thermistors / enclosure fire tube / thermometer | `WearDeltaTimeTemperature` | simulated seconds at the temperature source authored on the wear logic |
 | Spool | `WearDeltaFilament` | consumed metres / spool length |
 | Axes / belts / rotors / bearings | `WearDeltaDistanceTemperature` | distance approximated from simulated time until M4 paths exist |
 | Extruder fan / HEPA fan | `WearDeltaTimeRPM` | simulated seconds at `FanRPM` |
@@ -785,6 +802,7 @@ Use the existing wear system and the correct delta types:
 
 Rules:
 
+- `ItemWearLogicTimeTemperatureSO.TemperatureSource` selects `Nozzle`, `Bed`, `Chamber` or `EnclosureAware`; `EnclosureAware` uses chamber while the part is under a `PrinterEnclosure` and bed elsewhere. Runtime no longer infers temperature channels from GameObject names.
 - Batch wear application about once per simulated second, not every frame.
 - Use simulated process time, not wall-clock time.
 - Enclosure parts are scanned from `PrinterEnclosure` as well as the printer assembly.
@@ -797,7 +815,7 @@ Rules:
 remainingMeters = wear.CurrentCondition / 100f * spoolData.FilamentLengthSpoolMeters;
 ```
 
-`wear` and `spoolData` belong to the spool in the selected `SpoolSlot`.
+`wear` and `spoolData` belong to the spool in the selected `SpoolSlotDefinition`.
 
 This assumes the spool uses `ItemWearLogicFilamentSO`. Validate that in M0 and add a guard/fallback if the logic type is different.
 
@@ -819,7 +837,7 @@ Hard-stop penalty (initial values, tune in M3):
 - Bed/plate: `0.1 + 0.3 × normalizedBedTemperature`
 - Axes: small optional penalty
 
-These are one-off condition points, not `WearDelta` values.
+These are one-off condition points, not `WearDelta` values. The nozzle, heater, bed and plate targets are serialized `PartLocation` references on `Printer` (`NozzleWearLocation`, `HeaterWearLocation`, `PrintBedWearLocation`, `PrintPlateLocation`), so a new printer model can rename its hierarchy without changing code.
 
 ### 6.7 Print visuals
 
@@ -1146,7 +1164,7 @@ Add a `FilamentMaterialProfileSO` (one asset per material) with:
 Plain C# classes, not MonoBehaviours:
 
 - `PrintJob`
-- `PrintJobRequest` with `SpoolSlot` and `PrintPlacement`
+- `PrintJobRequest` with `SpoolSlotId` and `PrintPlacement`
 - `PrintPlacement` (position on plate, yaw, uniform scale, object boundary corners)
 - `PrintProgress`
 - `PrintResult`
@@ -1316,7 +1334,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - `SupportsMode` (`None` / `Auto`) and support cost/penalty rules.
 - `FilamentMaterialProfileSO` (data type; spool reference is optional).
 - `LayerHeightPreset`, `PrintSpeedPreset`, `LayerHeightSettings`, `PrintSpeedSettings`.
-- `SpoolSlot` (`Left` / `Right`) and printer spool-slot references.
+- `SpoolSlotDefinition` data with `Id`, `Label` and `PartLocation`; up to four UI slots.
+- `PrinterEnclosureSpoolSocket` mapping for docked external spools.
 - `PrintJobRequest`, `PrintJobValidationResult`, `PrintJobValidator`, `PrintEstimates`, `PrintQualityEstimator`.
 - Console job picker, layer-height/speed/infill/supports/spool selectors, estimate panel, raw-quality range, validation panel.
 - `Start print` gating and a `Printer.PendingJob` slot for M3.
@@ -1329,7 +1348,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Selecting an object shows name, icon, derived height, estimates, and a raw-quality range.
 - Layer height, speed and infill selections update time and filament (filament depends on infill and supports only).
 - Supports defaults from the meta; `Auto` adds cost, and a required object with `None` shows the severe quality penalty.
-- The `SPOOL` row selects `Left` or `Right`; the console defaults to an occupied slot and warns when the selected slot is empty.
+- The `SPOOL` row is hidden for zero/one slot and dynamically shows up to four slot labels. The console defaults to an occupied slot and warns when the selected slot is empty.
 - Every installed part at `0%` blocks; every installed part at `20%` or below warns; critical parts also warn between `20%` and `40%`.
 - The projected raw-quality range moves with layer height, speed and critical-part condition.
 - `Start print` is disabled when:
@@ -1348,7 +1367,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 1. Fill in the two 100% baseline values for the current object catalog; dimensions and reference settings are derived/global.
 2. Compare estimates against a slicer at Normal layer height and Normal speed; record the tuning factor. Check one Draft and one Fine print for the layer-height scaling.
-3. Verify spool remaining calculation at 100%, 50%, and 10% condition, including Left/Right selection and a missing selected slot.
+3. Verify spool remaining calculation at 100%, 50%, and 10% condition, including 0/1/up-to-four slot selection and a missing selected slot.
 4. Verify build-volume rejection with an oversized test object.
 6. Verify that the console cannot start a job on an unbound printer.
 7. Toggle supports on a required and a non-required object; confirm the warning, cost and severe quality penalty.
@@ -1452,7 +1471,9 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - print plate: `WearDeltaUses` once per print
   - print bed: `WearDeltaUsesHardness` once per print, scaled by spool material hardness
 - `ItemWearState.ApplyConditionLoss` and `ApplyWear` routed through it.
-- `SpoolFilamentState` for the selected `SpoolSlot`, including remaining metres, spool rotation and wear-level child sync.
+- `SpoolFilamentState` for the selected spool slot id, including remaining metres, spool rotation and wear-level child sync.
+- `SpoolSlotDefinition` data with string ids and up to four console slots; requests and drafts persist the slot id.
+- `CoreXYPrinterMotion` for coupled-XY rectangular XYZ printers.
 - Rename `ItemFFFPrusaMK4SSpoolDataHolder` to `ItemFFFSpoolDataHolder`.
 - Spool rotation from consumed filament:
   - `degrees = consumedMetres / (2π × EffectiveRadiusMeters) × 360`;
@@ -1518,11 +1539,13 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Calibration with `N` grid points moves smoothly at the selected `SIM SPEED`, touches the plate at every point, and returns to the global home.
 - An uncalibrated printer starts with a warning but is not blocked; its final quality uses a random `0.7–1.0×` factor at print completion. Changing a part while paused invalidates calibration and keeps the warning visible until the bed is cleared.
 - The console shows the chosen simulation multiplier and live printer status.
+- A printer can expose zero, one, two, three or four selectable spool slots; the console hides the selector for zero/one and shows the rest dynamically.
+- A CoreXY prefab using `CoreXYPrinterMotion` reaches the same print-space positions as the Cartesian implementation; belt/motor dynamics are not simulated.
 - Switching printers preserves each printer's selected object, spool, settings and placement; switching objects preserves their settings/placement.
 - A busy printer/enclosure cannot be sold, taken or freely interacted with.
 - An installed printer is inspected only through its enclosure: enclosure interaction list, printer-as-one integrity/remove, and printer internals available in wear mode.
 - A docked printer validates the enclosure's required parts as well; missing battery closet, adapter, HEPA, fire-suppression or thermometer parts block `Start print` with a specific error, and enclosure wear contributes to the quality estimate.
-- Installing a printer moves its single spool, battery closet and adapter to the enclosure sockets, hides `spool_holder`, and restores them on removal. Two spools block the install with a reason.
+- Installing a printer moves its installed spools to available enclosure sockets, up to the number of free sockets, hides `spool_holder` when mapped, and restores everything on removal. Overflow blocks the install with a reason. The console supports zero, one or up to four selectable slots.
 - Detached enclosure plugs reset to the enclosure plug locations when the enclosure is taken.
 - Raw quality tops out at `90`; the post-process state can improve the finished object later.
 
@@ -1543,10 +1566,11 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 13. In `ItemsSell`, confirm the busy printer/enclosure shows the reason in `item_hover_sell_description`, uses the wrong selling ghost, and cannot be sold. Repeat for an idle but device-bound printer: `Connected to a device`.
 14. While carrying a part, hover a busy/calibrating/hot printer; confirm the MMB install hint is still visible. Press MMB and confirm the game stays in `ItemPlace`, `item_hover_place_text` shows the reason, and no part-install state/ghost is entered.
 15. Install a printer in an enclosure, then inspect the enclosure: interaction list must be the enclosure's; integrity must show the printer as one part; wear must show enclosure parts and the printer's internal parts with the printer root hidden; remove must treat the printer as one part with its ghost.
-16. Install a printer with zero, one and two spools. Confirm zero/one installs succeed, the enclosure spool slot becomes the printer spool source, the battery closet and adapter move, and `spool_holder` hides; two spools are refused with the reason on MMB. While docked, confirm the battery closet adapter is not offered as a free take; remove it through the parts flow instead. After removal it behaves as a free part again. Detach a plug, take the enclosure, and confirm it resets to the enclosure plug location. Remove the printer and confirm accessories return and `spool_holder` is visible again.
+16. Install printers with zero, one, two and four spools. Confirm the console hides the selector for zero/one, derives its selection from an occupied slot, and shows the correct labels for up to four. Confirm the enclosure accepts only as many spools as it has free sockets and blocks overflow with a reason. While docked, confirm the battery closet adapter is not offered as a free take; remove it through the parts flow instead. After removal it behaves as a free part again. Detach a plug, take the enclosure, and confirm it resets to the enclosure plug location. Remove the printer and confirm accessories return and `spool_holder` is visible again.
 17. With the printer docked, remove the battery closet, adapter, one HEPA fan, one fire-suppression tube, and the thermometer one at a time. Confirm `Start print` is disabled with a specific missing-part error for each, and the quality estimate includes installed enclosure-part wear. Reinstall them and confirm the errors disappear.
 18. Start a print on an uncalibrated printer; confirm the warning appears and final quality is in the `0.7–1.0×` range. Run calibration, then start again and confirm the warning disappears and quality is `1.0×`.
 19. With multiple printers connected, change object/settings/placement on printer A, switch to printer B, change them there, then switch back; confirm A's draft is restored. Switch objects on one printer and confirm each object's settings and placement return.
+20. Instantiate a rectangular CoreXY prefab with `CoreXYPrinterMotion`; run the motion debug and calibration checks. Confirm X/Z compose onto the shared carriage, the bed/gantry Y role maps correctly, placement/validation still use the rectangular build volume, and no `Printer`/job code changes are needed.
 
 **Do not proceed to M4 until the numbers and timing feel right, wear is applied to the intended parts, and pause/service/calibration are stable.**
 
@@ -1826,7 +1850,7 @@ Fill this table during M0 and update it during later milestones.
 - Multi-material printing.
 - Printer networking/range.
 - Full device power/battery simulation.
-- Delta/CoreXY printer prefabs.
+- Delta printer prefabs and non-rectangular volumes (CoreXY motion class exists; model prefab/art still required).
 - Auto-generated print profiles.
 - Multiplayer.
 - Save/load.
@@ -1875,7 +1899,7 @@ M2 is implemented:
 
 - `ObjectToPrintPrintProfile` (two baselines + supports) and `ObjectToPrintRequirements` live on `ObjectToPrintMetaSO`; object size is derived by `ObjectToPrintSizing`.
 - `InfillPattern`, `LayerHeightPreset`, `PrintSpeedPreset`, `PrintEstimates`, `PrintQualityEstimator`, `PrintJobRequest`, `PrintJobValidationResult` and `PrintJobValidator` cover settings, estimates, raw quality and rules.
-- `Printer` exposes `PendingJob`, `HasPendingJob`, `HasPartialPrint`, `CriticalPartLocations`, `PrintPlateLocation`, `LeftSpoolLocation` and `RightSpoolLocation` references.
+- `Printer` exposes `PendingJob`, `HasPendingJob`, `HasPartialPrint`, `CriticalPartLocations`, `PrintPlateLocation` and `SpoolSlotDefinitions` references.
 - The console's print-job card has an object picker, layer-height/speed/infill/supports rows, time/filament/raw-quality summary, validation text, and a gated `Start print`.
 - `DeviceConsolePresenter.ObjectCatalog` is wired in `MainScene` to the authored catalog.
 
@@ -1890,9 +1914,9 @@ Remaining M2 work (manual gate):
 
 M1's remaining device-type/aspect checks are carried forward; they do not block M2 validation.
 
-M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add console `Left`/`Right` spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The manual gate passed with the authored tuning values.
+M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add data-driven up-to-four spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The manual gate passed with the authored tuning values.
 
-The M3 first iteration is ready for its manual gate. The FreeWalk busy-printer hover fields are wired; visual styling/placement remains owner-authored.
+The M3 first iteration is implemented and its earlier manual checks passed. The data-driven spool slots and CoreXY motion follow-up now extend the same M3 scope; their new checks are included in the manual gate, and the milestone remains unmarked until those checks are recorded.
 
 ---
 
@@ -1979,10 +2003,11 @@ Assets/Scripts/Coursework_Master_Degree/
 │   │   ├── PrintJobValidationResult.cs
 │   │   ├── PrintJobValidator.cs
 │   │   ├── SimulationSpeedPreset.cs
-│   │   └── SpoolSlot.cs
+│   │   └── SpoolSlotDefinition.cs
 │   ├── Motion/
 │   │   ├── PrinterMotionBase.cs
 │   │   ├── CartesianPrinterMotion.cs
+│   │   ├── CoreXYPrinterMotion.cs
 │   │   ├── PrinterMotionSimulator.cs
 │   │   └── AxisBinding.cs
 │   ├── Visuals/
@@ -2083,9 +2108,15 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-19 | Bind occlusion ignores the installed enclosure assembly | Resolved through `PartsAssembly.FindEnclosingPrinterEnclosure`, so runtime install/uninstall does not rely on stale environment state; enclosure colliders still block other printers |
 | 2026-11-20 | Enclosure docking uses the existing `PartLocation` sockets | Printer, spool, battery closet and adapter are installed parts; plug reset points stay free-part transforms because plugs are not installed parts |
 | 2026-11-20 | Docking relocates printer accessories and hides `spool_holder` | Keeps the installed printer visually consistent with the enclosure and restores the standalone layout on removal |
+| 2026-11-20 | Installed and free-part docking are role-based | `DockingSources`/`DockingTargets` handle installed accessories; `FreePartDockingSources`/`FreePartDockingTargets` handle plugs and other loose parts without hardcoded roles |
 | 2026-11-20 | Removed or separately placed wearable free parts are not reset by core-item moves | Prevents the adapter from snapping into an installed-looking socket while its printer socket is empty; regular free parts still reset |
 | 2026-11-20 | The adapter is fixed while installed under an enclosure | A combined free/wearable part with `ItemDataHolder` installed under a `PrinterEnclosure` is handled as an installed part, not a free take; removal restores free behavior |
 | 2026-11-20 | Enclosure parts have their own critical list | The printer's list remains printer-internal; the enclosure list covers battery closet, adapter, HEPA, fire-suppression tubes and thermometer, while the spool stays selected-slot validation |
+| 2026-11-20 | Hard-stop wear uses serialized part references | `Printer.NozzleWearLocation`, `HeaterWearLocation`, `PrintBedWearLocation` and `PrintPlateLocation` replace GameObject-name lookups, so future printer hierarchies remain compatible |
+| 2026-11-20 | Time-temperature wear uses an authored temperature source | `ItemWearLogicTimeTemperatureSO.TemperatureSource` replaces name heuristics; `EnclosureAware` preserves docking-dependent chamber/bed behavior |
+| 2026-11-20 | Spool slots are data-driven with a typed runtime key | `SpoolSlotDefinition` ids/labels/locations and a `SpoolSlotId` value key decouple requests/drafts/UI from Left/Right; only one selected slot feeds a job. The stable string remains the persistence key. |
+| 2026-11-20 | Enclosure spool sockets map to printer slots | `PrinterEnclosureSpoolSocket` supports explicit slot ids or any free slot and blocks when the printer has more installed spools than free sockets |
+| 2026-11-20 | CoreXY uses a coupled horizontal carriage | `CoreXYPrinterMotion` composes X/Z onto one carriage; rectangular XYZ volumes remain shared with `CartesianPrinterMotion` and no belt/motor simulation is added |
 | 2026-11-19 | Spool wear visuals use the upper condition threshold | Avoids showing the empty child while usable filament remains |
 | 2026-11-19 | Calibration is recommended, not required | Uncalibrated prints warn and use a random `0.7–1.0×` quality factor at completion; calibrated prints use `1.0×` |
 | 2026-11-19 | Part changes during pause invalidate calibration | The current job keeps a warning and finalizes with the uncalibrated factor until the print is removed |
@@ -2302,9 +2333,10 @@ Select the printer root (`Prusa_MK4S_printer_root`) and check the `Printer` comp
   - print bed, print bed thermistor
   - X/Y belts, X/Y rotors, Z left/right rotors
 - `PrintPlateLocation` — direct reference to `printer_print_plate_location`.
-- `Auto-Assign Critical Parts` (context menu) fills both from the default names; normal validation uses only the references.
+- `NozzleWearLocation`, `HeaterWearLocation`, `PrintBedWearLocation` — direct references used by the one-off hard-stop penalty.
+- `Auto-Assign Critical Parts` (context menu) fills the critical and plate references from the MK4S default names; normal validation and wear use only the serialized references.
 
-Validation matches locations by name because `ItemMetaSO.ItemTypes` stores only the broad item path (`FFF`, `Printer`, `Part`), not leaf types such as print plate or nozzle. If the hierarchy is renamed, update these strings.
+The editor auto-assign helper is MK4S-specific by design. Runtime validation, hard-stop wear and time-temperature wear do not depend on names. For a new printer model, wire the same reference fields in its prefab and author the wear-logic temperature source.
 
 Every installed part is inspected:
 
@@ -2327,22 +2359,22 @@ This gives the installation order: Y-axis bearings → print bed → bed thermis
 
 ### F.3 Spool
 
-1. Install one or both spools into `spool_location_1` / `spool_location_2` on the printer. The optional spool group requires at least one.
-2. `Printer.LeftSpoolLocation` / `RightSpoolLocation` map those locations to the console's `SPOOL: Left / Right` row. The console defaults to an occupied side; the player chooses the active side explicitly.
-   Inside an enclosure, the enclosure's single `spool_location` becomes the active slot; installing a printer with two spools is refused.
-3. On the spool's `ItemFFFSpoolDataHolder`, set `MaterialType` (PLA/PETG/ABS/TPU) and keep `FilamentLengthSpoolMeters` at the physical spool length (default `300 m`).
-4. Remaining filament is read from the selected spool's `ItemWearState.CurrentCondition`:
+1. Add one or more `SpoolSlotDefinition` entries to `Printer.spoolSlots`. Each entry has a stable `Id`, a console `Label` and a `PartLocation` socket. The console supports up to four entries. Runtime requests/events use the typed `SpoolSlotId`; drafts store its stable string value.
+2. The console hides the `SPOOL` row for zero/one slot. For two to four slots it shows the authored labels, defaults to the first occupied slot, and stores the selected id in the job draft and request.
+3. An enclosure exposes `PrinterEnclosureSpoolSocket` entries. A socket can name a specific printer slot id or accept any free slot. Docking maps installed spools first and maps remaining empty slots to remaining sockets; installation blocks when there are not enough free sockets.
+4. On the spool's `ItemFFFSpoolDataHolder`, set `MaterialType` (PLA/PETG/ABS/TPU) and keep `FilamentLengthSpoolMeters` at the physical spool length (default `300 m`).
+5. Remaining filament is read from the selected spool's `ItemWearState.CurrentCondition`:
    `remaining = FilamentLengthSpoolMeters * CurrentCondition / 100`.
    In play mode use the `ItemWearState` context menu `Debug/Set Condition 100% / 50% / 10%` to test thresholds without editing assets.
-5. Optionally assign a `FilamentMaterialProfileSO` for M3 temperatures. If it is null, M3 falls back by `MaterialType`.
+6. Optionally assign a `FilamentMaterialProfileSO` for M3 temperatures. If it is null, M3 falls back by `MaterialType`.
 
-If the selected slot is empty, the console reports `No filament spool installed on the Left side.` / `... Right side.` and disables `Start print`. The other side can be selected from the `SPOOL` row.
+If the selected slot is empty, the console reports `No filament spool installed on the <label> side.` and disables `Start print`. Another configured slot can be selected from the dynamic `SPOOL` row.
 
-Only the selected spool participates in spool validation and wear/quality checks. A worn or empty spool on the unselected side is ignored until the player selects it.
+Only the selected spool participates in spool validation and wear/quality checks. A worn or empty spool on another slot is ignored until the player selects it.
 
 ### F.4 Start print
 
-`Start print` is enabled only when `PrintJobValidator` returns no errors. The request stores the object, infill, layer height, speed, selected `SpoolSlot`, placement, estimates and raw-quality range in `Printer.PendingJob`. The printer consumes it on the next tick, enters `Preheating`, and the console switches to live status. Nothing is instantiated on the bed until M4.
+`Start print` is enabled only when `PrintJobValidator` returns no errors. The request stores the object, infill, layer height, speed, selected `SpoolSlotId`, placement, estimates and raw-quality range in `Printer.PendingJob`. The printer consumes it on the next tick, enters `Preheating`, and the console switches to live status. Nothing is instantiated on the bed until M4.
 
 ### F.5 Validation matrix
 
@@ -2357,11 +2389,11 @@ Check each row in play mode and confirm the console message:
 | Completed print still on bed | `Printer is busy (Finished).` |
 | Partial print on bed | `A partial print is still on the bed.` |
 | Job already queued | `A job is already queued on this printer.` |
-| Selected spool slot empty | `No filament spool installed on the Left/Right side.` |
-| Selected slot has non-spool item | `The Left/Right spool slot does not contain a filament spool.` |
-| Selected spool condition 0 | `The Left/Right filament spool is empty.` |
-| Selected spool condition ≤ 20% | `Low condition on the Left/Right spool (n%).` |
-| Selected spool below estimate | `Not enough filament on the Left/Right spool: ...` |
+| Selected spool slot empty | `No filament spool installed on the <label> side.` |
+| Selected slot has non-spool item | `The <label> spool slot does not contain a filament spool.` |
+| Selected spool condition 0 | `The <label> filament spool is empty.` |
+| Selected spool condition ≤ 20% | `Low condition on the <label> spool (n%).` |
+| Selected spool below estimate | `Not enough filament on the <label> spool: ...` |
 | Critical location empty | `Missing part: ...` |
 | Any installed part at 0% | `Worn out: ... (location, 0%).` |
 | Any installed part at 20% or less | `Low condition: ... (location, n%).` |
