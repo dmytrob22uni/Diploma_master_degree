@@ -25,6 +25,8 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 > Do not hardcode model names, MK4S-specific GameObject names, fixed spool sides, or per-model conditionals into shared runtime code. Use serialized `PartLocation` references, `SpoolSlotDefinition` data, role-based docking sources/targets, `PrinterMotionBase` subclasses, authored wear data, and per-prefab critical/reference lists.
 >
 > If a requested printer/enclosure feature cannot be expressed through those contracts, generalize the shared contract first rather than adding a model-specific branch. New rectangular XYZ models should normally be added through prefabs/data; CoreXY uses `CoreXYPrinterMotion`, independent XYZ uses `CartesianPrinterMotion`. Delta/polar volumes and multi-material printing are out of scope until explicitly approved.
+>
+> **Final documentation gate:** at the end of the final milestone, review all printer/enclosure work against this rule and write the full agent-facing setup guide for adding future printers. Start from [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md).
 
 ---
 
@@ -1658,6 +1660,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Screen animations and notifications.
 - Save/load if desired.
 - Optional resume-from-partial-print.
+- **Final documentation gate:** replace [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md) with the full agent-facing setup guide for adding new FFF printer models. It must cover prefab wiring, motion, parts, spools, enclosure roles, metadata, validation and verification.
 - Production cleanup:
   - remove the calibration-only `PrintBedAnchorDebug` and `PrinterMotionDebug` components from shipped prefabs, or keep them disabled and stripped from the player build;
   - remove any placed `PrintRevealDebug` and temporary test cubes;
@@ -1829,6 +1832,7 @@ Fill this table during M0 and update it during later milestones.
 - Audio/VFX.
 - Save/load, if implemented.
 - Production cleanup: calibration/debug components removed or disabled, test cubes removed, editor-only debug helpers excluded from the player.
+- Final documentation gate is complete: the new-printer agent setup guide covers the universal setup contract, current supported models and deferred cases.
 
 ---
 
