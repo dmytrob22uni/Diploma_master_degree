@@ -41,7 +41,8 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
 
         public GameStateItemPlace(
             GameObject itemGameObject,
-            Transform movableTransform = null)
+            Transform movableTransform = null,
+            bool allowCancel = true)
         {
             playerController = GameStateManager.Instance.PlayerController;
             interfaceController = GameStateManager.Instance.InterfaceController;
@@ -68,7 +69,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
                     ? movableTransform
                     : itemGameObject.transform,
                 ReturnGameState = GetReturnGameState(),
-                IsCancelAvailable = IsItemPlaceCancelAvailable(),
+                IsCancelAvailable = allowCancel && IsItemPlaceCancelAvailable(),
                 IsInstallModeAvailable = IsInstallablePart(itemDataHolder),
                 ItemName = itemName,
                 GhostGameObject = ghostGameObject,

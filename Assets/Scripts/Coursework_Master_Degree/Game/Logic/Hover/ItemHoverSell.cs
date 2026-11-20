@@ -54,6 +54,10 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private const string WornPartsReason = "Worn parts";
         private const string WornOutReason = "Too worn out";
         private const string LowQualityReason = "Low quality";
+        private const string OnPrintBedReason = "Remove from printer bed first";
+        private const string OnPrintBedDescription =
+            "Take the print off the bed and place it before selling it.";
+        private const string PartialPrintReason = "Partial print";
         private const string ConnectedToPrinterReason = "Connected to a printer";
         private const string PrinterBusyReason = "Printer is on its job";
         private const string PrinterBusyDescription =
@@ -264,6 +268,26 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private SellTarget CreateObjectToPrintTarget(ObjectToPrintDataHolder objectToPrint)
         {
+            PrintedObjectDataHolder printedObject =
+                objectToPrint.GetComponent<PrintedObjectDataHolder>();
+
+            if (printedObject != null && printedObject.IsOnPrintBed)
+            {
+                return new SellTarget
+                {
+                    ObjectToPrint = objectToPrint,
+                    Name = objectToPrint.ObjectToPrintMetaData != null
+                        ? objectToPrint.ObjectToPrintMetaData.Name
+                        : objectToPrint.name,
+                    Description = OnPrintBedDescription,
+                    State = SellingState.Wrong,
+                    Reason = OnPrintBedReason,
+                };
+            }
+
+            bool isPartial = printedObject != null &&
+                printedObject.IsPartial;
+
             SellTarget target = new()
             {
                 ObjectToPrint = objectToPrint,
@@ -278,7 +302,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                     : SellingState.NoIncome,
                 Reason = objectToPrint.IsHaveQuality
                     ? default
-                    : LowQualityReason,
+                    : isPartial
+                        ? PartialPrintReason
+                        : LowQualityReason,
             };
 
             return target;
@@ -757,7 +783,18 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 target.ObjectToPrint.RemoveFromSurface();
                 DestroyObjectToPrintGhosts(target.ObjectToPrint);
-                target.ObjectToPrint.gameObject.SetActive(false);
+
+                PrintedObjectDataHolder printedObject =
+                    target.ObjectToPrint.GetComponent<PrintedObjectDataHolder>();
+
+                if (printedObject != null)
+                {
+                    Object.Destroy(target.ObjectToPrint.gameObject);
+                }
+                else
+                {
+                    target.ObjectToPrint.gameObject.SetActive(false);
+                }
             }
         }
 

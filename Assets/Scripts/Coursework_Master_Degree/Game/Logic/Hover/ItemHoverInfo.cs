@@ -198,6 +198,21 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                     string info = objectToPrint.ObjectToPrintMetaData.Name;
 
+                    PrintedObjectDataHolder printedObject =
+                        objectToPrint.GetComponent<PrintedObjectDataHolder>();
+
+                    if (printedObject != null &&
+                        printedObject.IsOnPrintBed &&
+                        printedObject.IsFinalized)
+                    {
+                        // A finished/partial print is deliberately removable
+                        // while the printer reports Finished/partial. The
+                        // object owns the removal interaction, not the busy
+                        // printer status.
+                        SetupInfoAndTake(info);
+                        return;
+                    }
+
                     if (ShowBusyPrinterStatus(objectToPrint.gameObject))
                     {
                         return;
@@ -386,11 +401,30 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return;
             }
 
-            Printer printer = Printer.FindFor(cachedItemGameObject);
+            bool fromPrintBed = false;
+            PrintedObjectDataHolder printedObject =
+                cachedItemGameObject.GetComponent<PrintedObjectDataHolder>();
 
-            if (printer != null && printer.IsBusy)
+            if (printedObject != null && printedObject.IsOnPrintBed)
             {
-                return;
+                Printer printer = printedObject.Printer;
+
+                if (printer == null ||
+                    !printer.TryReleasePrintedObject(cachedItemGameObject))
+                {
+                    return;
+                }
+
+                fromPrintBed = true;
+            }
+            else
+            {
+                Printer printer = Printer.FindFor(cachedItemGameObject);
+
+                if (printer != null && printer.IsBusy)
+                {
+                    return;
+                }
             }
 
             // A wearable free part is carried together with its PartLocation
@@ -404,7 +438,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             GameStateManager.Instance.ChangeState(
                 new GameStateItemPlace(
                     cachedItemGameObject,
-                    movableTransform));
+                    movableTransform,
+                    !fromPrintBed));
         }
 
         public void ApplyInspectWear()
