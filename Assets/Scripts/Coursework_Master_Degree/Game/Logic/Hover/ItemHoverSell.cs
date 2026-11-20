@@ -55,6 +55,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private const string WornOutReason = "Too worn out";
         private const string LowQualityReason = "Low quality";
         private const string ConnectedToPrinterReason = "Connected to a printer";
+        private const string PrinterBusyReason = "Printer is on its job";
+        private const string PrinterBusyDescription =
+            "The printer is running a print job. Pause or hard-stop it before selling.";
+        private const string PrinterBoundReason = "Connected to a device";
+        private const string PrinterBoundDescription =
+            "Disconnect this printer from its device before selling.";
 
         private static readonly int SellingStatePropertyID = Shader.PropertyToID("_selling_state");
 
@@ -223,7 +229,17 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             if (printer != null && printer.IsBusy)
             {
                 target.State = SellingState.Wrong;
-                target.Reason = "Printer is busy";
+                target.Reason = PrinterBusyReason;
+                target.Description = PrinterBusyDescription;
+
+                return target;
+            }
+
+            if (printer != null && printer.IsBound)
+            {
+                target.State = SellingState.Wrong;
+                target.Reason = PrinterBoundReason;
+                target.Description = PrinterBoundDescription;
 
                 return target;
             }
@@ -270,8 +286,11 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void EvaluateItem(ItemDataHolder item, ref SellTarget target)
         {
+            ItemWearState wearState = item.GetComponentInChildren<ItemWearState>(
+                true);
+
             if (item.IsHaveWearLevel &&
-                item.TryGetComponent<ItemWearState>(out ItemWearState wearState) &&
+                wearState != null &&
                 wearState.CurrentCondition < WearLevelThresholdPercent)
             {
                 target.State = SellingState.NoIncome;
@@ -328,7 +347,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return false;
             }
 
-            ItemWearState wearState = part.GetComponent<ItemWearState>();
+            ItemWearState wearState =
+                part.GetComponentInChildren<ItemWearState>(true);
 
             return wearState != null &&
                 wearState.CurrentCondition < PartWearLevelThresholdPercent;

@@ -39,6 +39,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private Collider cachedCollider;
         private Device cachedDevice;
+        private Printer cachedBusyPrinter;
 
         private IInteractable cachedInteractable;
         public IInteractable CachedInteractable => cachedInteractable;
@@ -77,7 +78,15 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 if (hit.collider == cachedCollider)
                 {
-                    return;
+                    if (cachedBusyPrinter == null ||
+                        cachedBusyPrinter.IsBusy)
+                    {
+                        return;
+                    }
+
+                    ClearCachedCollider();
+                    ClearCached();
+                    ClearHover();
                 }
 
                 Printer busyPrinter = Printer.FindFor(hit.collider.gameObject);
@@ -85,11 +94,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 if (busyPrinter != null && busyPrinter.IsBusy)
                 {
                     cachedCollider = hit.collider;
-                    cachedDevice = null;
-                    cachedInteractable = null;
-                    cachedInteractions = null;
-                    cachedAction = null;
-                    SetupInteract(busyPrinter.StatusSummary);
+                    ClearCached();
+                    cachedBusyPrinter = busyPrinter;
+                    ClearHover();
                     return;
                 }
 
@@ -215,6 +222,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private void ClearCached()
         {
             cachedDevice = default;
+            cachedBusyPrinter = default;
             cachedInteractable = default;
             cachedInteractions = default;
             cachedAction = default;

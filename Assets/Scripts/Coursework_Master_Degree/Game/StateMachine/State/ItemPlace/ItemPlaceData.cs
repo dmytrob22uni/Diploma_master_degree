@@ -13,6 +13,7 @@ namespace Coursework_Master_Degree.Game.StateMachine.State.ItemPlace
         public bool IsCancelAvailable;
         public bool IsInstallModeAvailable;
         public PartsAssembly InstallTargetAssembly;
+        public string InstallBlockReason;
         public string ItemName;
         public GameObject GhostGameObject;
         public List<MeshRenderer> GhostMeshRenderers;

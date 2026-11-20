@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Part;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Items.Ghosts;
 using Coursework_Master_Degree.ScriptableObjects.Items;
 using Coursework_Master_Degree.ScriptableObjects.Items.Ghosts;
@@ -49,6 +50,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private PartsAssembly targetAssembly;
         private ItemGhostDataHolder installationGhost;
         private PartLocation targetPartLocation;
+        private string installBlockReason;
 
         private PartLocation lastHoveredPartLocation;
         private PartLocation lastBlockedPartLocation;
@@ -174,6 +176,15 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void PerformHoverCheck()
         {
+            if (!string.IsNullOrEmpty(installBlockReason))
+            {
+                SetInstallHintVisible(false);
+                ClearHoveredPartLocations();
+                ClearTargetLocation();
+
+                return;
+            }
+
             if (Eyes == null || targetItem == null || installationGhost == null)
             {
                 ClearTargetLocation();
@@ -683,6 +694,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             installationGhost = default;
             targetItem = default;
             targetAssembly = default;
+            installBlockReason = null;
 
             blockedUntilTime = -1.0f;
 
@@ -717,6 +729,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             targetItem = item;
             targetAssembly = partsAssembly;
             installationGhost = default;
+            installBlockReason = null;
 
             blockedUntilTime = -1.0f;
 
@@ -729,6 +742,30 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             if (item == null)
             {
+                return;
+            }
+
+            Printer printer = Printer.FindFor(
+                partsAssembly != null
+                    ? partsAssembly.gameObject
+                    : item.gameObject);
+
+            installBlockReason = printer != null
+                ? printer.GetPartInstallBlockReason()
+                : null;
+
+            if (string.IsNullOrEmpty(installBlockReason))
+            {
+                installBlockReason =
+                    Printer.GetPrinterEnclosureInstallBlockReason(
+                        item,
+                        targetAssembly);
+            }
+
+            if (!string.IsNullOrEmpty(installBlockReason))
+            {
+                SetText(PartInstallNameText, installBlockReason);
+                SetInstallHintVisible(false);
                 return;
             }
 
@@ -764,7 +801,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         public void ApplyAnotherHoverLayer(Vector2 value)
         {
-            if (IsHoverBlocked)
+            if (IsHoverBlocked || !string.IsNullOrEmpty(installBlockReason))
             {
                 return;
             }
@@ -810,7 +847,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         public void ApplyInstallPart()
         {
-            if (targetItem == null || targetPartLocation == null)
+            if (!string.IsNullOrEmpty(installBlockReason) ||
+                targetItem == null ||
+                targetPartLocation == null)
             {
                 return;
             }

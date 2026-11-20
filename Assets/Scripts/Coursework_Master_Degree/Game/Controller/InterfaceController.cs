@@ -306,7 +306,18 @@ namespace Coursework_Master_Degree.Game.Controller
             ItemDataHolder item = itemPlace.ItemDataHolder;
             PartsAssembly partsAssembly = itemPlace.InstallTargetAssembly;
 
-            if (item == null || !itemPlace.IsPartInstallable || partsAssembly == null)
+            if (item == null || !itemPlace.IsPartInstallable)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(itemPlace.InstallBlockReason))
+            {
+                itemPlace.ShowInstallBlockedReason();
+                return;
+            }
+
+            if (partsAssembly == null)
             {
                 return;
             }

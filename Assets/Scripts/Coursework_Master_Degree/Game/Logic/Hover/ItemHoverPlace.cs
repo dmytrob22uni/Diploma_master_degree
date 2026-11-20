@@ -6,6 +6,7 @@ using Coursework_Master_Degree.Game.StateMachine.State;
 using Coursework_Master_Degree.Game.StateMachine.State.ItemPlace;
 using Coursework_Master_Degree.Items;
 using Coursework_Master_Degree.Items.Part;
+using Coursework_Master_Degree.Items.FFF;
 using Coursework_Master_Degree.Items.Surface;
 
 namespace Coursework_Master_Degree.Game.Logic.Hover
@@ -44,6 +45,10 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         public GameObject PlaceRoot;
         public GameObject CancelRoot;
         public GameObject InstallModeRoot;
+
+        [Header("Install Block Info")]
+        [Min(0.1f)]
+        public float InstallBlockInfoDuration = 2.0f;
 
         private MaterialPropertyBlock propertyBlock;
         private int propertyID;
@@ -124,6 +129,10 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private Vector3 ghostPosition;
         private Quaternion ghostRotation;
 
+        private string installBlockReason;
+        private string blockedInfo;
+        private float blockedInfoUntil;
+
         private void Awake()
         {
             propertyBlock = new MaterialPropertyBlock();
@@ -136,6 +145,13 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void Update()
         {
+            if (!string.IsNullOrEmpty(blockedInfo) &&
+                Time.time >= blockedInfoUntil)
+            {
+                blockedInfo = null;
+                isPlacementStateApplied = false;
+            }
+
             PerformHoverCheck();
         }
 
@@ -180,24 +196,56 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void SetInstallTarget(PartsAssembly partsAssembly)
         {
-            // Installation mode is offered only while the placed item is a
-            // part expected by the hovered complex item's assembly.
-            bool isInstallModeAvailable = itemPlaceData != null &&
+            // The MMB hint is shown for every eligible target. The printer may
+            // still refuse the transition; the reason is shown on MMB press.
+            bool isEligibleInstallTarget = itemPlaceData != null &&
                 itemPlaceData.IsInstallModeAvailable &&
                 partsAssembly != null &&
                 itemDataHolder != null &&
                 partsAssembly.IsExpectedPart(itemDataHolder.ItemMetaData);
 
+            installBlockReason = null;
+
+            if (isEligibleInstallTarget)
+            {
+                Printer printer = Printer.FindFor(partsAssembly.gameObject);
+                installBlockReason = printer != null
+                    ? printer.GetPartInstallBlockReason()
+                    : null;
+
+                if (string.IsNullOrEmpty(installBlockReason))
+                {
+                    installBlockReason =
+                        Printer.GetPrinterEnclosureInstallBlockReason(
+                            itemDataHolder,
+                            partsAssembly);
+                }
+            }
+
             if (itemPlaceData != null)
             {
                 itemPlaceData.InstallTargetAssembly =
-                    isInstallModeAvailable ? partsAssembly : default;
+                    isEligibleInstallTarget ? partsAssembly : default;
+                itemPlaceData.InstallBlockReason = installBlockReason;
             }
 
             if (InstallModeRoot != null)
             {
-                InstallModeRoot.SetActive(isInstallModeAvailable);
+                InstallModeRoot.SetActive(isEligibleInstallTarget);
             }
+        }
+
+        public void ShowInstallBlockedReason(string reason)
+        {
+            if (string.IsNullOrEmpty(reason))
+            {
+                return;
+            }
+
+            blockedInfo = reason;
+            blockedInfoUntil = Time.time +
+                Mathf.Max(0.1f, InstallBlockInfoDuration);
+            SetupInfo(blockedInfo);
         }
 
         private void SetGhostPosition(Vector3 position)
@@ -302,6 +350,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private void SetupInfo(string info)
         {
+            if (!string.IsNullOrEmpty(blockedInfo) &&
+                Time.time < blockedInfoUntil)
+            {
+                info = blockedInfo;
+            }
+
             ItemHoverPlaceText.text = info;
             ItemHoverPlaceText.gameObject.SetActive(true);
         }
@@ -334,6 +388,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             isPlacementStateApplied = default;
             ghostPosition = default;
             ghostRotation = default;
+            installBlockReason = default;
+            blockedInfo = default;
+            blockedInfoUntil = default;
         }
 
         private void ClearHover()

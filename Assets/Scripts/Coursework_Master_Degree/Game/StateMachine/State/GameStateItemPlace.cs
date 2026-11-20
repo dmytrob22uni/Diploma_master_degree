@@ -26,6 +26,18 @@ namespace Coursework_Master_Degree.Game.StateMachine.State
         public bool IsPartInstallable { get; }
         public GameState ReturnGameState => itemPlaceData.ReturnGameState;
         public PartsAssembly InstallTargetAssembly => itemPlaceData.InstallTargetAssembly;
+        public string InstallBlockReason => itemPlaceData.InstallBlockReason;
+
+        public void ShowInstallBlockedReason()
+        {
+            if (!string.IsNullOrEmpty(InstallBlockReason) &&
+                playerController != null &&
+                playerController.ItemHoverPlace != null)
+            {
+                playerController.ItemHoverPlace.ShowInstallBlockedReason(
+                    InstallBlockReason);
+            }
+        }
 
         public GameStateItemPlace(
             GameObject itemGameObject,

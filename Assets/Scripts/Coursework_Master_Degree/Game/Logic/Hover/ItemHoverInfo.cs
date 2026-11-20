@@ -37,6 +37,17 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         public GameObject TakeRoot;
         public GameObject InspectWearRoot;
 
+        [Header("Printer Status")]
+        public TextMeshProUGUI PrinterStateProgressText;
+        public TextMeshProUGUI PrinterNozzleTemperatureText;
+        public TextMeshProUGUI PrinterBedTemperatureText;
+        public TextMeshProUGUI PrinterSpoolMetersText;
+        public TextMeshProUGUI PrinterPausePenaltyText;
+
+        private const float PrinterStatusRefreshInterval = 0.15f;
+        private Printer cachedBusyPrinter;
+        private float lastPrinterStatusRefreshTime;
+
         private Collider cachedCollider;
 
         private GameObject cachedItemGameObject;
@@ -77,10 +88,28 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 if (hit.collider == cachedCollider)
                 {
-                    return;
-                }
+                    if (cachedBusyPrinter == null)
+                    {
+                        return;
+                    }
 
-                cachedCollider = hit.collider;
+                    if (cachedBusyPrinter.IsBusy)
+                    {
+                        if (Time.unscaledTime -
+                            lastPrinterStatusRefreshTime >=
+                            PrinterStatusRefreshInterval)
+                        {
+                            lastPrinterStatusRefreshTime = Time.unscaledTime;
+                            UpdatePrinterStatus(cachedBusyPrinter);
+                        }
+
+                        return;
+                    }
+                }
+                else
+                {
+                    cachedCollider = hit.collider;
+                }
 
                 // prepare data collection
                 ClearCached();
@@ -91,7 +120,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                     return;
                 }
 
-                if (hit.collider.attachedRigidbody.TryGetComponent<ItemFreePartDataHolder>(out var itemFreePart))
+                if (hit.collider.attachedRigidbody.TryGetComponent<ItemFreePartDataHolder>(out var itemFreePart) &&
+                    itemFreePart.IsFreePartActive)
                 {
                     if (itemFreePart.gameObject == cachedItemGameObject)
                     {
@@ -205,7 +235,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return false;
             }
 
-            return item.GetComponent<ItemWearState>() != null;
+            return item.GetComponentInChildren<ItemWearState>(true) != null;
         }
 
         private bool ShowBusyPrinterStatus(GameObject target)
@@ -217,13 +247,75 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return false;
             }
 
-            ItemHoverInfoText.text = printer.StatusSummary;
+            cachedBusyPrinter = printer;
+            ItemHoverInfoText.text = printer.DisplayName;
             ItemHoverInfoText.gameObject.SetActive(true);
+
+            UpdatePrinterStatus(printer);
 
             TakeRoot.SetActive(false);
             SetupInspectWear(false);
             isHoverClear = false;
             return true;
+        }
+
+        private void UpdatePrinterStatus(Printer printer)
+        {
+            if (printer == null)
+            {
+                ClearPrinterStatus();
+                return;
+            }
+
+            SetPrinterStatusText(
+                PrinterStateProgressText,
+                printer.StateProgressText,
+                true);
+            SetPrinterStatusText(
+                PrinterNozzleTemperatureText,
+                printer.NozzleTemperatureText,
+                true);
+            SetPrinterStatusText(
+                PrinterBedTemperatureText,
+                printer.BedTemperatureText,
+                true);
+            SetPrinterStatusText(
+                PrinterSpoolMetersText,
+                printer.SpoolMetersText,
+                false);
+            SetPrinterStatusText(
+                PrinterPausePenaltyText,
+                printer.PausePenaltyText,
+                false);
+        }
+
+        private static void SetPrinterStatusText(
+            TextMeshProUGUI text,
+            string value,
+            bool showWhenEmpty)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            bool visible = showWhenEmpty || !string.IsNullOrEmpty(value);
+            text.gameObject.SetActive(visible);
+
+            if (visible)
+            {
+                text.text = value;
+            }
+        }
+
+        private void ClearPrinterStatus()
+        {
+            cachedBusyPrinter = null;
+            SetPrinterStatusText(PrinterStateProgressText, string.Empty, false);
+            SetPrinterStatusText(PrinterNozzleTemperatureText, string.Empty, false);
+            SetPrinterStatusText(PrinterBedTemperatureText, string.Empty, false);
+            SetPrinterStatusText(PrinterSpoolMetersText, string.Empty, false);
+            SetPrinterStatusText(PrinterPausePenaltyText, string.Empty, false);
         }
 
         private void SetupInfoAndTake(string info)
@@ -273,6 +365,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             TakeRoot.SetActive(false);
             SetupInspectWear(false);
+            ClearPrinterStatus();
 
             isHoverClear = true;
         }
