@@ -1,6 +1,6 @@
 # Manufacturing Plan — Device-Controlled FFF Printing
 
-**Status:** Draft for implementation  
+**Status:** In progress — M3 complete; M4 next
 **Last updated:** 2026-11-20
 **Scope:** Laptop / PC / Smartphone / Tablet controlling one or more FFF printers. Prusa MK4S is the first model; rectangular XYZ printers, including CoreXY, are supported by the shared architecture.
 **Document type:** Living design spec + milestone checklist
@@ -1462,6 +1462,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 **Goal:** A job actually runs through preheat, print, cool, and finish; wear and filament are consumed; the player can pause, service, hard-stop and calibrate through the console.
 
+**Status:** Done (2026-11-20). The MK4S manual gate passed, including the calibration-sensitive part policy. CoreXY play-mode validation and 3/4-slot console presentation are deferred until authored printer models exist.
+
 **Deliverables**
 
 - `PrinterStateMachine` with the states and transitions in section 6.3, including `Calibrating`.
@@ -1581,7 +1583,9 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 19. With multiple printers connected, change object/settings/placement on printer A, switch to printer B, change them there, then switch back; confirm A's draft is restored. Switch objects on one printer and confirm each object's settings and placement return.
 20. Instantiate a rectangular CoreXY prefab with `CoreXYPrinterMotion`; run the motion debug and calibration checks. Confirm X/Z compose onto the shared carriage, the bed/gantry Y role maps correctly, placement/validation still use the rectangular build volume, and no `Printer`/job code changes are needed.
 
-**Do not proceed to M4 until the numbers and timing feel right, wear is applied to the intended parts, and pause/service/calibration are stable.**
+**Sign-off (2026-11-20):** The MK4S M3 manual gate passed, including the calibration-sensitive part check. Deferred until the relevant assets exist: CoreXY play-mode validation (no CoreXY model/prefab) and 3/4-slot console presentation (no authored printer with that configuration).
+
+**M3 gate passed; M4 may proceed. The deferred variant checks remain acceptance items for when those printer configurations are authored.**
 
 ---
 
@@ -1812,6 +1816,8 @@ Fill this table during M0 and update it during later milestones.
 - Worn-out part blocks job.
 - Multiple printers simultaneously.
 
+**Status (2026-11-20):** Passed for the MK4S configuration. CoreXY motion and 3/4-slot layout checks are deferred until those prefabs/configurations exist.
+
 ### M4
 
 - Visual reveal at start/mid/end.
@@ -1870,7 +1876,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0 and M1 are committed. M1 implementation is complete and the laptop flow is approved; formal M1 close still needs the other device types and aspect ratios checked. M2 is committed and pushed, calibrated against PrusaSlicer and play-mode gated. M2.5 is committed and complete. The first M3 iteration is implemented: the printer owns the job FSM, temperature/wear simulation, pause/service/hard-stop controls, calibration state, enclosure loop and spool visuals. The M3 play-mode gate is still pending.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated. M3 is marked done on 2026-11-20: the printer owns the job FSM, temperature/wear simulation, pause/service/hard-stop controls, calibration state, enclosure loop, spool visuals and the calibration-sensitive part policy; its MK4S manual gate passed. CoreXY play-mode validation and 3/4-slot console presentation are deferred until those printer models/configurations are authored. M4 is next and has not started.
 
 
 M1 is code-complete:
@@ -1927,7 +1933,7 @@ M1's remaining device-type/aspect checks are carried forward; they do not block 
 
 M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add data-driven up-to-four spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The manual gate passed with the authored tuning values.
 
-The M3 first iteration is implemented and its earlier manual checks passed. The data-driven spool slots and CoreXY motion follow-up now extend the same M3 scope; their new checks are included in the manual gate, and the milestone remains unmarked until those checks are recorded.
+The M3 first iteration is implemented and its earlier manual checks passed. The follow-up spool, docking, calibration-sensitive and CoreXY work extended the same scope. M3 is complete and marked done on 2026-11-20; CoreXY play-mode validation and 3/4-slot presentation remain deferred until the corresponding assets exist.
 
 ---
 
@@ -2130,6 +2136,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | Spool slots are data-driven with a typed runtime key | `SpoolSlotDefinition` ids/labels/locations and a `SpoolSlotId` value key decouple requests/drafts/UI from Left/Right; only one selected slot feeds a job. The stable string remains the persistence key. |
 | 2026-11-20 | Enclosure spool sockets map to printer slots | `PrinterEnclosureSpoolSocket` supports explicit slot ids or any free slot and blocks when the printer has more installed spools than free sockets |
 | 2026-11-20 | CoreXY uses a coupled horizontal carriage | `CoreXYPrinterMotion` composes X/Z onto one carriage; rectangular XYZ volumes remain shared with `CartesianPrinterMotion` and no belt/motor simulation is added |
+| 2026-11-20 | M3 is complete with variant checks deferred | MK4S manual gate passed; CoreXY play-mode validation and 3/4-slot presentation wait for authored models, with no shared-contract changes |
 | 2026-11-19 | Spool wear visuals use the upper condition threshold | Avoids showing the empty child while usable filament remains |
 | 2026-11-19 | Calibration is recommended, not required | Uncalibrated prints warn and use a random `0.7–1.0×` quality factor at completion; calibrated prints use `1.0×` |
 | 2026-11-19 | Only calibration-sensitive part changes invalidate calibration | Nozzle/heater/thermistors, bed/plate and axis mechanics invalidate in idle and active states; spool and enclosure accessories do not |
