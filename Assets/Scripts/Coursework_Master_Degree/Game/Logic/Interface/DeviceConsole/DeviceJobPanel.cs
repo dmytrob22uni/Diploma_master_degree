@@ -36,12 +36,16 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private readonly ObjectToPrintMetasListSO catalog;
         private readonly List<ObjectRow> rows = new List<ObjectRow>();
 
+        private readonly PrinterJobDraftStore drafts =
+            new PrinterJobDraftStore();
+
         private Device device;
         private Printer lastPrinter;
+        private PrinterJobDraftStore.PrinterDraft currentDraft;
         private PrintPlacement placement;
         private SpoolSlot spoolSlot = SpoolSlot.Left;
         private SimulationSpeedPreset simulationSpeed =
-            SimulationSpeedPreset.Default;
+            SimulationSpeedSettings.DefaultPreset;
         private bool spoolInitialized;
         private int selectedIndex;
         private InfillPattern infill = InfillPattern.Grid;
@@ -142,14 +146,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             BuildObjectList(card);
             BuildDetails(card);
-
-            ObjectToPrintMetaSO meta = CurrentMeta;
-
-            if (meta != null)
-            {
-                ApplyProfileDefaults(meta.PrintProfile);
-            }
-
             RefreshRows();
         }
 
@@ -157,8 +153,11 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         {
             if (device != target)
             {
+                drafts.Clear();
+                currentDraft = null;
                 placement = null;
                 lastPrinter = null;
+                selectedIndex = 0;
                 spoolInitialized = false;
                 hardStopArmed = false;
             }
@@ -169,6 +168,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         public void SetPlacement(PrintPlacement value)
         {
             placement = value;
+            StoreCurrentDraft();
             Refresh();
         }
 
@@ -181,20 +181,28 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             if (printer != lastPrinter)
             {
-                placement = null;
+                StoreCurrentDraft();
                 lastPrinter = printer;
-                spoolInitialized = false;
+                currentDraft = drafts.For(printer);
+                LoadCurrentDraft();
                 hardStopArmed = false;
                 simulationSpeed = printer != null
                     ? SimulationSpeedSettings.Closest(
                         printer.PrintSpeedMultiplier)
-                    : SimulationSpeedPreset.Default;
+                    : SimulationSpeedSettings.DefaultPreset;
+            }
+            else if (currentDraft == null)
+            {
+                currentDraft = drafts.For(printer);
+                LoadCurrentDraft();
             }
 
             if (!spoolInitialized)
             {
                 spoolSlot = ChooseDefaultSpoolSlot(printer);
                 spoolInitialized = true;
+                currentDraft.SpoolSlot = spoolSlot;
+                currentDraft.SpoolInitialized = true;
             }
 
             if (hardStopArmed &&
@@ -374,6 +382,78 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 infillButtons,
                 infillLabels,
                 (int)infill);
+
+            StoreCurrentDraft();
+        }
+
+        private void LoadCurrentDraft()
+        {
+            if (currentDraft == null)
+            {
+                return;
+            }
+
+            int count = catalog != null &&
+                catalog.ObjectToPrintMetasList != null
+                    ? catalog.ObjectToPrintMetasList.Length
+                    : 0;
+
+            selectedIndex = count > 0
+                ? Mathf.Clamp(currentDraft.SelectedIndex, 0, count - 1)
+                : 0;
+            currentDraft.SelectedIndex = selectedIndex;
+
+            spoolSlot = currentDraft.SpoolSlot;
+            spoolInitialized = currentDraft.SpoolInitialized;
+
+            ObjectToPrintMetaSO meta = CurrentMeta;
+
+            if (meta == null)
+            {
+                infill = InfillPattern.Grid;
+                supports = SupportsMode.None;
+                layerHeight = LayerHeightPreset.Normal;
+                speed = PrintSpeedPreset.Normal;
+                placement = null;
+                return;
+            }
+
+            PrinterJobDraftStore.ObjectDraft draft =
+                currentDraft.GetObject(meta);
+
+            infill = draft.Infill;
+            supports = draft.Supports;
+            layerHeight = draft.LayerHeight;
+            speed = draft.Speed;
+            placement = draft.Placement;
+        }
+
+        private void StoreCurrentDraft()
+        {
+            if (currentDraft == null)
+            {
+                return;
+            }
+
+            currentDraft.SelectedIndex = selectedIndex;
+            currentDraft.SpoolSlot = spoolSlot;
+            currentDraft.SpoolInitialized = spoolInitialized;
+
+            ObjectToPrintMetaSO meta = CurrentMeta;
+
+            if (meta == null)
+            {
+                return;
+            }
+
+            PrinterJobDraftStore.ObjectDraft draft =
+                currentDraft.GetObject(meta);
+
+            draft.Infill = infill;
+            draft.Supports = supports;
+            draft.LayerHeight = layerHeight;
+            draft.Speed = speed;
+            draft.Placement = placement;
         }
 
         private ObjectToPrintMetaSO CurrentMeta
@@ -667,8 +747,15 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             button.onClick.AddListener(() =>
             {
+                StoreCurrentDraft();
                 selectedIndex = capturedIndex;
-                ApplyProfileDefaults(meta.PrintProfile);
+
+                if (currentDraft != null)
+                {
+                    currentDraft.SelectedIndex = selectedIndex;
+                }
+
+                LoadCurrentDraft();
                 Refresh();
             });
 
@@ -824,7 +911,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                     SimulationSpeedSettings.Label(
                         SimulationSpeedPreset.Quick),
                     SimulationSpeedSettings.Label(
-                        SimulationSpeedPreset.Default)
+                        SimulationSpeedPreset.Turbo)
                 },
                 SelectSimulationSpeed,
                 simulationSpeedButtons,
@@ -1166,12 +1253,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
         }
 
-        private ObjectToPrintRequirements GetRequirements()
-        {
-            ObjectToPrintMetaSO meta = CurrentMeta;
-            return meta != null ? meta.Requirements : null;
-        }
-
         private void LogValidationIfChanged(PrintJobValidationResult result)
         {
             System.Text.StringBuilder signature = new System.Text.StringBuilder();
@@ -1263,26 +1344,6 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
 
             return SpoolSlot.Left;
-        }
-
-        private void ApplyProfileDefaults(ObjectToPrintPrintProfile profile)
-        {
-            if (profile == null)
-            {
-                return;
-            }
-
-            ObjectToPrintRequirements requirements = GetRequirements();
-
-            infill = requirements != null
-                ? requirements.DefaultInfill
-                : InfillPattern.Grid;
-            supports = profile.SupportsRequired
-                ? SupportsMode.Auto
-                : SupportsMode.None;
-            layerHeight = LayerHeightPreset.Normal;
-            speed = PrintSpeedPreset.Normal;
-            placement = null;
         }
 
         private static void RefreshPresetStyles(
@@ -1424,6 +1485,10 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 {
                     signature.Append("COMPLETED|");
                 }
+
+                signature.Append("CAL:")
+                    .Append(printer.CalibrationWarningText)
+                    .Append('|');
             }
 
             for (int i = 0; i < result.Errors.Count; i++)
@@ -1457,6 +1522,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 CreateValidationRow(
                     "Starting print...",
                     DeviceConsoleStyle.TextMuted);
+                CreateCalibrationWarningRow(printer);
             }
             else if (printer != null && printer.OperationalState ==
                 PrinterOperationalState.Calibrating)
@@ -1470,18 +1536,21 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 CreateValidationRow(
                     "Print in progress. Use Pause or Hard stop above.",
                     DeviceConsoleStyle.TextMuted);
+                CreateCalibrationWarningRow(printer);
             }
             else if (printer != null && printer.HasPartialPrint)
             {
                 CreateValidationRow(
                     "Partial print on the bed. Clear the bed before starting another job.",
                     DeviceConsoleStyle.Text);
+                CreateCalibrationWarningRow(printer);
             }
             else if (printer != null && printer.HasCompletedPrint)
             {
                 CreateValidationRow(
                     "Print finished. Clear the bed before starting another job.",
                     DeviceConsoleStyle.Text);
+                CreateCalibrationWarningRow(printer);
             }
             else if (result.Errors.Count > 0)
             {
@@ -1520,6 +1589,19 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 Canvas.ForceUpdateCanvases();
                 validationScroll.verticalNormalizedPosition = 1.0f;
             }
+        }
+
+        private void CreateCalibrationWarningRow(Printer printer)
+        {
+            if (printer == null ||
+                string.IsNullOrEmpty(printer.CalibrationWarningText))
+            {
+                return;
+            }
+
+            CreateValidationRow(
+                $"- {printer.CalibrationWarningText}",
+                DeviceConsoleStyle.TextMuted);
         }
 
         private void CreateValidationRow(string text, Color color)
