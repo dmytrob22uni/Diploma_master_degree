@@ -39,7 +39,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
         private Collider cachedCollider;
         private Device cachedDevice;
-        private Printer cachedBusyPrinter;
+        private Printer cachedBlockedPrinter;
 
         private IInteractable cachedInteractable;
         public IInteractable CachedInteractable => cachedInteractable;
@@ -78,27 +78,55 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
             {
                 if (hit.collider == cachedCollider)
                 {
-                    if (cachedBusyPrinter == null ||
-                        cachedBusyPrinter.IsBusy)
+                    Printer cachedPrinter =
+                        Printer.FindFor(hit.collider.gameObject);
+
+                    if (cachedPrinter != null &&
+                        !cachedPrinter.CanOpenInteractions)
                     {
+                        if (cachedBlockedPrinter != cachedPrinter)
+                        {
+                            cachedBlockedPrinter = cachedPrinter;
+                            ClearCached();
+                            ClearHover();
+                        }
+
                         return;
                     }
 
-                    ClearCachedCollider();
-                    ClearCached();
-                    ClearHover();
+                    if (cachedBlockedPrinter != null)
+                    {
+                        cachedBlockedPrinter = default;
+                        ClearCachedCollider();
+                        ClearCached();
+                        ClearHover();
+                    }
+                    else if (cachedInteractable != null ||
+                        cachedDevice != null ||
+                        cachedAction != null)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        ClearCachedCollider();
+                        ClearCached();
+                        ClearHover();
+                    }
                 }
 
                 Printer busyPrinter = Printer.FindFor(hit.collider.gameObject);
 
-                if (busyPrinter != null && busyPrinter.IsBusy)
+                if (busyPrinter != null && !busyPrinter.CanOpenInteractions)
                 {
                     cachedCollider = hit.collider;
+                    cachedBlockedPrinter = busyPrinter;
                     ClearCached();
-                    cachedBusyPrinter = busyPrinter;
                     ClearHover();
                     return;
                 }
+
+                cachedBlockedPrinter = default;
 
                 // computing device root: its colliders live on child meshes
                 Device device = hit.collider.GetComponentInParent<Device>();
@@ -140,15 +168,23 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                     cachedInteractable = simple;
 
                     var interactions = simple.GetInteractions();
+
+                    if (interactions == null || interactions.Count == 0)
+                    {
+                        ClearHover();
+                        return;
+                    }
+
                     if (interactions.Count > 1)
                     {
+                        cachedInteractions = interactions;
+                        cachedAction = ShowInteractions;
+                        SetupInteract(defaultInteractText);
                         return;
                     }
 
                     cachedAction = interactions[0].OnExecute;
-
-                    string info = interactions[0].Info;
-                    SetupInteract(info);
+                    SetupInteract(interactions[0].Info);
 
                     return;
                 }
@@ -217,12 +253,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private void ClearCachedCollider()
         {
             cachedCollider = default;
+            cachedBlockedPrinter = default;
         }
 
         private void ClearCached()
         {
             cachedDevice = default;
-            cachedBusyPrinter = default;
             cachedInteractable = default;
             cachedInteractions = default;
             cachedAction = default;

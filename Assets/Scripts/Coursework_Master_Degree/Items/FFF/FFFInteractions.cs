@@ -27,7 +27,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
             Printer printer = Printer.FindFor(partsAssembly.gameObject);
 
-            if (printer != null && printer.IsBusy)
+            if (printer != null && !printer.CanOpenInteractions)
             {
                 return System.Array.Empty<InteractionOption>();
             }
@@ -45,6 +45,16 @@ namespace Coursework_Master_Degree.Items.FFF
                                 itemDataHolder));
                     }
                 },
+                new() {
+                    Info = "Parts integrity",
+                    OnExecute =
+                        () => {
+                            GameStateManager.Instance.ChangeState(
+                                new GameStatePartsIntegrity(
+                                    partsAssembly,
+                                    itemDataHolder));
+                        }
+                },
                 new()
                 {
                     Info = "Parts remove",
@@ -56,16 +66,6 @@ namespace Coursework_Master_Degree.Items.FFF
                                 partsAssembly,
                                 itemDataHolder));
                     }
-                },
-                new() {
-                    Info = "Parts integrity",
-                    OnExecute =
-                        () => {
-                            GameStateManager.Instance.ChangeState(
-                                new GameStatePartsIntegrity(
-                                    partsAssembly,
-                                    itemDataHolder));
-                        }
                 }
             };
 

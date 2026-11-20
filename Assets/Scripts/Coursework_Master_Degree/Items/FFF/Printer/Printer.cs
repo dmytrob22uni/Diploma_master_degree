@@ -237,11 +237,27 @@ namespace Coursework_Master_Degree.Items.FFF
             HasPartialPrint ||
             HasCompletedPrint;
 
+        /// <summary>
+        /// A paused printer becomes serviceable after cooling and parking.
+        /// This is intentionally separate from IsBusy: the printer is still
+        /// busy for selling/taking, but its parts interaction list is allowed.
+        /// </summary>
+        public bool IsPausedServiceReady =>
+            OperationalState == PrinterOperationalState.Paused &&
+            activeJob != null &&
+            !isMovingHome &&
+            IsAtSafeServiceTemperature;
+
+        /// <summary>
+        /// Whether the FreeWalk interaction list may open for this printer.
+        /// Idle printers are always available; paused printers are available
+        /// only once cooling and homing have completed.
+        /// </summary>
+        public bool CanOpenInteractions =>
+            !IsBusy || IsPausedServiceReady;
+
         public bool IsPrintActive =>
             stateMachine.IsActiveJobState;
-
-        public bool IsPaused =>
-            OperationalState == PrinterOperationalState.Paused;
 
         public bool IsCalibrated => isCalibrated;
 
