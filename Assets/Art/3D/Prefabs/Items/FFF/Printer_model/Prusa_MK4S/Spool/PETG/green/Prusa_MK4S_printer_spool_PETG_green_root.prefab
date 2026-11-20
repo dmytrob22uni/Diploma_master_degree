@@ -788,6 +788,10 @@ MonoBehaviour:
     value: {fileID: 7980125261056101415}
   - key: 100
     value: {fileID: 8530524046648030927}
+  RotatingPart: {fileID: 0}
+  RotationAxis: {x: 0, y: 1, z: 0}
+  EffectiveRadiusMeters: 0.1
+  InvertRotation: 1
   FilamentLengthSpoolMeters: 300
 --- !u!114 &329810693413118664
 MonoBehaviour:

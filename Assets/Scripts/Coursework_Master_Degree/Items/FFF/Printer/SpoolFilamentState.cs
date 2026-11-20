@@ -19,6 +19,12 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public float RemainingMeters { get; private set; }
 
+        public float Condition => Wear != null
+            ? Mathf.Clamp(Wear.CurrentCondition, 0.0f, Wear.MaxCondition)
+            : Data != null && Data.FilamentLengthSpoolMeters > 0.001f
+                ? RemainingMeters / Data.FilamentLengthSpoolMeters * 100.0f
+                : 0.0f;
+
         private float fallbackRemainingMeters;
         private bool warnedAboutLogic;
 
@@ -89,9 +95,15 @@ namespace Coursework_Master_Degree.Items.FFF
                     Debug.LogWarning(
                         $"[SpoolFilamentState] {Data.name} uses " +
                         $"{Wear.ItemWearLogicSO?.GetType().Name ?? "no wear logic"}; " +
-                        "falling back to local filament accounting.",
+                        "using direct condition loss for filament consumption.",
                         Data);
                 }
+
+                float directLoss = Data.FilamentLengthSpoolMeters > 0.001f
+                    ? meters / Data.FilamentLengthSpoolMeters * 100.0f
+                    : 0.0f;
+
+                Wear?.ApplyConditionLoss(directLoss);
 
                 fallbackRemainingMeters = Mathf.Max(
                     0.0f,
@@ -114,7 +126,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
-            if (HasFilamentWearLogic)
+            if (Wear != null)
             {
                 float condition = Mathf.Clamp(
                     Wear.CurrentCondition,

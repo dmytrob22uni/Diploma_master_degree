@@ -27,18 +27,18 @@ namespace Coursework_Master_Degree.Items.FFF.Spool
         public Dictionary<float, GameObject> SpoolWearLevelsToGameObjectsDictionary;
 
         [Header("Consumption Visual")]
-        [Tooltip("Transform rotated while filament is consumed. Auto-finds a child named 'spool'.")]
+        [Tooltip("Transform rotated while filament is consumed. Defaults to the spool root.")]
         public Transform RotatingPart;
 
         [Tooltip("Local axis around which the spool turns.")]
-        public Vector3 RotationAxis = Vector3.forward;
+        public Vector3 RotationAxis = Vector3.up;
 
         [Min(0.001f)]
         [Tooltip("Effective filament radius in metres. Rotation = metres / circumference.")]
         public float EffectiveRadiusMeters = 0.1f;
 
         [Tooltip("Flip the rotation direction if the filament unwinds the other way.")]
-        public bool InvertRotation;
+        public bool InvertRotation = true;
 
         private readonly List<float> wearKeys = new List<float>();
         private float lastWearKey = float.NaN;
@@ -91,8 +91,8 @@ namespace Coursework_Master_Degree.Items.FFF.Spool
         }
 
         /// <summary>
-        /// Shows the child whose authored wear threshold is nearest to the
-        /// current condition. The dictionary keys are 0..100 condition values.
+        /// Shows the upper authored wear threshold for the current condition.
+        /// The dictionary keys are 0..100 condition values.
         /// </summary>
         public void RefreshWearVisual(float condition)
         {
@@ -110,17 +110,17 @@ namespace Coursework_Master_Degree.Items.FFF.Spool
             }
 
             float clamped = Mathf.Clamp(condition, 0.0f, 100.0f);
-            float selected = wearKeys[0];
-            float bestDelta = Mathf.Abs(selected - clamped);
 
-            for (int i = 1; i < wearKeys.Count; i++)
+            // Use the upper authored level: 91..100 shows the 100% child,
+            // 81..90 shows 90%, and so on. Only a true 0% shows the empty child.
+            float selected = wearKeys[wearKeys.Count - 1];
+
+            for (int i = 0; i < wearKeys.Count; i++)
             {
-                float delta = Mathf.Abs(wearKeys[i] - clamped);
-
-                if (delta < bestDelta)
+                if (wearKeys[i] >= clamped)
                 {
                     selected = wearKeys[i];
-                    bestDelta = delta;
+                    break;
                 }
             }
 
@@ -147,28 +147,10 @@ namespace Coursework_Master_Degree.Items.FFF.Spool
 
         private void ResolveVisuals()
         {
-            if (RotatingPart != null)
-            {
-                return;
-            }
-
-            Transform candidate = transform.Find("spool");
-
-            if (candidate == null)
-            {
-                foreach (Transform child in transform)
-                {
-                    if (child.name.IndexOf(
-                            "spool",
-                            System.StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        candidate = child;
-                        break;
-                    }
-                }
-            }
-
-            RotatingPart = candidate != null ? candidate : transform;
+            // The root is the item that is installed into the spool holder.
+            // Rotating the mesh child instead changes the visual axis and
+            // detaches the rotation from the authored holder orientation.
+            RotatingPart = RotatingPart != null ? RotatingPart : transform;
         }
     }
 }
