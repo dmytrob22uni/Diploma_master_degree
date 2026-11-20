@@ -1175,7 +1175,7 @@ time = profile.PrintTimeSecondsAt100PercentInfill
 
 These values are intentionally simple and tunable. Infill changes time and filament; supports use a per-object overhang multiplier; layer height and speed change time (filament stays constant at this abstraction); confirmed scale uses the shell/infill two-term factor. The reference layer height (`0.2 mm`) and speed (`80 mm/s`, Slow) are global settings.
 
-The profile baseline is the only time coefficient that can absorb a single slicer measurement: at `0.2 mm` / `80 mm/s` / `100%` infill / no supports every multiplier is `1.0`, so `time = PrintTimeSecondsAt100PercentInfill`. The editor tool's effective flow (`5.88922 mm3/s`) is calibrated so its volume/effective-flow seed produces that same baseline for the bunny. Do not add a second global time correction on top of the profile baseline; it would double-count for slicer-calibrated profiles. The layer/speed/infill/support multipliers need a multi-point slicer matrix if they are to be refitted.
+The profile baseline is the only time coefficient that can absorb a single slicer measurement: at `0.2 mm` / `80 mm/s` / `100%` infill / no supports every multiplier is `1.0`, so `time = PrintTimeSecondsAt100PercentInfill`. The editor tool exposes `reference flow x extrusion duty`: its round defaults are `12 mm3/s x 0.5 = 6.0 mm3/s`, while the bunny's exact calibration is `5.88922 mm3/s`. The profile baseline remains authoritative; do not add a second global time correction on top of it. The layer/speed/infill/support multipliers need a multi-point slicer matrix if they are to be refitted.
 
 Raw quality is projected from the same settings before post-processing:
 
@@ -1464,7 +1464,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - batch or selected `ObjectToPrintMetaSO` entries from the catalog,
   - load the prefab, combine renderer bounds (report only; runtime sizing uses the same data), compute mesh volume and surface area,
   - estimate overhang ratio and set `SupportsRequired` plus `SupportOverhangPercent`,
-  - seed 100% infill filament/time from volume, a configurable effective flow and a configurable filament packing factor,
+  - seed 100% infill filament/time from volume, a configurable reference flow x extrusion duty and a configurable filament packing factor,
   - write the configurable wall thickness used by the shell/infill scale rule,
   - report solid shell, material shell for the default infill, and the scale-2x factor using the same rule as runtime,
   - share the reference layer height/speed and seed coefficients in one editor settings asset,
@@ -1489,7 +1489,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 2. **Done:** go below the dynamic min (`2 cm` largest dimension) and above the max (`BuildVolume`/plate fit); the wrong state appears and confirm is blocked.
 3. **Re-check required after the estimate refinement:** recalculated estimates match the shell/infill scale rule at the minimum, `1.0` and the maximum scale, and support cost follows each object's overhang percentage.
 4. **Done:** cancel restores the previous placement and confirm survives console close/reopen.
-5. **Done:** the editor generator on the bunny reproduces the `36 720 s` and `85.36 m` slicer reference from the calibrated effective flow and filament packing; the full matrix review is in [`estimate_matrix.md`](estimate_matrix.md).
+5. **Done:** the editor generator reproduces the bunny `36 720 s` / `85.36 m` with the exact calibration (`5.88922 mm3/s`, `0.94943`); the round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. The full matrix review is in [`estimate_matrix.md`](estimate_matrix.md).
 6. **Done:** confirm and cancel return with the same blend duration as entering.
 7. **Done:** the project owner authored the placement UI on `object_place_canvas`.
 
@@ -1877,7 +1877,7 @@ Fill this table during M0 and update it during later milestones.
 | Support cost | filament × `1 + 0.06 × overhang / 15.48308`, time × `1 + 0.12 × overhang / 15.48308` | bunny reference overhang is `15.48308%`; other objects use their own `SupportOverhangPercent` |
 | Support rule | required object: `None` → `-25` raw and max `55`; optional `Auto` → warning only | `PrintJobValidator` / `PrintQualityEstimator` |
 | Material gating | none | any spool material prints; M3/M5 use material for temperatures and quality |
-| Bunny baseline (current profile) | `85.36 m` at 100%, `36 720 s` at 100% | Both values restored to the PrusaSlicer reference; editor seeds calibrated to reproduce them |
+| Bunny baseline (current profile) | `85.36 m` at 100%, `36 720 s` at 100% | Both values restored to the PrusaSlicer reference; exact editor calibration is `5.88922 / 0.94943`, round defaults are `6.0 / 1.0` |
 | Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
 | Console camera idle priority | `-1` | player camera stays at implicit `0` |
 | Print speed multiplier | `1×` / `4×` / `64×` / `120×` | console `SIM SPEED`; default `1×`, stored per printer |
@@ -2038,7 +2038,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`), and the editor seeds are calibrated to reproduce it. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
 
 
 M1 is code-complete:
@@ -2084,7 +2084,7 @@ M2 is implemented:
 
 Remaining M2 work (manual gate):
 
-1. **Calibration:** `85.36 m` and `36 720 s` at 100% infill (`0.2 mm`, `80 mm/s`; now Slow). Both values are restored to the PrusaSlicer reference, and the editor tool's effective flow/filament packing seeds reproduce them.
+1. **Calibration:** `85.36 m` and `36 720 s` at 100% infill (`0.2 mm`, `80 mm/s`; now Slow). Both values are restored to the PrusaSlicer reference; the exact editor seed calibration is `5.88922 mm3/s` / `0.94943`, while the tool defaults are round seeds.
 2. **Original check:** Grid / Normal / Normal compared with PrusaSlicer (`28.53 m`, `3 h 53 min`) and matched by the console (`28.5 m`, `3 h 53 min`). With the new presets, old Normal is Slow; the reference point now matches in both time and filament. Normal/Fast presets and scale/support still need a fresh spot-check.
 3. **Done:** Draft and Fine spot checks confirmed time and raw quality move in the expected direction.
 4. **Done:** validation matrix verified, including the oversized-object rejection.
@@ -2307,7 +2307,8 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | Caps appear only on settled pauses and finalized partials | Live printing uses uncapped reveal/backface lighting; pause-settled and hard-stopped surfaces use a sliced final-material cap; completed prints have no cap |
 | 2026-11-20 | Printed-object sale destroys all ghosts and generated surfaces | `DestroyGhostInstances` clears mutual references; the object hierarchy owns the sliced cap mesh and collider |
 | 2026-11-20 | Enclosure continuity is a one-way job flag | Continuous enclosure keeps `+5`; resuming outside applies `-9` once; reinstalling does not restore the bonus and toggles never stack |
-| 2026-11-20 | Time calibration lives in the profile baseline, not a global factor | Editor effective flow `5.88922 mm3/s` reproduces the bunny `36 720 s`; runtime layer/speed/infill/support multipliers are `1.0` at the reference |
+| 2026-11-20 | Time calibration lives in the profile baseline, not a global factor | Exact editor calibration `5.88922 mm3/s` reproduces the bunny `36 720 s`; runtime layer/speed/infill/support multipliers are `1.0` at the reference |
+| 2026-11-21 | Editor seed defaults are round | Reference flow `12 x 0.5 = 6.0 mm3/s` and packing `1.0`; exact bunny calibration `5.88922 / 0.94943` stays available |
 | 2026-11-20 | Filament seed is calibrated like the time seed | Editor filament packing `0.94943` (`85.36 / 89.90716`) restores the bunny `85.36 m`; Grid/Auto matches the slicer `28.53 m` |
 | 2026-11-20 | Shell diagnostics share the runtime formula | `PrintEstimates.MaterialShellShare` drives both the scale rule and the editor tool; the bunny reports `14.0%` solid shell, `44.4%` Grid material shell and `6.22x` at scale 2 |
 | 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |
@@ -2642,7 +2643,7 @@ See [`estimate_matrix.md`](estimate_matrix.md) for the full LAYER x SPEED x INFI
 | Raw quality: Slow / Normal / Fast (Normal layer, Auto) | enclosed `89-90 / 85-90 / 75-80`; open `75-80 / 71-76 / 61-66` |
 | Current profile | `85.36 m` filament, `36 720 s` (`10 h 12 min`) at 100% (slicer reference) |
 | Current profile sources | Filament and time: PrusaSlicer reference |
-| Editor seeds | Effective flow `5.88922 mm3/s`; filament packing `0.94943` |
+| Editor seeds | Exact `5.88922 mm3/s` / `0.94943`; round defaults `6.0 mm3/s` (`12 x 0.5`) / `1.0` |
 | Console estimate at Grid / Normal / Slow (current profile) | `28.53 m`, `3 h 53 min` |
 | Current tuning factor (slicer / console) | filament `1.00`, time `1.00` |
 | Current calibration status | Reference point matched; full console matrix reviewed in `estimate_matrix.md`; speed-preset and scale/support spot-checks pending |
@@ -2724,19 +2725,19 @@ It can:
 3. Compute mesh volume and surface area from the triangle soup (signed tetrahedra sum and triangle areas). For a watertight mesh this is the solid volume; for open meshes, report the result as approximate.
 4. Compute the overhang ratio: triangles whose normal is below the overhang angle (`45°` default) relative to the plate up; set `SupportsRequired` above a configurable threshold and write `SupportOverhangPercent`.
 5. Seed 100% infill filament from `volume / (π × (filamentDiameter/2)²) × filamentPackingFactor`, with the packing factor exposed in the tool settings.
-6. Seed 100% infill time from `volume / effectiveFlowMm3PerSecond`, with the flow value exposed in the tool settings.
+6. Seed 100% infill time from `volume / (referenceFlowMm3PerSecond x extrusionDuty)`; expose both values and show the derived effective flow.
 7. Write `WallThicknessMillimeters` for the shell/infill scale rule; report solid shell, material shell for the default infill, and the scale-2x factor.
 8. Write through `SerializedObject`, mark the asset dirty, and report a per-object summary; support batch over the whole catalog.
 
-Model meshes must have **Read/Write enabled** for volume/overhang. The bunny FBX now has it enabled, so the tool can report volume and overhang. Defaults: `1.75 mm` filament, `0.94943` filament packing, `5.88922 mm3/s` effective flow, `1.2 mm` wall thickness, `45°` overhang, `5%` supports threshold.
+Model meshes must have **Read/Write enabled** for volume/overhang. The bunny FBX now has it enabled, so the tool can report volume and overhang. Defaults: `1.75 mm` filament, `1.0` filament packing, `12 mm3/s` reference flow, `0.5` extrusion duty (`6.0 mm3/s` effective), `1.2 mm` wall thickness, `45°` overhang, `5%` supports threshold.
 
-The effective flow is a lumped seed coefficient: the slicer's average extrusion rate including travel and acceleration, plus the mesh-to-slicer volume difference. It is not the hotend's peak flow. It is calibrated from the bunny reference: `216252.06 mm3 / 36720 s = 5.88922 mm3/s` at `0.2 mm` / `80 mm/s` / `100%` infill, supports off. This is the coefficient that makes the editor tool's time seed reproduce the PrusaSlicer time. The runtime model's layer/speed/infill/support multipliers are neutral at that reference and still need a multi-point slicer matrix to refit; one slicer point cannot identify them.
+The tool separates the time seed into `reference flow x extrusion duty`. Reference flow is the hotend/slicer volumetric limit; extrusion duty is the time-weighted fraction actually extruding, with travel, acceleration, cooling and layer changes taking the rest. The round defaults are `12 mm3/s x 0.5 = 6.0 mm3/s`. The bunny's exact calibration is `5.88922 mm3/s` (`12 x 0.490768`), derived from `216252.06 mm3 / 36720 s` at `0.2 mm` / `80 mm/s` / `100%` infill, supports off. Enter the exact duty when exact slicer reproduction is needed. The runtime model's layer/speed/infill/support multipliers are neutral at that reference and still need a multi-point slicer matrix to refit; one slicer point cannot identify them.
 
-The filament packing factor is the matching lumped coefficient for material: `85.36 / 89.90716 = 0.94943`. It absorbs the mesh-to-slicer material-volume difference, so the editor's filament seed and the runtime Grid/Auto matrix both reproduce the slicer reference. Like the effective flow, it should be recalibrated if the mesh import or reference slicer profile changes.
+The filament packing factor is the matching lumped coefficient for material: `85.36 / 89.90716 = 0.94943`. It absorbs the mesh-to-slicer material-volume difference. The tool default is `1.0`, which is a round seed and about `5.3%` above the slicer reference; use `0.94943` when exact reproduction is needed. The bunny profile stores `85.36 m`, so the runtime Grid/Auto matrix still matches the slicer. Like the effective flow, the packing factor should be recalibrated if the mesh import or reference slicer profile changes.
 
 Limitations:
 
-- Time and filament from volume are seeds, not a per-object slicer result. The two lumped coefficients are calibrated to the bunny reference; confirm each new object with one slicer run.
+- Time and filament from volume are seeds, not a per-object slicer result. The exact bunny calibration values are recorded; the round defaults are approximate. Confirm each new object with one slicer run.
 - Automatic orientation selection is not part of the first version; the player rotates on the bed instead. A future version can try candidate yaw/face rotations and pick the lowest overhang score.
 - Default infill stays authored; material is selected by the selected spool and is not inferred.
 - The tool must not touch scenes; it only edits meta assets.

@@ -27,6 +27,12 @@ The 100% profile is a calibration reference, not a console choice. The console
 offers `None`, `Grid` and `Gyroid`; their material fractions already include
 the shell and top/bottom skins.
 
+The editor tool has separate round seed defaults — `12 mm3/s x 0.5 duty =
+6.0 mm3/s` and filament packing `1.0`. They produce about `36,042 s` and
+`89.91 m` for the bunny, so they are not used for this matrix. The matrix uses
+the calibrated profile values above; the exact tool calibration is
+`5.88922 mm3/s` and `0.94943`.
+
 Coefficients:
 
 | Setting | Values |
@@ -182,10 +188,12 @@ below use `Auto` supports and no hardware penalty; `None` supports applies
 
 ## Tweaks applied from this review
 
-- Editor tool time seed uses a calibrated effective flow of
+- Editor tool time seed is `reference flow x extrusion duty`. The round
+  defaults are `12 mm3/s x 0.5 = 6.0 mm3/s`; the bunny's exact calibration is
   `5.88922 mm3/s` (`216,252.06 mm3 / 36,720 s`).
-- Editor tool filament seed uses a calibrated packing factor of `0.94943`
-  (`85.36 / 89.90716`), restoring the bunny profile to `85.36 m`.
+- Editor tool filament packing defaults to `1.0`; the bunny's exact
+  calibration is `0.94943` (`85.36 / 89.90716`). The bunny profile itself
+  stays at `85.36 m` / `36,720 s`, so the matrix above is unchanged.
 - `PrintEstimates.MaterialShellShare` is now the single source for the
   scale-rule shell share. The editor tool shows:
   - solid shell `14.0%`;

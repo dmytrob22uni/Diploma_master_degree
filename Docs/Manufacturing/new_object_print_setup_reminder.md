@@ -11,8 +11,8 @@ The target is a rectangular XYZ printer workflow. Object setup is data/prefab wo
 `Tools/Manufacturing/Print Profile Generator` is a **seeder and validator**, not the final calibrator.
 
 - Use **Scan** to inspect mesh volume, surface area, overhang and the seeded baseline.
-- Do **not** click **Apply successful scans** on the Stanford bunny just to refresh it: Apply overwrites `FilamentMetersAt100PercentInfill` and `PrintTimeSecondsAt100PercentInfill` with seeds. The calibrated seeds now reproduce the bunny reference (`85.36 m`, `36 720 s`), but Apply still replaces any manual calibration.
-- The editor uses two lumped seed coefficients: effective flow `5.88922 mm3/s` for time and filament packing `0.94943` for material. Both are calibrated from the bunny reference; recalibrate them if the printer profile or mesh import changes.
+- Do **not** click **Apply successful scans** on the Stanford bunny just to refresh it: Apply overwrites `FilamentMetersAt100PercentInfill` and `PrintTimeSecondsAt100PercentInfill` with the tool's round seed. For the bunny that is about `36,042 s` and `89.91 m`, not the calibrated `36,720 s` / `85.36 m`.
+- The editor exposes `reference flow x extrusion duty` for time and filament packing for material. The round defaults are `12 mm3/s x 0.5 = 6.0 mm3/s` and `1.0`. Use the bunny's exact calibration (`5.88922 mm3/s`, `0.94943`) when exact slicer reproduction is required.
 - The stored calculation baseline is `0.20 mm` layer, `80 mm/s` (Slow), `100%` infill and no supports. It is shown at the top of the editor tool and in the profile's inspector header.
 - Calibrate the final baseline in a slicer at that profile: `0.2 mm` layer height, `80 mm/s`, `100%` infill, supports off.
 - Use **Apply successful scans** only to seed a new object; confirm the two seeded values with a slicer run before treating the profile as calibrated.
@@ -39,7 +39,7 @@ The final setup guide must cover, in order:
    - `WallThicknessMillimeters` (default `1.2 mm`) used by the shell/infill scale rule;
    - `DefaultInfill`;
    - icon, name, description, `ObjectToPrintType` and catalog entry;
-   - note that the editor tool’s volume/effective-flow/filament-packing values are seeds; both coefficients are calibrated to the bunny reference, but each new object still needs a slicer confirmation;
+   - note that the editor tool’s volume/flow×duty/filament-packing values are seeds; the round defaults are approximate (about `-1.9%` time and `+5.3%` filament versus the calibrated bunny), and each new object still needs a slicer confirmation;
    - the tool reports solid shell, material shell for the default infill, and the scale-2x factor from the same rule used by `PrintEstimates`.
 
 3. **Catalog and UI**

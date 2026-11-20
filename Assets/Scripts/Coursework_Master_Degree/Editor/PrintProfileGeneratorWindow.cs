@@ -11,20 +11,17 @@ namespace Coursework_Master_Degree.Editor
     /// <summary>
     /// Generates profile seeds for ObjectsToPrint metas from their prefabs.
     /// Dimensions are reported only; volume and overhang need readable meshes.
-    /// Time and filament use lumped seed coefficients calibrated from the
-    /// reference slicer result; they are seeds, not per-object calibration.
+    /// Time uses reference flow x extrusion duty; filament uses a packing
+    /// factor. Both are seeds, not per-object calibration.
     /// </summary>
     public class PrintProfileGeneratorWindow : EditorWindow
     {
-        // Lumped effective flow, not peak hotend flow. Calibrated from the
-        // Stanford bunny PrusaSlicer reference:
-        // 216252.06 mm3 / 36720 s = 5.88922 mm3/s at 0.2 mm / 80 mm/s / 100%.
-        private const float DefaultEffectiveFlowMm3PerSecond = 5.88922f;
-
-        // Lumped filament seed coefficient: slicer material volume vs mesh
-        // volume. Calibrated from the Stanford bunny PrusaSlicer reference:
-        // 85.36 m / 89.90716 m = 0.94943.
-        private const float DefaultFilamentPackingFactor = 0.94943f;
+        // Round seed defaults. The bunny's exact calibration is
+        // 5.88922 mm3/s (12 x 0.490768) and 0.94943 filament packing; the
+        // defaults below are deliberately simple and stay within 2% / 5%.
+        private const float DefaultReferenceFlowMm3PerSecond = 12.0f;
+        private const float DefaultExtrusionDuty = 0.5f;
+        private const float DefaultFilamentPackingFactor = 1.0f;
 
         private sealed class ScanResult
         {
@@ -50,11 +47,15 @@ namespace Coursework_Master_Degree.Editor
         private ObjectToPrintMetasListSO catalog;
         private float filamentDiameterMillimeters = 1.75f;
         private float filamentPackingFactor = DefaultFilamentPackingFactor;
-        private float effectiveFlowMm3PerSecond =
-            DefaultEffectiveFlowMm3PerSecond;
+        private float referenceFlowMm3PerSecond =
+            DefaultReferenceFlowMm3PerSecond;
+        private float extrusionDuty = DefaultExtrusionDuty;
         private float wallThicknessMillimeters = 1.2f;
         private float overhangAngleDegrees = 45.0f;
         private float overhangThresholdPercent = 5.0f;
+
+        private float EffectiveFlowMm3PerSecond =>
+            referenceFlowMm3PerSecond * Mathf.Clamp01(extrusionDuty);
 
         private readonly List<ScanResult> results = new List<ScanResult>();
         private Vector2 scroll;
@@ -72,9 +73,9 @@ namespace Coursework_Master_Degree.Editor
             EditorGUILayout.HelpBox(
                 "Stored calculation baseline: " +
                 ObjectToPrintPrintProfile.ReferenceBaselineDescription +
-                ".\nEffective flow and filament packing are lumped seed " +
-                "coefficients calibrated from the same reference; they shape " +
-                "the generated estimate and do not change the baseline.",
+                ".\nRound seed defaults: 12 mm3/s x 0.5 duty = " +
+                "6.0 mm3/s effective flow; filament packing 1.0. " +
+                "Bunny exact: 12 x 0.490768 = 5.88922 mm3/s, packing 0.94943.",
                 MessageType.None);
 
             catalog = (ObjectToPrintMetasListSO)EditorGUILayout.ObjectField(
@@ -86,21 +87,32 @@ namespace Coursework_Master_Degree.Editor
             filamentDiameterMillimeters = EditorGUILayout.FloatField(
                 "Filament diameter (mm)",
                 filamentDiameterMillimeters);
+            referenceFlowMm3PerSecond = EditorGUILayout.FloatField(
+                new GUIContent(
+                    "Reference flow (mm3/s)",
+                    "Hotend/slicer volumetric limit used as the seed base. " +
+                    "Default 12 mm3/s."),
+                referenceFlowMm3PerSecond);
+            extrusionDuty = EditorGUILayout.Slider(
+                new GUIContent(
+                    "Extrusion duty",
+                    "Time-weighted fraction of the print that is actually " +
+                    "extruding. Travel, acceleration, cooling and layer " +
+                    "changes make this below 1. Default 0.5."),
+                extrusionDuty,
+                0.0f,
+                1.0f);
+            EditorGUILayout.LabelField(
+                new GUIContent(
+                    "Effective flow",
+                    "Reference flow x extrusion duty; used by the time seed."),
+                $"{EffectiveFlowMm3PerSecond:0.###} mm3/s");
             filamentPackingFactor = EditorGUILayout.FloatField(
                 new GUIContent(
                     "Filament packing",
                     "Lumped filament seed coefficient: slicer material volume " +
-                    "vs mesh volume. Default calibrated from the Stanford " +
-                    "bunny slicer reference."),
+                    "vs mesh volume. Default 1.0."),
                 filamentPackingFactor);
-            effectiveFlowMm3PerSecond = EditorGUILayout.FloatField(
-                new GUIContent(
-                    "Effective flow (mm3/s)",
-                    "Lumped time seed coefficient: slicer average extrusion rate " +
-                    "including travel and acceleration, plus the mesh-to-slicer " +
-                    "volume difference. Not peak hotend flow. Default calibrated " +
-                    "from the Stanford bunny slicer reference."),
-                effectiveFlowMm3PerSecond);
             wallThicknessMillimeters = EditorGUILayout.FloatField(
                 "Wall thickness (mm)",
                 wallThicknessMillimeters);
@@ -443,11 +455,13 @@ namespace Coursework_Master_Degree.Editor
                         filamentPackingFactor);
                 }
 
-                if (effectiveFlowMm3PerSecond > 0.0f)
+                float effectiveFlow = EffectiveFlowMm3PerSecond;
+
+                if (effectiveFlow > 0.0f)
                 {
                     result.Seconds =
                         result.VolumeCubicMeters * 1_000_000_000.0f /
-                        effectiveFlowMm3PerSecond;
+                        effectiveFlow;
                 }
 
                 if (skippedMeshes > 0)
@@ -530,8 +544,11 @@ namespace Coursework_Master_Degree.Editor
                 $"[PrintProfileGenerator] Applied {applied} profile seed(s), " +
                 $"skipped {skipped} at " +
                 $"{ObjectToPrintPrintProfile.ReferenceBaselineDescription}. " +
-                "Effective flow and filament packing are calibrated to the " +
-                "reference; still confirm each object with a slicer.\n" +
+                $"Effective flow {EffectiveFlowMm3PerSecond:0.###} mm3/s " +
+                $"(reference {referenceFlowMm3PerSecond:0.###} x duty " +
+                $"{extrusionDuty:0.###}), filament packing " +
+                $"{filamentPackingFactor:0.####}. Round seeds; confirm each " +
+                "object with a slicer.\n" +
                 report);
             Repaint();
         }
