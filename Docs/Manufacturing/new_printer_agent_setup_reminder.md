@@ -48,8 +48,12 @@ The final setup guide must cover, in order:
 3. **Printed-object visuals**
    - verify the object prefab has a readable mesh, a pivot at the bottom centre and an original collider;
    - confirm the selected spool has a `PrintingMaterial` with `_reveal_height` and a regular `FinalMaterial`;
-   - verify the reveal, layer cap and partial sliced collider follow the bed;
+   - verify live printing is uncapped and uses the spool printing shader;
+   - verify a settled pause and hard-stopped partial get a sliced capped final-material surface;
+   - verify resume removes the cap and restores the printing shader/reveal;
+   - verify completed prints have no cap and partial prints keep the capped surface/collider;
    - verify supports use only the object mesh and stay attached until M5;
+   - verify selling removes the object, cap/sliced surface and every object-to-print ghost;
    - verify completed and partial prints are taken off the bed manually; there is no `Clear bed`;
    - verify selling is blocked on the bed and partial prints give no income.
 

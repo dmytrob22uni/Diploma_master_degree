@@ -867,8 +867,10 @@ These are one-off condition points, not `WearDelta` values. The nozzle, heater, 
 - Use the selected spool's `PrintingMaterial` while printing; it exposes `_reveal_height`.
 - Add a runtime `PrintedObjectDataHolder` for quality, partial/completed state and bed ownership.
 - Disable colliders and physics during printing. The object remains on the `object_to_print` layer for later hover/removal.
-- Generate a horizontal cap mesh at the current top layer so the clipped object does not expose its inside faces. The cap uses the spool's regular `FinalMaterial`.
-- Build a sliced, capped collider mesh when a partial print is finalized. Completed prints use the prefab's original collider.
+- Keep live printing uncapped. The spool's printing shader supplies both the reveal cutoff and backface lighting; no cap is generated per layer.
+- When a pause settles (cooled and head parked), build a sliced, capped surface with the spool's regular `FinalMaterial`. On resume, remove that surface and restore the printing shader and reveal.
+- On hard-stop finalization, build the same sliced, capped surface and use it as both the partial visual and partial collider. Completed prints have no cap.
+- Partial prints keep the sliced, capped surface and final material after removal and placement.
 - Do not use the `ObjectToPrintGhostPrintingDataHolder` path; the real prefab is the single source of visual/collider truth.
 
 #### Layer reveal
@@ -900,9 +902,9 @@ Important:
 - Use a `MaterialPropertyBlock` per renderer with `_reveal_height`.
 - Quantize the reveal to the layer height.
 - Update the reveal at ~15 Hz, not every frame.
-- Update the layer cap only when the quantized printed layer changes, and throttle it independently (about 10 Hz).
-- The cap must follow the bed with the object; build it in object-root local space.
-- The cap and sliced collider are display/gameplay approximations, not a real slicer.
+- Do not build a cap during live printing; the printing shader's backface lighting is the intended active-layer look.
+- A settled pause or finalized partial print gets a sliced, capped surface built in object-root local space so it follows the bed.
+- The sliced surface and collider are display/gameplay approximations, not a real slicer.
 
 #### Motion
 
@@ -939,9 +941,12 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 - The rotation uses simulated consumption, so it follows `PrintSpeedMultiplier`.
 - The visible filament child uses the upper authored threshold: `91..100 → 100`, `81..90 → 90`, … `1..10 → 10`, and only `0` shows the empty child. This keeps the spool visually fuller for longer.
 - `SpoolFilamentState` reads the installed spool's live `ItemWearState.CurrentCondition`; the visible child and remaining metres are derived from that same value. If a spool has unexpected wear logic, consumption falls back to direct condition loss so the wear state still moves.
-- M4 applies the spool-bound printing shader (`_reveal_height`) to the printed object and restores the spool's regular `FinalMaterial` on completion.
-- Partial prints keep the printing shader and their frozen reveal/cap after removal and placement.
-- If the vertical reveal looks wrong, verify the renderer-pivot/cutoff formula and cap before changing artwork.
+- M4 applies the spool-bound printing shader (`_reveal_height`, backface lighting) during live printing.
+- A settled pause shows a sliced capped surface with the spool's regular `FinalMaterial`; resuming removes it and restores the printing shader/reveal.
+- Hard-stopped partial prints show the same capped final-material surface after cooling and parking.
+- Completed prints have no cap and use the regular final material.
+- Partial prints keep the capped final-material surface after removal and placement.
+- If the vertical reveal looks wrong, verify the renderer-pivot/cutoff formula before changing artwork.
 
 #### Completion and removal
 
@@ -952,9 +957,9 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
   - Wait for cooling and head parking at `PrinterMotionBase.HomePositionNormalized`.
   - After both complete, enable the original colliders/surface placement and mark it as a completed print.
 - On hard stop:
-  - Freeze the reveal, cap and supports at the partial height.
-  - Keep the printing material and printing-shader state.
-  - Wait for cooling and head parking, then build the sliced/capped partial collider.
+  - Freeze the reveal and supports at the partial height.
+  - Keep the printing material during cooling.
+  - Wait for cooling and head parking, then build the sliced/capped partial visual and collider.
   - Mark it as a partial print. Partial prints are removable, placed and sellable, but give no income.
 - Removal:
   - Hover a completed or partial print and enter `GameStateItemPlace` directly, with no `Cancel` option.
@@ -1623,9 +1628,11 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - `PrintedSupportPresenter`: sample overhang triangles for the placed object, cluster them to a capped number of points (`48`), and spawn thin vertical support columns. Columns reveal with print height and remain attached to the finished object; M5 adds support removal.
 - `PrinterMotionSimulator`: seeded procedural path inside the placed object's bed-local bounding box, layer changes and a small Z-hop. It never moves outside the rectangular build volume.
 - `CartesianPrinterMotion` integration through `PrinterMotionBase`; CoreXY uses the same contract when its model prefab exists.
-- Spool integration: use the selected spool's `PrintingMaterial` (the shader with `_reveal_height`) while printing; on completion apply the spool's regular `FinalMaterial`.
-- Layer-cap mesh: generate a horizontal cap for the current top layer so the clipped object does not expose inside faces. The cap uses the spool's final material and follows the bed with the object.
-- Partial collider mesh: build a sliced, capped mesh at the partial height and use it as the partial object's collider. Completed prints use the prefab's original collider.
+- Spool integration: use the selected spool's `PrintingMaterial` (the shader with `_reveal_height` and backface lighting) during live printing; completed prints apply the spool's regular `FinalMaterial`.
+- No live layer cap: printing keeps the shader reveal and backface lighting.
+- Paused-settled surface: after cooling and parking, build a sliced, capped surface with the spool's final material; on resume remove it, restore the printing shader/reveal and return to the print path.
+- Hard-stopped partial surface: after cooling and parking, build the same sliced, capped surface and use it as the partial visual and collider.
+- Partial-print surface: keep the sliced, capped final-material surface after removal and placement. Completed prints have no cap and use the original collider.
 - Completion material restore and collider enable only after cooling and head parking.
 - Apply `PrinterJob.FinalQuality` to `PrintedObjectDataHolder.Quality`; completed prints are sellable, partial prints are sellable with no income.
 - Post-print parking: after cooling, move the head smoothly to `PrinterMotionBase.HomePositionNormalized`. Pause and hard stop also park the head at home.
@@ -1638,15 +1645,18 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 - The object appears where the M2.5 placement put it: position, yaw and uniform scale.
 - With `Auto` supports, visible support columns appear under the overhangs and reveal with the print; `None` prints no supports. Supports remain attached after completion.
-- Reveal starts empty and grows bottom-up; the layer cap hides inside faces at the current top layer.
-- Reveal and cap follow the moving bed correctly.
+- Reveal starts empty and grows bottom-up; live printing has no cap.
+- Reveal follows the moving bed correctly.
 - The nozzle moves inside the placed object's bounding box, not over the whole plate.
 - The nozzle appears to work over the printed area; axes stay within soft limits and do not clip.
 - The selected spool's printing shader drives the reveal; completion switches the object to the spool's regular material.
 - Pause and hard stop move the head smoothly to `HomePositionNormalized`.
-- Hard stop freezes the partial object, cap and supports at the correct height.
+- Pause settled: after cooling and parking, the print shows a sliced capped surface with final material; resume removes it and restores the printing shader/reveal.
+- Hard stop freezes the partial shape; after cooling and parking, it shows the sliced capped surface with final material.
+- Completed prints have no cap and use the original collider.
+- Partial prints keep the sliced/capped surface and collider.
 - Completed and partial objects are fully removable only after cooling and the head is settled at home.
-- Partial prints use a sliced/capped collider; completed prints use the original collider.
+- Selling a printed object removes the object, cap/sliced surface and every registered object-to-print ghost; mutual references are cleared.
 - The object's quality value comes from `CompletedJob.FinalQuality`; partial prints expose no quality value and give no income.
 - Hovering a finalized print transitions directly to placement with no cancel path, and the printer bed is released.
 - Selling is blocked while the object is on the printer bed.
@@ -1654,20 +1664,22 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 **Manual gate**
 
-1. Compare the reveal top and cap height to the nozzle height; adjust the offset if needed.
+1. Confirm live printing has no cap; compare the reveal top to the nozzle height and adjust the offset if needed.
 2. Check bed movement direction and speed.
-3. Check the object from several player angles; no popping, holes or z-fighting; the cap covers the cut cross-section.
-4. Use a temporary multi-mesh test prefab (only Stanford bunny exists in the catalog); confirm all renderers reveal and cap consistently. Remove test assets in M5.
+3. Check the object from several player angles; no popping, holes or z-fighting. Confirm the cap appears only for a settled pause or finalized partial print.
+4. Use a temporary multi-mesh test prefab (only Stanford bunny exists in the catalog); confirm all renderers reveal consistently and the paused/hard-stopped cap covers the cut. Remove test assets in M5.
 5. Re-check the M3 spool visual at 100%, 50%, 10%, and 0% with the printed object present.
 6. Check `Auto` vs `None` supports; columns follow the print height and stay attached after completion.
-7. Check partial print height, cap, sliced collider and manual removal.
-8. Check completed object materials, original collider, placement and sale.
-9. Confirm the head parks at `HomePositionNormalized` after cooling and before completed/partial removal.
-10. Confirm pause and hard stop park the head at home; resume returns to the print path.
-11. Confirm a print on the bed cannot be sold, and that a placed partial print sells with no income while a placed completed print sells normally.
-12. Confirm no-cancel removal and bed release.
-13. Profile reveal/cap updates, supports and multiple printers; verify no per-frame material instancing or GC spikes.
-14. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed.
+7. Pause and let the printer cool; confirm the capped final-material surface appears. Resume and confirm the cap disappears, the printing shader returns and the reveal continues.
+8. Hard stop after a few layers; after cooling and parking confirm the capped final-material surface and sliced collider. Remove and place the partial print.
+9. Check completed object materials, original collider, no cap, placement and sale.
+10. Confirm the head parks at `HomePositionNormalized` after cooling and before completed/partial removal.
+11. Confirm pause and hard stop park the head at home; resume returns to the print path.
+12. Confirm a print on the bed cannot be sold, and that a placed partial print sells with no income while a placed completed print sells normally.
+13. Confirm no-cancel removal and bed release.
+14. Sell a placed print and confirm no printed object, cap/sliced surface, or object-to-print ghost remains; mutual references are cleared.
+15. Profile reveal updates, partial-surface generation and multiple printers; verify no per-frame material instancing or GC spikes.
+16. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed.
 
 **Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance and the wear-coefficient gate is approved.**
 
@@ -1856,8 +1868,10 @@ Fill this table during M0 and update it during later milestones.
 ### M4
 
 - Exact placement match: position, yaw and scale.
-- Visual reveal at start/mid/end; the cap closes the current top layer.
-- Spool printing material during the print; regular final material after completion.
+- Visual reveal at start/mid/end; no cap during live printing.
+- Pause settled shows the capped final-material surface; resume removes it and restores the printing shader.
+- Hard-stop partial shows the capped final-material surface after cooling/parking.
+- Spool printing material during the print; regular final material for completed and partial surfaces.
 - Auto supports render as columns under overhangs, follow print height, and remain attached.
 - No supports render when `None`.
 - Nozzle path stays inside the placed object's bounding box.
@@ -1869,6 +1883,7 @@ Fill this table during M0 and update it during later milestones.
 - Completed object material/collider restore.
 - No selling while the object is on the bed.
 - No `Clear bed`; completed/partial removal uses hover placement with no cancel.
+- Sale destroys the printed object, cap/sliced surface and all registered ghosts with mutual references cleared.
 - Performance profile.
 - Wear-coefficient approval in `wear_coefficients_manual_gate.md`.
 
@@ -1898,7 +1913,8 @@ Fill this table during M0 and update it during later milestones.
 | Multiple printers cause CPU spikes | Update budgets; no per-frame allocations; reveal at 15 Hz |
 | No save/load | Document in-memory scope; add persistence later if needed |
 | Partial print blocks the player with no way out | Completed and partial prints share the hover-to-place removal flow; no `Clear bed` action |
-| Layer-cap rebuild cost at high simulation speed | Cap only when the quantized layer changes, throttle to ~10 Hz, and fall back to a bounds quad |
+| Partial sliced-surface build cost | Build it once on pause-settled or hard-stop finalization, not per layer; fall back to a box collider if slicing fails |
+| Ghosts left after selling a print | `ObjectToPrintDataHolder.DestroyGhostInstances` clears mutual references and destroys every registered ghost; destroying the object removes the cap/sliced surface |
 | Object removal races the printer busy rule | `PrintedObjectDataHolder` owns `IsOnPrintBed`; `Printer.TryReleasePrintedObject` clears the bed before placement |
 | Selling a print while it is on the bed | `ItemHoverSell` returns a wrong-state reason until the object is released and placed |
 
@@ -1921,7 +1937,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound reveal material, layer caps, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
 
 
 M1 is code-complete:
@@ -2184,7 +2200,8 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | M3 is complete with variant checks deferred | MK4S manual gate passed; CoreXY play-mode validation and 3/4-slot presentation wait for authored models, with no shared-contract changes |
 | 2026-11-20 | M4 uses the real object prefab | The spool-bound printing material, runtime data and original collider all attach to the real prefab; the legacy printing ghost is not used |
 | 2026-11-20 | Printed objects use a spool-bound reveal and final material | Printing uses the spool's `_reveal_height` shader; completion restores its regular `FinalMaterial` |
-| 2026-11-20 | Layer caps and sliced partial colliders are generated | A horizontal cap closes the current top layer; a sliced/capped mesh is the partial collider |
+| 2026-11-20 | Caps appear only on settled pauses and finalized partials | Live printing uses uncapped reveal/backface lighting; pause-settled and hard-stopped surfaces use a sliced final-material cap; completed prints have no cap |
+| 2026-11-20 | Printed-object sale destroys all ghosts and generated surfaces | `DestroyGhostInstances` clears mutual references; the object hierarchy owns the sliced cap mesh and collider |
 | 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |
 | 2026-11-20 | No `Clear bed`; selling on the bed is blocked | The player must take the object off the printer and place it before selling |
 | 2026-11-20 | Supports stay attached until M5 | Generated columns reveal with the print and remain on the finished/partial object |
@@ -2249,7 +2266,7 @@ Assets/Scripts/Coursework_Master_Degree/
 - Record the actual MK4S `MinLocal` / `MaxLocal` offsets in §9.
 - Confirm the test cube is flush, centred, and Y-up.
 - Verify the reveal endpoints with the padded `PrintRevealDebug` range.
-- Add a `_reveal_height` object printing shader before M4; current `ObjectsToPrint` materials are URP Lit.
+- M4 uses the spool `PrintingMaterial` (which exposes `_reveal_height`) rather than a separate object printing shader.
 - Decide in M1 how the screen anchor is authored per device type.
 
 ---
