@@ -23,5 +23,6 @@ MonoBehaviour:
     PrintTimeSecondsAt100PercentInfill: 36720
     SupportsRequired: 1
     SupportOverhangPercent: 15.48308
+    WallThicknessMillimeters: 1.2
   Requirements:
     DefaultInfill: 1

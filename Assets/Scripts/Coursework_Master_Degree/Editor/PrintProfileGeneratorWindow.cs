@@ -32,6 +32,7 @@ namespace Coursework_Master_Degree.Editor
         private ObjectToPrintMetasListSO catalog;
         private float filamentDiameterMillimeters = 1.75f;
         private float referenceFlowMm3PerSecond = 12.0f;
+        private float wallThicknessMillimeters = 1.2f;
         private float overhangAngleDegrees = 45.0f;
         private float overhangThresholdPercent = 5.0f;
 
@@ -60,6 +61,9 @@ namespace Coursework_Master_Degree.Editor
             referenceFlowMm3PerSecond = EditorGUILayout.FloatField(
                 "Reference flow (mm3/s)",
                 referenceFlowMm3PerSecond);
+            wallThicknessMillimeters = EditorGUILayout.FloatField(
+                "Wall thickness (mm)",
+                wallThicknessMillimeters);
             overhangAngleDegrees = EditorGUILayout.Slider(
                 "Overhang angle",
                 overhangAngleDegrees,
@@ -90,7 +94,7 @@ namespace Coursework_Master_Degree.Editor
             }
 
             EditorGUILayout.HelpBox(
-                "Volume and overhang require Read/Write enabled on the source model. " +
+                "Volume, surface area and overhang require Read/Write enabled on the source model. " +
                 "Dimensions are always reported but are derived at runtime; they are not written.",
                 MessageType.Info);
 
@@ -128,6 +132,15 @@ namespace Coursework_Master_Degree.Editor
                     EditorGUILayout.LabelField(
                         "Overhang",
                         $"{result.OverhangPercent:0.#}%");
+                    float shellFraction = result.VolumeCubicMeters > 0.0f
+                        ? Mathf.Clamp01(
+                            result.SurfaceArea *
+                            wallThicknessMillimeters * 0.001f /
+                            result.VolumeCubicMeters)
+                        : 0.0f;
+                    EditorGUILayout.LabelField(
+                        "Shell at scale 1",
+                        $"{shellFraction * 100.0f:0.#}%");
                     EditorGUILayout.LabelField(
                         "Seeds",
                         $"{result.FilamentMeters:0.0} m, " +
@@ -422,6 +435,8 @@ namespace Coursework_Master_Degree.Editor
                     result.SupportsRequired;
                 result.Meta.PrintProfile.SupportOverhangPercent =
                     result.OverhangPercent;
+                result.Meta.PrintProfile.WallThicknessMillimeters =
+                    Mathf.Max(0.0f, wallThicknessMillimeters);
 
                 EditorUtility.SetDirty(result.Meta);
                 applied++;
