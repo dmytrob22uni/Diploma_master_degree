@@ -335,7 +335,7 @@ namespace Coursework_Master_Degree.Game.Controller
             SupportsMode supports,
             LayerHeightPreset layerHeight,
             PrintSpeedPreset speed,
-            SpoolSlot spoolSlot,
+            SpoolSlotId spoolSlotId,
             PrintPlacement placement)
         {
             Device targetDevice = device != null ? device : consoleDevice;
@@ -353,7 +353,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 supports,
                 layerHeight,
                 speed,
-                spoolSlot,
+                spoolSlotId,
                 placement);
 
             if (!result.IsValid)
@@ -372,7 +372,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 result.EstimatedFilamentMeters,
                 result.EstimatedQualityMin,
                 result.EstimatedQualityMax,
-                spoolSlot,
+                spoolSlotId,
                 placement);
 
             if (printer.TrySetPendingJob(request))

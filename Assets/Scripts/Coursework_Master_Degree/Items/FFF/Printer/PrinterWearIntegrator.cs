@@ -102,14 +102,12 @@ namespace Coursework_Master_Degree.Items.FFF
                         new WearDeltaFilamentTemperatureAbrasiveness
                         {
                             FilamentLength = filamentMeters,
-                            Temperature = PartTemperature(
-                                wear,
-                                temperature,
-                                TemperatureKind.Nozzle),
+                            Temperature = temperature.Nozzle,
                             MaterialAbrasiveness = materialAbrasiveness,
                         });
                 }
-                else if (logic is ItemWearLogicTimeTemperatureSO)
+                else if (logic is ItemWearLogicTimeTemperatureSO
+                    timeTemperatureLogic)
                 {
                     wear.ApplyWear(
                         new WearDeltaTimeTemperature
@@ -117,8 +115,8 @@ namespace Coursework_Master_Degree.Items.FFF
                             DeltaTime = simulatedSeconds,
                             Temperature = PartTemperature(
                                 wear,
-                                temperature,
-                                TemperatureKind.Bed),
+                                timeTemperatureLogic.TemperatureSource,
+                                temperature),
                         });
                 }
                 else if (logic is ItemWearLogicDistanceTemperatureSO)
@@ -217,117 +215,58 @@ namespace Coursework_Master_Degree.Items.FFF
             PrinterTemperatureState temperature = printer.Temperature;
 
             ApplyConditionLoss(
-                printer,
-                "extruder_nozzle_location",
+                printer.NozzleWearLocation,
                 nozzleBase +
                 nozzleScale * temperature.NormalizedNozzleTemperature);
 
             ApplyConditionLoss(
-                printer,
-                "extruder_filament_heater_location",
+                printer.HeaterWearLocation,
                 heaterBase +
                 heaterScale * temperature.NormalizedNozzleTemperature);
 
-            ApplyConditionLoss(
-                printer,
-                "print_bed_location",
-                bedBase +
-                bedScale * temperature.NormalizedBedTemperature);
-
-            float plateLoss = bedBase +
+            float bedLoss = bedBase +
                 bedScale * temperature.NormalizedBedTemperature;
 
-            if (printer.PrintPlateLocation != null &&
-                printer.PrintPlateLocation.InstalledPart != null)
-            {
-                ItemWearState plateWear =
-                    printer.PrintPlateLocation.InstalledPart
-                        .GetComponentInChildren<ItemWearState>(true);
-
-                plateWear?.ApplyConditionLoss(plateLoss);
-            }
+            ApplyConditionLoss(printer.PrintBedWearLocation, bedLoss);
+            ApplyConditionLoss(printer.PrintPlateLocation, bedLoss);
         }
 
         private static void ApplyConditionLoss(
-            Printer printer,
-            string locationName,
+            PartLocation location,
             float amount)
         {
-            if (amount <= 0.0f)
+            if (location == null ||
+                location.InstalledPart == null ||
+                amount <= 0.0f)
             {
                 return;
             }
 
-            PartLocation[] locations =
-                printer.Assembly != null
-                    ? printer.Assembly.GetComponentsInChildren<PartLocation>(true)
-                    : null;
+            ItemWearState wear =
+                location.InstalledPart.GetComponentInChildren<ItemWearState>(
+                    true);
 
-            if (locations == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < locations.Length; i++)
-            {
-                PartLocation location = locations[i];
-
-                if (location == null ||
-                    location.gameObject.name != locationName ||
-                    location.InstalledPart == null)
-                {
-                    continue;
-                }
-
-                ItemWearState wear =
-                    location.InstalledPart.GetComponentInChildren<ItemWearState>(
-                        true);
-
-                wear?.ApplyConditionLoss(amount);
-                return;
-            }
-        }
-
-        private enum TemperatureKind
-        {
-            Nozzle,
-            Bed,
+            wear?.ApplyConditionLoss(amount);
         }
 
         private static float PartTemperature(
             ItemWearState wear,
-            PrinterTemperatureState temperature,
-            TemperatureKind fallback)
+            WearTemperatureSource source,
+            PrinterTemperatureState temperature)
         {
-            if (wear.GetComponentInParent<PrinterEnclosure>() != null)
+            switch (source)
             {
-                return temperature.Chamber;
+                case WearTemperatureSource.Nozzle:
+                    return temperature.Nozzle;
+                case WearTemperatureSource.Bed:
+                    return temperature.Bed;
+                case WearTemperatureSource.Chamber:
+                    return temperature.Chamber;
+                default:
+                    return wear.GetComponentInParent<PrinterEnclosure>() != null
+                        ? temperature.Chamber
+                        : temperature.Bed;
             }
-
-            string name = wear.gameObject.name.ToLowerInvariant();
-
-            if (name.Contains("nozzle") ||
-                name.Contains("extruder") ||
-                name.Contains("heater"))
-            {
-                return temperature.Nozzle;
-            }
-
-            if (name.Contains("bed") || name.Contains("plate"))
-            {
-                return temperature.Bed;
-            }
-
-            if (name.Contains("enclosure") ||
-                name.Contains("fire") ||
-                name.Contains("thermometer"))
-            {
-                return temperature.Chamber;
-            }
-
-            return fallback == TemperatureKind.Nozzle
-                ? temperature.Nozzle
-                : temperature.Bed;
         }
     }
 }

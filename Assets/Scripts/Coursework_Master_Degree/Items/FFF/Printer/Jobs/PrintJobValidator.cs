@@ -28,7 +28,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             SupportsMode supports,
             LayerHeightPreset layerHeight,
             PrintSpeedPreset speed,
-            SpoolSlot spoolSlot,
+            SpoolSlotId spoolSlotId,
             PrintPlacement placement = null)
         {
             PrintJobValidationResult result = new PrintJobValidationResult();
@@ -150,7 +150,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 result.Errors.Add("Print plate is missing.");
             }
 
-            CheckSpool(printer, spoolSlot, speed, result);
+            CheckSpool(printer, spoolSlotId, speed, result);
             CheckBuildVolume(printer, objectToPrint, result);
 
             return result;
@@ -311,12 +311,29 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
         private static void CheckSpool(
             Printer printer,
-            SpoolSlot spoolSlot,
+            SpoolSlotId spoolSlotId,
             PrintSpeedPreset speed,
             PrintJobValidationResult result)
         {
-            PartLocation location = printer.GetSpoolLocation(spoolSlot);
-            string side = SpoolSlotSettings.Label(spoolSlot);
+            if (printer.SpoolSlotCount == 0)
+            {
+                result.Errors.Add("No spool slots are configured on this printer.");
+                return;
+            }
+
+            SpoolSlotDefinition slot = printer.GetSpoolSlot(spoolSlotId);
+
+            if (slot == null)
+            {
+                result.Errors.Add(
+                    !spoolSlotId.IsValid
+                        ? "No spool slot is selected."
+                        : $"Spool slot '{spoolSlotId.Value}' is not configured.");
+                return;
+            }
+
+            string side = slot.DisplayLabel;
+            PartLocation location = printer.GetSpoolLocation(slot);
 
             if (location == null)
             {

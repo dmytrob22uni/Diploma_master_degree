@@ -37,7 +37,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         internal sealed class PrinterDraft
         {
             public int SelectedIndex;
-            public SpoolSlot SpoolSlot = SpoolSlot.Left;
+            public string SpoolSlotId;
             public bool SpoolInitialized;
 
             private readonly Dictionary<ObjectToPrintMetaSO, ObjectDraft> objects =
@@ -46,7 +46,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             public void Clear()
             {
                 SelectedIndex = 0;
-                SpoolSlot = SpoolSlot.Left;
+                SpoolSlotId = null;
                 SpoolInitialized = false;
                 objects.Clear();
             }

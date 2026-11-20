@@ -4,6 +4,14 @@ using Coursework_Master_Degree.Items.Wear.Delta;
 
 namespace Coursework_Master_Degree.ScriptableObjects.Items.Wear
 {
+    public enum WearTemperatureSource
+    {
+        EnclosureAware,
+        Nozzle,
+        Bed,
+        Chamber
+    }
+
     [CreateAssetMenu(fileName = "item_wear_logic_time_temperature_SO", menuName = "Game Items/Wear/Item Wear Logic Time Temperature SO", order = 7)]
     public class ItemWearLogicTimeTemperatureSO : ItemWearLogicSO
     {
@@ -12,6 +20,13 @@ namespace Coursework_Master_Degree.ScriptableObjects.Items.Wear
             "Base condition loss per operating hour at or below " +
             "the reference temperature")]
         public float WearPerHour;
+
+        [Tooltip(
+            "Temperature channel used by this part. EnclosureAware uses " +
+            "the chamber while installed under a PrinterEnclosure and the " +
+            "bed otherwise.")]
+        public WearTemperatureSource TemperatureSource =
+            WearTemperatureSource.EnclosureAware;
 
         [Tooltip("Temperature at which the base wear rate is used")]
         public float ReferenceTemperature = 25.0f;

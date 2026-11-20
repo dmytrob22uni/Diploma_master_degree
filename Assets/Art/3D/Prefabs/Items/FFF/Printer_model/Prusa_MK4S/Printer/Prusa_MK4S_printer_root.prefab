@@ -1982,13 +1982,31 @@ MonoBehaviour:
   - {fileID: 1923395181610000019}
   - {fileID: 3554641083262955466}
   PrintPlateLocation: {fileID: 3042372913035685079}
-  LeftSpoolLocation: {fileID: 8626608670176291238}
-  RightSpoolLocation: {fileID: 2198933648768292544}
-  BatteryClosetLocation: {fileID: 8259628848575778981}
-  BatteryClosetAdapterLocation: {fileID: 5101444217939252786}
+  NozzleWearLocation: {fileID: 3101614061098862216}
+  HeaterWearLocation: {fileID: 454191578216812911}
+  PrintBedWearLocation: {fileID: 8560630339366317379}
+  spoolSlots:
+  - Id: left
+    Label: Left
+    Location: {fileID: 8626608670176291238}
+  - Id: right
+    Label: Right
+    Location: {fileID: 2198933648768292544}
+  DockingSources:
+  - Role: battery_closet
+    Label: Battery closet
+    Location: {fileID: 8259628848575778981}
+  - Role: battery_closet_adapter
+    Label: Battery closet adapter
+    Location: {fileID: 5101444217939252786}
   SpoolHolder: {fileID: 2765012395741968235}
-  BatteryClosetPlug: {fileID: 4358186379803017681}
-  WallSocketPlug: {fileID: 1473766023292708551}
+  FreePartDockingSources:
+  - Role: battery_closet_plug
+    Label: Battery closet plug
+    Part: {fileID: 4358186379803017681}
+  - Role: wall_socket_plug
+    Label: Wall socket plug
+    Part: {fileID: 1473766023292708551}
   ServiceBlockedDuringPrint:
   - {fileID: 8560630339366317379}
   - {fileID: 8193525627608041013}

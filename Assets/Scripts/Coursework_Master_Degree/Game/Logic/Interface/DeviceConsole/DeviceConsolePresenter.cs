@@ -44,7 +44,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             SupportsMode,
             LayerHeightPreset,
             PrintSpeedPreset,
-            SpoolSlot,
+            SpoolSlotId,
             PrintPlacement> StartPrintRequested;
 
         public event Action<
@@ -339,7 +339,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             SupportsMode supports,
             LayerHeightPreset layerHeight,
             PrintSpeedPreset speed,
-            SpoolSlot spoolSlot,
+            SpoolSlotId spoolSlotId,
             PrintPlacement placement)
         {
             StartPrintRequested?.Invoke(
@@ -350,7 +350,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 supports,
                 layerHeight,
                 speed,
-                spoolSlot,
+                spoolSlotId,
                 placement);
         }
 

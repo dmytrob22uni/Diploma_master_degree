@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Wear.ItemWearLogicTimeTemperatureSO
   WearRatio: 1
   WearPerHour: 0.015
+  TemperatureSource: 0
   ReferenceTemperature: 30
   TemperatureRange: 20
   TemperatureEffect: 1.5

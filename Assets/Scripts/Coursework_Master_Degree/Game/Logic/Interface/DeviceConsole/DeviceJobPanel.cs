@@ -43,7 +43,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private Printer lastPrinter;
         private PrinterJobDraftStore.PrinterDraft currentDraft;
         private PrintPlacement placement;
-        private SpoolSlot spoolSlot = SpoolSlot.Left;
+        private SpoolSlotId spoolSlotId = SpoolSlotId.None;
         private SimulationSpeedPreset simulationSpeed =
             SimulationSpeedSettings.DefaultPreset;
         private bool spoolInitialized;
@@ -89,6 +89,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
         private readonly List<Button> spoolButtons = new List<Button>();
         private readonly List<TextMeshProUGUI> spoolLabels =
             new List<TextMeshProUGUI>();
+        private TextMeshProUGUI spoolRowLabel;
         private readonly List<Button> simulationSpeedButtons =
             new List<Button>();
         private readonly List<TextMeshProUGUI> simulationSpeedLabels =
@@ -113,7 +114,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             SupportsMode,
             LayerHeightPreset,
             PrintSpeedPreset,
-            SpoolSlot,
+            SpoolSlotId,
             PrintPlacement> StartRequested;
 
         public event System.Action<
@@ -197,11 +198,14 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 LoadCurrentDraft();
             }
 
-            if (!spoolInitialized)
+            if (!spoolInitialized ||
+                !spoolSlotId.IsValid ||
+                printer == null ||
+                printer.GetSpoolSlot(spoolSlotId) == null)
             {
-                spoolSlot = ChooseDefaultSpoolSlot(printer);
+                spoolSlotId = ChooseDefaultSpoolSlotId(printer);
                 spoolInitialized = true;
-                currentDraft.SpoolSlot = spoolSlot;
+                currentDraft.SpoolSlotId = spoolSlotId.Value;
                 currentDraft.SpoolInitialized = true;
             }
 
@@ -261,7 +265,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 supports,
                 layerHeight,
                 speed,
-                spoolSlot,
+                spoolSlotId,
                 placement);
 
             if (estimateText != null)
@@ -370,10 +374,15 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 supportsButtons,
                 supportsLabels,
                 (int)supports);
+            int selectedSpoolIndex = printer != null
+                ? printer.GetSpoolSlotIndex(spoolSlotId)
+                : -1;
+
+            RefreshSpoolRow(printer);
             RefreshPresetStyles(
                 spoolButtons,
                 spoolLabels,
-                (int)spoolSlot);
+                selectedSpoolIndex);
             RefreshPresetStyles(
                 simulationSpeedButtons,
                 simulationSpeedLabels,
@@ -403,7 +412,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 : 0;
             currentDraft.SelectedIndex = selectedIndex;
 
-            spoolSlot = currentDraft.SpoolSlot;
+            spoolSlotId = new SpoolSlotId(currentDraft.SpoolSlotId);
             spoolInitialized = currentDraft.SpoolInitialized;
 
             ObjectToPrintMetaSO meta = CurrentMeta;
@@ -436,7 +445,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
 
             currentDraft.SelectedIndex = selectedIndex;
-            currentDraft.SpoolSlot = spoolSlot;
+            currentDraft.SpoolSlotId = spoolSlotId.Value;
             currentDraft.SpoolInitialized = spoolInitialized;
 
             ObjectToPrintMetaSO meta = CurrentMeta;
@@ -885,16 +894,12 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 supportsButtons,
                 supportsLabels);
 
-            BuildPresetRow(
+            spoolRowLabel = BuildPresetRow(
                 details,
                 "SPOOL",
                 -186.0f,
-                new[]
-                {
-                    SpoolSlotSettings.Label(SpoolSlot.Left),
-                    SpoolSlotSettings.Label(SpoolSlot.Right)
-                },
-                index => spoolSlot = (SpoolSlot)index,
+                new[] { "Spool 1", "Spool 2", "Spool 3", "Spool 4" },
+                SelectSpoolSlot,
                 spoolButtons,
                 spoolLabels);
 
@@ -1038,7 +1043,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             startButton.onClick.AddListener(HandleStartClicked);
         }
 
-        private void BuildPresetRow(
+        private TextMeshProUGUI BuildPresetRow(
             RectTransform details,
             string title,
             float y,
@@ -1093,6 +1098,36 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
                 buttons.Add(button);
                 texts.Add(buttonLabel);
+            }
+
+            return label;
+        }
+
+        private void SelectSpoolSlot(int index)
+        {
+            Printer printer = device != null ? device.ActivePrinter : null;
+
+            if (printer == null ||
+                index < 0 ||
+                index >= printer.SpoolSlotCount)
+            {
+                return;
+            }
+
+            SpoolSlotDefinition slot = printer.SpoolSlotDefinitions[index];
+
+            if (slot == null || string.IsNullOrEmpty(slot.Id))
+            {
+                return;
+            }
+
+            spoolSlotId = new SpoolSlotId(slot.Id);
+            spoolInitialized = true;
+
+            if (currentDraft != null)
+            {
+                currentDraft.SpoolSlotId = spoolSlotId.Value;
+                currentDraft.SpoolInitialized = true;
             }
         }
 
@@ -1204,7 +1239,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 supports,
                 layerHeight,
                 speed,
-                spoolSlot,
+                spoolSlotId,
                 placement);
         }
 
@@ -1324,26 +1359,75 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
         }
 
-        private static SpoolSlot ChooseDefaultSpoolSlot(Printer printer)
+        private static SpoolSlotId ChooseDefaultSpoolSlotId(Printer printer)
         {
-            if (printer == null)
+            if (printer == null || printer.SpoolSlotCount == 0)
             {
-                return SpoolSlot.Left;
+                return SpoolSlotId.None;
             }
 
-            PartLocation left = printer.GetSpoolLocation(SpoolSlot.Left);
-            if (left != null && left.IsOccupied)
+            SpoolSlotDefinition first = null;
+
+            for (int i = 0; i < printer.SpoolSlotCount; i++)
             {
-                return SpoolSlot.Left;
+                SpoolSlotDefinition slot = printer.SpoolSlotDefinitions[i];
+
+                if (slot == null || string.IsNullOrEmpty(slot.Id))
+                {
+                    continue;
+                }
+
+                if (first == null)
+                {
+                    first = slot;
+                }
+
+                if (printer.GetSpoolLocation(slot)?.IsOccupied == true)
+                {
+                    return new SpoolSlotId(slot.Id);
+                }
             }
 
-            PartLocation right = printer.GetSpoolLocation(SpoolSlot.Right);
-            if (right != null && right.IsOccupied)
+            return first != null
+                ? new SpoolSlotId(first.Id)
+                : SpoolSlotId.None;
+        }
+
+        private void RefreshSpoolRow(Printer printer)
+        {
+            int count = printer != null
+                ? Mathf.Min(printer.SpoolSlotCount, spoolButtons.Count)
+                : 0;
+            bool show = count > 1;
+
+            if (spoolRowLabel != null)
             {
-                return SpoolSlot.Right;
+                spoolRowLabel.gameObject.SetActive(show);
             }
 
-            return SpoolSlot.Left;
+            for (int i = 0; i < spoolButtons.Count; i++)
+            {
+                bool visible = show && i < count;
+
+                if (spoolButtons[i] != null)
+                {
+                    spoolButtons[i].gameObject.SetActive(visible);
+                }
+
+                if (!visible || spoolLabels[i] == null)
+                {
+                    continue;
+                }
+
+                SpoolSlotDefinition slot = printer.SpoolSlotDefinitions[i];
+                string label = slot != null
+                    ? slot.DisplayLabel
+                    : $"Spool {i + 1}";
+
+                spoolLabels[i].text = string.IsNullOrWhiteSpace(label)
+                    ? $"Spool {i + 1}"
+                    : label;
+            }
         }
 
         private static void RefreshPresetStyles(

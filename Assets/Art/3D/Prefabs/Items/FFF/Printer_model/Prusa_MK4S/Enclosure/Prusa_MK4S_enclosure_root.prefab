@@ -423,11 +423,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrinterEnclosure
   BoundsPadding: {x: 0.05, y: 0.05, z: 0.05}
-  SpoolLocation: {fileID: 8074260900121233423}
-  BatteryClosetLocation: {fileID: 4010792883348728552}
-  BatteryClosetAdapterLocation: {fileID: 2819473336310229906}
-  BatteryClosetPlugLocation: {fileID: 1957633364029884435}
-  WallSocketPlugLocation: {fileID: 41572032276612803}
+  SpoolSockets:
+  - PrinterSlotId: 
+    Location: {fileID: 8074260900121233423}
+  DockingTargets:
+  - Role: battery_closet
+    Label: Battery closet
+    Location: {fileID: 4010792883348728552}
+  - Role: battery_closet_adapter
+    Label: Battery closet adapter
+    Location: {fileID: 2819473336310229906}
+  FreePartDockingTargets:
+  - Role: battery_closet_plug
+    Label: Battery closet plug
+    Location: {fileID: 1957633364029884435}
+  - Role: wall_socket_plug
+    Label: Wall socket plug
+    Location: {fileID: 41572032276612803}
   CriticalPartLocations:
   - {fileID: 4010792883348728552}
   - {fileID: 2819473336310229906}

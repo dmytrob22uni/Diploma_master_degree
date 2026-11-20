@@ -52,28 +52,37 @@ namespace Coursework_Master_Degree.Items.FFF
         [Tooltip("Part location that holds the removable print plate.")]
         public PartLocation PrintPlateLocation;
 
-        [Header("Spool slots")]
-        [Tooltip("Part location for the left spool (spool_location_1).")]
-        public PartLocation LeftSpoolLocation;
+        [Header("Wear targets")]
+        [Tooltip("Nozzle socket used by the one-off hard-stop penalty.")]
+        public PartLocation NozzleWearLocation;
 
-        [Tooltip("Part location for the right spool (spool_location_2).")]
-        public PartLocation RightSpoolLocation;
+        [Tooltip("Heater socket used by the one-off hard-stop penalty.")]
+        public PartLocation HeaterWearLocation;
+
+        [Tooltip("Print-bed socket used by the one-off hard-stop penalty.")]
+        public PartLocation PrintBedWearLocation;
+
+        [Header("Spool slots")]
+        [SerializeField]
+        [Tooltip(
+            "Selectable filament sockets. The console shows one entry per slot " +
+            "and only the selected slot feeds a job.")]
+        private List<SpoolSlotDefinition> spoolSlots =
+            new List<SpoolSlotDefinition>();
+
+        public const int MaxSpoolSlots = 4;
 
         [Header("Enclosure docking")]
-        [Tooltip("Printer socket for the battery closet.")]
-        public PartLocation BatteryClosetLocation;
-
-        [Tooltip("Printer socket for the battery closet adapter.")]
-        public PartLocation BatteryClosetAdapterLocation;
+        [Tooltip("Installed accessories moved to matching enclosure docking targets.")]
+        public List<PrinterDockingSource> DockingSources =
+            new List<PrinterDockingSource>();
 
         [Tooltip("Visual spool holder hidden while the printer is docked.")]
         public GameObject SpoolHolder;
 
-        [Tooltip("Battery closet free part that follows the installed printer.")]
-        public ItemFreePartDataHolder BatteryClosetPlug;
-
-        [Tooltip("Wall socket free part that follows the installed printer.")]
-        public ItemFreePartDataHolder WallSocketPlug;
+        [Tooltip("Free parts moved to matching enclosure reset points.")]
+        public List<PrinterFreePartDockingSource> FreePartDockingSources =
+            new List<PrinterFreePartDockingSource>();
 
         [Header("Service")]
         [Tooltip("Parts that cannot be swapped while a print is paused.")]
@@ -163,8 +172,8 @@ namespace Coursework_Master_Degree.Items.FFF
         private bool isCalibrated;
 
         private PrinterEnclosure dockedEnclosure;
-        private PartLocation dockedSpoolLocation;
-        private SpoolSlot dockedSpoolSlot;
+        private readonly Dictionary<string, PartLocation> dockedSpoolLocations =
+            new Dictionary<string, PartLocation>();
 
         private enum CalibrationPhase
         {
@@ -267,36 +276,118 @@ namespace Coursework_Master_Degree.Items.FFF
         public PrinterEnclosure DockedEnclosure =>
             dockedEnclosure != null ? dockedEnclosure : FindDockedEnclosure();
 
+        public IReadOnlyList<SpoolSlotDefinition> SpoolSlotDefinitions =>
+            spoolSlots;
+
+        public int SpoolSlotCount => spoolSlots != null
+            ? Mathf.Min(spoolSlots.Count, MaxSpoolSlots)
+            : 0;
+
         public int InstalledSpoolCount
         {
             get
             {
                 int count = 0;
 
-                if (LeftSpoolLocation != null && LeftSpoolLocation.IsOccupied)
+                if (spoolSlots == null)
                 {
-                    count++;
+                    return count;
                 }
 
-                if (RightSpoolLocation != null && RightSpoolLocation.IsOccupied)
+                for (int i = 0; i < SpoolSlotCount; i++)
                 {
-                    count++;
+                    if (GetSpoolLocation(spoolSlots[i])?.IsOccupied == true)
+                    {
+                        count++;
+                    }
                 }
 
                 return count;
             }
         }
 
-        public PartLocation GetSpoolLocation(SpoolSlot slot)
+        public SpoolSlotDefinition GetSpoolSlot(SpoolSlotId slotId)
         {
-            if (dockedSpoolLocation != null && slot == dockedSpoolSlot)
+            return FindSpoolSlot(slotId.Value);
+        }
+
+        public bool TryGetSpoolSlot(
+            SpoolSlotId slotId,
+            out SpoolSlotDefinition slot)
+        {
+            slot = GetSpoolSlot(slotId);
+            return slot != null;
+        }
+
+        public int GetSpoolSlotIndex(SpoolSlotId slotId)
+        {
+            return FindSpoolSlotIndex(slotId.Value);
+        }
+
+        public PartLocation GetSpoolLocation(SpoolSlotId slotId)
+        {
+            if (!slotId.IsValid)
             {
-                return dockedSpoolLocation;
+                return null;
             }
 
-            return slot == SpoolSlot.Right
-                ? RightSpoolLocation
-                : LeftSpoolLocation;
+            if (dockedSpoolLocations.TryGetValue(
+                    slotId.Value,
+                    out PartLocation dockedLocation))
+            {
+                return dockedLocation;
+            }
+
+            return FindSpoolSlot(slotId.Value)?.Location;
+        }
+
+        private SpoolSlotDefinition FindSpoolSlot(string slotId)
+        {
+            int index = FindSpoolSlotIndex(slotId);
+            return index >= 0 ? spoolSlots[index] : null;
+        }
+
+        private int FindSpoolSlotIndex(string slotId)
+        {
+            if (spoolSlots == null || string.IsNullOrEmpty(slotId))
+            {
+                return -1;
+            }
+
+            for (int i = 0; i < SpoolSlotCount; i++)
+            {
+                if (spoolSlots[i] != null && spoolSlots[i].Id == slotId)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public PartLocation GetSpoolLocation(SpoolSlotDefinition slot)
+        {
+            return slot != null
+                ? GetSpoolLocation(new SpoolSlotId(slot.Id))
+                : null;
+        }
+
+        public PrinterDockingSource GetDockingSource(string role)
+        {
+            if (DockingSources == null || string.IsNullOrEmpty(role))
+            {
+                return null;
+            }
+
+            foreach (PrinterDockingSource source in DockingSources)
+            {
+                if (source != null && source.Role == role)
+                {
+                    return source;
+                }
+            }
+
+            return null;
         }
 
         public static string GetPrinterEnclosureInstallBlockReason(
@@ -324,7 +415,7 @@ namespace Coursework_Master_Degree.Items.FFF
         }
 
         /// <summary>
-        /// Moves the printer's spool, battery closet, adapter and free parts
+        /// Moves the printer's spools, battery closet, adapter and free parts
         /// onto the enclosure sockets. PartLocation triggers this after the
         /// printer itself has been attached to an enclosure socket.
         /// </summary>
@@ -337,8 +428,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
             PrinterEnclosure enclosure = FindDockedEnclosure();
 
-            if (enclosure == null ||
-                InstalledSpoolCount > 1)
+            if (enclosure == null)
             {
                 return;
             }
@@ -346,46 +436,26 @@ namespace Coursework_Master_Degree.Items.FFF
             dockedEnclosure = enclosure;
             Environment?.SetEnclosure(enclosure, this);
 
-            // The enclosure exposes one spool socket. Preserve the printer's
-            // original side when it had a spool; otherwise show the socket on
-            // the left so it can be used later.
-            dockedSpoolSlot = SpoolSlot.Left;
-            dockedSpoolLocation = enclosure.SpoolLocation;
-
-            if (TryGetSingleInstalledSpool(
-                    out SpoolSlot spoolSlot,
-                    out PartLocation spoolLocation))
+            if (InstalledSpoolCount <= enclosure.CountEmptySpoolSockets())
             {
-                dockedSpoolSlot = spoolSlot;
-                spoolLocation.MoveInstalledPartTo(enclosure.SpoolLocation);
+                DockSpools(enclosure);
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "[Printer] Not enough empty enclosure spool sockets; " +
+                    "printer spools were left on the printer.",
+                    this);
             }
 
-            if (BatteryClosetLocation != null)
-            {
-                BatteryClosetLocation.MoveInstalledPartTo(
-                    enclosure.BatteryClosetLocation);
-            }
-
-            if (BatteryClosetAdapterLocation != null)
-            {
-                BatteryClosetAdapterLocation.MoveInstalledPartTo(
-                    enclosure.BatteryClosetAdapterLocation);
-            }
+            DockAccessories(enclosure);
 
             ItemDataHolder enclosureItem =
                 enclosure.GetComponent<ItemDataHolder>();
 
-            DockFreePart(
-                BatteryClosetPlug,
-                enclosure.BatteryClosetPlugLocation,
-                enclosureItem);
+            DockFreeParts(enclosure, enclosureItem);
 
-            DockFreePart(
-                WallSocketPlug,
-                enclosure.WallSocketPlugLocation,
-                enclosureItem);
-
-            if (SpoolHolder != null)
+            if (SpoolHolder != null && dockedSpoolLocations.Count > 0)
             {
                 SpoolHolder.SetActive(false);
             }
@@ -414,42 +484,9 @@ namespace Coursework_Master_Degree.Items.FFF
                 SpoolHolder.SetActive(true);
             }
 
-            if (dockedSpoolLocation != null &&
-                dockedSpoolLocation.IsOccupied)
-            {
-                PartLocation target = dockedSpoolSlot == SpoolSlot.Right
-                    ? RightSpoolLocation
-                    : LeftSpoolLocation;
-
-                dockedSpoolLocation.MoveInstalledPartTo(target);
-            }
-
-            dockedSpoolLocation = null;
-
-            if (enclosure.BatteryClosetLocation != null &&
-                enclosure.BatteryClosetLocation.IsOccupied)
-            {
-                enclosure.BatteryClosetLocation.MoveInstalledPartTo(
-                    BatteryClosetLocation);
-            }
-
-            if (enclosure.BatteryClosetAdapterLocation != null &&
-                enclosure.BatteryClosetAdapterLocation.IsOccupied &&
-                enclosure.BatteryClosetAdapterLocation.transform.IsChildOf(
-                    enclosure.transform))
-            {
-                enclosure.BatteryClosetAdapterLocation.MoveInstalledPartTo(
-                    BatteryClosetAdapterLocation);
-            }
-
-            ItemDataHolder enclosureItem =
-                enclosure.GetComponent<ItemDataHolder>();
-
-            enclosureItem?.ClearFreePartLocation(
-                BatteryClosetPlug != null ? BatteryClosetPlug.gameObject : null);
-
-            enclosureItem?.ClearFreePartLocation(
-                WallSocketPlug != null ? WallSocketPlug.gameObject : null);
+            UndockSpools();
+            UndockAccessories(enclosure);
+            UndockFreeParts(enclosure);
 
             ItemData?.ResetFreePartsToLocations();
             wearIntegrator.Refresh(this);
@@ -465,32 +502,300 @@ namespace Coursework_Master_Degree.Items.FFF
                 : null;
         }
 
-        private bool TryGetSingleInstalledSpool(
-            out SpoolSlot slot,
-            out PartLocation location)
+        private void DockSpools(PrinterEnclosure enclosure)
         {
-            slot = SpoolSlot.Left;
-            location = null;
+            dockedSpoolLocations.Clear();
 
-            if (LeftSpoolLocation != null && LeftSpoolLocation.IsOccupied)
+            List<SpoolSlotDefinition> freeSlots =
+                new List<SpoolSlotDefinition>();
+            List<PrinterEnclosureSpoolSocket> freeSockets =
+                new List<PrinterEnclosureSpoolSocket>();
+
+            for (int i = 0; i < SpoolSlotCount; i++)
             {
-                slot = SpoolSlot.Left;
-                location = LeftSpoolLocation;
+                SpoolSlotDefinition slot = spoolSlots[i];
+
+                if (slot != null &&
+                    !string.IsNullOrEmpty(slot.Id) &&
+                    slot.Location != null)
+                {
+                    freeSlots.Add(slot);
+                }
             }
 
-            if (RightSpoolLocation != null && RightSpoolLocation.IsOccupied)
+            if (enclosure.SpoolSockets != null)
             {
-                if (location != null)
+                foreach (PrinterEnclosureSpoolSocket socket in
+                    enclosure.SpoolSockets)
                 {
-                    location = null;
-                    return false;
+                    if (socket != null && socket.Location != null)
+                    {
+                        freeSockets.Add(socket);
+                    }
+                }
+            }
+
+            // Honour explicit socket-to-slot mappings first.
+            for (int i = freeSockets.Count - 1; i >= 0; i--)
+            {
+                PrinterEnclosureSpoolSocket socket = freeSockets[i];
+
+                if (string.IsNullOrEmpty(socket.PrinterSlotId))
+                {
+                    continue;
                 }
 
-                slot = SpoolSlot.Right;
-                location = RightSpoolLocation;
+                SpoolSlotDefinition slot =
+                    FindFreeSlot(freeSlots, socket.PrinterSlotId);
+
+                if (slot == null ||
+                    (slot.Location.IsOccupied && socket.Location.IsOccupied))
+                {
+                    continue;
+                }
+
+                if (AssignSpool(slot, socket))
+                {
+                    freeSlots.Remove(slot);
+                    freeSockets.RemoveAt(i);
+                }
             }
 
-            return location != null;
+            // Move installed spools into empty sockets before filling
+            // remaining empty slots.
+            for (int i = freeSlots.Count - 1; i >= 0; i--)
+            {
+                SpoolSlotDefinition slot = freeSlots[i];
+
+                if (!slot.Location.IsOccupied)
+                {
+                    continue;
+                }
+
+                PrinterEnclosureSpoolSocket socket =
+                    FindEmptySocket(freeSockets);
+
+                if (socket != null && AssignSpool(slot, socket))
+                {
+                    freeSlots.RemoveAt(i);
+                    freeSockets.Remove(socket);
+                }
+            }
+
+            // Expose remaining enclosure sockets to empty printer slots so
+            // the player can load an external spool after docking. Assign in
+            // slot order so the first empty slot is the default.
+            while (freeSlots.Count > 0 && freeSockets.Count > 0)
+            {
+                SpoolSlotDefinition slot = freeSlots[0];
+
+                if (slot.Location.IsOccupied)
+                {
+                    // No compatible empty socket was available. Keep the
+                    // spool on the printer rather than mapping a full socket.
+                    freeSlots.RemoveAt(0);
+                    continue;
+                }
+
+                PrinterEnclosureSpoolSocket socket =
+                    FindAnySocket(freeSockets);
+
+                dockedSpoolLocations[slot.Id] = socket.Location;
+                freeSlots.RemoveAt(0);
+                freeSockets.Remove(socket);
+            }
+        }
+
+        private SpoolSlotDefinition FindFreeSlot(
+            List<SpoolSlotDefinition> slots,
+            string slotId)
+        {
+            foreach (SpoolSlotDefinition slot in slots)
+            {
+                if (slot.Id == slotId)
+                {
+                    return slot;
+                }
+            }
+
+            return null;
+        }
+
+        private static PrinterEnclosureSpoolSocket FindEmptySocket(
+            List<PrinterEnclosureSpoolSocket> sockets)
+        {
+            foreach (PrinterEnclosureSpoolSocket socket in sockets)
+            {
+                if (!socket.Location.IsOccupied)
+                {
+                    return socket;
+                }
+            }
+
+            return null;
+        }
+
+        private static PrinterEnclosureSpoolSocket FindAnySocket(
+            List<PrinterEnclosureSpoolSocket> sockets)
+        {
+            return sockets.Count > 0 ? sockets[0] : null;
+        }
+
+        private bool AssignSpool(
+            SpoolSlotDefinition slot,
+            PrinterEnclosureSpoolSocket socket)
+        {
+            if (slot.Location.IsOccupied &&
+                !slot.Location.MoveInstalledPartTo(socket.Location))
+            {
+                return false;
+            }
+
+            dockedSpoolLocations[slot.Id] = socket.Location;
+            return true;
+        }
+
+        private void UndockSpools()
+        {
+            foreach (KeyValuePair<string, PartLocation> mapping in
+                dockedSpoolLocations)
+            {
+                SpoolSlotDefinition slot =
+                    FindSpoolSlot(mapping.Key);
+
+                if (slot == null || slot.Location == null)
+                {
+                    continue;
+                }
+
+                if (mapping.Value != null && mapping.Value.IsOccupied)
+                {
+                    if (!mapping.Value.MoveInstalledPartTo(slot.Location))
+                    {
+                        Debug.LogWarning(
+                            $"[Printer] Could not return spool '{slot.Label}' " +
+                            "to the printer.",
+                            this);
+                    }
+                }
+            }
+
+            dockedSpoolLocations.Clear();
+        }
+
+        private void DockAccessories(PrinterEnclosure enclosure)
+        {
+            if (DockingSources == null)
+            {
+                return;
+            }
+
+            foreach (PrinterDockingSource source in DockingSources)
+            {
+                if (source?.Location == null)
+                {
+                    continue;
+                }
+
+                PrinterEnclosureDockingTarget target =
+                    enclosure.FindDockingTarget(source.Role);
+
+                if (target?.Location == null)
+                {
+                    continue;
+                }
+
+                source.Location.MoveInstalledPartTo(target.Location);
+            }
+        }
+
+        private void UndockAccessories(PrinterEnclosure enclosure)
+        {
+            if (DockingSources == null)
+            {
+                return;
+            }
+
+            foreach (PrinterDockingSource source in DockingSources)
+            {
+                if (source?.Location == null)
+                {
+                    continue;
+                }
+
+                PrinterEnclosureDockingTarget target =
+                    enclosure.FindDockingTarget(source.Role);
+
+                if (target?.Location == null ||
+                    !target.Location.IsOccupied ||
+                    !target.Location.transform.IsChildOf(enclosure.transform))
+                {
+                    continue;
+                }
+
+                if (!target.Location.MoveInstalledPartTo(source.Location))
+                {
+                    Debug.LogWarning(
+                        $"[Printer] Could not return docked accessory " +
+                        $"'{source.Role}' to the printer.",
+                        this);
+                }
+            }
+        }
+
+        private void DockFreeParts(
+            PrinterEnclosure enclosure,
+            ItemDataHolder enclosureItem)
+        {
+            if (FreePartDockingSources == null)
+            {
+                return;
+            }
+
+            foreach (PrinterFreePartDockingSource source in
+                FreePartDockingSources)
+            {
+                if (source?.Part == null)
+                {
+                    continue;
+                }
+
+                PrinterEnclosureFreePartDockingTarget target =
+                    enclosure.FindFreePartDockingTarget(source.Role);
+
+                if (target?.Location == null)
+                {
+                    continue;
+                }
+
+                DockFreePart(
+                    source.Part,
+                    target.Location,
+                    enclosureItem);
+            }
+        }
+
+        private void UndockFreeParts(PrinterEnclosure enclosure)
+        {
+            if (FreePartDockingSources == null)
+            {
+                return;
+            }
+
+            ItemDataHolder enclosureItem =
+                enclosure.GetComponent<ItemDataHolder>();
+
+            foreach (PrinterFreePartDockingSource source in
+                FreePartDockingSources)
+            {
+                if (source?.Part == null)
+                {
+                    continue;
+                }
+
+                enclosureItem?.ClearFreePartLocation(
+                    source.Part.gameObject);
+            }
         }
 
         private static void DockFreePart(
@@ -600,6 +905,7 @@ namespace Coursework_Master_Degree.Items.FFF
         private void Awake()
         {
             AutoAssign();
+            NormalizeSpoolSlots();
 
             if (temperatureModel == null)
             {
@@ -608,6 +914,54 @@ namespace Coursework_Master_Degree.Items.FFF
 
             temperatureModel.Initialize(Environment);
             wearIntegrator.Refresh(this);
+        }
+
+        private void OnValidate()
+        {
+            NormalizeSpoolSlots();
+        }
+
+        private void NormalizeSpoolSlots()
+        {
+            spoolSlots ??= new List<SpoolSlotDefinition>();
+            spoolSlots.RemoveAll(slot => slot == null);
+
+            HashSet<string> ids = new HashSet<string>();
+            int validIndex = 0;
+
+            foreach (SpoolSlotDefinition slot in spoolSlots)
+            {
+                validIndex++;
+
+                if (string.IsNullOrWhiteSpace(slot.Id))
+                {
+                    slot.Id = $"spool_{validIndex}";
+                }
+
+                slot.Id = slot.Id.Trim();
+
+                string baseId = slot.Id;
+                int suffix = 2;
+
+                while (!ids.Add(slot.Id))
+                {
+                    slot.Id = $"{baseId}_{suffix}";
+                    suffix++;
+                }
+
+                if (string.IsNullOrWhiteSpace(slot.Label))
+                {
+                    slot.Label = $"Spool {validIndex}";
+                }
+            }
+
+            if (spoolSlots.Count > MaxSpoolSlots)
+            {
+                Debug.LogWarning(
+                    $"[Printer] More than {MaxSpoolSlots} spool slots are " +
+                    "configured; extra entries are ignored.",
+                    this);
+            }
         }
 
         private void Start()
@@ -739,7 +1093,7 @@ namespace Coursework_Master_Degree.Items.FFF
             if (activeJob != null)
             {
                 if (!SpoolFilamentState.TryCreate(
-                        GetSpoolLocation(activeJob.Request.SpoolSlot),
+                        GetSpoolLocation(activeJob.Request.SpoolSlotId),
                         out SpoolFilamentState spool))
                 {
                     reason = "The selected filament spool is missing.";
@@ -1074,7 +1428,7 @@ namespace Coursework_Master_Degree.Items.FFF
             wearFilamentAccumulator = 0.0f;
 
             if (!SpoolFilamentState.TryCreate(
-                    GetSpoolLocation(activeJob.Request.SpoolSlot),
+                    GetSpoolLocation(activeJob.Request.SpoolSlotId),
                     out SpoolFilamentState spool))
             {
                 Debug.LogWarning(
@@ -1647,6 +2001,20 @@ namespace Coursework_Master_Degree.Items.FFF
             if (Environment == null)
             {
                 Debug.LogWarning("[Printer] PrinterEnvironment is not assigned.", this);
+            }
+
+            if (PrintPlateLocation == null)
+            {
+                Debug.LogWarning("[Printer] PrintPlateLocation is not assigned.", this);
+            }
+
+            if (NozzleWearLocation == null ||
+                HeaterWearLocation == null ||
+                PrintBedWearLocation == null)
+            {
+                Debug.LogWarning(
+                    "[Printer] Hard-stop wear locations are not fully assigned.",
+                    this);
             }
         }
 
