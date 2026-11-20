@@ -60,6 +60,11 @@ MonoBehaviour:
   ItemHoverInfoText: {fileID: 0}
   TakeRoot: {fileID: 0}
   InspectWearRoot: {fileID: 0}
+  PrinterStateProgressText: {fileID: 0}
+  PrinterNozzleTemperatureText: {fileID: 0}
+  PrinterBedTemperatureText: {fileID: 0}
+  PrinterSpoolMetersText: {fileID: 0}
+  PrinterPausePenaltyText: {fileID: 0}
 --- !u!114 &6860568199009119305
 MonoBehaviour:
   m_ObjectHideFlags: 0
