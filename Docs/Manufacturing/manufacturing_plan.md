@@ -1853,7 +1853,7 @@ Fill this table during M0 and update it during later milestones.
 | Tablet screen anchor + distance | +Z → world +Y | device lies flat; distance computed from bounds (same values); prefab not yet instanced, verify in the M1 gate |
 | Camera blend in / out | `0.55 s` EaseInOut | both directions; console interaction enables after the focus blend |
 | Bind highlight bounds | printer bounds + `0.08 m` padding | translucent sphere, no collider |
-| Enclosure bind radius | `1.5×` | `PrinterBindHighlight.EnclosureRadiusMultiplier`; applies when the printer is installed in a `PrinterEnclosure` |
+| Enclosure bind radius | `1.5×` | `PrinterBindHighlight.EnclosureRadiusMultiplier`; applies while the printer is installed in a `PrinterEnclosure` and refreshes on install/remove |
 | Bind hover volume | the highlight sphere itself | analytic ray-sphere test; aiming at the bubble is enough |
 | Bind hover opacity | `0.30` vs `0.18` idle | slightly more opaque on hover, never opaque |
 | Bind distance | `3 m` | `PrinterBindTargeting.MaxDistance`; to the sphere entry point, with a line-of-sight raycast |
@@ -2454,7 +2454,7 @@ Repeat for `laptop_root`, `PC_root`, `smartphone_root`, and `tablet_root`.
 1. Add `PrinterBindHighlight` to the printer root if not already added. Leave it hidden by default.
 2. In play mode, set the component's `DebugState` to `Bindable`, or use the `Debug/Show ...` context menu. Confirm the sphere encloses the printer, does not block the hover raycast, and is translucent.
 3. Repeat the bind hover check for `Bindable`, `BoundToThisDevice`, and `BoundToOtherDevice`; in unbind mode, check `SelectedForUnbind`. All states use the same targeting path.
-4. With the printer standalone, confirm printer colliders do not block its own sphere. Install it in an enclosure and confirm the sphere uses `EnclosureRadiusMultiplier` (default `1.5×`) and that the enclosure's colliders do not block bind targeting for that printer. Other printers and walls must still block.
+4. With the printer standalone, confirm printer colliders do not block its own sphere. Install it in an enclosure and confirm the sphere uses `EnclosureRadiusMultiplier` (default `1.5×`) and that the enclosure's colliders do not block bind targeting for that printer. Remove and reinstall it while the highlight is visible; confirm the sphere refreshes its bounds, position and radius on every change. Other printers and walls must still block.
 
 ### E.7 Record and stop
 

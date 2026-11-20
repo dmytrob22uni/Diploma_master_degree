@@ -62,6 +62,8 @@ namespace Coursework_Master_Degree.Items.FFF
         private Material instanceMaterial;
         private Bounds targetBounds;
         private bool hasBounds;
+        private bool hasEnclosureContext;
+        private bool isEnclosed;
 
         private void Awake()
         {
@@ -70,7 +72,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 BoundsRoot = transform;
             }
 
-            RefreshBounds();
+            RefreshEnclosureContext(true);
             CreateSphere();
             Hide();
         }
@@ -82,6 +84,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
+            RefreshEnclosureContext(false);
             FollowTarget();
         }
 
@@ -112,7 +115,7 @@ namespace Coursework_Master_Degree.Items.FFF
             State = state;
             DebugState = state;
             EnsureSphere();
-            RefreshBounds();
+            RefreshEnclosureContext(true);
             FollowTarget();
 
             if (sphere != null)
@@ -332,18 +335,36 @@ namespace Coursework_Master_Degree.Items.FFF
             sphere.transform.localScale = Vector3.one * Mathf.Max(0.01f, diameter);
         }
 
-        private float CurrentRadiusMultiplier
+        private bool IsEnclosed()
         {
-            get
-            {
-                ItemDataHolder item = GetComponent<ItemDataHolder>();
+            ItemDataHolder item = GetComponent<ItemDataHolder>();
 
-                return item != null &&
-                    PartsAssembly.FindEnclosingPrinterEnclosure(item) != null
-                        ? EnclosureRadiusMultiplier
-                        : 1.0f;
+            return item != null &&
+                PartsAssembly.FindEnclosingPrinterEnclosure(item) != null;
+        }
+
+        /// <summary>
+        /// Re-reads the enclosure context. The sphere bounds and radius can
+        /// change when the printer is installed in or removed from an
+        /// enclosure while the highlight is already visible, so refresh the
+        /// bounds whenever that context changes.
+        /// </summary>
+        private void RefreshEnclosureContext(bool forceBounds)
+        {
+            bool enclosed = IsEnclosed();
+            bool changed = !hasEnclosureContext || enclosed != isEnclosed;
+
+            isEnclosed = enclosed;
+            hasEnclosureContext = true;
+
+            if (forceBounds || changed)
+            {
+                RefreshBounds();
             }
         }
+
+        private float CurrentRadiusMultiplier =>
+            isEnclosed ? EnclosureRadiusMultiplier : 1.0f;
 
         private void ApplyColor()
         {
