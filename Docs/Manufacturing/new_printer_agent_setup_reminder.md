@@ -87,7 +87,7 @@ The final setup guide must cover, in order:
    - missing/worn/critical part validation;
    - 0/1/2–4 spool layouts;
    - enclosure socket overflow and role-based docking;
-   - start, pause, resume, hard stop, manual completed/partial removal and sale blocking;
+   - start, pause, resume, hard stop, paused-safe Wear/Integrity/Remove interactions, manual completed/partial removal and sale blocking;
    - wear-coefficient approval in `wear_coefficients_manual_gate.md`;
    - no model-specific assumptions leaked into shared runtime code.
 

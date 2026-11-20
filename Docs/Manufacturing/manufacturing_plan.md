@@ -74,7 +74,7 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 | Print time | Simulated time = real time × configurable multiplier; default `1×` |
 | Hard stop result | Partial print stays on the bed until removed |
 | Infill choices | `None`, `Grid`, `Gyroid`; affects time/filament only |
-| Print settings | Layer height (`Draft 0.28` / `Normal 0.20` / `Fine 0.12` mm), speed (`Slow 40` / `Normal 80` / `Fast 140` mm/s), supports (`None` / `Auto`) |
+| Print settings | Layer height (`Draft 0.28` / `Normal 0.20` / `Fine 0.12` mm), speed (`Slow 80` / `Normal 160` / `Fast 240` mm/s), supports (`None` / `Auto`) |
 | Nozzle diameter | Not a per-print setting; treat nozzles as hardware |
 | Job queue | None; one active job per printer |
 | Device-to-printer model | One device → many printers; one printer → one device |
@@ -492,6 +492,8 @@ Printer
   - PartLocation[] ServiceBlockedDuringPrint
   - int CalibrationGridSize
   - bool IsCalibrated
+  - bool IsPausedServiceReady
+  - bool CanOpenInteractions
   - Device BoundDevice
   - string StatusSummary
   - PrintedObjectPresenter PrintedObject
@@ -504,6 +506,8 @@ PrinterJob
   - int PauseCount / float PauseQualityPenalty
   - float CalibrationQualityMultiplier / FinalQuality
   - float QualityMin / QualityMax (after pause penalty and calibration)
+  - float QualityWithoutEnclosureMin / QualityWithoutEnclosureMax
+  - bool StartedWithEnclosure / bool EnclosureInterrupted
   - bool IsPartial / bool WasHardStopped / bool UsesApplied
   - float Progress01 / RemainingSeconds / RemainingFilamentMeters
 
@@ -1026,7 +1030,10 @@ Behavior:
   - `printer_spool_meters_text`
   - `printer_pause_penalty_text`
 - The five fields are only active for a busy printer or its enclosure. Empty spool/pause fields are hidden; normal take/inspect prompts return when the printer is idle.
-- `ItemHoverInfo` refreshes the five fields while the same printer collider stays hovered. `ItemHoverInteract` suppresses its prompt for a busy printer so it does not duplicate the status.
+- `ItemHoverInfo` refreshes the five fields while the same printer collider stays hovered.
+- While the printer is running or calibrating, `ItemHoverInteract` suppresses its prompt so it does not duplicate the status.
+- Once the printer is `Paused`, cooled below `SafeServiceTemperatureC` and the head is parked, `Printer.IsPausedServiceReady` / `CanOpenInteractions` become true: the name and five status fields remain visible, and `interact_root` also appears with `Parts wear`, `Parts integrity` and `Parts remove`. Individual parts can still be refused by `ServiceBlockedDuringPrint`.
+- Resuming or hard-stopping the job closes the interaction list again.
 - In `ItemsSell`, a busy or bound printer/enclosure is `Wrong`, uses the selling ghost, cannot be sold, and puts the concise reason in `item_hover_sell_description`. Busy takes priority over connected.
 - Enclosure detection uses the same `Printer.FindFor` path: `PrinterEnclosure` binds the printer whose `PrinterEnvironment` is inside it.
 
@@ -1127,7 +1134,7 @@ public ObjectToPrintPrintProfile PrintProfile;
 public ObjectToPrintRequirements Requirements;
 ```
 
-Object dimensions, solid volume and surface area are **derived from the catalog prefab** by `ObjectToPrintSizing`, not authored. The global reference layer height (`0.2 mm`) and speed (`80 mm/s`) come from `LayerHeightSettings` / `PrintSpeedSettings`; only the two 100% baseline numbers and the wall thickness are per object.
+Object dimensions, solid volume and surface area are **derived from the catalog prefab** by `ObjectToPrintSizing`, not authored. The global reference layer height (`0.2 mm`) and speed (`80 mm/s`, now the Slow preset) come from `LayerHeightSettings` / `PrintSpeedSettings`; only the two 100% baseline numbers and the wall thickness are per object.
 
 Why inline instead of a separate asset:
 
@@ -1136,6 +1143,8 @@ Why inline instead of a separate asset:
 - A separate `ObjectToPrintPrintProfileSO` can be introduced later without changing job code if needed.
 
 The current catalog has one entry (`Stanford bunny`, `Assets/Art/3D/Prefabs/ObjectsToPrint/Animal/Stanford_bunny/SOs/stanford_bunny_meta_SO.asset`). Its 100% infill baseline is calibrated against PrusaSlicer in the M2 gate.
+
+The stored calculation baseline is `0.20 mm` layer, `80 mm/s` (Slow), `100%` infill and no supports. It is displayed in `Tools/Manufacturing/Print Profile Generator` and in the profile's inspector header; time and filament are stored at that baseline, and the console multipliers scale from it.
 
 ### Infill
 
@@ -1164,7 +1173,9 @@ time = profile.PrintTimeSecondsAt100PercentInfill
      * Pow(PrintSpeedSettings.ReferenceMillimetersPerSecond / selectedSpeed, 0.8);
 ```
 
-These values are intentionally simple and tunable. Infill changes time and filament; supports use a per-object overhang multiplier; layer height and speed change time (filament stays constant at this abstraction); confirmed scale uses the shell/infill two-term factor. The reference layer height (`0.2 mm`) and speed (`80 mm/s`) are global settings.
+These values are intentionally simple and tunable. Infill changes time and filament; supports use a per-object overhang multiplier; layer height and speed change time (filament stays constant at this abstraction); confirmed scale uses the shell/infill two-term factor. The reference layer height (`0.2 mm`) and speed (`80 mm/s`, Slow) are global settings.
+
+The profile baseline is the only time coefficient that can absorb a single slicer measurement: at `0.2 mm` / `80 mm/s` / `100%` infill / no supports every multiplier is `1.0`, so `time = PrintTimeSecondsAt100PercentInfill`. The editor tool's effective flow (`5.88922 mm3/s`) is calibrated so its volume/effective-flow seed produces that same baseline for the bunny. Do not add a second global time correction on top of the profile baseline; it would double-count for slicer-calibrated profiles. The layer/speed/infill/support multipliers need a multi-point slicer matrix if they are to be refitted.
 
 Raw quality is projected from the same settings before post-processing:
 
@@ -1401,7 +1412,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 **Manual gate**
 
 1. Fill in the two 100% baseline values for the current object catalog; dimensions and reference settings are derived/global.
-2. Compare estimates against a slicer at Normal layer height and Normal speed; record the tuning factor. Check one Draft and one Fine print for the layer-height scaling.
+2. Compare estimates against a slicer at Normal layer height and Slow speed (`80 mm/s`); record the tuning factor. Check one Draft and one Fine print for the layer-height scaling, then spot-check Normal/Fast speed presets.
 3. Verify spool remaining calculation at 100%, 50%, and 10% condition, including 0/1/up-to-four slot selection and a missing selected slot.
 4. Verify build-volume rejection with an oversized test object.
 6. Verify that the console cannot start a job on an unbound printer.
@@ -1453,9 +1464,10 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - batch or selected `ObjectToPrintMetaSO` entries from the catalog,
   - load the prefab, combine renderer bounds (report only; runtime sizing uses the same data), compute mesh volume and surface area,
   - estimate overhang ratio and set `SupportsRequired` plus `SupportOverhangPercent`,
-  - seed 100% infill filament/time from volume and a configurable reference flow,
+  - seed 100% infill filament/time from volume, a configurable effective flow and a configurable filament packing factor,
   - write the configurable wall thickness used by the shell/infill scale rule,
-  - share the reference layer height/speed and flow in one editor settings asset,
+  - report solid shell, material shell for the default infill, and the scale-2x factor using the same rule as runtime,
+  - share the reference layer height/speed and seed coefficients in one editor settings asset,
   - report what was written; slicer values still override the seeds.
 
 **Acceptance criteria**
@@ -1477,7 +1489,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 2. **Done:** go below the dynamic min (`2 cm` largest dimension) and above the max (`BuildVolume`/plate fit); the wrong state appears and confirm is blocked.
 3. **Re-check required after the estimate refinement:** recalculated estimates match the shell/infill scale rule at the minimum, `1.0` and the maximum scale, and support cost follows each object's overhang percentage.
 4. **Done:** cancel restores the previous placement and confirm survives console close/reopen.
-5. **Done:** the editor generator on the bunny matches the seeded volume/filament against the slicer.
+5. **Done:** the editor generator on the bunny reproduces the `36 720 s` and `85.36 m` slicer reference from the calibrated effective flow and filament packing; the full matrix review is in [`estimate_matrix.md`](estimate_matrix.md).
 6. **Done:** confirm and cancel return with the same blend duration as entering.
 7. **Done:** the project owner authored the placement UI on `object_place_canvas`.
 
@@ -1543,7 +1555,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - `PrinterMotionBase.HomePositionNormalized` is the global start position for spawn, pause, hard stop and post-print parking. It is drawn as an orange gizmo; `UseCustomHomePosition` exposes the normalized X/Y/Z sliders, and the same normalized X/Z also defines the moving bed home on bed-slinger printers.
 - Calibration has a height-only override via `UseCustomCalibrationHomeHeight` + `CalibrationHomeY` (green gizmo). X/Z and the return position always use the global home.
 - Interaction protection while a printer is busy:
-  - sell, take and free-walk interaction are blocked for the printer and its enclosure;
+  - sell and take are blocked for the printer and its enclosure;
+  - free-walk interaction is blocked while the printer is running/calibrating, but is allowed once it is `Paused`, cooled below `SafeServiceTemperatureC` and the head is parked (`Printer.IsPausedServiceReady` / `CanOpenInteractions`);
   - when the printer is installed in an enclosure, its interaction list redirects to the enclosure; integrity resolves the printer as one part, wear includes the printer's internal parts while hiding the printer root, and remove resolves to the printer root;
   - part installation is blocked, but the MMB install hint remains visible for an eligible target; pressing MMB is refused in `GameStateItemPlace` and `item_hover_place_text` shows the reason (`Printer is on its job`, `Printer is calibrating` or `Wait for the printer to cool`). The game does not enter `GameStatePartInstall`;
   - `PartHoverInstall` also shows the same reason in `part_install_name` if that state is reached another way;
@@ -1580,7 +1593,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - A printer can expose zero, one, two, three or four selectable spool slots; the console hides the selector for zero/one and shows the rest dynamically.
 - A CoreXY prefab using `CoreXYPrinterMotion` reaches the same print-space positions as the Cartesian implementation; belt/motor dynamics are not simulated.
 - Switching printers preserves each printer's selected object, spool, settings and placement; switching objects preserves their settings/placement.
-- A busy printer/enclosure cannot be sold, taken or freely interacted with.
+- A busy printer/enclosure cannot be sold or taken. Free-walk interaction is blocked while running/calibrating, but becomes available after a pause has cooled and parked; all three interaction options are shown, while `ServiceBlockedDuringPrint` still refuses specific parts.
 - An installed printer is inspected only through its enclosure: enclosure interaction list, printer-as-one integrity/remove, and printer internals available in wear mode.
 - A docked printer validates the enclosure's required parts as well; missing battery closet, adapter, HEPA, fire-suppression or thermometer parts block `Start print` with a specific error, and enclosure wear contributes to the quality estimate.
 - Installing a printer moves its installed spools to available enclosure sockets, up to the number of free sockets, hides `spool_holder` when mapped, and restores everything on removal. Overflow blocks the install with a reason. The console supports zero, one or up to four selectable slots.
@@ -1600,7 +1613,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 9. Run calibration with `N = 3` and `N = 5`; confirm the head moves smoothly from its current position, lifts, touches every point, returns to `HomePositionNormalized`, and `Hard stop` cancels/homes. Repeat at more than one `SIM SPEED` value; toggle the calibration height override and confirm it affects only the calibration start/lift.
 10. Verify the spool rotates in the correct direction and the visible filament level follows the wear dictionary.
 11. Check enclosure and no-enclosure quality differences; confirm the raw maximum is `90`.
-12. Hover a busy printer and its enclosure in FreeWalk; confirm the printer name stays in `item_hover_info_text`, the five status fields update, and take/interact are hidden.
+12. Hover a running printer and its enclosure in FreeWalk; confirm the printer name stays in `item_hover_info_text`, the five status fields update, and take/interact are hidden.
+    - Pause the job and wait for cooling and homing. Confirm the name/stats remain and `interact_root` appears on the printer/enclosure; open it and confirm `Parts wear`, `Parts integrity` and `Parts remove` are available. Confirm a `ServiceBlockedDuringPrint` part is still refused. Resume and confirm the interaction closes again.
 13. In `ItemsSell`, confirm the busy printer/enclosure shows the reason in `item_hover_sell_description`, uses the wrong selling ghost, and cannot be sold. Repeat for an idle but device-bound printer: `Connected to a device`.
 14. While carrying a part, hover a busy/calibrating/hot printer; confirm the MMB install hint is still visible. Press MMB and confirm the game stays in `ItemPlace`, `item_hover_place_text` shows the reason, and no part-install state/ghost is entered.
 15. Install a printer in an enclosure, then inspect the enclosure: interaction list must be the enclosure's; integrity must show the printer as one part; wear must show enclosure parts and the printer's internal parts with the printer root hidden; remove must treat the printer as one part with its ghost.
@@ -1713,6 +1727,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Screen animations and notifications.
 - Save/load if desired.
 - Optional resume-from-partial-print.
+- Job-level enclosure continuity snapshot: whether the job started enclosed, whether it has been interrupted, and the quality range without the enclosure contribution.
+- A capped or diminishing pause-quality penalty so repeated pause/service cycles cannot drive quality to zero.
 - **Final documentation gate:** replace [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md) with the full agent-facing setup guide for adding new FFF printer models, and replace [`new_object_print_setup_reminder.md`](new_object_print_setup_reminder.md) with the full guide for adding printable-object prefabs, profiles, ghosts and calibration. Both must cover their prefab/data contracts, validation and verification.
 - Production cleanup:
   - remove the calibration-only `PrintBedAnchorDebug` and `PrinterMotionDebug` components from shipped prefabs, or keep them disabled and stripped from the player build;
@@ -1721,13 +1737,89 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - keep editor-only debug context menus and diagnostic helpers out of the player path, using `#if UNITY_EDITOR` or an editor assembly where appropriate;
   - remove temporary debug logging/GUI that is not part of the shipped experience.
 
+#### Enclosure continuity during a job
+
+The enclosure quality contribution is tied to the whole print, not just the
+state at validation. A job keeps its original time, filament, speed, layer,
+supports and placement values; only the enclosure contribution and resume
+validation can change.
+
+**Quality policy**
+
+- The enclosure quality bonus is only earned if the printer is enclosed for
+  every **printing** interval. Pausing inside the enclosure does not break it.
+- Removing the printer while paused and restoring it before the next resume
+  does not break continuity; the job never printed outside.
+- If the job resumes outside the enclosure, set a one-way
+  `EnclosureInterrupted` flag for that job. Reinstalling the enclosure later
+  does not restore the bonus.
+- A job that starts unenclosed can never earn the continuous-enclosure bonus,
+  even if the enclosure is installed before a later resume.
+- Continuous enclosure: keep the existing `+5` enclosure contribution.
+- Interrupted or never enclosed: use the existing no-enclosure `-9`
+  contribution, not an additional per-toggle penalty.
+- Store the quality range **before** the enclosure contribution on the job.
+  This avoids applying `+5` or `-9` twice when the state changes.
+- The enclosure penalty is latched once. Repeated removal/installation must
+  not stack enclosure penalties.
+
+**Pause penalty**
+
+- The existing per-resume pause penalty still applies.
+- M5 must cap or diminish it so repeated pauses cannot zero quality. Suggested
+  starting rule: `min(pauseCount * PauseQualityPenalty, 20)` quality points.
+- Enclosure toggles while paused do not add extra enclosure penalties; the
+  normal pause penalty is the cost of another resume.
+- Resuming outside the enclosure adds the no-enclosure quality state, not a
+  second stack of pause penalties.
+
+**Resume validation and warnings**
+
+- If the enclosure is still present at resume, validate its critical parts as
+  today; missing required parts block resume with the existing specific errors.
+- If the printer is outside the enclosure, enclosure critical parts are not
+  required for resume, but the job is marked enclosure-interrupted and uses
+  the no-enclosure quality contribution.
+- Show one persistent job warning on the first interruption:
+  `Print resumed without enclosure. Final quality will use the no-enclosure penalty.`
+- If the enclosure is reinstalled later:
+  `Enclosure restored. This job is already marked enclosure-interrupted; the no-enclosure penalty remains.`
+- If an unenclosed job gets an enclosure before resume:
+  `Enclosure installed after printing started. This job cannot earn the continuous-enclosure bonus.`
+- Removing or reinstalling while paused before any outside resume should not
+  change quality; optionally show a transient hint that only the pause penalty
+  applies.
+- Repeated toggles must update the warning state once, not spam a new warning
+  per cycle.
+- Calibration is unaffected by enclosure movement. Time, filament, path and
+  print progress remain frozen for the active job.
+- Enclosure-part wear follows the current docked state: removed enclosure parts
+  stop accumulating wear; reinstalling resumes their wear targets. No
+  retroactive wear is applied for the paused interval.
+
 **Acceptance criteria**
 
 - Enclosure changes thermal behavior and quality in a visible, understandable way.
+- A job that resumes outside the enclosure loses the continuous-enclosure quality bonus exactly once; reinstalling does not restore it. Repeated toggles do not stack enclosure penalties.
+- A job that starts unenclosed cannot gain the enclosure bonus by installing an enclosure before a later resume.
+- Removing and reinstalling the enclosure while paused, before any outside resume, preserves the bonus and only incurs the normal pause penalty.
+- Removing or reinstalling the enclosure never changes the active job's estimated time, filament, speed, layer height, supports, placement or progress; only the enclosure quality contribution and resume validation change.
+- Pause quality penalties are capped or diminishing and repeated pauses cannot make the job quality estimate collapse to zero.
+- The enclosure continuity warning is persistent once interrupted and is not duplicated on every toggle.
 - Failure modes are telegraphed and recoverable.
 - Quality affects the object's value or usability.
 - The game remains performant with multiple printers.
 - Shipped prefabs/scenes contain no active calibration-only debug components, test cubes, or debug GUI.
+
+**Manual gate**
+
+1. Start enclosed, pause, remove and reinstall the enclosure before resuming: the enclosure bonus remains; only the normal pause penalty applies.
+2. Start enclosed, pause, remove the printer, resume outside: the persistent no-enclosure warning appears; final quality uses the no-enclosure contribution; time, filament and progress do not change.
+3. Reinstall the enclosure and resume again: the job stays enclosure-interrupted; the no-enclosure penalty is not restored and no additional enclosure penalty stacks.
+4. Start unenclosed, install the enclosure before resume: the job does not gain the bonus and shows the “started without enclosure” warning.
+5. Perform several pause/resume cycles: confirm the pause penalty follows the M5 cap/diminishing rule and cannot zero quality by itself.
+6. With the enclosure still present, remove a critical enclosure part and resume: resume is blocked with the specific missing-part error. With the printer outside the enclosure, resume is allowed but uses the no-enclosure quality state.
+7. Confirm enclosure wear targets follow the current docked state and calibration is unchanged by enclosure movement.
 
 ---
 
@@ -1774,7 +1866,7 @@ Fill this table during M0 and update it during later milestones.
 | Infill density | None `0.1892`, Grid `0.3153`, Gyroid `0.3531` | `InfillSettings.Density` |
 | Infill time factor | None `0.2615`, Grid `0.3399`, Gyroid `0.3765` | `InfillSettings.TimeFactor` |
 | Layer height | `0.28` / `0.20` / `0.12` mm | `LayerHeightSettings`; time scales `reference / selected` |
-| Print speed | `40` / `80` / `140` mm/s | `PrintSpeedSettings`; time scales `(reference / selected)^0.8` |
+| Print speed | `80` / `160` / `240` mm/s | `PrintSpeedSettings`; `80 mm/s` is the Slow reference; time scales `(reference / selected)^0.8` |
 | Raw quality | base `82`, range width `5`, raw cap `90` | `PrintQualityEstimator`; enclosure `+5`, no enclosure `-9`; post-process can polish beyond 90 later |
 | Part wear (all installed) | block `0%`, warn `≤20%`; critical warn `20–40%` | `WornOutConditionPercent` / `LowConditionWarningPercent` / `CriticalPartWarningPercent` |
 | Job catalog | `Assets/SOs/ObjectsToPrint/object_to_print_metas_list_SO.asset` | assigned to `DeviceConsolePresenter.ObjectCatalog` |
@@ -1785,7 +1877,7 @@ Fill this table during M0 and update it during later milestones.
 | Support cost | filament × `1 + 0.06 × overhang / 15.48308`, time × `1 + 0.12 × overhang / 15.48308` | bunny reference overhang is `15.48308%`; other objects use their own `SupportOverhangPercent` |
 | Support rule | required object: `None` → `-25` raw and max `55`; optional `Auto` → warning only | `PrintJobValidator` / `PrintQualityEstimator` |
 | Material gating | none | any spool material prints; M3/M5 use material for temperatures and quality |
-| Bunny baseline (calibrated) | `85.36 m` at 100%, `36 720 s` at 100% | PrusaSlicer, `0.2 mm` / `80 mm/s`; dimensions derived |
+| Bunny baseline (current profile) | `85.36 m` at 100%, `36 720 s` at 100% | Both values restored to the PrusaSlicer reference; editor seeds calibrated to reproduce them |
 | Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
 | Console camera idle priority | `-1` | player camera stays at implicit `0` |
 | Print speed multiplier | `1×` / `4×` / `64×` / `120×` | console `SIM SPEED`; default `1×`, stored per printer |
@@ -1859,7 +1951,7 @@ Fill this table during M0 and update it during later milestones.
 - Smooth calibration grid at `N = 3` and `N = 5`, return to `HomePositionNormalized`.
 - Calibrated vs uncalibrated quality multiplier and console warning.
 - Per-printer and per-object console draft restoration.
-- Busy printer/enclosure blocks sell/take/interact and part install; FreeWalk shows the five status fields.
+- Busy printer/enclosure blocks sell/take and part install; FreeWalk keeps the five status fields. Paused-safe interaction opens all three parts options after cooling and homing.
 - Installed printer is inspected through the enclosure: one interaction list, printer-as-one integrity/remove, printer-internal wear entries available.
 - Unbind/rebind during print.
 - Worn-out part blocks job.
@@ -1892,8 +1984,13 @@ Fill this table during M0 and update it during later milestones.
 ### M5
 
 - Enclosure thermal/quality effects.
+- Enclosure continuity: pause/remove/reinstall before resume preserves the bonus; resume outside latches the no-enclosure penalty; reinstalling does not restore it; toggles do not stack.
+- Unenclosed start cannot gain an enclosure bonus later.
+- Enclosure critical parts are revalidated when the enclosure is still present; outside enclosure resumes use the no-enclosure quality contribution with a persistent warning.
+- Pause penalty cap/diminishing rule.
 - Failure modes, including wear-triggered service prompts.
 - Quality and sale value.
+- Infill gameplay effect (strength, durability or sale value) so `None`/`Grid`/`Gyroid` are not only cost tiers; `Gyroid` is currently dominated by `Grid`.
 - Audio/VFX.
 - Save/load, if implemented.
 - Production cleanup: calibration/debug components removed or disabled, test cubes removed, editor-only debug helpers excluded from the player.
@@ -1919,6 +2016,8 @@ Fill this table during M0 and update it during later milestones.
 | Ghosts left after selling a print | `ObjectToPrintDataHolder.DestroyGhostInstances` clears mutual references and destroys every registered ghost; destroying the object removes the cap/sliced surface |
 | Object removal races the printer busy rule | `PrintedObjectDataHolder` owns `IsOnPrintBed`; `Printer.TryReleasePrintedObject` clears the bed before placement |
 | Selling a print while it is on the bed | `ItemHoverSell` returns a wrong-state reason until the object is released and placed |
+| Enclosure toggling during pause exploits quality | Latch `EnclosureInterrupted` once; reinstallation does not restore the bonus; pause penalties are capped/diminished |
+| Enclosure penalty applied twice | Store the quality range without the enclosure contribution and apply `+5` / `-9` once at finalization |
 
 ---
 
@@ -1939,7 +2038,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`), and the editor seeds are calibrated to reproduce it. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
 
 
 M1 is code-complete:
@@ -1985,8 +2084,8 @@ M2 is implemented:
 
 Remaining M2 work (manual gate):
 
-1. **Done:** object baseline calibrated against PrusaSlicer: `85.36 m` and `36 720 s` at 100% infill (`0.2 mm`, `80 mm/s`).
-2. **Done:** Grid / Normal / Normal compared with PrusaSlicer (`28.53 m`, `3 h 53 min`) and matched by the console (`28.5 m`, `3 h 53 min`); tuning factor recorded in §9.
+1. **Calibration:** `85.36 m` and `36 720 s` at 100% infill (`0.2 mm`, `80 mm/s`; now Slow). Both values are restored to the PrusaSlicer reference, and the editor tool's effective flow/filament packing seeds reproduce them.
+2. **Original check:** Grid / Normal / Normal compared with PrusaSlicer (`28.53 m`, `3 h 53 min`) and matched by the console (`28.5 m`, `3 h 53 min`). With the new presets, old Normal is Slow; the reference point now matches in both time and filament. Normal/Fast presets and scale/support still need a fresh spot-check.
 3. **Done:** Draft and Fine spot checks confirmed time and raw quality move in the expected direction.
 4. **Done:** validation matrix verified, including the oversized-object rejection.
 5. **Done:** `Start print` queues `Printer.PendingJob` only when valid; M3 consumes it on the next printer tick.
@@ -2156,6 +2255,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-18 | Bed placement as M2.5 | Job setup, not printing; M3/M4 need stored placement before execution/visuals |
 | 2026-11-18 | Uniform scale allowed in placement | Volume matters; estimates use a shell/infill two-term scale rule; bounds are dynamic |
 | 2026-11-20 | Object geometry drives the scale estimate | `ObjectToPrintSizing` caches solid volume and surface area; the profile wall thickness yields the shell share, and `scale = 1` preserves the calibrated profile |
+| 2026-11-20 | Print speed presets are 80 / 160 / 240 mm/s | The 80 mm/s profile baseline is now the Slow preset; Normal and Fast scale time from it, and the M2 speed spot-check is pending |
 | 2026-11-20 | Support cost follows the object overhang | The bunny’s `15.48308%` reference reproduces its `1.06`/`1.12` cost; other objects use their own `SupportOverhangPercent` |
 | 2026-11-18 | Scale limits from printer/object | Max must fit `BuildVolume` and plate; min keeps the object at least `2 cm` |
 | 2026-11-18 | `PrintBedAnchor` is the placement reference | One source for surface, size and front direction |
@@ -2168,7 +2268,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-19 | Raw print quality caps at 90 | Leaves room for the post-process state to improve the final object |
 | 2026-11-19 | Spool rotation and wear-level child sync move to M3 | The loop already knows consumed metres; M4 only polishes reveal |
 | 2026-11-19 | Calibration is a printer state, not a console overlay | Reuses motion and the existing status/controls; no new global state |
-| 2026-11-19 | Busy printer/enclosure blocks sell/take/interact | Protects a running job; hover status is an owner-authored UI section |
+| 2026-11-19 | Busy printer/enclosure blocks sell/take; paused-safe interaction is allowed | Protects a running job while allowing Wear/Integrity/Remove after a safe pause; hover status remains visible |
 | 2026-11-19 | Spool rotation uses the root with local `-Y` | The mesh child has a different authored axis; the root matches the installed spool holder |
 | 2026-11-19 | Head start position lives on `PrinterMotionBase` in print space | Axis-safe across printer variants; a posed prefab transform would be brittle |
 | 2026-11-19 | Calibration moves smoothly with lift/dwell | Matches real printer calibration and makes the grid readable |
@@ -2179,7 +2279,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-19 | Default home is implicit; custom home is opt-in | `UseCustomHomePosition` keeps the default top-left/3/4-forward pose while exposing sliders only when needed |
 | 2026-11-19 | Calibration home is a height-only optional override | Calibration can start/lift higher without redefining X/Z or the global return position |
 | 2026-11-19 | FreeWalk printer stats use five separate texts | Keeps the name/status stack readable and lets the owner style each metric independently |
-| 2026-11-19 | ItemHoverInteract stays silent for a busy printer | Prevents duplicate status prompts; ItemHoverInfo owns the printer-status stack |
+| 2026-11-19 | ItemHoverInteract stays silent for a busy printer unless paused-safe | Prevents duplicate status prompts while running; `CanOpenInteractions` enables service interactions after cooling and homing |
 | 2026-11-19 | Bound printers cannot be sold | Prevents dangling device bindings and matches the device-side sell rule |
 | 2026-11-19 | Calibration follows the printer simulation multiplier | One speed control for all simulated motion; use 1× for visual inspection |
 | 2026-11-19 | One normalized home for head, bed and all state returns | Removes competing start positions and keeps placement/aesthetics consistent |
@@ -2206,6 +2306,10 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | Printed objects use a spool-bound reveal and final material | Printing uses the spool's `_reveal_height` shader; completion restores its regular `FinalMaterial` |
 | 2026-11-20 | Caps appear only on settled pauses and finalized partials | Live printing uses uncapped reveal/backface lighting; pause-settled and hard-stopped surfaces use a sliced final-material cap; completed prints have no cap |
 | 2026-11-20 | Printed-object sale destroys all ghosts and generated surfaces | `DestroyGhostInstances` clears mutual references; the object hierarchy owns the sliced cap mesh and collider |
+| 2026-11-20 | Enclosure continuity is a one-way job flag | Continuous enclosure keeps `+5`; resuming outside applies `-9` once; reinstalling does not restore the bonus and toggles never stack |
+| 2026-11-20 | Time calibration lives in the profile baseline, not a global factor | Editor effective flow `5.88922 mm3/s` reproduces the bunny `36 720 s`; runtime layer/speed/infill/support multipliers are `1.0` at the reference |
+| 2026-11-20 | Filament seed is calibrated like the time seed | Editor filament packing `0.94943` (`85.36 / 89.90716`) restores the bunny `85.36 m`; Grid/Auto matches the slicer `28.53 m` |
+| 2026-11-20 | Shell diagnostics share the runtime formula | `PrintEstimates.MaterialShellShare` drives both the scale rule and the editor tool; the bunny reports `14.0%` solid shell, `44.4%` Grid material shell and `6.22x` at scale 2 |
 | 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |
 | 2026-11-20 | No `Clear bed`; selling on the bed is blocked | The player must take the object off the printer and place it before selling |
 | 2026-11-20 | Supports stay attached until M5 | Generated columns reveal with the print and remain on the finished/partial object |
@@ -2517,36 +2621,44 @@ Check each row in play mode and confirm the console message:
 
 ### F.6 Calibration record
 
-Fill these in after the first slicer comparison and copy the final numbers into §9:
+Fill these in after the first slicer comparison and copy the final numbers into §9.
+
+See [`estimate_matrix.md`](estimate_matrix.md) for the full LAYER x SPEED x INFILL x SUPPORTS matrix and the sanity review.
 
 | Item | Value |
 |---|---|
 | Bunny size reported by `ObjectToPrintSizing` (not edited) | derived from prefab bounds |
-| Bunny filament at 100% infill | `85.36 m` |
-| Bunny time at 100% infill at `0.2 mm` / `80 mm/s` | `36 720 s` (`10 h 12 min`) |
+| Bunny filament at 100% infill | `85.36 m` (original slicer reference) |
+| Bunny time at 100% infill at `0.2 mm` / `80 mm/s` (Slow) | `36 720 s` (`10 h 12 min`, original slicer reference) |
 | Supports required? | yes |
 | Auto support cost at bunny overhang | filament ×1.06, time ×1.12 at `15.48308%`; formula scales by each object's overhang |
 | Required + None quality (expect `55-55`) | `55-55` |
-| Slicer estimate at Grid / Normal / Normal | `28.53 m`, `3 h 53 min` |
-| Console estimate at Grid / Normal / Normal | `28.5 m`, `3 h 53 min` |
-| Tuning factor (slicer / console) | `1.00` filament, `1.00` time |
-| Draft time vs Normal | `1 h 22 min` vs `3 h 53 min` |
-| Fine time vs Normal | `12 h 29 min` vs `3 h 53 min` |
-| Raw quality: Draft / Normal / Fine | `70-75 / 80-85 / 84-89` |
-| Raw quality: Slow / Normal / Fast | `84-89 / 80-85 / 70-75` |
+| Slicer estimate at Grid / Normal / Slow (original reference) | `28.53 m`, `3 h 53 min` |
+| Console estimate at Grid / Normal / Slow (original reference) | `28.5 m`, `3 h 53 min` |
+| Tuning factor (slicer / console, original reference) | `1.00` filament, `1.00` time |
+| Draft layer vs Normal layer (Grid, Slow, Auto) | `2 h 46 min` vs `3 h 53 min` |
+| Fine layer vs Normal layer (Grid, Slow, Auto) | `6 h 28 min` vs `3 h 53 min` |
+| Raw quality: Draft / Normal / Fine (Normal speed, Auto) | enclosed `75-80 / 85-90 / 89-90`; open `61-66 / 71-76 / 75-80` |
+| Raw quality: Slow / Normal / Fast (Normal layer, Auto) | enclosed `89-90 / 85-90 / 75-80`; open `75-80 / 71-76 / 61-66` |
+| Current profile | `85.36 m` filament, `36 720 s` (`10 h 12 min`) at 100% (slicer reference) |
+| Current profile sources | Filament and time: PrusaSlicer reference |
+| Editor seeds | Effective flow `5.88922 mm3/s`; filament packing `0.94943` |
+| Console estimate at Grid / Normal / Slow (current profile) | `28.53 m`, `3 h 53 min` |
+| Current tuning factor (slicer / console) | filament `1.00`, time `1.00` |
+| Current calibration status | Reference point matched; full console matrix reviewed in `estimate_matrix.md`; speed-preset and scale/support spot-checks pending |
 | Spool material used | PrusaSlicer default (PLA) |
 | Critical locations confirmed | yes |
 
-Expected values with the calibrated bunny seed (`85.36 m`, `36 720 s` at 100%) and `Auto` supports:
+Expected values below are the slicer-calibrated reference with `Auto` supports. Time, filament and the full console matrix are in [`estimate_matrix.md`](estimate_matrix.md). Quality values are for an enclosed printer; open-printer values are about `14` raw points lower (see the matrix). Re-run this table after the speed-preset spot-check:
 
-| Layer / speed / infill (supports Auto) | Filament | Simulated time | Real time at `120×` | Raw quality |
+| Layer / speed / infill (supports Auto) | Filament | Simulated time | Real time at `120×` | Raw quality (enclosed) |
 |---|---:|---:|---:|---:|
-| Draft / Fast / None | `17.1 m` | `1 h 22 min` | `0.7 min` | `60–65` |
-| Draft / Normal / Grid | `28.5 m` | `2 h 46 min` | `1.4 min` | `70–75` |
-| Normal / Fast / Grid | `28.5 m` | `2 h 29 min` | `1.2 min` | `70–75` |
-| Normal / Normal / Grid | `28.5 m` | `3 h 53 min` | `1.9 min` | `80–85` |
-| Fine / Normal / Gyroid | `32.0 m` | `7 h 10 min` | `3.6 min` | `84–89` |
-| Fine / Slow / Gyroid | `32.0 m` | `12 h 29 min` | `6.2 min` | `88–93` |
+| Draft / Fast / None | `17.1 m` | `0 h 53 min` | `0.4 min` | `65–70` |
+| Draft / Normal / Grid | `28.5 m` | `1 h 36 min` | `0.8 min` | `75–80` |
+| Normal / Fast / Grid | `28.5 m` | `1 h 37 min` | `0.8 min` | `75–80` |
+| Normal / Normal / Grid | `28.5 m` | `2 h 14 min` | `1.1 min` | `85–90` |
+| Fine / Normal / Gyroid | `32.0 m` | `4 h 07 min` | `2.1 min` | `89–90` |
+| Fine / Slow / Gyroid | `32.0 m` | `7 h 10 min` | `3.6 min` | `90–90` |
 
 These are the values to compare against a slicer. Tune `InfillSettings`/`PrintSpeedSettings` globally rather than per object.
 
@@ -2611,16 +2723,20 @@ It can:
 2. Combine all child `Renderer.bounds` and report the prefab-root-space size. Dimensions are runtime-derived by `ObjectToPrintSizing`; do not write them into the meta.
 3. Compute mesh volume and surface area from the triangle soup (signed tetrahedra sum and triangle areas). For a watertight mesh this is the solid volume; for open meshes, report the result as approximate.
 4. Compute the overhang ratio: triangles whose normal is below the overhang angle (`45°` default) relative to the plate up; set `SupportsRequired` above a configurable threshold and write `SupportOverhangPercent`.
-5. Seed 100% infill filament from `volume / (π × (filamentDiameter/2)²)`.
-6. Seed 100% infill time from `volume / referenceFlowMm3PerSecond`, with the flow value exposed in the tool settings.
-7. Write `WallThicknessMillimeters` for the shell/infill scale rule; report the resulting scale-1 shell share.
+5. Seed 100% infill filament from `volume / (π × (filamentDiameter/2)²) × filamentPackingFactor`, with the packing factor exposed in the tool settings.
+6. Seed 100% infill time from `volume / effectiveFlowMm3PerSecond`, with the flow value exposed in the tool settings.
+7. Write `WallThicknessMillimeters` for the shell/infill scale rule; report solid shell, material shell for the default infill, and the scale-2x factor.
 8. Write through `SerializedObject`, mark the asset dirty, and report a per-object summary; support batch over the whole catalog.
 
-Model meshes must have **Read/Write enabled** for volume/overhang. The bunny FBX now has it enabled, so the tool can report volume and overhang. Defaults: `1.75 mm` filament, `12 mm3/s` reference flow, `1.2 mm` wall thickness, `45°` overhang, `5%` supports threshold.
+Model meshes must have **Read/Write enabled** for volume/overhang. The bunny FBX now has it enabled, so the tool can report volume and overhang. Defaults: `1.75 mm` filament, `0.94943` filament packing, `5.88922 mm3/s` effective flow, `1.2 mm` wall thickness, `45°` overhang, `5%` supports threshold.
+
+The effective flow is a lumped seed coefficient: the slicer's average extrusion rate including travel and acceleration, plus the mesh-to-slicer volume difference. It is not the hotend's peak flow. It is calibrated from the bunny reference: `216252.06 mm3 / 36720 s = 5.88922 mm3/s` at `0.2 mm` / `80 mm/s` / `100%` infill, supports off. This is the coefficient that makes the editor tool's time seed reproduce the PrusaSlicer time. The runtime model's layer/speed/infill/support multipliers are neutral at that reference and still need a multi-point slicer matrix to refit; one slicer point cannot identify them.
+
+The filament packing factor is the matching lumped coefficient for material: `85.36 / 89.90716 = 0.94943`. It absorbs the mesh-to-slicer material-volume difference, so the editor's filament seed and the runtime Grid/Auto matrix both reproduce the slicer reference. Like the effective flow, it should be recalibrated if the mesh import or reference slicer profile changes.
 
 Limitations:
 
-- Time from volume is a seed, not a slicer result. Calibrate it with one known print, then keep a single global factor.
+- Time and filament from volume are seeds, not a per-object slicer result. The two lumped coefficients are calibrated to the bunny reference; confirm each new object with one slicer run.
 - Automatic orientation selection is not part of the first version; the player rotates on the bed instead. A future version can try candidate yaw/face rotations and pick the lowest overhang score.
 - Default infill stays authored; material is selected by the selected spool and is not inferred.
 - The tool must not touch scenes; it only edits meta assets.
@@ -2629,8 +2745,9 @@ Recommended workflow:
 
 1. Run the generator on the catalog.
 2. Inspect bounds/supports per object.
-3. Print or slice one reference object at Normal/Normal/Grid.
-4. Record the slicer values in F.6 and adjust the global flow/factor, not individual objects unless the mesh is unusual.
+3. Slice one reference object at `100%` infill, `0.20 mm` layer, `80 mm/s`, supports off, to calibrate the profile seeds.
+4. Record those values in F.6; separately compare the Grid / Normal / Slow / Auto console estimate against a Grid slicer run.
+5. Adjust the global seed coefficients, not individual objects unless the mesh is unusual.
 
 ### F.9 Supports
 

@@ -11,8 +11,11 @@ The target is a rectangular XYZ printer workflow. Object setup is data/prefab wo
 `Tools/Manufacturing/Print Profile Generator` is a **seeder and validator**, not the final calibrator.
 
 - Use **Scan** to inspect mesh volume, surface area, overhang and the seeded baseline.
-- Do **not** click **Apply successful scans** on the Stanford bunny just to refresh it: Apply overwrites `FilamentMetersAt100PercentInfill` and `PrintTimeSecondsAt100PercentInfill` with volume/flow seeds, replacing the slicer-calibrated values.
-- Calibrate the final baseline in a slicer at the reference profile: `0.2 mm` layer height, `80 mm/s`, `100%` infill.
+- Do **not** click **Apply successful scans** on the Stanford bunny just to refresh it: Apply overwrites `FilamentMetersAt100PercentInfill` and `PrintTimeSecondsAt100PercentInfill` with seeds. The calibrated seeds now reproduce the bunny reference (`85.36 m`, `36 720 s`), but Apply still replaces any manual calibration.
+- The editor uses two lumped seed coefficients: effective flow `5.88922 mm3/s` for time and filament packing `0.94943` for material. Both are calibrated from the bunny reference; recalibrate them if the printer profile or mesh import changes.
+- The stored calculation baseline is `0.20 mm` layer, `80 mm/s` (Slow), `100%` infill and no supports. It is shown at the top of the editor tool and in the profile's inspector header.
+- Calibrate the final baseline in a slicer at that profile: `0.2 mm` layer height, `80 mm/s`, `100%` infill, supports off.
+- Use **Apply successful scans** only to seed a new object; confirm the two seeded values with a slicer run before treating the profile as calibrated.
 - The new geometry and shell/infill scale model are derived at runtime, so volume and surface area do not need to be stored on the profile.
 
 ## Required guide contents
@@ -36,7 +39,8 @@ The final setup guide must cover, in order:
    - `WallThicknessMillimeters` (default `1.2 mm`) used by the shell/infill scale rule;
    - `DefaultInfill`;
    - icon, name, description, `ObjectToPrintType` and catalog entry;
-   - note that the editor tool’s volume/flow values are seeds, not calibrated results.
+   - note that the editor tool’s volume/effective-flow/filament-packing values are seeds; both coefficients are calibrated to the bunny reference, but each new object still needs a slicer confirmation;
+   - the tool reports solid shell, material shell for the default infill, and the scale-2x factor from the same rule used by `PrintEstimates`.
 
 3. **Catalog and UI**
    - add the meta to the correct `ObjectToPrintMetasListSO`;
@@ -61,7 +65,7 @@ The final setup guide must cover, in order:
    - selling on the bed is blocked; partials sell without income.
 
 6. **Verification**
-   - run the M2 estimates/quality checks;
+   - run the M2 estimates/quality checks against `estimate_matrix.md`;
    - run the M2.5 placement and scale/support re-check;
    - run the M4 print visual/manual gate;
    - verify multi-mesh reveal, support coverage and sale-time cleanup;
@@ -73,6 +77,7 @@ The final setup guide must cover, in order:
 - `Docs/Manufacturing/new_printer_agent_setup_reminder.md` — printer setup.
 - `Docs/Manufacturing/wear_coefficients_manual_gate.md` — wear approval.
 - `Docs/Manufacturing/manufacturing_plan.md` — M2, M2.5 and M4 gates.
+- `Docs/Manufacturing/estimate_matrix.md` — full bunny console matrix and sanity review.
 - `Assets/Scripts/Coursework_Master_Degree/Items/FFF/Printer/Jobs/ObjectToPrintSizing.cs`
 - `Assets/Scripts/Coursework_Master_Degree/Items/FFF/Printer/Jobs/PrintEstimates.cs`
 - `Assets/Scripts/Coursework_Master_Degree/Editor/PrintProfileGeneratorWindow.cs`
