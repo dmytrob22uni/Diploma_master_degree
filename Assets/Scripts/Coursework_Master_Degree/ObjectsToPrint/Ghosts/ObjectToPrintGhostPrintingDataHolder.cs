@@ -7,12 +7,12 @@ namespace Coursework_Master_Degree.ObjectsToPrint.Ghost
     {
         private void OnValidate()
         {
-            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Quality;
+            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Printing;
         }
 
         private void Awake()
         {
-            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Quality;
+            base.ObjectToPrintGhostType = ObjectToPrintGhostType.Printing;
         }
     }
 }
