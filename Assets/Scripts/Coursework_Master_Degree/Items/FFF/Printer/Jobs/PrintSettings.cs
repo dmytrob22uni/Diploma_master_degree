@@ -81,7 +81,11 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
     public static class PrintSpeedSettings
     {
+        // The authored profile times were measured at 80 mm/s, which is now
+        // the Slow preset. Keep this reference when rescaling estimates.
         public const float ReferenceMillimetersPerSecond = 80.0f;
+        public const float NormalMillimetersPerSecond = 160.0f;
+        public const float FastMillimetersPerSecond = 240.0f;
 
         // Acceleration and travel make speed changes sub-linear in time.
         public const float TimeFactorExponent = 0.8f;
@@ -91,11 +95,11 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             switch (preset)
             {
                 case PrintSpeedPreset.Slow:
-                    return 40.0f;
-                case PrintSpeedPreset.Fast:
-                    return 140.0f;
-                default:
                     return ReferenceMillimetersPerSecond;
+                case PrintSpeedPreset.Fast:
+                    return FastMillimetersPerSecond;
+                default:
+                    return NormalMillimetersPerSecond;
             }
         }
 
