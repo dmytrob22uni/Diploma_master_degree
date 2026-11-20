@@ -1,6 +1,7 @@
 using UnityEngine;
 using Coursework_Master_Degree.Game.StateMachine.State;
 using Coursework_Master_Degree.Items.Computing;
+using Coursework_Master_Degree.Items.Part;
 
 namespace Coursework_Master_Degree.Items.FFF
 {
@@ -8,8 +9,9 @@ namespace Coursework_Master_Degree.Items.FFF
     /// Center-screen targeting used while the player binds or unbinds printers.
     /// Hover is resolved against the highlight spheres, so the player only
     /// needs to aim at the visible bubble around a printer. A short
-    /// line-of-sight check keeps walls and other printers blocking the ray.
-    /// Input and state transitions live in DeviceController and
+    /// line-of-sight check keeps walls and other printers blocking the ray,
+    /// while the target printer's own colliders and its installed enclosure
+    /// are ignored. Input and state transitions live in DeviceController and
     /// GameStateDeviceBind.
     /// </summary>
     public class PrinterBindTargeting : MonoBehaviour
@@ -31,6 +33,7 @@ namespace Coursework_Master_Degree.Items.FFF
         private Device device;
         private DeviceBindMode mode;
         private Printer[] printers = System.Array.Empty<Printer>();
+        private readonly RaycastHit[] occlusionHits = new RaycastHit[32];
         private bool isActive;
 
         public Printer HoveredPrinter => hoveredPrinter;
@@ -166,19 +169,50 @@ namespace Coursework_Master_Degree.Items.FFF
                 return false;
             }
 
-            if (!Physics.Raycast(
-                    ray,
-                    out RaycastHit hit,
-                    distance,
-                    RaycastMask,
-                    QueryTriggerInteraction.Ignore))
+            int hitCount = Physics.RaycastNonAlloc(
+                ray,
+                occlusionHits,
+                distance,
+                RaycastMask,
+                QueryTriggerInteraction.Ignore);
+
+            PartsAssembly targetEnclosure =
+                PartsAssembly.FindEnclosingPrinterEnclosure(target);
+
+            for (int i = 0; i < hitCount; i++)
             {
-                return false;
+                Collider hitCollider = occlusionHits[i].collider;
+
+                if (hitCollider == null ||
+                    IsTargetOwnedCollider(
+                        hitCollider,
+                        target,
+                        targetEnclosure))
+                {
+                    continue;
+                }
+
+                return true;
             }
 
-            // The sphere encloses the printer, so its own colliders sit
-            // behind the entry point. Ignore them if they ever poke out.
-            return hit.collider.GetComponentInParent<Printer>() != target;
+            return false;
+        }
+
+        private static bool IsTargetOwnedCollider(
+            Collider collider,
+            Printer target,
+            PartsAssembly targetEnclosure)
+        {
+            // Ignore the target printer's own colliders.
+            if (collider.GetComponentInParent<Printer>() == target)
+            {
+                return true;
+            }
+
+            // Ignore the enclosure assembly that holds the installed printer.
+            // Its colliders still block other printers normally.
+            return targetEnclosure != null &&
+                collider.transform.IsChildOf(targetEnclosure.transform);
         }
 
         private static bool TryGetSphereEntry(

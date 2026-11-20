@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using Coursework_Master_Degree.Items.Part;
 
 namespace Coursework_Master_Degree.Items.FFF
 {
@@ -25,6 +26,11 @@ namespace Coursework_Master_Degree.Items.FFF
         [Tooltip("Extra sphere radius as a fraction of the largest bounds axis")]
         [Range(0.0f, 0.5f)]
         public float Padding = 0.08f;
+
+        [Header("Enclosure")]
+        [Tooltip("Radius multiplier when the printer is installed in an enclosure.")]
+        [Min(1.0f)]
+        public float EnclosureRadiusMultiplier = 1.5f;
 
         [Tooltip("Optional material. A transparent runtime material is created when empty.")]
         public Material SphereMaterial;
@@ -164,7 +170,9 @@ namespace Coursework_Master_Degree.Items.FFF
                 Vector3 size = targetBounds.size;
                 center = targetBounds.center;
                 radius = Mathf.Max(size.x, Mathf.Max(size.y, size.z)) *
-                    (1.0f + Padding) * 0.5f;
+                    (1.0f + Padding) *
+                    CurrentRadiusMultiplier *
+                    0.5f;
             }
 
             return radius > 0.0001f;
@@ -315,11 +323,26 @@ namespace Coursework_Master_Degree.Items.FFF
 
             Vector3 size = targetBounds.size;
             float diameter =
-                Mathf.Max(size.x, Mathf.Max(size.y, size.z)) * (1.0f + Padding);
+                Mathf.Max(size.x, Mathf.Max(size.y, size.z)) *
+                (1.0f + Padding) *
+                CurrentRadiusMultiplier;
 
             sphere.transform.position = targetBounds.center;
             sphere.transform.rotation = Quaternion.identity;
             sphere.transform.localScale = Vector3.one * Mathf.Max(0.01f, diameter);
+        }
+
+        private float CurrentRadiusMultiplier
+        {
+            get
+            {
+                ItemDataHolder item = GetComponent<ItemDataHolder>();
+
+                return item != null &&
+                    PartsAssembly.FindEnclosingPrinterEnclosure(item) != null
+                        ? EnclosureRadiusMultiplier
+                        : 1.0f;
+            }
         }
 
         private void ApplyColor()
