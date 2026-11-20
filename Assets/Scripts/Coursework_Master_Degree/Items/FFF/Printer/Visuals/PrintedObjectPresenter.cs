@@ -231,19 +231,19 @@ namespace Coursework_Master_Degree.Items.FFF
             Vector3 buildVolume = printer.Motion != null
                 ? printer.Motion.BuildVolume
                 : Vector3.zero;
+            Matrix4x4 localToBed = anchor.transform.worldToLocalMatrix *
+                printedObject.transform.localToWorldMatrix;
             PrintLayerBounds[] layerBounds = PrintLayerBoundsBuilder.Build(
                 meshData,
                 localBounds,
-                uniformScale,
+                localToBed,
                 layerHeightMeters,
-                placement,
-                buildVolume);
+                buildVolume,
+                out Bounds bedBounds);
 
             motion.Begin(
                 printer.Motion,
-                placement,
-                localBounds,
-                uniformScale,
+                bedBounds,
                 layerHeightMeters,
                 seed,
                 layerBounds);
@@ -676,9 +676,11 @@ namespace Coursework_Master_Degree.Items.FFF
             int metaHash = meta != null && !string.IsNullOrEmpty(meta.Id)
                 ? meta.Id.GetHashCode()
                 : 0;
+            int jobHash = UnityEngine.Random.Range(1, int.MaxValue);
 
             return (metaHash * 397) ^
-                (printer != null ? printer.GetHashCode() : 0);
+                (printer != null ? printer.GetHashCode() : 0) ^
+                jobHash;
         }
     }
 }

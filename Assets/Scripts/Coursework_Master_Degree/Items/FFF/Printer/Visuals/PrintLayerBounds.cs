@@ -1,5 +1,4 @@
 using UnityEngine;
-using Coursework_Master_Degree.Items.FFF.Jobs;
 
 namespace Coursework_Master_Degree.Items.FFF
 {
@@ -21,7 +20,8 @@ namespace Coursework_Master_Degree.Items.FFF
     }
 
     /// <summary>
-    /// Precomputes per-layer XZ bounds from the captured mesh. The bounds are
+    /// Precomputes per-layer XZ bounds from the captured mesh, transformed
+    /// through the actual printed-object-to-bed matrix. The bounds are
     /// conservative: a triangle contributes to every layer its Y range
     /// crosses, so the head never leaves the object because of a vertex-only
     /// sampling gap.
@@ -31,32 +31,22 @@ namespace Coursework_Master_Degree.Items.FFF
         public static PrintLayerBounds[] Build(
             PrintedMeshData mesh,
             Bounds localBounds,
-            float uniformScale,
+            Matrix4x4 localToBed,
             float layerHeight,
-            PrintPlacement placement,
-            Vector3 buildVolume)
+            Vector3 buildVolume,
+            out Bounds bedBounds)
         {
-            float scale = Mathf.Max(0.0001f, uniformScale);
-            float height = Mathf.Max(
-                0.0f,
-                localBounds.size.y * scale);
+            bedBounds = TransformBounds(localBounds, localToBed);
+
+            float height = Mathf.Max(0.0f, bedBounds.size.y);
             float layer = Mathf.Max(0.00001f, layerHeight);
             int layerCount = Mathf.Max(
                 1,
                 Mathf.CeilToInt(height / layer));
 
-            Vector2 overallMin = new Vector2(
-                localBounds.min.x,
-                localBounds.min.z);
-            Vector2 overallMax = new Vector2(
-                localBounds.max.x,
-                localBounds.max.z);
-
-            TransformToBed(
-                overallMin,
-                overallMax,
-                scale,
-                placement,
+            ClampToVolume(
+                new Vector2(bedBounds.min.x, bedBounds.min.z),
+                new Vector2(bedBounds.max.x, bedBounds.max.z),
                 buildVolume,
                 out Vector2 fallbackMin,
                 out Vector2 fallbackMax);
@@ -86,14 +76,14 @@ namespace Coursework_Master_Degree.Items.FFF
                 maxZ[i] = float.NegativeInfinity;
             }
 
-            float localBottom = localBounds.min.y;
-            float localLayerHeight = layer / scale;
-
             for (int t = 0; t < mesh.Triangles.Count; t += 3)
             {
-                Vector3 a = mesh.Vertices[mesh.Triangles[t]];
-                Vector3 b = mesh.Vertices[mesh.Triangles[t + 1]];
-                Vector3 c = mesh.Vertices[mesh.Triangles[t + 2]];
+                Vector3 a = localToBed.MultiplyPoint3x4(
+                    mesh.Vertices[mesh.Triangles[t]]);
+                Vector3 b = localToBed.MultiplyPoint3x4(
+                    mesh.Vertices[mesh.Triangles[t + 1]]);
+                Vector3 c = localToBed.MultiplyPoint3x4(
+                    mesh.Vertices[mesh.Triangles[t + 2]]);
 
                 float triangleMinY = Mathf.Min(
                     a.y,
@@ -104,12 +94,12 @@ namespace Coursework_Master_Degree.Items.FFF
 
                 int firstLayer = Mathf.Clamp(
                     Mathf.FloorToInt(
-                        (triangleMinY - localBottom) / localLayerHeight),
+                        (triangleMinY - bedBounds.min.y) / layer),
                     0,
                     layerCount - 1);
                 int lastLayer = Mathf.Clamp(
                     Mathf.FloorToInt(
-                        (triangleMaxY - localBottom) / localLayerHeight),
+                        (triangleMaxY - bedBounds.min.y) / layer),
                     0,
                     layerCount - 1);
 
@@ -193,11 +183,9 @@ namespace Coursework_Master_Degree.Items.FFF
 
             for (int i = 0; i < layerCount; i++)
             {
-                TransformToBed(
+                ClampToVolume(
                     new Vector2(minX[i], minZ[i]),
                     new Vector2(maxX[i], maxZ[i]),
-                    scale,
-                    placement,
                     buildVolume,
                     out Vector2 bedMin,
                     out Vector2 bedMax);
@@ -208,70 +196,67 @@ namespace Coursework_Master_Degree.Items.FFF
             return result;
         }
 
-        private static void TransformToBed(
-            Vector2 localMin,
-            Vector2 localMax,
-            float scale,
-            PrintPlacement placement,
-            Vector3 buildVolume,
-            out Vector2 bedMin,
-            out Vector2 bedMax)
+        private static Bounds TransformBounds(
+            Bounds localBounds,
+            Matrix4x4 localToBed)
         {
-            float yaw = placement != null ? placement.Yaw : 0.0f;
-            float radians = yaw * Mathf.Deg2Rad;
-            float cos = Mathf.Abs(Mathf.Cos(radians));
-            float sin = Mathf.Abs(Mathf.Sin(radians));
+            Vector3 min = localBounds.min;
+            Vector3 max = localBounds.max;
+            Vector3 bedMin = localToBed.MultiplyPoint3x4(min);
+            Vector3 bedMax = bedMin;
 
-            Vector2 localCenter = (localMin + localMax) * 0.5f;
-            Vector2 localSize = localMax - localMin;
-            Vector3 scaledCenter = new Vector3(
-                localCenter.x,
-                0.0f,
-                localCenter.y) * scale;
-            Vector3 rotatedCenter =
-                Quaternion.Euler(0.0f, yaw, 0.0f) * scaledCenter;
-            Vector3 center = (placement != null
-                    ? placement.LocalPosition
-                    : Vector3.zero) +
-                rotatedCenter;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 corner = new Vector3(
+                    (i & 1) == 0 ? min.x : max.x,
+                    (i & 2) == 0 ? min.y : max.y,
+                    (i & 4) == 0 ? min.z : max.z);
+                Vector3 bedCorner = localToBed.MultiplyPoint3x4(corner);
 
-            float halfX = (localSize.x * scale * cos +
-                localSize.y * scale * sin) * 0.5f;
-            float halfZ = (localSize.x * scale * sin +
-                localSize.y * scale * cos) * 0.5f;
+                bedMin = Vector3.Min(bedMin, bedCorner);
+                bedMax = Vector3.Max(bedMax, bedCorner);
+            }
 
+            return new Bounds(
+                (bedMin + bedMax) * 0.5f,
+                bedMax - bedMin);
+        }
+
+        private static void ClampToVolume(
+            Vector2 min,
+            Vector2 max,
+            Vector3 buildVolume,
+            out Vector2 clampedMin,
+            out Vector2 clampedMax)
+        {
             float limitX = Mathf.Max(0.0f, buildVolume.x * 0.5f);
             float limitZ = Mathf.Max(0.0f, buildVolume.z * 0.5f);
 
-            float minX = Mathf.Clamp(
-                center.x - halfX,
-                -limitX,
-                limitX);
-            float maxX = Mathf.Clamp(
-                center.x + halfX,
-                -limitX,
-                limitX);
-            float minZ = Mathf.Clamp(
-                center.z - halfZ,
-                -limitZ,
-                limitZ);
-            float maxZ = Mathf.Clamp(
-                center.z + halfZ,
-                -limitZ,
-                limitZ);
+            float minX = Mathf.Clamp(min.x, -limitX, limitX);
+            float maxX = Mathf.Clamp(max.x, -limitX, limitX);
+            float minZ = Mathf.Clamp(min.y, -limitZ, limitZ);
+            float maxZ = Mathf.Clamp(max.y, -limitZ, limitZ);
 
             if (minX > maxX)
             {
-                minX = maxX = Mathf.Clamp(center.x, -limitX, limitX);
+                float center = Mathf.Clamp(
+                    (min.x + max.x) * 0.5f,
+                    -limitX,
+                    limitX);
+                minX = maxX = center;
             }
 
             if (minZ > maxZ)
             {
-                minZ = maxZ = Mathf.Clamp(center.z, -limitZ, limitZ);
+                float center = Mathf.Clamp(
+                    (min.y + max.y) * 0.5f,
+                    -limitZ,
+                    limitZ);
+                minZ = maxZ = center;
             }
 
-            bedMin = new Vector2(minX, minZ);
-            bedMax = new Vector2(maxX, maxZ);
+            clampedMin = new Vector2(minX, minZ);
+            clampedMax = new Vector2(maxX, maxZ);
         }
     }
 }
