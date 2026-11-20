@@ -5,8 +5,12 @@ namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
     /// Cheap procedural nozzle path for the active print. The path stays inside
-    /// the placed object's bed-local bounding box and uses only the abstract
-    /// print-space motion API.
+    /// the placed object's bed-local bounds and follows a precomputed per-layer
+    /// silhouette. It uses a continuous global layer parameter so layer
+    /// changes do not reset the X/Z phase or teleport the head.
+    ///
+    /// Progress comes from PrinterJob.Progress01, whose duration already
+    /// includes the console SPEED preset. Do not scale visual speed again here.
     /// </summary>
     internal sealed class PrinterMotionSimulator
     {
@@ -14,10 +18,12 @@ namespace Coursework_Master_Degree.Items.FFF
         private const float ZHopMeters = 0.0006f;
 
         private PrinterMotionBase motion;
-        private Vector2 min;
-        private Vector2 max;
+        private Vector2 fallbackMin;
+        private Vector2 fallbackMax;
+        private PrintLayerBounds[] layerBounds;
         private float totalHeight;
         private float layerHeight;
+        private int layerCount;
         private int seed;
         private bool returning;
 
@@ -27,15 +33,18 @@ namespace Coursework_Master_Degree.Items.FFF
             Bounds localBounds,
             float uniformScale,
             float targetLayerHeight,
-            int targetSeed)
+            int targetSeed,
+            PrintLayerBounds[] targetLayerBounds)
         {
             motion = targetMotion;
             layerHeight = Mathf.Max(0.00001f, targetLayerHeight);
+            layerBounds = targetLayerBounds;
             seed = targetSeed;
             returning = false;
 
             if (motion == null)
             {
+                layerCount = 0;
                 return;
             }
 
@@ -61,25 +70,30 @@ namespace Coursework_Master_Degree.Items.FFF
             float limitX = Mathf.Max(0.0f, volume.x * 0.5f);
             float limitZ = Mathf.Max(0.0f, volume.z * 0.5f);
 
-            min = new Vector2(center.x - halfX, center.z - halfZ);
-            max = new Vector2(center.x + halfX, center.z + halfZ);
+            fallbackMin = new Vector2(center.x - halfX, center.z - halfZ);
+            fallbackMax = new Vector2(center.x + halfX, center.z + halfZ);
 
-            min.x = Mathf.Clamp(min.x, -limitX, limitX);
-            max.x = Mathf.Clamp(max.x, -limitX, limitX);
-            min.y = Mathf.Clamp(min.y, -limitZ, limitZ);
-            max.y = Mathf.Clamp(max.y, -limitZ, limitZ);
+            fallbackMin.x = Mathf.Clamp(fallbackMin.x, -limitX, limitX);
+            fallbackMax.x = Mathf.Clamp(fallbackMax.x, -limitX, limitX);
+            fallbackMin.y = Mathf.Clamp(fallbackMin.y, -limitZ, limitZ);
+            fallbackMax.y = Mathf.Clamp(fallbackMax.y, -limitZ, limitZ);
 
-            if (min.x > max.x)
+            if (fallbackMin.x > fallbackMax.x)
             {
-                min.x = max.x = Mathf.Clamp(center.x, -limitX, limitX);
+                fallbackMin.x = fallbackMax.x =
+                    Mathf.Clamp(center.x, -limitX, limitX);
             }
 
-            if (min.y > max.y)
+            if (fallbackMin.y > fallbackMax.y)
             {
-                min.y = max.y = Mathf.Clamp(center.z, -limitZ, limitZ);
+                fallbackMin.y = fallbackMax.y =
+                    Mathf.Clamp(center.z, -limitZ, limitZ);
             }
 
             totalHeight = Mathf.Max(0.0f, scaledSize.y);
+            layerCount = Mathf.Max(
+                1,
+                Mathf.CeilToInt(totalHeight / layerHeight));
         }
 
         public void Resume()
@@ -120,46 +134,76 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private Vector3 CalculateTarget(float progress)
         {
-            float p = Mathf.Clamp01(progress);
-
-            if (totalHeight <= 0.0001f)
+            if (totalHeight <= 0.0001f || layerCount <= 0)
             {
-                return new Vector3(
-                    (min.x + max.x) * 0.5f,
-                    0.0f,
-                    (min.y + max.y) * 0.5f);
+                Vector2 center = (fallbackMin + fallbackMax) * 0.5f;
+                return new Vector3(center.x, 0.0f, center.y);
             }
 
-            int layerCount = Mathf.Max(
-                1,
-                Mathf.CeilToInt(totalHeight / layerHeight));
+            float p = Mathf.Clamp01(progress);
             float layerPosition = p * layerCount;
             int layer = Mathf.Min(
                 layerCount - 1,
                 Mathf.FloorToInt(layerPosition));
             float layerT = Mathf.Clamp01(layerPosition - layer);
-            float phase = (seed % 997) * 0.017f + layer * 2.399963f;
+
+            PrintLayerBounds current = GetLayerBounds(layer);
+            PrintLayerBounds next = GetLayerBounds(
+                Mathf.Min(layer + 1, layerCount - 1));
+
+            // Stay inside the current layer's bounds for most of the layer,
+            // then blend into the next layer near the top. This matches the
+            // per-layer silhouette without a hard bounds switch.
+            float blend = Mathf.SmoothStep(
+                0.0f,
+                1.0f,
+                Mathf.Clamp01((layerT - 0.8f) / 0.2f));
+            float minX = Mathf.Lerp(current.Min.x, next.Min.x, blend);
+            float maxX = Mathf.Lerp(current.Max.x, next.Max.x, blend);
+            float minZ = Mathf.Lerp(current.Min.y, next.Min.y, blend);
+            float maxZ = Mathf.Lerp(current.Max.y, next.Max.y, blend);
+
+            // Keep the angle continuous across layers. The old path added a
+            // per-layer phase offset, which made X/Z jump at every boundary.
+            float phase = (seed % 997) * 0.017f;
+            float angleX = (layerPosition * 2.0f + phase) *
+                Mathf.PI * 2.0f;
+            float angleZ = (layerPosition * 3.0f + phase * 0.7f) *
+                Mathf.PI * 2.0f;
 
             float x = Mathf.Lerp(
-                min.x,
-                max.x,
-                0.5f + 0.5f * Mathf.Sin(
-                    (layerT * 2.0f + phase) * Mathf.PI * 2.0f));
+                minX,
+                maxX,
+                0.5f + 0.5f * Mathf.Sin(angleX));
             float z = Mathf.Lerp(
-                min.y,
-                max.y,
-                0.5f + 0.5f * Mathf.Cos(
-                    (layerT * 3.0f + phase * 0.7f) * Mathf.PI * 2.0f));
+                minZ,
+                maxZ,
+                0.5f + 0.5f * Mathf.Cos(angleZ));
             float y = Mathf.Min(
                 totalHeight,
-                (layer + layerT) * layerHeight);
+                layerPosition * layerHeight);
 
-            if (layerT > 0.9f)
-            {
-                y += ZHopMeters * ((layerT - 0.9f) / 0.1f);
-            }
+            // Lift only near the top of the layer, then return to zero with
+            // zero slope at the boundary. The old ramp snapped down when the
+            // next layer started.
+            float hopT = Mathf.Clamp01((layerT - 0.8f) / 0.2f);
+            float hop = Mathf.SmoothStep(0.0f, 1.0f, hopT);
+            y += ZHopMeters * Mathf.Sin(Mathf.PI * hop);
 
             return new Vector3(x, y, z);
+        }
+
+        private PrintLayerBounds GetLayerBounds(int layer)
+        {
+            if (layerBounds != null && layerBounds.Length > 0)
+            {
+                return layerBounds[Mathf.Clamp(
+                    layer,
+                    0,
+                    layerBounds.Length - 1)];
+            }
+
+            return new PrintLayerBounds(fallbackMin, fallbackMax);
         }
     }
 }

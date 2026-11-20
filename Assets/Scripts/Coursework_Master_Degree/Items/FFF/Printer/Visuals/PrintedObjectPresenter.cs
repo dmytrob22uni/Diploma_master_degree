@@ -228,13 +228,25 @@ namespace Coursework_Master_Degree.Items.FFF
                 SupportOverhangThreshold,
                 SupportColumnRadiusMeters,
                 localBounds);
+            Vector3 buildVolume = printer.Motion != null
+                ? printer.Motion.BuildVolume
+                : Vector3.zero;
+            PrintLayerBounds[] layerBounds = PrintLayerBoundsBuilder.Build(
+                meshData,
+                localBounds,
+                uniformScale,
+                layerHeightMeters,
+                placement,
+                buildVolume);
+
             motion.Begin(
                 printer.Motion,
                 placement,
                 localBounds,
                 uniformScale,
                 layerHeightMeters,
-                seed);
+                seed,
+                layerBounds);
 
             UpdateVisuals(0.0f);
         }
