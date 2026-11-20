@@ -167,6 +167,11 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                         var surface = item.GetComponent<ItemSurfaceDataHolder>();
                         if (!surface.IsEmptyShelves())
                         {
+                            if (ShowBusyPrinterStatus(item.gameObject))
+                            {
+                                return;
+                            }
+
                             SetupTake(false);
 
                             return;
