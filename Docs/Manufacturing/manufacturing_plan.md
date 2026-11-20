@@ -26,7 +26,7 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 >
 > If a requested printer/enclosure feature cannot be expressed through those contracts, generalize the shared contract first rather than adding a model-specific branch. New rectangular XYZ models should normally be added through prefabs/data; CoreXY uses `CoreXYPrinterMotion`, independent XYZ uses `CartesianPrinterMotion`. Delta/polar volumes and multi-material printing are out of scope until explicitly approved.
 >
-> **Final documentation gate:** at the end of the final milestone, review all printer/enclosure work against this rule and write the full agent-facing setup guide for adding future printers. Start from [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md).
+> **Final documentation gate:** at the end of the final milestone, review all printer/enclosure and printable-object work against this rule and write the full agent-facing setup guides for adding future printers and objects. Start from [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md) and [`new_object_print_setup_reminder.md`](new_object_print_setup_reminder.md).
 
 ---
 
@@ -1110,6 +1110,7 @@ public class ObjectToPrintPrintProfile
     public float PrintTimeSecondsAt100PercentInfill;
     public bool SupportsRequired;
     public float SupportOverhangPercent;
+    public float WallThicknessMillimeters = 1.2f;
 }
 
 [Serializable]
@@ -1126,7 +1127,7 @@ public ObjectToPrintPrintProfile PrintProfile;
 public ObjectToPrintRequirements Requirements;
 ```
 
-Object dimensions are **derived from the prefab bounds** by `ObjectToPrintSizing`, not authored. The global reference layer height (`0.2 mm`) and speed (`80 mm/s`) come from `LayerHeightSettings` / `PrintSpeedSettings`; only the two 100% baseline numbers are per object.
+Object dimensions, solid volume and surface area are **derived from the catalog prefab** by `ObjectToPrintSizing`, not authored. The global reference layer height (`0.2 mm`) and speed (`80 mm/s`) come from `LayerHeightSettings` / `PrintSpeedSettings`; only the two 100% baseline numbers and the wall thickness are per object.
 
 Why inline instead of a separate asset:
 
@@ -1163,7 +1164,7 @@ time = profile.PrintTimeSecondsAt100PercentInfill
      * Pow(PrintSpeedSettings.ReferenceMillimetersPerSecond / selectedSpeed, 0.8);
 ```
 
-These values are intentionally simple and tunable. Infill changes time and filament; supports add a provisional multiplier; layer height and speed change time (filament stays constant at this abstraction). The reference layer height (`0.2 mm`) and speed (`80 mm/s`) are global settings.
+These values are intentionally simple and tunable. Infill changes time and filament; supports use a per-object overhang multiplier; layer height and speed change time (filament stays constant at this abstraction); confirmed scale uses the shell/infill two-term factor. The reference layer height (`0.2 mm`) and speed (`80 mm/s`) are global settings.
 
 Raw quality is projected from the same settings before post-processing:
 
@@ -1363,7 +1364,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 **Deliverables**
 
 - `ObjectToPrintPrintProfile` (baseline filament/time, supports) and `ObjectToPrintRequirements` on `ObjectToPrintMetaSO`.
-- `ObjectToPrintSizing` derives object dimensions from the prefab bounds.
+- `ObjectToPrintSizing` derives dimensions and mesh geometry from the prefab.
 - `InfillPattern` and `InfillSettings`.
 - `SupportsMode` (`None` / `Auto`) and support cost/penalty rules.
 - `FilamentMaterialProfileSO` (data type; spool reference is optional).
@@ -1443,16 +1444,17 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - the player may exceed either limit; the placement simply becomes invalid until corrected.
 - Estimates:
   - initial console estimates remain the default placement (centred, yaw `0`, scale `1`);
-  - after confirm, filament and time scale by `scale³` (fixed layer height and speed), then feed validation and `PrintJobRequest`;
+  - after confirm, filament and time use the object-derived shell/infill scale rule (fixed layer height and speed), then feed validation and `PrintJobRequest`;
   - rotation changes fit only, not volume.
 - `Place on bed` button in the console; `Start print` requires a confirmed placement.
 - Placement is draft-only and required for every print. It is not stored on the printer or reused; leaving the console or starting a print discards it so the next job must place the object again.
 - **Placement UI is authored by the project owner.** The roadmap asks for the hints/validity/confirm-cancel UI before implementation.
 - Editor tool `PrintProfileGenerator`:
   - batch or selected `ObjectToPrintMetaSO` entries from the catalog,
-  - load the prefab, combine renderer bounds (report only; runtime sizing uses the same data), compute mesh volume,
+  - load the prefab, combine renderer bounds (report only; runtime sizing uses the same data), compute mesh volume and surface area,
   - estimate overhang ratio and set `SupportsRequired` plus `SupportOverhangPercent`,
   - seed 100% infill filament/time from volume and a configurable reference flow,
+  - write the configurable wall thickness used by the shell/infill scale rule,
   - share the reference layer height/speed and flow in one editor settings asset,
   - report what was written; slicer values still override the seeds.
 
@@ -1473,13 +1475,13 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 1. **Done:** push the ghost to each plate corner and beyond; the wrong state appears and confirm is blocked.
 2. **Done:** go below the dynamic min (`2 cm` largest dimension) and above the max (`BuildVolume`/plate fit); the wrong state appears and confirm is blocked.
-3. **Done:** recalculated estimates match the cube-scaling rule at the minimum, `1.0` and the maximum scale.
+3. **Re-check required after the estimate refinement:** recalculated estimates match the shell/infill scale rule at the minimum, `1.0` and the maximum scale, and support cost follows each object's overhang percentage.
 4. **Done:** cancel restores the previous placement and confirm survives console close/reopen.
 5. **Done:** the editor generator on the bunny matches the seeded volume/filament against the slicer.
 6. **Done:** confirm and cancel return with the same blend duration as entering.
 7. **Done:** the project owner authored the placement UI on `object_place_canvas`.
 
-**M2.5 gate passed; M3 may start after the M2.5 commit.**
+**M2.5 gate passed; M3 may start after the M2.5 commit. The estimate refinement recheck is a post-M2.5 follow-up.**
 
 ---
 
@@ -1711,7 +1713,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Screen animations and notifications.
 - Save/load if desired.
 - Optional resume-from-partial-print.
-- **Final documentation gate:** replace [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md) with the full agent-facing setup guide for adding new FFF printer models. It must cover prefab wiring, motion, parts, spools, enclosure roles, metadata, validation and verification.
+- **Final documentation gate:** replace [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md) with the full agent-facing setup guide for adding new FFF printer models, and replace [`new_object_print_setup_reminder.md`](new_object_print_setup_reminder.md) with the full guide for adding printable-object prefabs, profiles, ghosts and calibration. Both must cover their prefab/data contracts, validation and verification.
 - Production cleanup:
   - remove the calibration-only `PrintBedAnchorDebug` and `PrinterMotionDebug` components from shipped prefabs, or keep them disabled and stripped from the player build;
   - remove any placed `PrintRevealDebug` and temporary test cubes;
@@ -1779,8 +1781,8 @@ Fill this table during M0 and update it during later milestones.
 | Placement scale | soft limits: largest dimension ≥ `2 cm`; footprint/height within plate/`BuildVolume` | overscale/underscale is allowed but invalid; no clamp |
 | Plate margin | `2 mm` inside the plate bounds | keeps the footprint off the plate edge |
 | Placement shader | `_printer_bed_placement_state` `0/1`, `_PRINTER_BED_PLACEMENT_STATE_WRONG` | ghost validity feedback |
-| Scale estimate rule | filament and time × `scale³` | fixed layer height and speed |
-| Support cost (provisional) | filament × `1.06`, time × `1.12` | replace with `SupportOverhangPercent` model later |
+| Scale estimate rule | two-term shell/infill factor; at `scale = 1` it is exactly `1` | shell `s²`, infill `s³`; uses profile `WallThicknessMillimeters` |
+| Support cost | filament × `1 + 0.06 × overhang / 15.48308`, time × `1 + 0.12 × overhang / 15.48308` | bunny reference overhang is `15.48308%`; other objects use their own `SupportOverhangPercent` |
 | Support rule | required object: `None` → `-25` raw and max `55`; optional `Auto` → warning only | `PrintJobValidator` / `PrintQualityEstimator` |
 | Material gating | none | any spool material prints; M3/M5 use material for temperatures and quality |
 | Bunny baseline (calibrated) | `85.36 m` at 100%, `36 720 s` at 100% | PrusaSlicer, `0.2 mm` / `80 mm/s`; dimensions derived |
@@ -1895,7 +1897,7 @@ Fill this table during M0 and update it during later milestones.
 - Audio/VFX.
 - Save/load, if implemented.
 - Production cleanup: calibration/debug components removed or disabled, test cubes removed, editor-only debug helpers excluded from the player.
-- Final documentation gate is complete: the new-printer agent setup guide covers the universal setup contract, current supported models and deferred cases.
+- Final documentation gate is complete: the new-printer and new-object agent setup guides cover the universal contracts, current supported profiles and deferred cases.
 
 ---
 
@@ -1937,7 +1939,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, bounded nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
 
 
 M1 is code-complete:
@@ -1975,7 +1977,7 @@ Remaining M1 work (manual gate):
 
 M2 is implemented:
 
-- `ObjectToPrintPrintProfile` (two baselines + supports) and `ObjectToPrintRequirements` live on `ObjectToPrintMetaSO`; object size is derived by `ObjectToPrintSizing`.
+- `ObjectToPrintPrintProfile` (two baselines + supports + wall thickness) and `ObjectToPrintRequirements` live on `ObjectToPrintMetaSO`; size/geometry is derived by `ObjectToPrintSizing`.
 - `InfillPattern`, `LayerHeightPreset`, `PrintSpeedPreset`, `PrintEstimates`, `PrintQualityEstimator`, `PrintJobRequest`, `PrintJobValidationResult` and `PrintJobValidator` cover settings, estimates, raw quality and rules.
 - `Printer` exposes `PendingJob`, `HasPendingJob`, `HasPartialPrint`, `CriticalPartLocations`, `PrintPlateLocation` and `SpoolSlotDefinitions` references.
 - The console's print-job card has an object picker, layer-height/speed/infill/supports rows, time/filament/raw-quality summary, validation text, and a gated `Start print`.
@@ -1992,7 +1994,7 @@ Remaining M2 work (manual gate):
 
 M1's remaining device-type/aspect checks are carried forward; they do not block M2 validation.
 
-M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add data-driven up-to-four spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The manual gate passed with the authored tuning values.
+M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add data-driven up-to-four spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The original M2.5 manual gate passed with the authored tuning values. The post-M2.5 estimate refinement (shell/infill scale and overhang-based supports) still needs its scale/support re-check.
 
 The M3 first iteration is implemented and its earlier manual checks passed. The follow-up spool, docking, calibration-sensitive and CoreXY work extended the same scope. M3 is complete and marked done on 2026-11-20; CoreXY play-mode validation and 3/4-slot presentation remain deferred until the corresponding assets exist.
 
@@ -2152,7 +2154,9 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-18 | Expose layer height and speed only | They are the two settings with clear time/quality trade-offs; nozzle diameter is hardware |
 | 2026-11-18 | Raw quality as a range in M2 | Gives post-processing a target before the full M5 quality model exists |
 | 2026-11-18 | Bed placement as M2.5 | Job setup, not printing; M3/M4 need stored placement before execution/visuals |
-| 2026-11-18 | Uniform scale allowed in placement | Volume matters; scale changes estimates by `scale³`; bounds are dynamic |
+| 2026-11-18 | Uniform scale allowed in placement | Volume matters; estimates use a shell/infill two-term scale rule; bounds are dynamic |
+| 2026-11-20 | Object geometry drives the scale estimate | `ObjectToPrintSizing` caches solid volume and surface area; the profile wall thickness yields the shell share, and `scale = 1` preserves the calibrated profile |
+| 2026-11-20 | Support cost follows the object overhang | The bunny’s `15.48308%` reference reproduces its `1.06`/`1.12` cost; other objects use their own `SupportOverhangPercent` |
 | 2026-11-18 | Scale limits from printer/object | Max must fit `BuildVolume` and plate; min keeps the object at least `2 cm` |
 | 2026-11-18 | `PrintBedAnchor` is the placement reference | One source for surface, size and front direction |
 | 2026-11-18 | Placement is per-job and not persisted | Same as slicing: each print is set up fresh |
@@ -2372,22 +2376,40 @@ For every meta, set `PrintProfile`:
 | `FilamentMetersAt100PercentInfill` | Filament for a solid print at the global reference profile |
 | `PrintTimeSecondsAt100PercentInfill` | Time for a solid print at the global reference profile |
 | `SupportsRequired` | Geometry needs supports; drives the console default and validation |
-| `SupportOverhangPercent` | Optional generated overhang ratio for future support-cost tuning |
+| `SupportOverhangPercent` | Generated overhang ratio; drives per-object support cost and the required-support warning |
+| `WallThicknessMillimeters` | Fixed shell thickness for the scale rule; defaults to `1.2 mm` |
 | `DefaultInfill` (Requirements) | Initial console selection |
 
-Object width/height/depth are **not authored**: `ObjectToPrintSizing` derives them from the catalog prefab bounds. The reference layer height and speed are global (`0.2 mm`, `80 mm/s`).
+Object width/height/depth, solid volume and surface area are **not authored**: `ObjectToPrintSizing.GetGeometry` derives them once from the catalog prefab. The reference layer height and speed are global (`0.2 mm`, `80 mm/s`).
 
 The estimates shown by the console are:
 
 ```
+shellShare = clamp01(min(objectVolume, objectSurfaceArea * wallThickness)
+                     / (objectVolume * density(infill)))
+
+scaleFactor = shellShare * scale² + (1 - shellShare) * scale³
+
+supportFilament = 1 + 0.06 * overhang / 15.48308
+supportTime     = 1 + 0.12 * overhang / 15.48308
+
 filament = FilamentMetersAt100PercentInfill * density(infill)
-         * (supports Auto ? 1.06 : 1)
+         * (supports Auto ? supportFilament : 1)
+         * scaleFactor
+
 time     = PrintTimeSecondsAt100PercentInfill
          * infillTimeFactor
          * (0.2 / selectedLayerHeight)
          * (80 / selectedSpeed)^0.8
-         * (supports Auto ? 1.12 : 1)
+         * (supports Auto ? supportTime : 1)
+         * scaleFactor
 ```
+
+`objectVolume` and `objectSurfaceArea` are derived once from the catalog
+prefab by `ObjectToPrintSizing.GetGeometry`; `wallThickness` comes from the
+profile. At `scale = 1`, `scaleFactor` is exactly `1`, preserving the
+calibrated profile. A missing/invalid mesh or wall thickness falls back to
+the old `scale³` rule.
 
 The job card exposes `LAYER`, `SPEED`, `INFILL` and `SUPPORTS` as four rows. Raw quality is projected from the same settings and shown next to the estimates.
 
@@ -2503,7 +2525,7 @@ Fill these in after the first slicer comparison and copy the final numbers into 
 | Bunny filament at 100% infill | `85.36 m` |
 | Bunny time at 100% infill at `0.2 mm` / `80 mm/s` | `36 720 s` (`10 h 12 min`) |
 | Supports required? | yes |
-| Auto support cost compared with None | filament ×1.06, time ×1.12 |
+| Auto support cost at bunny overhang | filament ×1.06, time ×1.12 at `15.48308%`; formula scales by each object's overhang |
 | Required + None quality (expect `55-55`) | `55-55` |
 | Slicer estimate at Grid / Normal / Normal | `28.53 m`, `3 h 53 min` |
 | Console estimate at Grid / Normal / Normal | `28.5 m`, `3 h 53 min` |
@@ -2552,7 +2574,7 @@ Configuration:
 4. Camera orbit pitch is clamped to `15°–75°` above the plate; zoom distance is clamped too. `PrintBedAnchor` supplies the plate plane, size and the front direction used for the initial yaw.
 5. Estimates:
    - default console estimates assume centred, yaw `0`, scale `1`;
-   - after a confirmed placement, multiply filament and time by `scale³`;
+   - after a confirmed placement, apply the shell/infill two-term scale factor;
    - rotation does not change volume/estimates in M2.5 (it can affect supports/quality later).
 6. Store `localPosition`, `yaw` and `uniformScale` on `PrintJobRequest`; the object boundary corners are derived from the ghost bounds and used for validation.
 7. Confirm is disabled while invalid; cancel returns to the console without saving. `Start print` requires a confirmed placement, and placement is required again for the next job.
@@ -2587,13 +2609,14 @@ It can:
 
 1. Load each catalog meta's prefab with `PrefabUtility.LoadPrefabContents`.
 2. Combine all child `Renderer.bounds` and report the prefab-root-space size. Dimensions are runtime-derived by `ObjectToPrintSizing`; do not write them into the meta.
-3. Compute mesh volume from the triangle soup (signed tetrahedra sum). For a watertight mesh this is the solid volume; for open meshes, report the result as approximate.
+3. Compute mesh volume and surface area from the triangle soup (signed tetrahedra sum and triangle areas). For a watertight mesh this is the solid volume; for open meshes, report the result as approximate.
 4. Compute the overhang ratio: triangles whose normal is below the overhang angle (`45°` default) relative to the plate up; set `SupportsRequired` above a configurable threshold and write `SupportOverhangPercent`.
 5. Seed 100% infill filament from `volume / (π × (filamentDiameter/2)²)`.
 6. Seed 100% infill time from `volume / referenceFlowMm3PerSecond`, with the flow value exposed in the tool settings.
-7. Write through `SerializedObject`, mark the asset dirty, and report a per-object summary; support batch over the whole catalog.
+7. Write `WallThicknessMillimeters` for the shell/infill scale rule; report the resulting scale-1 shell share.
+8. Write through `SerializedObject`, mark the asset dirty, and report a per-object summary; support batch over the whole catalog.
 
-Model meshes must have **Read/Write enabled** for volume/overhang. The bunny FBX now has it enabled, so the tool can report volume and overhang. Defaults: `1.75 mm` filament, `12 mm3/s` reference flow, `45°` overhang, `5%` supports threshold.
+Model meshes must have **Read/Write enabled** for volume/overhang. The bunny FBX now has it enabled, so the tool can report volume and overhang. Defaults: `1.75 mm` filament, `12 mm3/s` reference flow, `1.2 mm` wall thickness, `45°` overhang, `5%` supports threshold.
 
 Limitations:
 
@@ -2613,7 +2636,7 @@ Recommended workflow:
 
 Supports are a job setting, not free-form geometry:
 
-1. `ObjectToPrintPrintProfile.SupportsRequired` is the geometric truth: the editor generator sets it from the overhang ratio. `SupportOverhangPercent` records the ratio for later tuning.
+1. `ObjectToPrintPrintProfile.SupportsRequired` is the geometric truth: the editor generator sets it from the overhang ratio. `SupportOverhangPercent` drives the per-object support cost and the required-support warning.
 2. The console shows `SUPPORTS: None / Auto`.
 3. Default:
    - required → `Auto`,
@@ -2621,9 +2644,10 @@ Supports are a job setting, not free-form geometry:
 4. Validation and quality:
    - required + `None` → allowed, device-UI warning `This object needs supports.`, raw quality `-25` and capped at `55`;
    - not required + `Auto` → warning `Supports are not mandatory here.`, normal extra cost.
-5. Cost (provisional until `SupportOverhangPercent` is wired into the estimate):
-   - filament × `1.06`,
-   - time × `1.12`.
+5. Cost is derived from the generated overhang ratio:
+   - `supportFilament = 1 + 0.06 × overhang / 15.48308`,
+   - `supportTime = 1 + 0.12 × overhang / 15.48308`.
+   The bunny's `15.48308%` reference reproduces the previous `1.06` / `1.12`; objects with less overhang pay less and objects with more pay more. If supports are required but the overhang is unavailable, the reference overhang is used as a conservative fallback.
 6. Raw quality: `Auto` subtracts `2` marks for the support contact surfaces; required + `None` applies the severe penalty above.
 7. Post-processing: supports must be removed before sale/quality; leaving them caps the final quality. This is M5 work.
 8. Visualization staging:
@@ -2682,7 +2706,7 @@ Job flow:
 2. Press `Place on bed`; the placement camera focuses the plate and the ghost starts at the previous confirmed placement, or at the plate centre with yaw `0` and scale `1`.
 3. Confirm a valid placement; the console returns with the placement stored on the draft job. Cancel keeps the previous placement.
 4. `Start print` is disabled until a valid placement exists. A confirmed placement survives console close/reopen while the same draft is selected, and is cleared when the object/printer/device changes or after a job is queued.
-5. Confirmed estimates multiply filament and time by `scale³`; rotation changes fit only.
+5. Confirmed estimates use the shell/infill two-term scale factor; rotation changes fit only.
 
 Manual gate to record:
 
@@ -2691,7 +2715,8 @@ Manual gate to record:
 | Ghost starts centred on first entry | Pass |
 | Move to each plate corner and beyond; wrong state and blocked confirm | Pass |
 | Minimum 2 cm and maximum plate/height scales; wrong state and blocked confirm | Pass |
-| Estimates match the cube rule at min / 1.0 / max scale | Pass |
+| Estimates match the shell/infill rule at min / 1.0 / max scale | Re-check |
+| Support cost follows each object's overhang | Re-check |
 | Cancel restores the previous placement; confirm survives console close/reopen | Pass |
 | `object_place_reason` lists every current reason with `- ` prefix | Pass |
 | Camera orbit stays locked on the volume centre; pitch/zoom limits hold | Pass |

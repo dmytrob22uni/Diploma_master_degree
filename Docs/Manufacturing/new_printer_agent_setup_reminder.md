@@ -93,4 +93,4 @@ The final setup guide must cover, in order:
 
 ## Reminder
 
-Update the roadmap when the guide is written, record the printer models and deferred cases it covers, and keep this file as the entry point for future coding agents adding printer models.
+Update the roadmap when the guide is written, record the printer models and deferred cases it covers, and keep this file as the entry point for future coding agents adding printer models. Printable-object setup is covered separately by [`new_object_print_setup_reminder.md`](new_object_print_setup_reminder.md).
