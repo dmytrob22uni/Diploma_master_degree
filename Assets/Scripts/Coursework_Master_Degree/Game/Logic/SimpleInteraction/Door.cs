@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Coursework_Master_Degree.Items.Contracts;
+using Coursework_Master_Degree.Items.FFF;
 
 namespace Coursework_Master_Degree.Game.Logic.SimpleInteraction
 {
-    public class Door : MonoBehaviour, IInteractable
+    public class Door : MonoBehaviour, IInteractable, IPrinterBusyInteraction
     {
         public DoorSide DoorSide;
         public Transform Hinge;
@@ -15,6 +16,15 @@ namespace Coursework_Master_Degree.Game.Logic.SimpleInteraction
         private Vector3 openedRotation;
         private Quaternion closedRotationQuaternion;
         private Quaternion openedRotationQuaternion;
+
+        private readonly List<InteractionOption> interactions =
+            new List<InteractionOption>(1);
+        private readonly InteractionOption lockedOption =
+            new InteractionOption { Info = "Locked door" };
+        private readonly InteractionOption blockedOption =
+            new InteractionOption();
+        private readonly InteractionOption doorOption =
+            new InteractionOption { Info = "Door" };
 
         [Header("Animation")]
         [Min(0.01f)]
@@ -36,6 +46,8 @@ namespace Coursework_Master_Degree.Game.Logic.SimpleInteraction
         public bool IsOpened => isOpened;
         public bool IsLocked => isLocked;
 
+        public bool AllowsPrinterBusyHover => true;
+
         private void Awake()
         {
             if (DoorSide == DoorSide.Left)
@@ -49,6 +61,7 @@ namespace Coursework_Master_Degree.Game.Logic.SimpleInteraction
 
             closedRotationQuaternion = Quaternion.Euler(closedRotation);
             openedRotationQuaternion = Quaternion.Euler(openedRotation);
+            doorOption.OnExecute = ToggleDoor;
         }
 
         private void Update()
@@ -113,26 +126,25 @@ namespace Coursework_Master_Degree.Game.Logic.SimpleInteraction
 
         public IReadOnlyList<InteractionOption> GetInteractions()
         {
-            var options = new List<InteractionOption>();
+            interactions.Clear();
 
             if (isLocked)
             {
-                options.Add(new InteractionOption
-                {
-                    Info = "Locked door",
-                    OnExecute = null
-                });
-            }
-            else
-            {
-                options.Add(new InteractionOption
-                {
-                    Info = "Door",
-                    OnExecute = ToggleDoor
-                });
+                interactions.Add(lockedOption);
+                return interactions;
             }
 
-            return options;
+            Printer printer = Printer.FindFor(gameObject);
+
+            if (printer != null && !printer.CanOpenEnclosureDoors)
+            {
+                blockedOption.Info = printer.EnclosureDoorBlockReason;
+                interactions.Add(blockedOption);
+                return interactions;
+            }
+
+            interactions.Add(doorOption);
+            return interactions;
         }
     }
 }

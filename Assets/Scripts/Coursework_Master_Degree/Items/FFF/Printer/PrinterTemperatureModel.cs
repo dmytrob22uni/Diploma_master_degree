@@ -233,6 +233,72 @@ namespace Coursework_Master_Degree.Items.FFF
             return State.Nozzle <= temperature && State.Bed <= temperature;
         }
 
+        /// <summary>
+        /// Progress from the temperatures captured when preheating started to
+        /// the current material targets. Both nozzle and bed contribute
+        /// equally, so a lagging axis keeps the value below 100%.
+        /// </summary>
+        public float HeatingProgress01(float startNozzle, float startBed)
+        {
+            return AverageProgress(
+                HeatingFraction(
+                    State.Nozzle,
+                    startNozzle,
+                    State.NozzleTarget),
+                HeatingFraction(
+                    State.Bed,
+                    startBed,
+                    State.BedTarget));
+        }
+
+        /// <summary>
+        /// Progress from the temperatures captured when cooling started down
+        /// to ambient. A printer that is already at or below ambient reads as
+        /// fully cooled.
+        /// </summary>
+        public float CoolingProgress01(
+            float startNozzle,
+            float startBed,
+            float ambient)
+        {
+            return AverageProgress(
+                1.0f - CoolingFraction(State.Nozzle, startNozzle, ambient),
+                1.0f - CoolingFraction(State.Bed, startBed, ambient));
+        }
+
+        private static float HeatingFraction(
+            float current,
+            float start,
+            float target)
+        {
+            if (target <= start + 0.001f)
+            {
+                return 1.0f;
+            }
+
+            return Mathf.Clamp01(
+                (current - start) / (target - start));
+        }
+
+        private static float CoolingFraction(
+            float current,
+            float start,
+            float ambient)
+        {
+            if (start <= ambient + 0.001f)
+            {
+                return 0.0f;
+            }
+
+            return Mathf.Clamp01(
+                (current - ambient) / (start - ambient));
+        }
+
+        private static float AverageProgress(float a, float b)
+        {
+            return Mathf.Clamp01((a + b) * 0.5f);
+        }
+
         public float NormalizedNozzleTemperature =>
             State.NozzleTarget > 0.001f
                 ? Mathf.Clamp01(State.Nozzle / State.NozzleTarget)

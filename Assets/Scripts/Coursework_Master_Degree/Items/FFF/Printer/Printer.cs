@@ -180,6 +180,11 @@ namespace Coursework_Master_Degree.Items.FFF
         private bool isCalibrated;
         private bool isFinalizingPrint;
         private bool pauseVisualSettled;
+        private float preheatStartNozzle;
+        private float preheatStartBed;
+        private float coolingStartNozzle;
+        private float coolingStartBed;
+        private bool warnedPendingJobDoors;
 
         private PrinterEnclosure dockedEnclosure;
         private readonly Dictionary<string, PartLocation> dockedSpoolLocations =
@@ -255,6 +260,50 @@ namespace Coursework_Master_Degree.Items.FFF
         /// </summary>
         public bool CanOpenInteractions =>
             !IsBusy || IsPausedServiceReady;
+
+        /// <summary>
+        /// Temperature progress for the current preheating interval.
+        /// </summary>
+        public float HeatingProgress01 =>
+            temperatureModel.HeatingProgress01(
+                preheatStartNozzle,
+                preheatStartBed);
+
+        /// <summary>
+        /// Temperature progress for the current cooling interval.
+        /// </summary>
+        public float CoolingProgress01 =>
+            temperatureModel.CoolingProgress01(
+                coolingStartNozzle,
+                coolingStartBed,
+                Temperature.Ambient);
+
+        /// <summary>
+        /// Doors may be opened while idle, paused, cooling or finished. They
+        /// are interlocked during active heating, printing and calibration.
+        /// </summary>
+        public bool CanOpenEnclosureDoors =>
+            OperationalState != PrinterOperationalState.Preheating &&
+            OperationalState != PrinterOperationalState.Printing &&
+            OperationalState != PrinterOperationalState.Calibrating;
+
+        public string EnclosureDoorBlockReason
+        {
+            get
+            {
+                switch (OperationalState)
+                {
+                    case PrinterOperationalState.Calibrating:
+                        return "Stop calibration before opening the enclosure.";
+                    case PrinterOperationalState.Preheating:
+                        return "Wait for heating to finish or hard stop " +
+                            "before opening the enclosure.";
+                    default:
+                        return "Pause or stop the print before opening the " +
+                            "enclosure.";
+                }
+            }
+        }
 
         public bool IsPrintActive =>
             stateMachine.IsActiveJobState;
@@ -850,6 +899,25 @@ namespace Coursework_Master_Degree.Items.FFF
         {
             get
             {
+                if (OperationalState == PrinterOperationalState.Preheating)
+                {
+                    return $"Heating " +
+                        $"{HeatingProgress01 * 100.0f:0}%";
+                }
+
+                if (OperationalState == PrinterOperationalState.Cooling)
+                {
+                    return $"Cooling " +
+                        $"{CoolingProgress01 * 100.0f:0}%";
+                }
+
+                if (HasPendingJob &&
+                    DockedEnclosure != null &&
+                    !DockedEnclosure.AreDoorsClosed)
+                {
+                    return "Close enclosure doors";
+                }
+
                 if (activeJob != null)
                 {
                     return $"{StateLabel(OperationalState)} " +
@@ -917,6 +985,13 @@ namespace Coursework_Master_Degree.Items.FFF
                 if (!string.IsNullOrEmpty(PausePenaltyText))
                 {
                     summary += $" · {PausePenaltyText}";
+                }
+
+                if (!HasPendingJob &&
+                    DockedEnclosure != null &&
+                    !DockedEnclosure.AreDoorsClosed)
+                {
+                    summary += " · doors open";
                 }
 
                 return summary;
@@ -1013,6 +1088,23 @@ namespace Coursework_Master_Degree.Items.FFF
             float simulatedDelta = Mathf.Min(Time.deltaTime, 0.1f) *
                 Mathf.Max(1.0f, PrintSpeedMultiplier);
 
+            PrinterEnclosure enclosure = DockedEnclosure;
+
+            if (enclosure != null &&
+                !enclosure.AreDoorsClosed &&
+                (OperationalState == PrinterOperationalState.Preheating ||
+                 OperationalState == PrinterOperationalState.Printing))
+            {
+                Debug.LogWarning(
+                    $"[Printer] {DisplayName} paused because an enclosure " +
+                    "door opened.",
+                    this);
+
+                SetState(PrinterOperationalState.Paused);
+                pauseVisualSettled = false;
+                BeginHomeMove();
+            }
+
             if (isMovingHome)
             {
                 TickHomeMove(simulatedDelta);
@@ -1100,6 +1192,7 @@ namespace Coursework_Master_Degree.Items.FFF
         internal void ClearPendingJob()
         {
             PendingJob = null;
+            warnedPendingJobDoors = false;
         }
 
         public bool TryPause(out string reason)
@@ -1125,6 +1218,14 @@ namespace Coursework_Master_Degree.Items.FFF
             if (OperationalState != PrinterOperationalState.Paused)
             {
                 reason = "The printer is not paused.";
+                return false;
+            }
+
+            PrinterEnclosure enclosure = DockedEnclosure;
+
+            if (enclosure != null && !enclosure.AreDoorsClosed)
+            {
+                reason = "Close all enclosure doors before resuming.";
                 return false;
             }
 
@@ -1496,6 +1597,24 @@ namespace Coursework_Master_Degree.Items.FFF
             {
                 return;
             }
+
+            PrinterEnclosure enclosure = DockedEnclosure;
+
+            if (enclosure != null && !enclosure.AreDoorsClosed)
+            {
+                if (!warnedPendingJobDoors)
+                {
+                    warnedPendingJobDoors = true;
+                    Debug.LogWarning(
+                        $"[Printer] {DisplayName} is waiting for the " +
+                        "enclosure doors to close.",
+                        this);
+                }
+
+                return;
+            }
+
+            warnedPendingJobDoors = false;
 
             if (!HasAllCriticalParts(out string criticalReason))
             {
@@ -2041,6 +2160,21 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private void SetState(PrinterOperationalState state)
         {
+            PrinterOperationalState previous = stateMachine.State;
+
+            if (state == PrinterOperationalState.Preheating &&
+                previous != PrinterOperationalState.Preheating)
+            {
+                preheatStartNozzle = Temperature.Nozzle;
+                preheatStartBed = Temperature.Bed;
+            }
+            else if (state == PrinterOperationalState.Cooling &&
+                previous != PrinterOperationalState.Cooling)
+            {
+                coolingStartNozzle = Temperature.Nozzle;
+                coolingStartBed = Temperature.Bed;
+            }
+
             stateMachine.Enter(state);
         }
 

@@ -82,7 +82,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                         Printer.FindFor(hit.collider.gameObject);
 
                     if (cachedPrinter != null &&
-                        !cachedPrinter.CanOpenInteractions)
+                        !cachedPrinter.CanOpenInteractions &&
+                        !AllowsBusyPrinterHover(hit.collider))
                     {
                         if (cachedBlockedPrinter != cachedPrinter)
                         {
@@ -91,6 +92,12 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                             ClearHover();
                         }
 
+                        return;
+                    }
+
+                    if (cachedInteractable is IPrinterBusyInteraction)
+                    {
+                        RefreshBusyInteractable();
                         return;
                     }
 
@@ -117,7 +124,9 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                 Printer busyPrinter = Printer.FindFor(hit.collider.gameObject);
 
-                if (busyPrinter != null && !busyPrinter.CanOpenInteractions)
+                if (busyPrinter != null &&
+                    !busyPrinter.CanOpenInteractions &&
+                    !AllowsBusyPrinterHover(hit.collider))
                 {
                     cachedCollider = hit.collider;
                     cachedBlockedPrinter = busyPrinter;
@@ -160,6 +169,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 // simple interactable
                 if (hit.collider.TryGetComponent<IInteractable>(out var simple))
                 {
+                    cachedCollider = hit.collider;
+
                     if (simple == cachedInteractable)
                     {
                         return;
@@ -248,6 +259,57 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         {
             GameStateManager.Instance.ChangeState(
                 new GameStateInteractionsList(cachedInteractions));
+        }
+
+        private static bool AllowsBusyPrinterHover(Collider collider)
+        {
+            if (collider == null)
+            {
+                return false;
+            }
+
+            IPrinterBusyInteraction interaction =
+                collider.GetComponentInParent<IPrinterBusyInteraction>();
+
+            return interaction != null &&
+                interaction.AllowsPrinterBusyHover;
+        }
+
+        private void RefreshBusyInteractable()
+        {
+            if (cachedInteractable == null)
+            {
+                return;
+            }
+
+            IReadOnlyList<InteractionOption> interactions =
+                cachedInteractable.GetInteractions();
+
+            if (interactions == null || interactions.Count == 0)
+            {
+                ClearHover();
+                return;
+            }
+
+            if (interactions.Count > 1)
+            {
+                cachedInteractions = interactions;
+                cachedAction = ShowInteractions;
+                SetupInteract(defaultInteractText);
+                return;
+            }
+
+            if (cachedAction == interactions[0].OnExecute &&
+                InteractText != null &&
+                InteractText.text == interactions[0].Info &&
+                InteractRoot != null &&
+                InteractRoot.activeSelf)
+            {
+                return;
+            }
+
+            cachedAction = interactions[0].OnExecute;
+            SetupInteract(interactions[0].Info);
         }
 
         private void ClearCachedCollider()

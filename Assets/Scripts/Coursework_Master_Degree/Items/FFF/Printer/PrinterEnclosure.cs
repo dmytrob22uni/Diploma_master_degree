@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Coursework_Master_Degree.Game.Logic.SimpleInteraction;
 using Coursework_Master_Degree.Items.Part;
 
 namespace Coursework_Master_Degree.Items.FFF
@@ -97,7 +98,72 @@ namespace Coursework_Master_Degree.Items.FFF
         [Tooltip("Enclosure parts that must be installed before printing.")]
         public PartLocation[] CriticalPartLocations;
 
+        [Header("Doors")]
+        [Tooltip(
+            "Doors that must be closed before printing. Leave empty to " +
+            "auto-find child doors.")]
+        public Door[] Doors;
+
         public Printer Printer { get; private set; }
+
+        private bool doorsResolved;
+
+        private void Awake()
+        {
+            EnsureDoors();
+        }
+
+        /// <summary>
+        /// All installed doors must be closed and settled before a print can
+        /// start or resume. An enclosure without doors is always available.
+        /// </summary>
+        public bool AreDoorsClosed
+        {
+            get
+            {
+                EnsureDoors();
+
+                if (Doors == null || Doors.Length == 0)
+                {
+                    return true;
+                }
+
+                for (int i = 0; i < Doors.Length; i++)
+                {
+                    Door door = Doors[i];
+
+                    if (door == null)
+                    {
+                        continue;
+                    }
+
+                    if (door.IsOpened || door.IsAnimating)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        public string DoorWarning =>
+            "Close all enclosure doors before printing or resuming.";
+
+        private void EnsureDoors()
+        {
+            if (doorsResolved)
+            {
+                return;
+            }
+
+            doorsResolved = true;
+
+            if (Doors == null || Doors.Length == 0)
+            {
+                Doors = GetComponentsInChildren<Door>(true);
+            }
+        }
 
         public void BindPrinter(Printer printer)
         {

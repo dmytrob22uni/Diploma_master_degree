@@ -146,6 +146,13 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 result.Errors.Add("A partial print is still on the bed.");
             }
 
+            PrinterEnclosure enclosure = printer.DockedEnclosure;
+
+            if (enclosure != null && !enclosure.AreDoorsClosed)
+            {
+                result.Errors.Add(enclosure.DoorWarning);
+            }
+
             CheckParts(printer, result);
 
             if (printer.PrintPlateLocation == null ||

@@ -1538,6 +1538,13 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 signature.Append("CAL:")
                     .Append(printer.CalibrationWarningText)
                     .Append('|');
+
+                if (printer.DockedEnclosure != null)
+                {
+                    signature.Append("DOORS:")
+                        .Append(printer.DockedEnclosure.AreDoorsClosed)
+                        .Append('|');
+                }
             }
 
             for (int i = 0; i < result.Errors.Count; i++)
@@ -1631,6 +1638,19 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 CreateValidationRow(
                     "Ready to print.",
                     DeviceConsoleStyle.TextMuted);
+            }
+
+            if (printer != null &&
+                printer.DockedEnclosure != null &&
+                !printer.DockedEnclosure.AreDoorsClosed &&
+                (printer.HasPendingJob ||
+                 printer.IsPrintActive ||
+                 printer.HasPartialPrint ||
+                 printer.HasCompletedPrint))
+            {
+                CreateValidationRow(
+                    $"- {printer.DockedEnclosure.DoorWarning}",
+                    DeviceConsoleStyle.Text);
             }
 
             if (validationScroll != null)
