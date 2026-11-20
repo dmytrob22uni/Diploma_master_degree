@@ -9,23 +9,17 @@ using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
 namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
-    /// Owns the visible object for one printer job. It instantiates the real
-    /// object prefab, applies the selected spool's printing material, drives
-    /// the layer reveal/motion/supports, and finalizes the object only after
-    /// cooling and parking are complete.
+    /// Owns the visible object for one printer job. Live printing uses the
+    /// spool's reveal shader and backface lighting. A settled pause or a
+    /// finalized partial print gets a sliced, capped surface with the spool's
+    /// regular final material; resuming a pause restores the printing shader.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class PrintedObjectPresenter : MonoBehaviour
     {
-        private static readonly int RevealHeightId =
-            Shader.PropertyToID("_reveal_height");
-
         [Header("Reveal")]
         [Min(1.0f)]
         [SerializeField] private float RevealUpdatesPerSecond = 15.0f;
-
-        [Min(0.01f)]
-        [SerializeField] private float CapUpdateIntervalSeconds = 0.1f;
 
         [Header("Supports")]
         [Min(0)]
@@ -59,12 +53,8 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private Material printingMaterial;
         private Material finalMaterial;
-        private Material capMaterial;
+        private Material partialMaterial;
         private Material fallbackMaterial;
-
-        private Mesh capMesh;
-        private GameObject capObject;
-        private MeshRenderer capRenderer;
 
         private Mesh slicedMesh;
         private GameObject slicedObject;
@@ -73,17 +63,17 @@ namespace Coursework_Master_Degree.Items.FFF
         private float uniformScale = 1.0f;
         private float layerHeightMeters = 0.0002f;
         private float lastRevealTime = -1000.0f;
-        private float lastCapTime = -1000.0f;
-        private float lastCapHeight = -1.0f;
         private int seed;
         private bool isPartial;
         private bool isCompleted;
         private bool isFinalized;
+        private bool isPartialSurfaceVisible;
 
         public bool HasObject => printedObject != null;
         public bool IsFinalized => isFinalized;
         public bool IsPartial => isPartial;
         public bool IsCompleted => isCompleted;
+        public bool IsPartialSurfaceVisible => isPartialSurfaceVisible;
         public GameObject PrintedObject => printedObject;
 
         public void Bind(Printer owner)
@@ -161,9 +151,11 @@ namespace Coursework_Master_Degree.Items.FFF
                 finalMaterial = fallbackMaterial;
             }
 
-            capMaterial = finalMaterial != null
+            partialMaterial = finalMaterial != null
                 ? finalMaterial
-                : printingMaterial;
+                : fallbackMaterial != null
+                    ? fallbackMaterial
+                    : printingMaterial;
 
             Rigidbody body = printedObject.GetComponentInChildren<Rigidbody>(true);
 
@@ -201,20 +193,21 @@ namespace Coursework_Master_Degree.Items.FFF
                     printJob.Request.LayerHeight) / 1000.0f);
             seed = CalculateSeed(meta);
             lastRevealTime = -1000.0f;
-            lastCapTime = -1000.0f;
-            lastCapHeight = -1.0f;
             isPartial = false;
             isCompleted = false;
             isFinalized = false;
+            isPartialSurfaceVisible = false;
 
             reveal.Begin(printedObject, printingMaterial);
+            reveal.SetVisible(true);
             meshData = PrintedMeshCapture.Capture(printedObject);
 
             if (meshData == null || !meshData.IsValid)
             {
                 Debug.LogWarning(
                     "[PrintedObjectPresenter] The object has no readable " +
-                    "mesh data; caps, supports and motion bounds are limited.",
+                    "mesh data; partial surfaces, supports and motion bounds " +
+                    "are limited.",
                     printedObject);
                 localBounds = new Bounds(Vector3.zero, Vector3.zero);
             }
@@ -225,11 +218,10 @@ namespace Coursework_Master_Degree.Items.FFF
 
             localHeight = Mathf.Max(0.0f, localBounds.size.y);
 
-            CreateCap();
             supports.Begin(
                 printedObject,
                 meshData,
-                capMaterial,
+                partialMaterial,
                 printJob.Request.Supports,
                 MaxSupportColumns,
                 SupportClusterSizeMeters,
@@ -244,14 +236,15 @@ namespace Coursework_Master_Degree.Items.FFF
                 layerHeightMeters,
                 seed);
 
-            UpdateVisuals(0.0f, true);
+            UpdateVisuals(0.0f);
         }
 
         public void Tick(PrinterJob printJob, float simulatedDelta)
         {
             if (printedObject == null ||
                 printJob == null ||
-                printJob != job)
+                printJob != job ||
+                isPartialSurfaceVisible)
             {
                 return;
             }
@@ -265,7 +258,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 1.0f / Mathf.Max(1.0f, RevealUpdatesPerSecond))
             {
                 lastRevealTime = Time.unscaledTime;
-                UpdateVisuals(quantized, false);
+                UpdateVisuals(quantized);
             }
         }
 
@@ -278,10 +271,11 @@ namespace Coursework_Master_Degree.Items.FFF
 
             isCompleted = true;
             isPartial = false;
+
+            ClearPartialSurface();
+            reveal.SetVisible(true);
             reveal.SetFull();
             reveal.SetFinalMaterial(finalMaterial);
-            HideCap();
-
             supports.Tick(localHeight);
         }
 
@@ -294,20 +288,60 @@ namespace Coursework_Master_Degree.Items.FFF
 
             isPartial = true;
             isCompleted = false;
+
+            // A pause may already have shown the capped final-material
+            // surface. Hard stop returns to the live printing look while the
+            // object cools; the capped surface is rebuilt on finalization.
+            ClearPartialSurface();
+            reveal.SetVisible(true);
+            reveal.SetPrintingMaterial(printingMaterial);
+
             float quantized = Quantize(printJob != null
                 ? printJob.Progress01
                 : 0.0f);
-            UpdateVisuals(quantized, true);
+            reveal.SetProgress(quantized);
+            supports.Tick(quantized * localHeight);
         }
 
         public void Pause()
         {
-            // The printer owns the pause/home move. Visuals simply freeze
-            // because Tick is no longer called.
+            // The printer owns the pause/home move. Live visuals freeze because
+            // Tick is no longer called.
+        }
+
+        /// <summary>
+        /// Called once the paused printer has cooled and parked. Shows the
+        /// capped, final-material surface without enabling removal.
+        /// </summary>
+        public void PauseSettled(PrinterJob printJob)
+        {
+            if (printedObject == null || isFinalized)
+            {
+                return;
+            }
+
+            float quantized = Quantize(printJob != null
+                ? printJob.Progress01
+                : 0.0f);
+            ShowPartialSurface(quantized * localHeight, false);
         }
 
         public void Resume()
         {
+            if (printedObject == null)
+            {
+                return;
+            }
+
+            ClearPartialSurface();
+            reveal.SetVisible(true);
+            reveal.SetPrintingMaterial(printingMaterial);
+
+            float quantized = Quantize(job != null
+                ? job.Progress01
+                : 0.0f);
+            reveal.SetProgress(quantized);
+            supports.Tick(quantized * localHeight);
             motion.Resume();
         }
 
@@ -322,12 +356,12 @@ namespace Coursework_Master_Degree.Items.FFF
             isCompleted = true;
             isPartial = false;
 
+            ClearPartialSurface();
+            reveal.SetVisible(true);
             reveal.SetFull();
             reveal.SetFinalMaterial(finalMaterial);
-            HideCap();
             supports.Tick(localHeight);
 
-            ClearPartialCollider();
             SetCollidersEnabled(true);
 
             printedData?.MarkFinalized(
@@ -356,10 +390,7 @@ namespace Coursework_Master_Degree.Items.FFF
             isCompleted = false;
 
             float quantized = Quantize(printJob.Progress01);
-            UpdateVisuals(quantized, true);
-
-            BuildPartialCollider(quantized * localHeight);
-            SetCollidersEnabled(false);
+            ShowPartialSurface(quantized * localHeight, true);
 
             printedData?.MarkFinalized(printJob, true, -1.0f);
 
@@ -389,32 +420,17 @@ namespace Coursework_Master_Degree.Items.FFF
             printedData?.Release();
             printedObject.transform.SetParent(null, true);
 
-            if (isCompleted)
-            {
-                if (capObject != null)
-                {
-                    Destroy(capObject);
-                }
-
-                if (capMesh != null)
-                {
-                    Destroy(capMesh);
-                }
-            }
-
             printedObject = null;
             printedData = null;
             job = null;
             meshData = null;
             originalColliders = null;
-            capObject = null;
-            capMesh = null;
-            capRenderer = null;
             slicedObject = null;
             slicedMesh = null;
             isFinalized = false;
             isPartial = false;
             isCompleted = false;
+            isPartialSurfaceVisible = false;
 
             return true;
         }
@@ -426,29 +442,17 @@ namespace Coursework_Master_Degree.Items.FFF
                 Destroy(printedObject);
             }
 
-            if (capMesh != null)
-            {
-                Destroy(capMesh);
-            }
-
-            if (slicedMesh != null)
-            {
-                Destroy(slicedMesh);
-            }
-
             printedObject = null;
             printedData = null;
             job = null;
             meshData = null;
             originalColliders = null;
-            capObject = null;
-            capMesh = null;
-            capRenderer = null;
             slicedObject = null;
             slicedMesh = null;
             isFinalized = false;
             isPartial = false;
             isCompleted = false;
+            isPartialSurfaceVisible = false;
         }
 
         private void OnDestroy()
@@ -456,17 +460,6 @@ namespace Coursework_Master_Degree.Items.FFF
             if (printedObject != null)
             {
                 ClearObject();
-                return;
-            }
-
-            if (capMesh != null)
-            {
-                Destroy(capMesh);
-            }
-
-            if (slicedMesh != null)
-            {
-                Destroy(slicedMesh);
             }
         }
 
@@ -507,128 +500,101 @@ namespace Coursework_Master_Degree.Items.FFF
             return null;
         }
 
-        private void UpdateVisuals(float quantizedProgress, bool force)
+        private void UpdateVisuals(float quantizedProgress)
         {
             float clamped = Mathf.Clamp01(quantizedProgress);
             float printedHeight = clamped * localHeight;
 
             reveal.SetProgress(clamped);
             supports.Tick(printedHeight);
-
-            if (printedHeight <= 0.0001f)
-            {
-                HideCap();
-                return;
-            }
-
-            UpdateCap(printedHeight, force);
         }
 
-        private void UpdateCap(float printedLocalHeight, bool force)
+        private void ShowPartialSurface(
+            float printedLocalHeight,
+            bool enableCollider)
         {
-            if (capObject == null || meshData == null)
+            ClearPartialSurface();
+
+            if (printedObject == null ||
+                meshData == null ||
+                printedLocalHeight <= 0.0001f)
             {
+                reveal.SetVisible(true);
+
+                if (enableCollider)
+                {
+                    BuildFallbackCollider(printedLocalHeight);
+                }
+
                 return;
             }
 
-            if (!force &&
-                Time.unscaledTime - lastCapTime < CapUpdateIntervalSeconds)
+            if (!capping.BuildSlicedMesh(
+                    meshData,
+                    printedLocalHeight + 0.00005f))
             {
+                Debug.LogWarning(
+                    "[PrintedObjectPresenter] Could not build a sliced partial " +
+                    "surface; keeping the live printing appearance.",
+                    printedObject);
+                reveal.SetVisible(true);
+
+                if (enableCollider)
+                {
+                    BuildFallbackCollider(printedLocalHeight);
+                }
+
                 return;
             }
 
-            if (!force &&
-                Mathf.Abs(printedLocalHeight - lastCapHeight) < 0.00001f)
-            {
-                return;
-            }
-
-            lastCapTime = Time.unscaledTime;
-
-            if (!capping.BuildCap(meshData, printedLocalHeight + 0.0001f))
-            {
-                HideCap();
-                return;
-            }
-
-            capMesh.Clear();
-            capMesh.SetVertices(capping.CapVertices);
-            capMesh.SetTriangles(capping.CapTriangles, 0);
-            capMesh.RecalculateNormals();
-            capMesh.RecalculateBounds();
-            capObject.SetActive(true);
-            lastCapHeight = printedLocalHeight;
-        }
-
-        private void HideCap()
-        {
-            if (capObject != null)
-            {
-                capObject.SetActive(false);
-            }
-
-            lastCapHeight = -1.0f;
-        }
-
-        private void CreateCap()
-        {
-            capObject = new GameObject("printed_layer_cap");
-            capObject.layer = printedObject.layer;
-            capObject.transform.SetParent(printedObject.transform, false);
-            capObject.transform.localPosition = Vector3.zero;
-            capObject.transform.localRotation = Quaternion.identity;
-            capObject.transform.localScale = Vector3.one;
-
-            MeshFilter filter = capObject.AddComponent<MeshFilter>();
-            capMesh = new Mesh { name = "printed_layer_cap_mesh" };
-            filter.sharedMesh = capMesh;
-
-            capRenderer = capObject.AddComponent<MeshRenderer>();
-            capRenderer.sharedMaterial = capMaterial;
-            capRenderer.shadowCastingMode = ShadowCastingMode.Off;
-            capRenderer.receiveShadows = false;
-
-            if (capMaterial != null &&
-                capMaterial.HasProperty(RevealHeightId))
-            {
-                MaterialPropertyBlock block = new MaterialPropertyBlock();
-                block.SetFloat(RevealHeightId, 1000.0f);
-                capRenderer.SetPropertyBlock(block);
-            }
-
-            capObject.SetActive(false);
-        }
-
-        private void BuildPartialCollider(float printedLocalHeight)
-        {
-            ClearPartialCollider();
-            slicedObject = new GameObject("printed_partial_collider");
+            slicedObject = new GameObject("printed_partial_surface");
             slicedObject.layer = printedObject.layer;
             slicedObject.transform.SetParent(printedObject.transform, false);
             slicedObject.transform.localPosition = Vector3.zero;
             slicedObject.transform.localRotation = Quaternion.identity;
             slicedObject.transform.localScale = Vector3.one;
 
-            if (meshData != null &&
-                capping.BuildSlicedMesh(
-                    meshData,
-                    printedLocalHeight + 0.00005f))
+            slicedMesh = new Mesh
             {
-                slicedMesh = new Mesh
-                {
-                    name = "printed_partial_collider_mesh",
-                };
-                slicedMesh.SetVertices(capping.SlicedVertices);
-                slicedMesh.SetTriangles(capping.SlicedTriangles, 0);
-                slicedMesh.RecalculateNormals();
-                slicedMesh.RecalculateBounds();
+                name = "printed_partial_surface_mesh",
+            };
+            slicedMesh.SetVertices(capping.SlicedVertices);
+            slicedMesh.SetTriangles(capping.SlicedTriangles, 0);
+            slicedMesh.RecalculateNormals();
+            slicedMesh.RecalculateBounds();
 
-                MeshCollider collider =
-                    slicedObject.AddComponent<MeshCollider>();
+            MeshFilter filter = slicedObject.AddComponent<MeshFilter>();
+            filter.sharedMesh = slicedMesh;
+
+            MeshRenderer renderer = slicedObject.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = partialMaterial;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+
+            PrintedMeshOwner meshOwner =
+                slicedObject.AddComponent<PrintedMeshOwner>();
+            meshOwner.Mesh = slicedMesh;
+
+            if (enableCollider)
+            {
+                MeshCollider collider = slicedObject.AddComponent<MeshCollider>();
                 collider.sharedMesh = slicedMesh;
                 collider.convex = false;
-                return;
+                SetCollidersEnabled(false);
             }
+
+            reveal.SetVisible(false);
+            isPartialSurfaceVisible = true;
+        }
+
+        private void BuildFallbackCollider(float printedLocalHeight)
+        {
+            slicedObject = new GameObject("printed_partial_collider");
+            slicedObject.layer = printedObject.layer;
+            slicedObject.transform.SetParent(printedObject.transform, false);
+            slicedObject.transform.localPosition = Vector3.zero;
+            slicedObject.transform.localRotation = Quaternion.identity;
+            slicedObject.transform.localScale = Vector3.one;
 
             BoxCollider box = slicedObject.AddComponent<BoxCollider>();
             float minY = Mathf.Max(0.0f, localBounds.min.y);
@@ -643,9 +609,11 @@ namespace Coursework_Master_Degree.Items.FFF
                 Mathf.Max(0.0001f, localBounds.size.x),
                 height,
                 Mathf.Max(0.0001f, localBounds.size.z));
+
+            SetCollidersEnabled(false);
         }
 
-        private void ClearPartialCollider()
+        private void ClearPartialSurface()
         {
             if (slicedObject != null)
             {
@@ -653,13 +621,9 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             slicedObject = null;
-
-            if (slicedMesh != null)
-            {
-                Destroy(slicedMesh);
-            }
-
             slicedMesh = null;
+            isPartialSurfaceVisible = false;
+            reveal.SetVisible(true);
         }
 
         private void SetCollidersEnabled(bool enabled)

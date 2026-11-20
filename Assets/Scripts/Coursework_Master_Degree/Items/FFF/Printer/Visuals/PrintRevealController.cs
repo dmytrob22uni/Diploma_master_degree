@@ -137,6 +137,42 @@ namespace Coursework_Master_Degree.Items.FFF
             }
         }
 
+        public void SetPrintingMaterial(Material printingMaterial)
+        {
+            if (printingMaterial == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < bindings.Count; i++)
+            {
+                RendererBinding binding = bindings[i];
+
+                if (binding.Renderer == null)
+                {
+                    continue;
+                }
+
+                ApplyMaterial(binding, printingMaterial);
+                binding.HasReveal =
+                    binding.Renderer.sharedMaterial != null &&
+                    binding.Renderer.sharedMaterial.HasProperty(RevealHeightId);
+            }
+        }
+
+        public void SetVisible(bool visible)
+        {
+            for (int i = 0; i < bindings.Count; i++)
+            {
+                RendererBinding binding = bindings[i];
+
+                if (binding.Renderer != null)
+                {
+                    binding.Renderer.enabled = visible;
+                }
+            }
+        }
+
         private static void ApplyMaterial(
             RendererBinding binding,
             Material material)

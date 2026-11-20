@@ -179,6 +179,7 @@ namespace Coursework_Master_Degree.Items.FFF
         private Vector3 homeMovePosition;
         private bool isCalibrated;
         private bool isFinalizingPrint;
+        private bool pauseVisualSettled;
 
         private PrinterEnclosure dockedEnclosure;
         private readonly Dictionary<string, PartLocation> dockedSpoolLocations =
@@ -1096,7 +1097,7 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             SetState(PrinterOperationalState.Paused);
-
+            pauseVisualSettled = false;
             BeginHomeMove();
             return true;
         }
@@ -1147,6 +1148,7 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             PrintedObject?.Resume();
+            pauseVisualSettled = false;
             SetTargetsFromJob();
             preheatElapsedSimulated = 0.0f;
             wearIntegrator.Refresh(this);
@@ -1186,6 +1188,7 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             PrintedObject?.HardStop(activeJob);
+            pauseVisualSettled = false;
 
             wearIntegrator.ApplyHardStopPenalty(
                 this,
@@ -1281,6 +1284,7 @@ namespace Coursework_Master_Degree.Items.FFF
             completedJob = null;
             partialJob = null;
             HasPartialPrint = false;
+            pauseVisualSettled = false;
 
             if (OperationalState == PrinterOperationalState.Finished)
             {
@@ -1492,6 +1496,7 @@ namespace Coursework_Master_Degree.Items.FFF
             partialJob = null;
             HasPartialPrint = false;
             isFinalizingPrint = false;
+            pauseVisualSettled = false;
             PrintedObject?.ClearObject();
             preheatElapsedSimulated = 0.0f;
             wearTimeAccumulator = 0.0f;
@@ -1592,6 +1597,15 @@ namespace Coursework_Master_Degree.Items.FFF
                 false,
                 true);
             AccumulateWear(simulatedDelta, 0.0f);
+
+            if (!pauseVisualSettled &&
+                !isMovingHome &&
+                temperatureModel.IsBelow(
+                    Temperature.Ambient + TemperatureToleranceC))
+            {
+                pauseVisualSettled = true;
+                PrintedObject?.PauseSettled(activeJob);
+            }
         }
 
         private void TickCooling(float simulatedDelta)
@@ -1640,6 +1654,7 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             PrinterJob finalJob = activeJob;
+            pauseVisualSettled = false;
 
             if (PrintedObject == null || !PrintedObject.HasObject)
             {

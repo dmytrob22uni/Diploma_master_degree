@@ -9610,7 +9610,6 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.Items.FFF.PrintedObjectPresenter
   RevealUpdatesPerSecond: 15
-  CapUpdateIntervalSeconds: 0.1
   MaxSupportColumns: 48
   SupportClusterSizeMeters: 0.02
   SupportOverhangThreshold: 0.35
