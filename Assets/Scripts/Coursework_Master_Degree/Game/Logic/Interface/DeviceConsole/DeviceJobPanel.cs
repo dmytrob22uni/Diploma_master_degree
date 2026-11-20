@@ -230,9 +230,12 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                     : "No object selected";
             }
 
+            ObjectToPrintGeometry geometry =
+                ObjectToPrintSizing.GetGeometry(meta);
+
             if (heightText != null)
             {
-                Vector3 size = ObjectToPrintSizing.GetSizeMeters(meta);
+                Vector3 size = geometry.Size;
                 heightText.text = size.y > 0.0f
                     ? $"{size.y * 100.0f:0.#} cm tall"
                     : "Size unavailable";
@@ -246,14 +249,16 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 profile,
                 infill,
                 supports,
-                uniformScale);
+                uniformScale,
+                geometry);
             float seconds = PrintEstimates.TimeSeconds(
                 profile,
                 infill,
                 layerHeight,
                 speed,
                 supports,
-                uniformScale);
+                uniformScale,
+                geometry);
 
             PrintJobValidationResult result = PrintJobValidator.Validate(
                 device,

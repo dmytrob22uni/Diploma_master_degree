@@ -51,19 +51,24 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 ? placement.UniformScale
                 : 1.0f;
 
+            ObjectToPrintGeometry geometry =
+                ObjectToPrintSizing.GetGeometry(objectToPrint);
+
             result.EstimatedSeconds = PrintEstimates.TimeSeconds(
                 profile,
                 infill,
                 layerHeight,
                 speed,
                 supports,
-                uniformScale);
+                uniformScale,
+                geometry);
             result.EstimatedFilamentMeters =
                 PrintEstimates.FilamentMeters(
                     profile,
                     infill,
                     supports,
-                    uniformScale);
+                    uniformScale,
+                    geometry);
 
             if (placement == null)
             {
