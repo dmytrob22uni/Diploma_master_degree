@@ -84,6 +84,16 @@ namespace Coursework_Master_Degree.Editor
                 typeof(ObjectToPrintMetasListSO),
                 false);
 
+            if (catalog == null)
+            {
+                EditorGUILayout.HelpBox(
+                    "No catalog assigned. Scan falls back to all " +
+                    "ObjectToPrintMetaSO assets when the open scene has no " +
+                    "ObjectToPrintDataHolder items. Assign the catalog to " +
+                    "limit the batch to the intended set.",
+                    MessageType.Warning);
+            }
+
             filamentDiameterMillimeters = EditorGUILayout.FloatField(
                 "Filament diameter (mm)",
                 filamentDiameterMillimeters);
@@ -106,7 +116,7 @@ namespace Coursework_Master_Degree.Editor
                 new GUIContent(
                     "Effective flow",
                     "Reference flow x extrusion duty; used by the time seed."),
-                $"{EffectiveFlowMm3PerSecond:0.###} mm3/s");
+                new GUIContent($"{EffectiveFlowMm3PerSecond:0.###} mm3/s"));
             filamentPackingFactor = EditorGUILayout.FloatField(
                 new GUIContent(
                     "Filament packing",
