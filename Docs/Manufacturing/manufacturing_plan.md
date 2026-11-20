@@ -63,7 +63,7 @@ The feature is intentionally a **gameplay abstraction** of 3D printing, not a sl
 |---|---|
 | Console presentation | Screen-space overlay, one generic UI for all devices |
 | Camera focus | Smooth Cinemachine blend to a dedicated screen-framing camera |
-| Print time | Simulated time = real time × configurable multiplier; default `120×` |
+| Print time | Simulated time = real time × configurable multiplier; default `1×` |
 | Hard stop result | Partial print stays on the bed until removed |
 | Infill choices | `None`, `Grid`, `Gyroid`; affects time/filament only |
 | Print settings | Layer height (`Draft 0.28` / `Normal 0.20` / `Fine 0.12` mm), speed (`Slow 40` / `Normal 80` / `Fast 140` mm/s), supports (`None` / `Auto`) |
@@ -173,10 +173,17 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 ### 4.9 Calibration
 
 1. With an idle printer and a clear bed, click `Calibrate` in the console.
-2. The nozzle visits every point of an `N × N` grid on the plate (`CalibrationGridSize`, default `5`), touching height `0` at each point. Calibration uses real time so the visual check stays readable regardless of `SIM SPEED`.
-3. The grid is inset by `CalibrationPaddingMeters`.
-4. Calibration completes by homing the motion. `Hard stop` cancels it.
+2. The head moves smoothly from its current position to `PrinterMotionBase.CalibrationHomePrintPosition` (global X/Z, optional calibration height), lifts by `CalibrationLiftHeightMeters` (default `3 cm`; clamped so the target does not exceed `BuildVolume.y`), then for every point of an `N × N` grid (`CalibrationGridSize`, default `5`):
+   - moves over the point at the lifted height,
+   - lowers to height `0` and touches the plate,
+   - waits `CalibrationPointDwellSeconds`,
+   - lifts again and advances.
+3. The grid is inset by `CalibrationPaddingMeters`; movement speed is `CalibrationMoveSpeedMetersPerSecond`.
+4. Calibration returns smoothly to the global `HomePositionNormalized` and marks the printer calibrated. `Hard stop` cancels it and also moves to the global home. Calibration travel and dwell follow the printer's `PrintSpeedMultiplier`; use `1×` when visually inspecting the grid.
 5. Calibration does not consume a job and is blocked while a print is queued, partial or finished.
+6. Calibration quality is evaluated when printing ends. A calibrated printer applies `1.0×`; an uncalibrated printer applies a random `0.7–1.0×` at the end. Changing a part while the printer is paused invalidates calibration for that job, so it finishes with the random factor. The console warning stays visible until the finished/partial print is removed.
+6. `HomePositionNormalized` lives on `PrinterMotionBase` and is drawn as an orange gizmo. By default it is top-left with the moving bed 3/4 forward (`0, 1, 0.75`). Enable `UseCustomHomePosition` to reveal the `0..1` X/Y/Z sliders (`HomeX`, `HomeY`, `HomeZ`). X/Z map across the usable build volume; Y maps from the plate to the build-volume top. The same position also sets the bed home on bed-slinger printers because the bed is one of those print-space axes; fixed-bed printers simply do not use a bed axis. This is preferred over manually posing a head transform on the prefab because it stays valid across axis mappings, printer variants and build volumes. A child marker transform can feed the same normalized value later if visual authoring is needed.
+7. Calibration has an optional height-only override: enable `UseCustomCalibrationHomeHeight` and set `CalibrationHomeY`. X/Z always follow the global home; after calibration the head returns to the full global home. The height override is drawn as a green gizmo and does not change spawn, pause, hard-stop or post-print home.
 
 ---
 
@@ -232,6 +239,15 @@ M3 enclosure behavior:
 - `PrinterTemperatureModel` reads chamber temperature and slows cooling when enclosed.
 - `PrintQualityEstimator` applies an enclosure bonus / no-enclosure penalty; raw quality caps at `90`.
 - Enclosure parts join the printer wear scan, so fans, filters, thermometers and fire-suppression parts wear during a job.
+- Enclosure inspection keeps the enclosure interaction list and treats the printer as one part for integrity/removal. Wear inspection includes the printer's internal parts and hides the printer root so only the wear ghosts remain visible.
+- Installing a printer in the enclosure docks its accessories:
+  - one spool moves from `spool_location_1` / `spool_location_2` to the enclosure `spool_location`;
+  - two installed spools block the install with `Remove one spool before installing the printer in the enclosure.`;
+  - the battery closet and adapter move to the matching enclosure sockets;
+  - the printer `spool_holder` is hidden and restored on removal;
+  - the battery-closet and wall-socket plugs move to the enclosure free-part reset points.
+- The printer, spool, battery closet and adapter sockets are `PartLocation`s because they are installed parts. The two plug reset points remain plain transforms registered through `ItemPartsToLocationsList`, because plugs are free parts.
+- Docking updates `PrinterEnvironment` directly, so enclosure thermal/quality/wear behavior applies after a runtime install rather than relying on awake-time renderer-bounds detection.
 - The console shows live nozzle/bed temperatures and enclosure-derived quality.
 
 M5 enclosure effects still to add:
@@ -449,6 +465,7 @@ Printer
   - float SafeServiceTemperatureC
   - PartLocation[] ServiceBlockedDuringPrint
   - int CalibrationGridSize
+  - bool IsCalibrated
   - Device BoundDevice
   - string StatusSummary
 
@@ -457,7 +474,8 @@ PrinterJob
   - float ElapsedSeconds
   - float ConsumedFilamentMeters
   - int PauseCount / float PauseQualityPenalty
-  - float QualityMin / QualityMax (after pause penalty)
+  - float CalibrationQualityMultiplier / FinalQuality
+  - float QualityMin / QualityMax (after pause penalty and calibration)
   - bool IsPartial / bool WasHardStopped / bool UsesApplied
   - float Progress01 / RemainingSeconds / RemainingFilamentMeters
 
@@ -496,6 +514,17 @@ Fix:
 - If found, treat it as a simple interactable and use its `GetInteractions()`.
 - Do not use a generic `GetComponentInParent<IInteractable>()` here, because it could accidentally resolve the printer's `FFFInteractions` and bypass the multi-option printer interaction path.
 - Cache both the hit collider and the resolved `Device` so the prompt does not flicker between child meshes.
+
+#### Enclosure/printer assembly inspection
+
+When a printer is installed in a `PrinterEnclosure`:
+
+- `PartsAssembly.FindEnclosingPrinterEnclosure` resolves the enclosure assembly from the printer's holding `PartLocation`.
+- `FFFInteractions` on the printer redirects its interaction list to the enclosure, so only the enclosure's `Parts integrity`, `Parts wear` and `Parts remove` options are shown.
+- `PartHoverIntegrity` resolves any internal printer part to the printer root, so the printer reads as one part.
+- `PartHoverWear` and `PartsWearStateSetup` include the installed printer's internal parts as wear entries. The printer root is hidden during wear inspection so its frame does not obscure those ghosts.
+- `PartHoverRemove` resolves internal printer hits to the printer root and removes the whole printer through its enclosure part location.
+- Existing installation/missing/wear ghosts remain used for the parts that are actually shown.
 
 #### `Game/StateMachine/State/GameStateDeviceInterface.cs`
 
@@ -589,7 +618,13 @@ Computing devices cannot be sold while connected to any printer. The sell hover 
 - bound to at least one printer → `SellingState.Wrong`, reason `Connected to a printer`;
 - no bound printers → normal sell rules.
 
-The wrong state is applied through the existing selling ghost `_selling_state` blackboard, and the reason appears in the sell hint like `Missing parts` / `Worn parts`.
+Printers cannot be sold while they are running a job or bound to a device:
+
+- busy → `Wrong`, `Printer is on its job`, with the explanation in `item_hover_sell_description`;
+- bound but idle → `Wrong`, `Connected to a device`, with `Disconnect this printer from its device before selling.`;
+- unbound and idle → normal sell rules.
+
+The same printer check applies when the sell target is an enclosure containing that printer. The wrong state is applied through the existing selling ghost `_selling_state` blackboard.
 
 #### Combined free-part / wearable items
 
@@ -601,10 +636,12 @@ Some parts are both a free part and a regular item (e.g. `Prusa_MK4S_printer_bat
 - A standalone item which also exposes `ItemFreePartDataHolder` has no core item above it and can be placed freely.
 - Placement updates every `ISurfacePlaceable` on the item root, so both free-part and item surface states agree.
 - Taking a wearable free part moves its `PartLocation` carrier; it stays installed in that carrier. Install mode is not offered while it is already installed. The carrier is deactivated while carried so its location collider cannot block placement rays.
-- Taking a core item resets every mapped free part: regular parts return to their `ItemPartsToLocationsList` location, and wearable parts move their `PartLocation` carrier to it. Old shelf registrations and placement ghosts are cleared.
+- Taking a core item resets mapped free parts: regular parts return to their `ItemPartsToLocationsList` location, and wearable parts still installed in their carrier and still attached to the core item move the `PartLocation` carrier to it. A removed or separately placed wearable part is left where the player put it, so it cannot visually snap into an installed-looking socket while still counting as removed. Old shelf registrations and placement ghosts are cleared.
 - `PartLocation.Remove()` and `PartLocation.Install()` reset a wearable part's carrier to its authored `ItemPartsToLocationsList` location, so the assembly socket is never left displaced.
 - Entering installation hides both the regular placement ghost and the free-part placement ghost.
+- A free part with its own `ItemDataHolder` that is installed under a `PrinterEnclosure` is a fixed installed part, not a loose take. The battery closet adapter uses this rule while the printer is docked; it becomes a free part again once removed or after the printer leaves the enclosure.
 - Hovering a detached combined part still offers wear inspection through its `ItemDataHolder`.
+- Printer docking moves the plugs into the enclosure free-part reset points and registers them on the enclosure item. Taking the enclosure resets them there; undocking clears those runtime mappings and returns them to the printer.
 
 ### 6.3 Printer state machine
 
@@ -636,6 +673,7 @@ Rules:
 
 - `Finished` means a completed print is still on the bed.
 - `Idle` means the bed is clear.
+- On spawn, after finishing a print, after a hard stop and after calibration cancel/return, move to `PrinterMotionBase.HomePositionNormalized`. Calibration may start/lift from its optional height override, but always returns to global home. M4 smooths the post-print move; there is no separate service/park position.
 - A hard-stopped partial print sets `HasPartialPrint = true`; the printer returns to `Idle` after cooling but rejects new jobs until the partial print is removed.
 - `Paused` is used for player pause and safe part service; it does not consume print progress.
 - `Calibrating` moves the nozzle to every point of an `N × N` plate grid and does not consume a job.
@@ -667,7 +705,8 @@ Validation rules:
 
 - A printer is selected and bound.
 - Printer is `Idle`; `Finished` means a completed print is still on the bed and blocks a new job until the bed is cleared. `HasPartialPrint` blocks separately.
-- Printer has all critical parts installed.
+- Printer has all critical printer parts installed.
+- When the printer is installed in a `PrinterEnclosure`, the enclosure's required parts are installed as well.
 - No installed part is completely worn out (`0%`); any installed part at `0%` blocks.
 - Every installed part at `20%` or less warns; critical parts additionally warn between `20%` and `40%`.
 - All installed part conditions feed the raw-quality hardware penalty.
@@ -677,18 +716,30 @@ Validation rules:
 - Print plate is present.
 - No job is already active or queued on that printer.
 - The printer is not calibrating.
+- An uncalibrated printer is allowed but warns: `Printer is not calibrated; final quality may be 70–100% of the estimate.`
 - The object has a confirmed placement inside the usable plate area and within the build volume.
 - Supports match the object: a model that needs supports can start with `None`, but receives a severe raw-quality penalty and a warning. `Auto` on a model that does not need it is allowed with a "not mandatory" warning and extra cost.
 
 All part locations are scanned, not only the critical list. Critical parts are the only ones that block when missing; a completely worn non-critical part still blocks because the policy is “any part at 0% blocks”. Spools are the exception: they are consumables and are excluded from the generic scan, so only the selected spool is validated. An empty or worn spool on the unselected side does not block the job.
 
-Critical parts are serialized as **`PartLocation` references** on the printer (`Printer.CriticalPartLocations`), not names. The print plate is `Printer.PrintPlateLocation`. References survive renames and support prefab variants; names are only used by the editor auto-assign helper. `ItemMetaSO.ItemTypes` is deliberately not used because it stores only broad paths (`FFF`, `Printer`, `Part`), not leaf types such as nozzle or print plate.
+For a docked printer, the scan covers both `Printer.Assembly` and the enclosing `PrinterEnclosure` assembly. The installed printer at `printer_location` and the selected spool are skipped as generic parts because they are the job target and the separately validated consumable. Enclosure wear also feeds the raw-quality hardware penalty.
 
-Balanced default critical set:
+Critical parts are serialized as **`PartLocation` references** on the printer (`Printer.CriticalPartLocations`) and on the enclosure (`PrinterEnclosure.CriticalPartLocations`), not names. The print plate is `Printer.PrintPlateLocation`. References survive renames and support prefab variants; names are only used by the editor auto-assign helper. `ItemMetaSO.ItemTypes` is deliberately not used because it stores only broad paths (`FFF`, `Printer`, `Part`), not leaf types such as nozzle or print plate.
+
+Balanced default printer critical set:
 
 - extruder nozzle, heater, thermistor, fan, filament bearing,
 - print bed and print bed thermistor (print plate is separate),
 - X/Y belts, X/Y rotors, Z left/right rotors.
+
+Default enclosure critical set:
+
+- battery closet and battery closet adapter,
+- three fire-suppression tubes,
+- thermometer,
+- left/right HEPA filter fans and HEPA filter trap.
+
+The enclosure spool is not in this list because `CheckSpool` validates only the selected side; `printer_location` is excluded because the docked printer itself is the job target. Add or remove references from `PrinterEnclosure.CriticalPartLocations` if a specific enclosure part should be optional.
 
 Other bearings/bushings are wear-warned and 0%-blocked by the all-parts scan but are not in the missing-critical list; add their references if the assembly should demand them.
 
@@ -714,6 +765,7 @@ PrinterTemperatureState
 - Preheat completes when both nozzle and bed are within tolerance (default ±2 °C).
 - In M3, a preheat timeout logs a warning and enters `Fault`; full thermal-failure gameplay is M5.
 - Raw quality is capped at `90` even with an enclosure. The post-process state can polish the finished object later.
+- Calibration quality is finalized when printing completes. A calibrated printer uses `1.0×`; an uncalibrated printer uses a random `0.7–1.0×`. A part changed while the job is paused invalidates calibration, so that job also finishes uncalibrated. The warning remains in the console until the bed is cleared.
 
 ### 6.6 Wear and filament
 
@@ -737,6 +789,7 @@ Rules:
 - Use simulated process time, not wall-clock time.
 - Enclosure parts are scanned from `PrinterEnclosure` as well as the printer assembly.
 - The selected spool rotates by `consumedMetres / (2π × EffectiveRadiusMeters) × 360°`; its visible child is chosen by nearest `SpoolWearLevelsToGameObjectsDictionary` threshold.
+- Hover wear panels read the live `ItemWearState.CurrentCondition` and refresh periodically while hovering; wear components are resolved on the item/part hierarchy, not only the root object.
 - `ItemWearState.ApplyWear` calls `CalculateWearByRatio`, so the authored `WearRatio` is honored. Existing assets use `1`, so the change does not alter their current values.
 - Spool remaining filament:
 
@@ -821,15 +874,28 @@ Important:
 - Do not attempt real perimeter/infill geometry.
 - Use a seeded random pattern so the motion is deterministic per job.
 - Respect configured axis speeds and soft limits.
-- Home the axes after finishing or hard-stopping.
+- Move to `HomePositionNormalized` after finishing, hard stop and calibration return. Calibration may start/lift from `CalibrationHomePrintPosition` (X/Z global, optional height). `Home()` remains the mechanical axis-home primitive for debug/mechanical use only.
 
 The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S transforms directly.
 
+#### Home, service and park
+
+- `Home()` is the mechanical axis-home primitive: `AxisBinding.RestoreHome()` returns each node to its authored local position. It is not a configurable upper-center point and is not the gameplay start position.
+- `HomePositionNormalized` is the global gameplay home used for spawn, pause/service, post-print parking and hard-stop recovery.
+- Calibration uses the optional `CalibrationHomePositionNormalized` only for its start/lift height; X/Z and the return position always use the global home.
+- `UseCustomHomePosition` is off by default. When off, the default top-left/3/4-forward home is used; when on, `HomeX/Y/Z` sliders define the custom pose.
+- X/Z are normalized across the build volume and Y is normalized height. On a bed-slinger the moving bed is one of those axes, so the same sliders define the bed home; fixed beds ignore that axis.
+- Do not add separate service/park/bed-home positions unless a future printer proves it needs an independent pose.
+
 #### Spool
 
-- Rotation arrives in M3: `degrees = consumedMetres / (2π × EffectiveRadiusMeters) × 360`, with a serialized local axis and direction.
+- Rotation arrives in M3: rotate the **spool root**, not the mesh child:
+  `degrees = consumedMetres / (2π × EffectiveRadiusMeters) × 360`.
+- The MK4S root axis is local `-Y`; the default is `RotationAxis = Vector3.up` with `InvertRotation = true`.
+- Both `spool_location_1` and `spool_location_2` share the same authored holder rotation, so the same root axis/direction applies to both.
 - The rotation uses simulated consumption, so it follows `PrintSpeedMultiplier`.
-- The visible filament child is chosen from `SpoolWearLevelsToGameObjectsDictionary` by nearest condition threshold.
+- The visible filament child uses the upper authored threshold: `91..100 → 100`, `81..90 → 90`, … `1..10 → 10`, and only `0` shows the empty child. This keeps the spool visually fuller for longer.
+- `SpoolFilamentState` reads the installed spool's live `ItemWearState.CurrentCondition`; the visible child and remaining metres are derived from that same value. If a spool has unexpected wear logic, consumption falls back to direct condition loss so the wear state still moves.
 - M4 adds shader reveal polish (`_reveal_height`) and visual verification with the printed object present.
 - If the vertical reveal looks wrong, fall back to the M3 wear-level children rather than new prefabs in M5.
 
@@ -839,14 +905,17 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
   - Fully reveal the object.
   - Restore the object's final materials.
   - Re-enable colliders/surface placement.
+  - Move the head smoothly to `PrinterMotionBase.HomePositionNormalized` before/while entering `Finished`.
   - Mark it as a completed print.
 - On hard stop:
   - Freeze the reveal at the partial height.
   - Keep the printing material.
   - Mark it as a partial print.
 - Removal:
-  - Interact with the printed object or use a console action.
-  - Destroy the instance and clear the printer's bed slot.
+  - Hover the finished object and enter `GameStateItemPlace` directly, with no `Cancel` option.
+  - Removing the object clears the printer's bed slot and lets the player place it like a normal item.
+  - The head is already at `HomePositionNormalized`, so removal needs no extra head motion.
+  - M3 keeps `Clear bed` as a temporary logical removal action; M4 replaces it with the hover flow.
   - Partial prints are discarded, not resumed.
 
 ### 6.8 Console UI
@@ -898,7 +967,26 @@ Behavior:
 - Disable buttons with reasons rather than hiding them.
 - Confirm hard stop and unbind-while-printing.
 - Do not show a printer as “connected” if its binding was removed.
-- While a printer is busy, FreeWalk hover shows `Printer.StatusSummary` instead of take/sell prompts. The dedicated hover-status layout is an owner-authored UI demand.
+- While a printer is busy, FreeWalk hover shows the printer name in `item_hover_info_text` and fills the separate `free_walk_canvas/vertical_stack` fields:
+  - `printer_state_progress_text`
+  - `printer_nozzle_temperature_text`
+  - `printer_bed_temperature_text`
+  - `printer_spool_meters_text`
+  - `printer_pause_penalty_text`
+- The five fields are only active for a busy printer or its enclosure. Empty spool/pause fields are hidden; normal take/inspect prompts return when the printer is idle.
+- `ItemHoverInfo` refreshes the five fields while the same printer collider stays hovered. `ItemHoverInteract` suppresses its prompt for a busy printer so it does not duplicate the status.
+- In `ItemsSell`, a busy or bound printer/enclosure is `Wrong`, uses the selling ghost, cannot be sold, and puts the concise reason in `item_hover_sell_description`. Busy takes priority over connected.
+- Enclosure detection uses the same `Printer.FindFor` path: `PrinterEnclosure` binds the printer whose `PrinterEnvironment` is inside it.
+
+#### Console job drafts
+
+- Each printer owns a console draft: selected object, selected spool, simulation speed and placement.
+- Each object inside that printer owns its own settings: layer height, speed, infill, supports and placement.
+- Switching printers restores that printer's selected object, spool and settings.
+- Switching objects restores that object's settings and placement instead of resetting to defaults.
+- New object drafts are seeded once from `ObjectToPrintMetaSO`: infill from `Requirements.DefaultInfill`, supports from `PrintProfile.SupportsRequired`, layer/speed `Normal`.
+- New printer drafts choose the first occupied spool; later manual spool choices are preserved across switches.
+- Placement is cleared only when the job is queued, the object is removed, or the device draft is discarded.
 
 ### 6.9 Camera controller
 
@@ -1081,7 +1169,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 | **M1** | Console + binding | Open/close console, bind/unbind multiple printers, camera flow feels right |
 | **M2** | Jobs + validation | Object/infill selection, believable estimates, clear rejection reasons |
 | **M2.5** | Bed placement + profile tooling | Place/rotate/scale on the plate, live validity, estimates recalculated, editor profile generator |
-| **M3** | FSM + temperatures + wear + enclosure | Full job cycle, pause/service/hard stop, calibration, wear/filament applied correctly |
+| **M3** | FSM + temperatures + wear + enclosure | Full job cycle, pause/service/hard stop, calibration, wear/filament applied correctly; console drafts persist per printer/object |
 | **M4** | Print visuals | Object reveal, motion, spool, partial print, performance |
 | **M5** | Failure + advanced enclosure + polish | Failures, warp/draft/particulate effects, post-process quality, audio/VFX |
 
@@ -1104,6 +1192,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - Vertical Y → `x_axis_base`, local Z (gantry up/down)
 - `PrintBedAnchor` under/at `print_bed_location`, calibrated to Y-up.
 - `PrinterBindHighlight` with a translucent sphere sized to printer bounds; the same sphere is the bind hover volume.
+- Enclosure-installed printers use `EnclosureRadiusMultiplier` (default `1.5×`) for a larger bind/hover sphere.
 - `Device` component on all four computing prefabs.
 - Minimal `Device.GetInteractions()` returning `Use device`, plus the `ItemHoverInteract` parent-`Device` resolution. This is only the interaction entry point; in M0 the execute action can log a placeholder, and M1 wires it to the console state.
 - `DeviceScreenDisplay` on all four computing prefabs.
@@ -1349,7 +1438,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 - `PrinterStateMachine` with the states and transitions in section 6.3, including `Calibrating`.
 - Simulated-time ticking with a per-printer `PrintSpeedMultiplier`.
-- Console `SIM SPEED` preset row: `1×`, `4×`, `64×`, `120×` (default `120×`). The value is stored on the printer, not globally, and can be changed while idle or printing.
+- Console `SIM SPEED` preset row: `1×`, `4×`, `64×`, `120×` (default `1×`). The value is stored on the printer, not globally, and can be changed while idle or printing.
 - `PrinterTemperatureModel` with ambient/chamber/nozzle/bed, linear heating, hold, exponential cooling and a preheat timeout.
 - Material targets from `FilamentMaterialProfileSO`; fallback profile by `MaterialType` because current spool assets have no profile assigned.
 - `PrinterWearIntegrator`:
@@ -1376,6 +1465,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Hard-stop flow with partial-print flag, one-off condition penalties and console confirmation.
 - Console live status binding: state, progress, nozzle/bed temperatures, remaining filament.
 - Console controls for `Pause`/`Resume`, `Hard stop`/`Confirm stop`, `Calibrate` and `Clear bed` (temporary M3 removal action).
+- Console job drafts are keyed by printer, with per-object settings and placement, so switching printers/objects restores the prior draft.
 - Printer continues ticking when unbound.
 - Pause/resume through the console, not a new InputAction:
   - pause stops print progress, moves the nozzle to a service position and lets the nozzle/bed cool;
@@ -1385,12 +1475,21 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - a pause leaves a seam/quality penalty and a long pause may add adhesion risk in M5.
 - Calibration state:
   - console `Calibrate` button starts an `N × N` grid, with `N` exposed as `CalibrationGridSize`;
-  - the nozzle visually touches every point on the plate at height `0`, then homes;
-  - `Hard stop` cancels calibration.
+  - the head moves smoothly from its current position to `PrinterMotionBase.CalibrationHomePrintPosition` (global X/Z, optional calibration height), lifts, visits every point, lowers to height `0`, dwells, lifts, and returns to the global home;
+  - `CalibrationLiftHeightMeters`, `CalibrationMoveSpeedMetersPerSecond` and `CalibrationPointDwellSeconds` are exposed;
+  - calibration travel and dwell use the active `PrintSpeedMultiplier`; use `1×` to inspect the grid visually;
+  - successful calibration marks the printer calibrated; uncalibrated jobs get a random `0.7–1.0×` quality factor at the end of printing and a console warning;
+  - changing a part while paused sets `IsCalibrated = false` and keeps the warning visible until the finished/partial print is removed;
+  - `Hard stop` cancels calibration and moves to the global home.
+- `PrinterMotionBase.HomePositionNormalized` is the global start position for spawn, pause, hard stop and post-print parking. It is drawn as an orange gizmo; `UseCustomHomePosition` exposes the normalized X/Y/Z sliders, and the same normalized X/Z also defines the moving bed home on bed-slinger printers.
+- Calibration has a height-only override via `UseCustomCalibrationHomeHeight` + `CalibrationHomeY` (green gizmo). X/Z and the return position always use the global home.
 - Interaction protection while a printer is busy:
   - sell, take and free-walk interaction are blocked for the printer and its enclosure;
-  - hovering shows `Printer.StatusSummary` instead of take/sell prompts.
-- **Owner UI demand:** the dedicated FreeWalk hover-status section for busy printers/enclosures is authored by the project owner; the code exposes `Printer.StatusSummary` and blocks the existing interactions.
+  - when the printer is installed in an enclosure, its interaction list redirects to the enclosure; integrity resolves the printer as one part, wear includes the printer's internal parts while hiding the printer root, and remove resolves to the printer root;
+  - part installation is blocked, but the MMB install hint remains visible for an eligible target; pressing MMB is refused in `GameStateItemPlace` and `item_hover_place_text` shows the reason (`Printer is on its job`, `Printer is calibrating` or `Wait for the printer to cool`). The game does not enter `GameStatePartInstall`;
+  - `PartHoverInstall` also shows the same reason in `part_install_name` if that state is reached another way;
+  - hovering fills the separate FreeWalk status fields instead of a single prompt.
+- FreeWalk hover status is implemented as the five separate `free_walk_canvas` text fields above. The layout/visual styling remains owner-authored; the code exposes the metrics and blocks the existing interactions.
 
 **Acceptance criteria**
 
@@ -1416,9 +1515,15 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - swapping a `ServiceBlockedDuringPrint` part is refused;
   - resume applies the pause seam/quality penalty;
   - the print does not fail merely because it was paused.
-- Calibration with `N` grid points touches the plate at every point and returns to idle.
+- Calibration with `N` grid points moves smoothly at the selected `SIM SPEED`, touches the plate at every point, and returns to the global home.
+- An uncalibrated printer starts with a warning but is not blocked; its final quality uses a random `0.7–1.0×` factor at print completion. Changing a part while paused invalidates calibration and keeps the warning visible until the bed is cleared.
 - The console shows the chosen simulation multiplier and live printer status.
+- Switching printers preserves each printer's selected object, spool, settings and placement; switching objects preserves their settings/placement.
 - A busy printer/enclosure cannot be sold, taken or freely interacted with.
+- An installed printer is inspected only through its enclosure: enclosure interaction list, printer-as-one integrity/remove, and printer internals available in wear mode.
+- A docked printer validates the enclosure's required parts as well; missing battery closet, adapter, HEPA, fire-suppression or thermometer parts block `Start print` with a specific error, and enclosure wear contributes to the quality estimate.
+- Installing a printer moves its single spool, battery closet and adapter to the enclosure sockets, hides `spool_holder`, and restores them on removal. Two spools block the install with a reason.
+- Detached enclosure plugs reset to the enclosure plug locations when the enclosure is taken.
 - Raw quality tops out at `90`; the post-process state can improve the finished object later.
 
 **Manual gate**
@@ -1431,10 +1536,17 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 6. Verify partial print blocks the next job and `Clear bed` releases it.
 7. Pause, wait for cooling, swap a nozzle/fan/belt, resume and confirm the seam penalty.
 8. Attempt to swap a print-bed part while paused and confirm it is refused.
-9. Run calibration with `N = 3` and `N = 5`; confirm every point is touched and the nozzle homes afterwards.
+9. Run calibration with `N = 3` and `N = 5`; confirm the head moves smoothly from its current position, lifts, touches every point, returns to `HomePositionNormalized`, and `Hard stop` cancels/homes. Repeat at more than one `SIM SPEED` value; toggle the calibration height override and confirm it affects only the calibration start/lift.
 10. Verify the spool rotates in the correct direction and the visible filament level follows the wear dictionary.
 11. Check enclosure and no-enclosure quality differences; confirm the raw maximum is `90`.
-12. Try to sell/take/interact with a busy printer and enclosure; confirm the status-only hover and blocked actions.
+12. Hover a busy printer and its enclosure in FreeWalk; confirm the printer name stays in `item_hover_info_text`, the five status fields update, and take/interact are hidden.
+13. In `ItemsSell`, confirm the busy printer/enclosure shows the reason in `item_hover_sell_description`, uses the wrong selling ghost, and cannot be sold. Repeat for an idle but device-bound printer: `Connected to a device`.
+14. While carrying a part, hover a busy/calibrating/hot printer; confirm the MMB install hint is still visible. Press MMB and confirm the game stays in `ItemPlace`, `item_hover_place_text` shows the reason, and no part-install state/ghost is entered.
+15. Install a printer in an enclosure, then inspect the enclosure: interaction list must be the enclosure's; integrity must show the printer as one part; wear must show enclosure parts and the printer's internal parts with the printer root hidden; remove must treat the printer as one part with its ghost.
+16. Install a printer with zero, one and two spools. Confirm zero/one installs succeed, the enclosure spool slot becomes the printer spool source, the battery closet and adapter move, and `spool_holder` hides; two spools are refused with the reason on MMB. While docked, confirm the battery closet adapter is not offered as a free take; remove it through the parts flow instead. After removal it behaves as a free part again. Detach a plug, take the enclosure, and confirm it resets to the enclosure plug location. Remove the printer and confirm accessories return and `spool_holder` is visible again.
+17. With the printer docked, remove the battery closet, adapter, one HEPA fan, one fire-suppression tube, and the thermometer one at a time. Confirm `Start print` is disabled with a specific missing-part error for each, and the quality estimate includes installed enclosure-part wear. Reinstall them and confirm the errors disappear.
+18. Start a print on an uncalibrated printer; confirm the warning appears and final quality is in the `0.7–1.0×` range. Run calibration, then start again and confirm the warning disappears and quality is `1.0×`.
+19. With multiple printers connected, change object/settings/placement on printer A, switch to printer B, change them there, then switch back; confirm A's draft is restored. Switch objects on one printer and confirm each object's settings and placement return.
 
 **Do not proceed to M4 until the numbers and timing feel right, wear is applied to the intended parts, and pause/service/calibration are stable.**
 
@@ -1453,7 +1565,10 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - `CartesianPrinterMotion` integration.
 - Spool reveal polish; rotation and wear-level child sync already arrive in M3.
 - Completion material restore and collider enable.
+- Apply `PrinterJob.FinalQuality` to the instantiated printed object's quality value. M3 stores the finalized value on the completed/partial job; M4 owns the visible object.
+- Post-print parking: after cooling, move the head smoothly to `PrinterMotionBase.HomePositionNormalized` before/while `Finished`. This is the global position used for spawn and pause/service; calibration can override it separately.
 - Partial-print removal.
+- **Owner demand:** manual removal of a finished print. The player hovers the finished object and enters `GameStateItemPlace` directly, with no `Cancel` option. Removing it clears the printer bed and lets the object be placed like a normal item.
 - If printing ghosts are reused, fix the existing `ObjectToPrintGhostPrintingDataHolder` bug: its `OnValidate`/`Awake` currently assign `ObjectToPrintGhostType.Quality` instead of `Printing`. Prefer instantiating the real object prefab for prints and bypassing this ghost path.
 
 **Acceptance criteria**
@@ -1467,6 +1582,9 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - The M3 spool rotation continues to read correctly during the full print.
 - Hard stop freezes the partial object at the correct height.
 - Completed object is fully visible and removable.
+- The object's quality value comes from `CompletedJob.FinalQuality`.
+- The head parks at `HomePositionNormalized` before/while `Finished`; removal needs no extra head motion.
+- Hovering the finished print transitions directly to placement with no cancel path, and the printer bed is released.
 - No per-frame material instancing or GC spikes.
 
 **Manual gate**
@@ -1478,6 +1596,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 5. Re-check the M3 spool visual at 100%, 50%, 10%, and 0% with the printed object present.
 6. Check partial print height and removal.
 7. Check completed object materials, colliders, and selling/placement behavior.
+8. Confirm the head parks at `HomePositionNormalized` after cooling and before finished-object removal.
 
 **Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance.**
 
@@ -1555,9 +1674,11 @@ Fill this table during M0 and update it during later milestones.
 | Tablet screen anchor + distance | +Z → world +Y | device lies flat; distance computed from bounds (same values); prefab not yet instanced, verify in the M1 gate |
 | Camera blend in / out | `0.55 s` EaseInOut | both directions; console interaction enables after the focus blend |
 | Bind highlight bounds | printer bounds + `0.08 m` padding | translucent sphere, no collider |
+| Enclosure bind radius | `1.5×` | `PrinterBindHighlight.EnclosureRadiusMultiplier`; applies when the printer is installed in a `PrinterEnclosure` |
 | Bind hover volume | the highlight sphere itself | analytic ray-sphere test; aiming at the bubble is enough |
 | Bind hover opacity | `0.30` vs `0.18` idle | slightly more opaque on hover, never opaque |
 | Bind distance | `3 m` | `PrinterBindTargeting.MaxDistance`; to the sphere entry point, with a line-of-sight raycast |
+| Bind occlusion | target printer + its installed enclosure assembly ignored | other printers/walls still block; enclosure colliders are not treated as walls for the printer installed inside them |
 | Bind reason duration | `2 s` | `DeviceBindPanel.ReasonDuration` on `device_bind_canvas` |
 | Console UI | world-space uGUI canvas per device | logical width `1600`, height from screen aspect, `0.0015 m` offset, Montserrat SDF, items_market style |
 | Console canvas facing | forward points into the screen | UGUI is readable when the viewer looks along canvas `+Z`; verify in the M1 gate |
@@ -1580,13 +1701,17 @@ Fill this table during M0 and update it during later milestones.
 | Bunny baseline (calibrated) | `85.36 m` at 100%, `36 720 s` at 100% | PrusaSlicer, `0.2 mm` / `80 mm/s`; dimensions derived |
 | Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
 | Console camera idle priority | `-1` | player camera stays at implicit `0` |
-| Print speed multiplier | `1×` / `4×` / `64×` / `120×` | console `SIM SPEED`; default `120×`, stored per printer |
+| Print speed multiplier | `1×` / `4×` / `64×` / `120×` | console `SIM SPEED`; default `1×`, stored per printer |
 | Temperature tolerance | `±2 °C` | preheat completes when nozzle and bed are in tolerance |
 | Preheat timeout | `900` simulated seconds | logs a warning and enters `Fault` |
 | Safe service temperature | `50 °C` | pause service gate |
 | Hard-stop penalty | nozzle `0.2 + 0.8 × normalized`, heater `0.1 + 0.4 × normalized`, bed/plate `0.1 + 0.3 × normalized` | tune in the M3 gate |
 | Calibration grid | `5 × 5`, `0.15 s` dwell, `10 mm` padding | `CalibrationGridSize` / `CalibrationPointDwellSeconds` / `CalibrationPaddingMeters` |
-| Spool rotation | `degrees = metres / (2π × 0.1 m) × 360` | `EffectiveRadiusMeters`, local axis and invert flag on `ItemFFFSpoolDataHolder` |
+| Calibration motion | `3 cm` lift, `0.25 m/s` travel scaled by `SIM SPEED` | `CalibrationLiftHeightMeters` / `CalibrationMoveSpeedMetersPerSecond` |
+| Calibration quality | calibrated `1.0×`; uncalibrated random `0.7–1.0×` at print completion | final value stored on `PrinterJob.FinalQuality`; warning persists until bed clear |
+| Global home / start | default `(0, 1, 0.75)` normalized | top-left head, moving bed about 3/4 forward; `UseCustomHomePosition` + `HomeX/Y/Z`; orange gizmo |
+| Calibration height | global home height by default | `UseCustomCalibrationHomeHeight` + `CalibrationHomeY`; green gizmo; calibration returns to global home |
+| Spool rotation | root local `-Y`, `degrees = metres / (2π × 0.1 m) × 360` | `EffectiveRadiusMeters`, `RotationAxis`, `InvertRotation` on `ItemFFFSpoolDataHolder` |
 
 ---
 
@@ -1644,8 +1769,11 @@ Fill this table during M0 and update it during later milestones.
 - Wear application per part, including enclosure parts and every delta type.
 - Selected spool depletion, rotation and wear-level child sync.
 - Enclosure vs no-enclosure thermal behavior and quality cap.
-- Calibration grid at `N = 3` and `N = 5`.
-- Busy printer/enclosure blocks sell/take/interact and shows status-only hover.
+- Smooth calibration grid at `N = 3` and `N = 5`, return to `HomePositionNormalized`.
+- Calibrated vs uncalibrated quality multiplier and console warning.
+- Per-printer and per-object console draft restoration.
+- Busy printer/enclosure blocks sell/take/interact and part install; FreeWalk shows the five status fields.
+- Installed printer is inspected through the enclosure: one interaction list, printer-as-one integrity/remove, printer-internal wear entries available.
 - Unbind/rebind during print.
 - Worn-out part blocks job.
 - Multiple printers simultaneously.
@@ -1657,6 +1785,7 @@ Fill this table during M0 and update it during later milestones.
 - No supports render when `None`.
 - Bed motion and nozzle path.
 - M3 spool visual with the printed object present.
+- Post-print parking at `HomePositionNormalized`.
 - Partial print freeze and removal.
 - Completed object material/collider restore.
 - Performance profile.
@@ -1763,7 +1892,7 @@ M1's remaining device-type/aspect checks are carried forward; they do not block 
 
 M2.5 placement is implemented against the project-owner-authored `object_place_canvas` (move/rotate/scale hints, `object_place_reason`, confirm/cancel). The editor profile generator is implemented already: `Tools/Manufacturing/Print Profile Generator`. Follow-up fixes add console `Left`/`Right` spool selection, keep the cached console view (and its job draft) across placement/taking until the device is sold, and blend the placement camera back to the console on confirm/cancel. The manual gate passed with the authored tuning values.
 
-The M3 first iteration is ready for its manual gate. The remaining owner-authored UI demand is the dedicated FreeWalk printer-status hover section; the code already blocks take/sell/interact and exposes `Printer.StatusSummary`.
+The M3 first iteration is ready for its manual gate. The FreeWalk busy-printer hover fields are wired; visual styling/placement remains owner-authored.
 
 ---
 
@@ -1873,7 +2002,8 @@ Assets/Scripts/Coursework_Master_Degree/
 │   ├── DeviceConsoleView.cs
 │   ├── DeviceConsoleStyle.cs
 │   ├── DeviceConsoleChip.cs
-│   └── DeviceJobPanel.cs
+│   ├── DeviceJobPanel.cs
+│   └── PrinterJobDraftStore.cs
 ├── Game/Logic/Interface/DeviceBind/
 │   └── DeviceBindPanel.cs
 ├── Game/StateMachine/State/
@@ -1905,7 +2035,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-16 | No new input actions for M0–M4 | Existing inputs and UI EventSystem cover the flow |
 | 2026-11-16 | No job queue | Keep first pass simple |
 | 2026-11-16 | Partial print remains after hard stop | Approved default |
-| 2026-11-16 | 120× simulated print time | Approved default |
+| 2026-11-16 | 120× fastest simulation preset; 1× default | Real-time default with an optional fast-forward |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |
@@ -1932,6 +2062,33 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-19 | Spool rotation and wear-level child sync move to M3 | The loop already knows consumed metres; M4 only polishes reveal |
 | 2026-11-19 | Calibration is a printer state, not a console overlay | Reuses motion and the existing status/controls; no new global state |
 | 2026-11-19 | Busy printer/enclosure blocks sell/take/interact | Protects a running job; hover status is an owner-authored UI section |
+| 2026-11-19 | Spool rotation uses the root with local `-Y` | The mesh child has a different authored axis; the root matches the installed spool holder |
+| 2026-11-19 | Head start position lives on `PrinterMotionBase` in print space | Axis-safe across printer variants; a posed prefab transform would be brittle |
+| 2026-11-19 | Calibration moves smoothly with lift/dwell | Matches real printer calibration and makes the grid readable |
+| 2026-11-19 | Finished prints are removed by hover-to-place | Player-friendly; no separate removal state or cancel branch |
+| 2026-11-19 | `Home()` remains mechanical; `HomePositionNormalized` is global gameplay home | Avoid overloading axis-home semantics; calibration can override independently |
+| 2026-11-19 | Use normalized X/Y/Z home and no separate bed home | The moving bed is one of the print-space axes on bed-slingers; fixed beds ignore that axis |
+| 2026-11-19 | Use the same home after spawn, pause, calibration and finished prints | One position keeps placement, camera and aesthetics consistent |
+| 2026-11-19 | Default home is implicit; custom home is opt-in | `UseCustomHomePosition` keeps the default top-left/3/4-forward pose while exposing sliders only when needed |
+| 2026-11-19 | Calibration home is a height-only optional override | Calibration can start/lift higher without redefining X/Z or the global return position |
+| 2026-11-19 | FreeWalk printer stats use five separate texts | Keeps the name/status stack readable and lets the owner style each metric independently |
+| 2026-11-19 | ItemHoverInteract stays silent for a busy printer | Prevents duplicate status prompts; ItemHoverInfo owns the printer-status stack |
+| 2026-11-19 | Bound printers cannot be sold | Prevents dangling device bindings and matches the device-side sell rule |
+| 2026-11-19 | Calibration follows the printer simulation multiplier | One speed control for all simulated motion; use 1× for visual inspection |
+| 2026-11-19 | One normalized home for head, bed and all state returns | Removes competing start positions and keeps placement/aesthetics consistent |
+| 2026-11-19 | Part-install mode is blocked before state entry from ItemPlace | Keeps the player in `ItemPlace`, keeps the MMB hint visible, shows `item_hover_place_text`, and avoids a dead MMB transition |
+| 2026-11-19 | Console job drafts are per printer and per object | Preserves placement/settings across printer and object switches without leaking them between drafts |
+| 2026-11-19 | Installed printers are inspected through the enclosure | One interaction surface; integrity/remove use the printer root, wear includes printer internals |
+| 2026-11-19 | Enclosure-installed printers get a larger bind sphere | `EnclosureRadiusMultiplier` (default `1.5×`) keeps the enclosure printer easy to target |
+| 2026-11-19 | Bind occlusion ignores the installed enclosure assembly | Resolved through `PartsAssembly.FindEnclosingPrinterEnclosure`, so runtime install/uninstall does not rely on stale environment state; enclosure colliders still block other printers |
+| 2026-11-20 | Enclosure docking uses the existing `PartLocation` sockets | Printer, spool, battery closet and adapter are installed parts; plug reset points stay free-part transforms because plugs are not installed parts |
+| 2026-11-20 | Docking relocates printer accessories and hides `spool_holder` | Keeps the installed printer visually consistent with the enclosure and restores the standalone layout on removal |
+| 2026-11-20 | Removed or separately placed wearable free parts are not reset by core-item moves | Prevents the adapter from snapping into an installed-looking socket while its printer socket is empty; regular free parts still reset |
+| 2026-11-20 | The adapter is fixed while installed under an enclosure | A combined free/wearable part with `ItemDataHolder` installed under a `PrinterEnclosure` is handled as an installed part, not a free take; removal restores free behavior |
+| 2026-11-20 | Enclosure parts have their own critical list | The printer's list remains printer-internal; the enclosure list covers battery closet, adapter, HEPA, fire-suppression tubes and thermometer, while the spool stays selected-slot validation |
+| 2026-11-19 | Spool wear visuals use the upper condition threshold | Avoids showing the empty child while usable filament remains |
+| 2026-11-19 | Calibration is recommended, not required | Uncalibrated prints warn and use a random `0.7–1.0×` quality factor at completion; calibrated prints use `1.0×` |
+| 2026-11-19 | Part changes during pause invalidate calibration | The current job keeps a warning and finalizes with the uncalibrated factor until the print is removed |
 | 2026-11-18 | Editor profile generator seeds data | Mesh bounds/volume/overhang are automatable; exact time still needs a slicer reference |
 | 2026-11-18 | Supports are `None`/`Auto`, driven by meta | The model's geometry decides whether supports are needed; the player chooses the cost |
 | 2026-11-18 | Profile split into baseline + requirements; size derived | Two calibratable numbers per object; dimensions come from prefab bounds |
@@ -2065,7 +2222,8 @@ Repeat for `laptop_root`, `PC_root`, `smartphone_root`, and `tablet_root`.
 
 1. Add `PrinterBindHighlight` to the printer root if not already added. Leave it hidden by default.
 2. In play mode, set the component's `DebugState` to `Bindable`, or use the `Debug/Show ...` context menu. Confirm the sphere encloses the printer, does not block the hover raycast, and is translucent.
-3. Check `BoundToThisDevice`, `BoundToOtherDevice`, `SelectedForUnbind`, and `SetHovered(true)`.
+3. Repeat the bind hover check for `Bindable`, `BoundToThisDevice`, and `BoundToOtherDevice`; in unbind mode, check `SelectedForUnbind`. All states use the same targeting path.
+4. With the printer standalone, confirm printer colliders do not block its own sphere. Install it in an enclosure and confirm the sphere uses `EnclosureRadiusMultiplier` (default `1.5×`) and that the enclosure's colliders do not block bind targeting for that printer. Other printers and walls must still block.
 
 ### E.7 Record and stop
 
@@ -2171,6 +2329,7 @@ This gives the installation order: Y-axis bearings → print bed → bed thermis
 
 1. Install one or both spools into `spool_location_1` / `spool_location_2` on the printer. The optional spool group requires at least one.
 2. `Printer.LeftSpoolLocation` / `RightSpoolLocation` map those locations to the console's `SPOOL: Left / Right` row. The console defaults to an occupied side; the player chooses the active side explicitly.
+   Inside an enclosure, the enclosure's single `spool_location` becomes the active slot; installing a printer with two spools is refused.
 3. On the spool's `ItemFFFSpoolDataHolder`, set `MaterialType` (PLA/PETG/ABS/TPU) and keep `FilamentLengthSpoolMeters` at the physical spool length (default `300 m`).
 4. Remaining filament is read from the selected spool's `ItemWearState.CurrentCondition`:
    `remaining = FilamentLengthSpoolMeters * CurrentCondition / 100`.
@@ -2193,6 +2352,7 @@ Check each row in play mode and confirm the console message:
 |---|---|
 | No active printer | `No printer selected.` |
 | Printer bound to another device | `Printer is not connected to this device.` |
+| Printer not calibrated | warning: `Printer is not calibrated; final quality may be 70–100% of the estimate.` |
 | Printer printing/heating/paused/cooling/calibrating | `Printer is busy (...)` |
 | Completed print still on bed | `Printer is busy (Finished).` |
 | Partial print on bed | `A partial print is still on the bed.` |
