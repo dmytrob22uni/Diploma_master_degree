@@ -873,26 +873,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private static void DestroyObjectToPrintGhosts(
             ObjectToPrintDataHolder objectToPrint)
         {
-            if (objectToPrint.ObjectToPrintGhostTypesToInstancesList == null)
-            {
-                return;
-            }
-
-            foreach (ObjectToPrintGhostTypeToInstance objectToPrintGhostTypeToInstance in
-                objectToPrint.ObjectToPrintGhostTypesToInstancesList)
-            {
-                ObjectToPrintGhostDataHolder objectToPrintGhost =
-                    objectToPrintGhostTypeToInstance?.ObjectToPrintInstance;
-
-                if (objectToPrintGhost == null)
-                {
-                    continue;
-                }
-
-                Destroy(objectToPrintGhost.gameObject);
-            }
-
-            objectToPrint.ObjectToPrintGhostTypesToInstancesList.Clear();
+            objectToPrint?.DestroyGhostInstances();
         }
 
         private enum SellingState

@@ -122,7 +122,45 @@ namespace Coursework_Master_Degree.ObjectsToPrint
 
         public void AddGhostType(ObjectToPrintGhostType type, ObjectToPrintGhostDataHolder objectToPrintGhost)
         {
+            if (objectToPrintGhost != null)
+            {
+                objectToPrintGhost.ObjectToPrintInstance = gameObject;
+            }
+
             ObjectToPrintGhostTypesToInstancesList.Add(new ObjectToPrintGhostTypeToInstance(type, objectToPrintGhost));
+        }
+
+        /// <summary>
+        /// Destroys every ghost registered against this object and clears the
+        /// mutual references. Used when a printed object is sold.
+        /// </summary>
+        public void DestroyGhostInstances()
+        {
+            if (ObjectToPrintGhostTypesToInstancesList == null)
+            {
+                return;
+            }
+
+            foreach (ObjectToPrintGhostTypeToInstance entry in
+                ObjectToPrintGhostTypesToInstancesList)
+            {
+                ObjectToPrintGhostDataHolder ghost = entry?.ObjectToPrintInstance;
+
+                if (ghost == null)
+                {
+                    continue;
+                }
+
+                ghost.ObjectToPrintInstance = null;
+                Destroy(ghost.gameObject);
+            }
+
+            ObjectToPrintGhostTypesToInstancesList.Clear();
+        }
+
+        private void OnDestroy()
+        {
+            DestroyGhostInstances();
         }
 
         private bool IsContainGhostType(ObjectToPrintGhostType type)
