@@ -7,16 +7,30 @@ namespace Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint
     /// <summary>
     /// Numeric baseline for one object. Time and filament are measured at the
     /// global reference layer height and speed, with a solid (100% infill)
-    /// print. Object size is derived from the prefab bounds, not authored.
+    /// print and no supports. Object size is derived from the prefab bounds,
+    /// not authored.
     /// </summary>
     [Serializable]
     public class ObjectToPrintPrintProfile
     {
-        [Tooltip("Filament used by a solid (100% infill) print at the reference profile.")]
+        /// <summary>
+        /// Human-readable calculation baseline. Shown by the profile inspector
+        /// header and by the profile generator. Keep in sync with
+        /// LayerHeightSettings / PrintSpeedSettings / InfillSettings.
+        /// </summary>
+        public const string ReferenceBaselineDescription =
+            "0.20 mm layer, 80 mm/s (Slow), 100% infill, supports off";
+
+        [Header("Reference baseline: 0.20 mm | 80 mm/s Slow | 100% infill | supports off")]
+        [Tooltip(
+            "Filament used by a solid (100% infill) print at the reference " +
+            "baseline above, with no supports.")]
         [Min(0.0f)]
         public float FilamentMetersAt100PercentInfill = 10.0f;
 
-        [Tooltip("Print time for a solid (100% infill) print at the reference profile.")]
+        [Tooltip(
+            "Print time for a solid (100% infill) print at the reference " +
+            "baseline above, with no supports.")]
         [Min(0.0f)]
         public float PrintTimeSecondsAt100PercentInfill = 3600.0f;
 

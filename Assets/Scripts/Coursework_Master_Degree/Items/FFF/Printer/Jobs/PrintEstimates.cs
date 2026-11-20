@@ -70,6 +70,57 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         }
 
         /// <summary>
+        /// Share of the object's material at scale 1 that is solid shell
+        /// rather than infill. This is the same value the scale rule uses, so
+        /// editor diagnostics and runtime estimates cannot drift apart.
+        /// </summary>
+        public static float MaterialShellShare(
+            ObjectToPrintPrintProfile profile,
+            InfillPattern infill,
+            ObjectToPrintGeometry geometry)
+        {
+            if (profile == null)
+            {
+                return 0.0f;
+            }
+
+            float wallThicknessMillimeters =
+                profile.WallThicknessMillimeters > 0.01f
+                    ? profile.WallThicknessMillimeters
+                    : DefaultWallThicknessMillimeters;
+
+            return MaterialShellShare(
+                geometry.VolumeCubicMeters,
+                geometry.SurfaceAreaSquareMeters,
+                wallThicknessMillimeters,
+                infill);
+        }
+
+        public static float MaterialShellShare(
+            float volumeCubicMeters,
+            float surfaceAreaSquareMeters,
+            float wallThicknessMillimeters,
+            InfillPattern infill)
+        {
+            float density = Mathf.Clamp01(InfillSettings.Density(infill));
+
+            if (volumeCubicMeters <= 0.000001f ||
+                surfaceAreaSquareMeters <= 0.000001f ||
+                wallThicknessMillimeters <= 0.01f ||
+                density <= 0.000001f)
+            {
+                return 0.0f;
+            }
+
+            float shellVolume = Mathf.Min(
+                volumeCubicMeters,
+                surfaceAreaSquareMeters * wallThicknessMillimeters * 0.001f);
+
+            return Mathf.Clamp01(
+                shellVolume / (volumeCubicMeters * density));
+        }
+
+        /// <summary>
         /// Two-term shell/infill scaling. At scale 1 this is exactly 1 so the
         /// authored/calibrated profile remains authoritative. Small objects
         /// move toward s² for their solid shell; large objects toward s³ for
@@ -92,34 +143,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 return volumeScale;
             }
 
-            float wallThicknessMillimeters =
-                profile.WallThicknessMillimeters > 0.01f
-                    ? profile.WallThicknessMillimeters
-                    : DefaultWallThicknessMillimeters;
-            float wallThicknessMeters =
-                wallThicknessMillimeters / 1000.0f;
-
-            if (wallThicknessMeters <= 0.000001f)
-            {
-                return volumeScale;
-            }
-
-            float totalDensity = Mathf.Clamp01(InfillSettings.Density(infill));
-            float solidVolume = geometry.VolumeCubicMeters;
-            float shellVolume = Mathf.Min(
-                solidVolume,
-                geometry.SurfaceAreaSquareMeters * wallThicknessMeters);
-
-            if (totalDensity <= 0.000001f || solidVolume <= 0.000001f)
-            {
-                return volumeScale;
-            }
-
-            // Share of the object's total material at scale 1 that is solid
-            // shell rather than infill. The two terms then carry the shell
-            // through s² and the core through s³.
-            float shellShare = Mathf.Clamp01(
-                shellVolume / (solidVolume * totalDensity));
+            float shellShare = MaterialShellShare(profile, infill, geometry);
 
             return shellShare * scale * scale +
                 (1.0f - shellShare) * volumeScale;

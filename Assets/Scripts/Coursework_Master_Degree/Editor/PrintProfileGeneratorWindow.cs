@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using Coursework_Master_Degree.Items.FFF.Jobs;
 using Coursework_Master_Degree.ObjectsToPrint;
 using Coursework_Master_Degree.ScriptableObjects.ObjectsToPrint;
 
@@ -10,9 +11,21 @@ namespace Coursework_Master_Degree.Editor
     /// <summary>
     /// Generates profile seeds for ObjectsToPrint metas from their prefabs.
     /// Dimensions are reported only; volume and overhang need readable meshes.
+    /// Time and filament use lumped seed coefficients calibrated from the
+    /// reference slicer result; they are seeds, not per-object calibration.
     /// </summary>
     public class PrintProfileGeneratorWindow : EditorWindow
     {
+        // Lumped effective flow, not peak hotend flow. Calibrated from the
+        // Stanford bunny PrusaSlicer reference:
+        // 216252.06 mm3 / 36720 s = 5.88922 mm3/s at 0.2 mm / 80 mm/s / 100%.
+        private const float DefaultEffectiveFlowMm3PerSecond = 5.88922f;
+
+        // Lumped filament seed coefficient: slicer material volume vs mesh
+        // volume. Calibrated from the Stanford bunny PrusaSlicer reference:
+        // 85.36 m / 89.90716 m = 0.94943.
+        private const float DefaultFilamentPackingFactor = 0.94943f;
+
         private sealed class ScanResult
         {
             public ObjectToPrintMetaSO Meta;
@@ -27,11 +40,18 @@ namespace Coursework_Master_Degree.Editor
             public bool FromScene;
 
             public string SourceLabel => FromScene ? "Scene" : "Catalog";
+
+            public bool CanApply =>
+                Meta != null &&
+                VolumeCubicMeters > 0.0f &&
+                string.IsNullOrEmpty(Note);
         }
 
         private ObjectToPrintMetasListSO catalog;
         private float filamentDiameterMillimeters = 1.75f;
-        private float referenceFlowMm3PerSecond = 12.0f;
+        private float filamentPackingFactor = DefaultFilamentPackingFactor;
+        private float effectiveFlowMm3PerSecond =
+            DefaultEffectiveFlowMm3PerSecond;
         private float wallThicknessMillimeters = 1.2f;
         private float overhangAngleDegrees = 45.0f;
         private float overhangThresholdPercent = 5.0f;
@@ -49,6 +69,14 @@ namespace Coursework_Master_Degree.Editor
         {
             EditorGUILayout.LabelField("Object To Print Profile Generator", EditorStyles.boldLabel);
 
+            EditorGUILayout.HelpBox(
+                "Stored calculation baseline: " +
+                ObjectToPrintPrintProfile.ReferenceBaselineDescription +
+                ".\nEffective flow and filament packing are lumped seed " +
+                "coefficients calibrated from the same reference; they shape " +
+                "the generated estimate and do not change the baseline.",
+                MessageType.None);
+
             catalog = (ObjectToPrintMetasListSO)EditorGUILayout.ObjectField(
                 "Catalog",
                 catalog,
@@ -58,9 +86,21 @@ namespace Coursework_Master_Degree.Editor
             filamentDiameterMillimeters = EditorGUILayout.FloatField(
                 "Filament diameter (mm)",
                 filamentDiameterMillimeters);
-            referenceFlowMm3PerSecond = EditorGUILayout.FloatField(
-                "Reference flow (mm3/s)",
-                referenceFlowMm3PerSecond);
+            filamentPackingFactor = EditorGUILayout.FloatField(
+                new GUIContent(
+                    "Filament packing",
+                    "Lumped filament seed coefficient: slicer material volume " +
+                    "vs mesh volume. Default calibrated from the Stanford " +
+                    "bunny slicer reference."),
+                filamentPackingFactor);
+            effectiveFlowMm3PerSecond = EditorGUILayout.FloatField(
+                new GUIContent(
+                    "Effective flow (mm3/s)",
+                    "Lumped time seed coefficient: slicer average extrusion rate " +
+                    "including travel and acceleration, plus the mesh-to-slicer " +
+                    "volume difference. Not peak hotend flow. Default calibrated " +
+                    "from the Stanford bunny slicer reference."),
+                effectiveFlowMm3PerSecond);
             wallThicknessMillimeters = EditorGUILayout.FloatField(
                 "Wall thickness (mm)",
                 wallThicknessMillimeters);
@@ -132,19 +172,36 @@ namespace Coursework_Master_Degree.Editor
                     EditorGUILayout.LabelField(
                         "Overhang",
                         $"{result.OverhangPercent:0.#}%");
-                    float shellFraction = result.VolumeCubicMeters > 0.0f
+                    float solidShellFraction = result.VolumeCubicMeters > 0.0f
                         ? Mathf.Clamp01(
                             result.SurfaceArea *
                             wallThicknessMillimeters * 0.001f /
                             result.VolumeCubicMeters)
                         : 0.0f;
+                    InfillPattern defaultInfill =
+                        result.Meta.Requirements != null
+                            ? result.Meta.Requirements.DefaultInfill
+                            : InfillPattern.Grid;
+                    float materialShellShare =
+                        PrintEstimates.MaterialShellShare(
+                            result.VolumeCubicMeters,
+                            result.SurfaceArea,
+                            wallThicknessMillimeters,
+                            defaultInfill);
                     EditorGUILayout.LabelField(
-                        "Shell at scale 1",
-                        $"{shellFraction * 100.0f:0.#}%");
+                        "Solid shell",
+                        $"{solidShellFraction * 100.0f:0.#}%");
                     EditorGUILayout.LabelField(
-                        "Seeds",
+                        $"Material shell ({InfillSettings.Label(defaultInfill)})",
+                        $"{materialShellShare * 100.0f:0.#}%");
+                    EditorGUILayout.LabelField(
+                        "Scale 2x factor",
+                        $"{ScaleFactorAt(materialShellShare, 2.0f):0.00}x " +
+                        "(volume-only 8.00x)");
+                    EditorGUILayout.LabelField(
+                        "Seeds at baseline",
                         $"{result.FilamentMeters:0.0} m, " +
-                        $"{result.Seconds / 60.0f:0.#} min, " +
+                        $"{FormatDuration(result.Seconds)}, " +
                         $"supports {result.SupportsRequired}");
                 }
 
@@ -380,22 +437,24 @@ namespace Coursework_Master_Degree.Editor
 
                 if (filamentArea > 0.0f)
                 {
-                    result.FilamentMeters =
-                        result.VolumeCubicMeters / filamentArea;
+                    result.FilamentMeters = Mathf.Max(
+                        0.0f,
+                        result.VolumeCubicMeters / filamentArea *
+                        filamentPackingFactor);
                 }
 
-                if (referenceFlowMm3PerSecond > 0.0f)
+                if (effectiveFlowMm3PerSecond > 0.0f)
                 {
                     result.Seconds =
                         result.VolumeCubicMeters * 1_000_000_000.0f /
-                        referenceFlowMm3PerSecond;
+                        effectiveFlowMm3PerSecond;
                 }
 
                 if (skippedMeshes > 0)
                 {
                     result.Note =
                         $"{skippedMeshes} mesh(es) skipped because Read/Write is disabled; " +
-                        "the seed is based on readable meshes only.";
+                        "this result cannot be applied until all meshes are readable.";
                 }
 
                 return result;
@@ -406,17 +465,36 @@ namespace Coursework_Master_Degree.Editor
             }
         }
 
+        private static float ScaleFactorAt(float shellShare, float scale)
+        {
+            return shellShare * scale * scale +
+                (1.0f - shellShare) * scale * scale * scale;
+        }
+
+        private static string FormatDuration(float seconds)
+        {
+            int totalMinutes = Mathf.Max(0, Mathf.RoundToInt(seconds / 60.0f));
+            int hours = totalMinutes / 60;
+            int minutes = totalMinutes % 60;
+
+            return hours > 0
+                ? $"{hours} h {minutes:00} min"
+                : $"{minutes} min";
+        }
+
         private void Apply()
         {
             int applied = 0;
+            int skipped = 0;
             StringBuilder report = new StringBuilder();
 
             for (int i = 0; i < results.Count; i++)
             {
                 ScanResult result = results[i];
 
-                if (result.Meta == null || result.VolumeCubicMeters <= 0.0f)
+                if (!result.CanApply)
                 {
+                    skipped++;
                     continue;
                 }
 
@@ -442,14 +520,19 @@ namespace Coursework_Master_Degree.Editor
                 applied++;
                 report.AppendLine(
                     $"{result.Meta.Name}: {result.FilamentMeters:0.0} m, " +
-                    $"{result.Seconds / 60.0f:0.#} min, " +
+                    $"{FormatDuration(result.Seconds)}, " +
                     $"overhang {result.OverhangPercent:0.#}%");
             }
 
             AssetDatabase.SaveAssets();
 
             Debug.Log(
-                $"[PrintProfileGenerator] Applied {applied} profile seed(s).\n{report}");
+                $"[PrintProfileGenerator] Applied {applied} profile seed(s), " +
+                $"skipped {skipped} at " +
+                $"{ObjectToPrintPrintProfile.ReferenceBaselineDescription}. " +
+                "Effective flow and filament packing are calibrated to the " +
+                "reference; still confirm each object with a slicer.\n" +
+                report);
             Repaint();
         }
     }
