@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Coursework_Master_Degree.Items.Computing;
-using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.FFF.Jobs;
 using Coursework_Master_Degree.Items.FFF.Spool;
 using Coursework_Master_Degree.Items.Part;
@@ -1526,6 +1525,13 @@ namespace Coursework_Master_Degree.Items.FFF
             return false;
         }
 
+        /// <summary>
+        /// Resolves the printer that physically owns this object. Surface
+        /// placement is storage, not printer hardware, so items placed on an
+        /// enclosure shelf are intentionally not followed through
+        /// ItemSurfaceDataHolder; they keep their own hover/take behaviour
+        /// even while the printer is busy.
+        /// </summary>
         public static Printer FindFor(GameObject target)
         {
             if (target == null)
@@ -1533,67 +1539,39 @@ namespace Coursework_Master_Degree.Items.FFF
                 return null;
             }
 
-            GameObject current = target;
+            Printer printer = target.GetComponentInParent<Printer>();
 
-            for (int depth = 0; depth < 8 && current != null; depth++)
+            if (printer != null)
             {
-                Printer printer = current.GetComponentInParent<Printer>();
-
-                if (printer != null)
-                {
-                    return printer;
-                }
-
-                PrinterEnclosure enclosure =
-                    current.GetComponentInParent<PrinterEnclosure>();
-
-                if (enclosure == null)
-                {
-                    enclosure = current.GetComponentInChildren<PrinterEnclosure>(
-                        true);
-                }
-
-                if (enclosure != null)
-                {
-                    if (enclosure.Printer != null)
-                    {
-                        return enclosure.Printer;
-                    }
-
-                    Printer contained =
-                        enclosure.GetComponentInChildren<Printer>(true);
-
-                    if (contained != null)
-                    {
-                        return contained;
-                    }
-                }
-
-                Printer childPrinter =
-                    current.GetComponentInChildren<Printer>(true);
-
-                if (childPrinter != null)
-                {
-                    return childPrinter;
-                }
-
-                // Items placed on an enclosure shelf are not parented to the
-                // enclosure. Follow the surface chain so their hover/busy
-                // status still resolves to the printer that owns the surface.
-                ISurfacePlaceable placeable =
-                    current.GetComponentInParent<ISurfacePlaceable>();
-
-                if (placeable == null ||
-                    !placeable.IsPlaced ||
-                    placeable.ParentSurfaceDataHolder == null)
-                {
-                    break;
-                }
-
-                current = placeable.ParentSurfaceDataHolder.gameObject;
+                return printer;
             }
 
-            return null;
+            PrinterEnclosure enclosure =
+                target.GetComponentInParent<PrinterEnclosure>();
+
+            if (enclosure == null)
+            {
+                enclosure = target.GetComponentInChildren<PrinterEnclosure>(
+                    true);
+            }
+
+            if (enclosure != null)
+            {
+                if (enclosure.Printer != null)
+                {
+                    return enclosure.Printer;
+                }
+
+                Printer contained =
+                    enclosure.GetComponentInChildren<Printer>(true);
+
+                if (contained != null)
+                {
+                    return contained;
+                }
+            }
+
+            return target.GetComponentInChildren<Printer>(true);
         }
 
         public bool HasAllCriticalParts(out string reason)

@@ -1058,7 +1058,7 @@ Behavior:
 - The five fields are only active for a busy printer or its enclosure. Empty spool/pause fields are hidden; normal take/inspect prompts return when the printer is idle.
 - `printer_state_progress_text` uses `Heating 0–100%` / `Cooling 0–100%` from the interval start temperatures. Printing and paused states use job progress.
 - `ItemHoverInfo` refreshes the five fields while the same printer collider stays hovered.
-- `Printer.FindFor` follows `ISurfacePlaceable.ParentSurfaceDataHolder`, so items placed on enclosure shelves still resolve to the printer and show its busy status. `ItemHoverInfo` applies the same check when hovering an enclosure surface that has items on it.
+- `Printer.FindFor` resolves only the physical printer/enclosure hierarchy. Surface placement is storage, so items placed on an enclosure shelf keep their own hover/take even while the printer is busy; hovering the enclosure surface itself still resolves the printer and shows its status.
 - While the printer is running or calibrating, `ItemHoverInteract` suppresses its prompt so it does not duplicate the status; door interactables are exempt so they can show their interlock reason.
 - Once the printer is `Paused`, cooled below `SafeServiceTemperatureC` and the head is parked, `Printer.IsPausedServiceReady` / `CanOpenInteractions` become true: the name and five status fields remain visible, and `interact_root` also appears with `Parts wear`, `Parts integrity` and `Parts remove`. Individual parts can still be refused by `ServiceBlockedDuringPrint`.
 - Resuming or hard-stopping the job closes the interaction list again.
@@ -1598,7 +1598,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Print progress reaches 100% at the expected simulated duration.
 - Cooling returns temperatures toward ambient; enclosure cooling is visibly slower.
 - Heating and cooling percentages track the actual temperature interval and update in the console and FreeWalk hover.
-- Items placed on enclosure shelves or surfaces still show the busy printer name and status.
+- Items placed on enclosure shelves or surfaces keep their own name and take prompt while the printer is busy; the enclosure surface itself still shows the busy printer status.
 - All enclosure doors must be closed and settled before start/resume. Open doors show a console warning, remain interactable when idle/paused/cooling/finished, and interlock during preheating/printing/calibration.
 - Nozzle, bed/plate/heater/thermistor, enclosure parts and selected-spool wear are applied to the correct parts.
 - Every existing wear delta type is exercised by at least one installed printer/enclosure part or by the completed-print use pass.
@@ -1656,7 +1656,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 19. With multiple printers connected, change object/settings/placement on printer A, switch to printer B, change them there, then switch back; confirm A's draft is restored. Switch objects on one printer and confirm each object's settings and placement return.
 20. Instantiate a rectangular CoreXY prefab with `CoreXYPrinterMotion`; run the motion debug and calibration checks. Confirm X/Z compose onto the shared carriage, the bed/gantry Y role maps correctly, placement/validation still use the rectangular build volume, and no `Printer`/job code changes are needed.
 21. Hover printer and enclosure through preheat, printing, cooling and resume-heating; confirm the state percentage moves from 0 to 100 and matches the temperature interval rather than job progress.
-22. Place a spool or part on an enclosure shelf while the printer is printing; confirm hovering it still shows the printer name and all five status fields.
+22. Place a spool, part or device on an enclosure shelf while the printer is printing; confirm hovering it shows the item's own name and take/use prompt, not the busy printer status, and that it can be taken. Hovering the enclosure surface itself should still show the printer status.
 23. Start with one door open; confirm `Start print` is blocked with the console warning. Close both doors and confirm the job starts. Pause, open both doors, confirm they open and `Resume` is blocked with the warning; close and resume.
 24. Finish a print and wait for cooling and homing. Confirm both doors open, the finished object can be removed, and the enclosure/printer service interactions remain blocked until the object is removed. Print the same object twice and confirm the head paths differ while staying inside the layer bounds; test rotated and scaled placements.
 
@@ -2362,7 +2362,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Head path varies per job | Object/printer hash plus a random salt seeds Lissajous frequencies, a secondary harmonic and low-frequency Perlin drift; layer bounds remain authoritative |
 | 2026-11-21 | Enclosure doors are a shared interlock | `PrinterEnclosure.Doors` auto-finds generic `Door` components; closed doors are required for start/resume and opening during active printing pauses the job |
 | 2026-11-21 | Thermal percentages are interval-based | Heating/cooling progress is measured from the temperatures captured at the state transition, not from job progress |
-| 2026-11-21 | Surface placement still resolves printer status | `Printer.FindFor` follows `ISurfacePlaceable.ParentSurfaceDataHolder`; items on enclosure shelves show the busy printer status |
+| 2026-11-21 | Shelf storage is independent of the printer | `Printer.FindFor` stops at the physical printer/enclosure hierarchy; items placed on a surface keep their own hover/take even when the printer is busy, while the enclosure surface itself still shows the busy status |
 | 2026-11-20 | Filament seed is calibrated like the time seed | Editor filament packing `0.94943` (`85.36 / 89.90716`) restores the bunny `85.36 m`; Grid/Auto matches the slicer `28.53 m` |
 | 2026-11-20 | Shell diagnostics share the runtime formula | `PrintEstimates.MaterialShellShare` drives both the scale rule and the editor tool; the bunny reports `14.0%` solid shell, `44.4%` Grid material shell and `6.22x` at scale 2 |
 | 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |
