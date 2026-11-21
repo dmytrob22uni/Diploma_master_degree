@@ -1933,14 +1933,14 @@ MonoBehaviour:
     LocalAxis: {x: 1, y: 0, z: 0}
     MinLocal: -0.127
     MaxLocal: 0.127
-    Invert: 0
+    Invert: 1
     Speed: 0.2
   horizontalZ:
     Node: {fileID: 6575913149364803352}
     LocalAxis: {x: 0, y: 1, z: 0}
     MinLocal: -0.07
     MaxLocal: 0.151
-    Invert: 0
+    Invert: 1
     Speed: 0.2
   verticalY:
     Node: {fileID: 3190614672177522936}

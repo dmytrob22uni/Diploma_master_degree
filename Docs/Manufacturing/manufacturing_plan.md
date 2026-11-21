@@ -935,6 +935,7 @@ Important:
 - Do not attempt real perimeter/infill geometry.
 - Use a seeded pattern so the motion is deterministic per job.
 - Respect the rectangular build volume / soft limits.
+- Axis `Invert` flags are part of the print-space calibration: the MK4S horizontal X uses `Invert = 1` because its carriage parent maps local X to world -X, and horizontal Z uses `Invert = 1` because the bed moves the opposite way from the nozzle in print space. Keep the path bounds and motion axes on the same bed-local frame.
 - Pause and hard stop both move the head smoothly to `HomePositionNormalized`.
 - After cooling, normal completion moves the head smoothly to `HomePositionNormalized`; the print becomes removable only when both cooling and parking finish. Calibration may start/lift from `CalibrationHomePrintPosition` (X/Z global, optional height). `Home()` remains the mechanical axis-home primitive for debug/mechanical use only.
 
@@ -1864,10 +1865,10 @@ Fill this table during M0 and update it during later milestones.
 | Item | Recorded value | Notes |
 |---|---|---|
 | Horizontal X transform | `x_axis_base/extruder_base` | local X |
-| Horizontal X min / max offset | `-0.127` / `0.127` | signed local units, at print-space -X / +X |
+| Horizontal X min / max offset | `-0.127` / `0.127` | signed local units; `Invert = 1` maps print-space -X to local +0.127 because the carriage parent maps local X to world -X |
 | Horizontal X speed | `0.2` | units/s |
 | Horizontal Z transform | `print_bed_holder_base` | local Y (bed front/back) |
-| Horizontal Z min / max offset | `-0.07` / `0.151` | signed local units, at print-space -Z / +Z |
+| Horizontal Z min / max offset | `-0.07` / `0.151` | signed local units; `Invert = 1` because moving the bed toward +Z moves the nozzle toward bed-local -Z; `MinLocal` maps to print-space +Z and `MaxLocal` to print-space -Z |
 | Horizontal Z speed | `0.2` | units/s |
 | Vertical Y transform | `x_axis_base` | local Z (gantry up/down) |
 | Vertical Y min / max offset | `-0.22` / `0` | signed local units, first layer / full height |
@@ -2277,6 +2278,8 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-16 | Partial print remains after hard stop | Approved default |
 | 2026-11-16 | 120× fastest simulation preset; 1× default | Real-time default with an optional fast-forward |
 | 2026-11-21 | 240× preset added | Extends the console to 1×/4×/64×/120×/240×; estimates show real duration above 1× |
+| 2026-11-21 | Print-space X calibration uses the carriage sign | MK4S horizontal X uses `Invert = 1` so the head path follows the same bed-local X as the placed object |
+| 2026-11-21 | Print-space Z calibration uses the bed-motion sign | MK4S horizontal Z uses `Invert = 1`; moving the bed toward +Z moves the nozzle toward bed-local -Z, so the bed axis must run opposite the print-space axis |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |
@@ -2462,11 +2465,11 @@ Calibrate to the **usable print volume**, not the mechanical travel extremes. `A
 3. Drag Vertical Y. Confirm the **gantry** moves up/down. Record the offset at the first-layer position (nozzle tip just above the plate) and at full build height. The authored nozzle sits roughly 0.257 m above the plate, so expect a large **negative** first-layer offset and a less negative full-height offset.
 4. If an axis needs more than `DebugTravel = 0.25` m, raise `PrinterMotionDebug.DebugTravel` and re-enter play mode.
 5. Stop play mode and enter the offsets:
-   - `HorizontalX.MinLocal` = offset at print-space -X (left plate edge), `MaxLocal` = offset at +X (right plate edge).
-   - `HorizontalZ.MinLocal` = offset at print-space -Z (one plate edge), `MaxLocal` = offset at +Z (the opposite edge).
+   - `HorizontalX.MinLocal` / `MaxLocal` are the two plate-edge offsets. Set `Invert` so `SetAxisNormalized(0, 0)` puts the nozzle at print-space -X. The MK4S carriage local X maps world -X, so it uses `MinLocal = -0.127`, `MaxLocal = 0.127`, `Invert = 1`.
+   - `HorizontalZ.MinLocal` / `MaxLocal` are the two bed-edge offsets. A bed axis moves the nozzle the opposite way in print space; set `Invert = 1` (or reverse the recorded order) so positive print-space Z follows bed-local +Z. The MK4S bed uses `MinLocal = -0.07`, `MaxLocal = 0.151`, `Invert = 1`.
    - `VerticalY.MinLocal` = first-layer offset, `MaxLocal` = full-height offset.
    - Offsets are **signed** and measured from the authored local position. `MinLocal` may be numerically greater than `MaxLocal`.
-   - Use `Invert` only if it makes the recorded order more natural; do not use it to hide an unknown direction.
+   - Use `Invert` to make positive print-space coordinates follow positive bed-local coordinates; do not use it to hide an unknown direction.
 6. Set `BuildVolume.x` and `BuildVolume.z` to the measured plate spans, and `BuildVolume.y` to the measured full height. The calibrated span on each axis must equal its matching `BuildVolume` component, or the print is rescaled.
 7. Re-enter play mode. Enable `Test calibrated range`. Move X/Z to 0.5 and confirm the nozzle sits over the bed centre. Move Y to 0 and 1 and confirm the first-layer gap and full height.
 8. Confirm the test cube is flush, centred, and upright. Remove the cube or disable `SpawnOnStart` before saving.
