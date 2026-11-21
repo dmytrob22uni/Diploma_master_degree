@@ -1644,6 +1644,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Switching printers preserves each printer's selected object, spool, settings and placement; switching objects preserves their settings/placement.
 - A busy printer/enclosure cannot be sold or taken. Free-walk interaction is blocked while running/calibrating, but becomes available after a pause has cooled and parked; all three interaction options are shown, while `ServiceBlockedDuringPrint` still refuses specific parts.
 - An installed printer is inspected only through its enclosure: enclosure interaction list, printer-as-one integrity/remove, and printer internals available in wear mode.
+- A paused printer remains portable after cooling and parking: it can be taken and placed like a free item, including after being removed from an enclosure. `Printer.CanBeTaken` gates this; installed printers still use the enclosure parts-removal flow.
 - A docked printer validates the enclosure's required parts as well; missing battery closet, adapter, HEPA, fire-suppression or thermometer parts block `Start print` with a specific error, and enclosure wear contributes to the quality estimate.
 - Installing a printer moves its installed spools to available enclosure sockets, up to the number of free sockets, hides `spool_holder` when mapped, and restores everything on removal. Overflow blocks the install with a reason. The console supports zero, one or up to four selectable slots.
 - Detached enclosure plugs reset to the enclosure plug locations when the enclosure is taken.
@@ -1678,6 +1679,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 23. Start with one door open; confirm `Start print` is blocked with the console warning. Close both doors and confirm the job starts. Pause, open both doors, confirm they open and `Resume` is blocked with the warning; close and resume.
 24. Finish a print and wait for cooling and homing. Confirm both doors open, the finished object can be removed, and the enclosure/printer service interactions remain blocked until the object is removed. Print the same object twice and confirm the head paths differ while staying inside the layer bounds; test rotated and scaled placements.
 25. Place a part on an enclosure surface and hover it through the enclosure: confirm only the part's own hint (typically `inspect wear`) appears, with no enclosure `interact` prompt.
+26. Pause a print, wait for cooling/parking, remove the printer from its enclosure, place it, then take and place it again before resuming. Confirm the paused job is preserved and the printer remains portable; repeat with the printer on the floor (not in an enclosure).
 
 **Sign-off (2026-11-20):** The MK4S M3 manual gate passed, including the calibration-sensitive part check. The 2026-11-21 thermal/door/head-path checks were added afterward and remain pending. Deferred until the relevant assets exist: CoreXY play-mode validation (no CoreXY model/prefab) and 3/4-slot console presentation (no authored printer with that configuration).
 
@@ -2337,6 +2339,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Printer/enclosure audit keeps shared runtime model-agnostic | Axis signs, limits and bed-moving detection stay in motion data; enclosure doors, spools, docking and critical parts are serialized; the only name-based helper is editor-only |
 | 2026-11-21 | Enclosure bonus is one chance per job | Capture the state at actual start; the first removal latches a permanent loss, so reinstalling never restores it. Store the base quality range without enclosure and apply `+5` / `-9` once at completion |
 | 2026-11-21 | Direct part hover wins over enclosure prompts | `ItemHoverInteract` uses the same item/part mask as `ItemHoverInfo`; the closest part gets the hint and the enclosure behind it does not |
+| 2026-11-21 | Paused printers remain portable | Once cooled and parked, a paused printer can be taken/placed as a free item, including after enclosure removal; installed printers still use the parts-removal flow |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |

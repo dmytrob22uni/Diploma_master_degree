@@ -261,6 +261,13 @@ namespace Coursework_Master_Degree.Items.FFF
             IsAtSafeServiceTemperature;
 
         /// <summary>
+        /// Whether the printer itself may be taken/placed by the player.
+        /// Paused jobs remain portable once cooling and parking are complete;
+        /// installed printers are removed through their enclosure parts flow.
+        /// </summary>
+        public bool CanBeTaken => !IsBusy || IsPausedServiceReady;
+
+        /// <summary>
         /// Whether the FreeWalk interaction list may open for this printer.
         /// Idle printers are always available; paused printers are available
         /// only once cooling and homing have completed.

@@ -266,6 +266,15 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                 return false;
             }
 
+            // A paused printer that has cooled and parked is a portable item.
+            // Installed printers still use the enclosure parts-removal flow.
+            if (printer.CanBeTaken &&
+                target != null &&
+                target.GetComponent<Printer>() == printer)
+            {
+                return false;
+            }
+
             cachedBusyPrinter = printer;
             ItemHoverInfoText.text = printer.DisplayName;
             ItemHoverInfoText.gameObject.SetActive(true);
@@ -427,7 +436,13 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                 if (printer != null && printer.IsBusy)
                 {
-                    return;
+                    bool isPrinterItem = cachedItemGameObject != null &&
+                        cachedItemGameObject.GetComponent<Printer>() == printer;
+
+                    if (!isPrinterItem || !printer.CanBeTaken)
+                    {
+                        return;
+                    }
                 }
             }
 
