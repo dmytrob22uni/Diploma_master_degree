@@ -365,11 +365,25 @@ Important calibration notes:
 Add a `PrintBedAnchor` transform (or runtime-created anchor) under/at `print_bed_location`:
 
 - Position: bed center, just above the plate surface.
-- Rotation: calibrated so the object's local Y is world up.
+- Rotation: local +Y is world up and local +Z points to the printer front. The placement camera and visual home frame use this front direction.
+- Keep the anchor under the bed-moving axis (the bed carriage on a bedslinger) so `CartesianPrinterMotion` can detect a bed-moving horizontal Z role.
 - The printed object is parented to this anchor, so it moves with the bed.
 - At print start, compute the object's local bottom offset and center it on the anchor.
 
 This avoids fighting the prefab's diagonal rotations and makes future printer prefabs easier to support.
+
+**Universality audit (printer/enclosure)**
+
+- `PrinterMotionBase` / `CartesianPrinterMotion` / `CoreXYPrinterMotion` own node wiring, axis signs and travel limits. Job, visual and enclosure code call only `ApplyNozzlePosition`, `HomePrintPosition`, `BuildVolume` and `BedAnchor`.
+- `HomePositionNormalized` is exposed in the printer-front frame: X `0` = left, `1` = right; Z `0` = back, `1` = front; Y `0` = plate, `1` = top. `CartesianPrinterMotion` detects a bed-moving Z role from the bed-anchor hierarchy and converts it to print space internally. `AxisBinding.Invert` is never authored into home or placement values.
+- The bed anchor's local +Z is the printer-front direction used by placement framing and the home frame. Rotate the anchor if the model front differs, and keep it under the bed-moving axis for role detection.
+- `CartesianPrinterMotion` axis labels are role-agnostic; serialized tooltips may use MK4S paths as examples only. A new independent-axis rectangular printer is a prefab/calibration job, not a new runtime branch.
+- `CoreXYPrinterMotion` assumes a fixed bed; a moving-bed variant overrides `HorizontalZMovesBed`.
+- Enclosure behavior is driven by `PrinterEnclosure` data: doors, spool sockets, docking roles, free-part reset points and critical parts. `PrinterEnvironment` receives the docked state at runtime; shared code does not branch on model names or transforms.
+- Runtime part checks use serialized `PartLocation` references and `Printer.CriticalPartLocations` / `PrinterEnclosure.CriticalPartLocations`. The only name-based binding helper is the editor-only `Auto-Assign Critical Parts` context menu (`#if UNITY_EDITOR`); remaining name switches are display labels with a generic underscore fallback and never drive validation or state.
+- Shelf storage is independent of printer ownership: `Printer.FindFor` stops at the physical printer/enclosure hierarchy. Enclosure surfaces still resolve the printer; items placed on them keep their own hover/take.
+- Calibration, quality and job state are printer-generic; enclosure quality is read through `Printer.HasEnclosure` / `PrinterEnvironment.HasEnclosure`, and each job latches `StartedWithEnclosure` at queue time. The `+5` / `-9` enclosure quality values are global balance constants; future enclosure tiers should expose their own values on `PrinterEnvironment`/`PrinterEnclosure` rather than add a printer-name branch.
+- A new printer that needs different geometry or coupled axes should add a `PrinterMotionBase` subclass or prefab data, not a special case in shared job, console or enclosure code.
 
 ### 5.4 Camera focus and screen-off behavior
 
@@ -770,7 +784,7 @@ All part locations are scanned, not only the critical list. Critical parts are t
 
 For a docked printer, the scan covers both `Printer.Assembly` and the enclosing `PrinterEnclosure` assembly. The installed printer at `printer_location` and the selected spool are skipped as generic parts because they are the job target and the separately validated consumable. Enclosure wear also feeds the raw-quality hardware penalty.
 
-Critical parts are serialized as **`PartLocation` references** on the printer (`Printer.CriticalPartLocations`) and on the enclosure (`PrinterEnclosure.CriticalPartLocations`), not names. The print plate is `Printer.PrintPlateLocation`. References survive renames and support prefab variants; names are only used by the editor auto-assign helper. `ItemMetaSO.ItemTypes` is deliberately not used because it stores only broad paths (`FFF`, `Printer`, `Part`), not leaf types such as nozzle or print plate.
+Critical parts are serialized as **`PartLocation` references** on the printer (`Printer.CriticalPartLocations`) and on the enclosure (`PrinterEnclosure.CriticalPartLocations`), not names. The print plate is `Printer.PrintPlateLocation`. References survive renames and support prefab variants; critical-part names are only used by the editor-only auto-assign helper (`#if UNITY_EDITOR`), never for runtime validation. `ItemMetaSO.ItemTypes` is deliberately not used because it stores only broad paths (`FFF`, `Printer`, `Part`), not leaf types such as nozzle or print plate.
 
 Balanced default printer critical set:
 
@@ -2291,6 +2305,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Resume reuses the printed object | Reheating after a pause must not rebuild the mesh, reset the reveal or snap the head; only the motion return is re-armed |
 | 2026-11-21 | Home coefficients use the printer-front frame | `HomeX`/`HomeZ` are user-facing visual coordinates (0 = left/back, 1 = right/front); the bed-moving Z role is converted to print space inside the motion implementation, so `AxisBinding.Invert` never leaks into authored or player values |
 | 2026-11-21 | Calibration is consumed by a printed job | A successful calibration applies to the next job that actually prints; finalization returns the printer to uncalibrated for the following job. The warning and random `0.7–1.0×` factor are unchanged, and a preheat-only cancellation keeps calibration |
+| 2026-11-21 | Printer/enclosure audit keeps shared runtime model-agnostic | Axis signs, limits and bed-moving detection stay in motion data; enclosure doors, spools, docking and critical parts are serialized; the only name-based helper is editor-only |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |

@@ -6,7 +6,8 @@ namespace Coursework_Master_Degree.Items.FFF
     /// Visual CoreXY motion model. X and Z are composed onto the same
     /// horizontal carriage because CoreXY mechanics couple those print-space
     /// axes. Belt/motor dynamics are not simulated; the carriage reaches the
-    /// requested print-space position directly.
+    /// requested print-space position directly. The bed is treated as fixed;
+    /// a moving-bed CoreXY variant overrides `HorizontalZMovesBed`.
     /// </summary>
     public class CoreXYPrinterMotion : PrinterMotionBase
     {
@@ -76,7 +77,10 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public override int AxisCount => 3;
 
-        public override PrintBedAnchor BedAnchor => bedAnchor;
+        // Authoring fallback; explicit wiring still wins.
+        public override PrintBedAnchor BedAnchor => bedAnchor != null
+            ? bedAnchor
+            : GetComponentInChildren<PrintBedAnchor>(true);
 
         public Transform Carriage => carriage;
 

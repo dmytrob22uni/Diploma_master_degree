@@ -4,8 +4,10 @@ namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
     /// Y-up reference for the print plate surface.
-    /// Author it under the printer's print plate node
-    /// (printer_print_plate_location on MK4S).
+    /// Author it under the printer's print plate node; the anchor's local +Z
+    /// defines the printer-front direction used by placement framing and the
+    /// visual home values. For a bed-moving horizontal axis, keep this anchor
+    /// under the bed carriage so CartesianPrinterMotion can detect that role.
     /// Printed objects are parented here so they move with the bed.
     /// </summary>
     public class PrintBedAnchor : MonoBehaviour

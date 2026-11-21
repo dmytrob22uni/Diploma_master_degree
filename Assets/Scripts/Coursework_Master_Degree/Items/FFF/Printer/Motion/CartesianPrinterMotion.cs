@@ -3,9 +3,10 @@ using UnityEngine;
 namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
-    /// Prusa MK4S style motion: the extruder moves in X and Z, the bed moves
-    /// in Y. Axis transforms and directions are serialized, so the same class
-    /// can drive other cartesian printers after recalibration.
+    /// Independent-axis Cartesian motion. The three serialized axis bindings
+    /// map print-space X/Z and nozzle height Y onto any rectangular machine;
+    /// the MK4S calibration is one example. Axis signs and travel limits stay
+    /// in serialized data, never in shared job or enclosure code.
     /// </summary>
     public class CartesianPrinterMotion : PrinterMotionBase
     {
@@ -16,7 +17,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
         [Header("Axes")]
         [SerializeField]
-        [Tooltip("MK4S: base/x_axis_base/extruder_base, local X")]
+        [Tooltip("Example (MK4S): base/x_axis_base/extruder_base, local X")]
         private AxisBinding horizontalX = new AxisBinding
         {
             LocalAxis = Vector3.right
@@ -24,7 +25,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
         [SerializeField]
         [Tooltip(
-            "MK4S: base/print_bed_holder_base.\n" +
+            "Example (MK4S): base/print_bed_holder_base.\n" +
             "The bed carriage parent is rotated, so its local Y is world " +
             "front/back.")]
         private AxisBinding horizontalZ = new AxisBinding
@@ -34,7 +35,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
         [SerializeField]
         [Tooltip(
-            "MK4S: base/x_axis_base.\n" +
+            "Example (MK4S): base/x_axis_base.\n" +
             "The gantry parent is rotated, so its local Z is world up/down.")]
         private AxisBinding verticalY = new AxisBinding
         {
@@ -49,7 +50,12 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public override int AxisCount => 3;
 
-        public override PrintBedAnchor BedAnchor => bedAnchor;
+        // Authoring fallback; explicit wiring still wins. This keeps a
+        // future printer usable when only the Printer component has its bed
+        // anchor assigned, without mutating the serialized field in edit mode.
+        public override PrintBedAnchor BedAnchor => bedAnchor != null
+            ? bedAnchor
+            : GetComponentInChildren<PrintBedAnchor>(true);
 
         protected override bool HorizontalZMovesBed => MovesBed(horizontalZ);
 
@@ -79,9 +85,9 @@ namespace Coursework_Master_Degree.Items.FFF
         {
             switch (axisIndex)
             {
-                case 0: return "Horizontal X (extruder)";
-                case 1: return "Horizontal Z (bed)";
-                case 2: return "Vertical Y (gantry)";
+                case 0: return "Horizontal X";
+                case 1: return "Horizontal Z";
+                case 2: return "Vertical Y";
                 default: return "Unknown";
             }
         }
@@ -130,14 +136,16 @@ namespace Coursework_Master_Degree.Items.FFF
         /// </summary>
         private bool MovesBed(AxisBinding binding)
         {
-            if (bedAnchor == null ||
+            PrintBedAnchor anchorComponent = BedAnchor;
+
+            if (anchorComponent == null ||
                 binding == null ||
                 binding.Node == null)
             {
                 return false;
             }
 
-            Transform anchor = bedAnchor.transform;
+            Transform anchor = anchorComponent.transform;
 
             return anchor == binding.Node ||
                 anchor.IsChildOf(binding.Node);

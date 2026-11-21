@@ -204,6 +204,7 @@ namespace Coursework_Master_Degree.Items.FFF
             ReturnToStart
         }
 
+#if UNITY_EDITOR
         private static readonly string[] DefaultCriticalLocationNames =
         {
             "extruder_nozzle_location",
@@ -220,6 +221,7 @@ namespace Coursework_Master_Degree.Items.FFF
             "z_axis_rotor_right_location",
             "extruder_filament_bearing_location"
         };
+#endif
 
         public PrintJobRequest PendingJob { get; private set; }
 
@@ -517,7 +519,7 @@ namespace Coursework_Master_Degree.Items.FFF
         }
 
         /// <summary>
-        /// Moves the printer's spools, battery closet, adapter and free parts
+        /// Moves the printer's spools, dockable accessories and free parts
         /// onto the enclosure sockets. PartLocation triggers this after the
         /// printer itself has been attached to an enclosure socket.
         /// </summary>
@@ -2303,6 +2305,7 @@ namespace Coursework_Master_Degree.Items.FFF
             }
         }
 
+#if UNITY_EDITOR
         [ContextMenu("Auto-Assign Critical Parts")]
         private void AutoAssignCriticalParts()
         {
@@ -2346,6 +2349,7 @@ namespace Coursework_Master_Degree.Items.FFF
             CriticalPartLocations = critical.ToArray();
             PrintPlateLocation = plate;
         }
+#endif
 
         [ContextMenu("Validate Configuration")]
         public void ValidateConfiguration()

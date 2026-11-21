@@ -5,8 +5,9 @@ namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
     /// Abstraction between print-space coordinates and the concrete transforms
-    /// that move. Print jobs only talk to this class, so future printers
-    /// (bedslinger, CoreXY, delta) can map the same coordinates differently.
+    /// that move. Print jobs only talk to this class, so future rectangular
+    /// printers (bedslinger, CoreXY and other XYZ layouts) can map the same
+    /// coordinates differently.
     ///
     /// Print space convention:
     /// - X: metres, centred on the bed.
