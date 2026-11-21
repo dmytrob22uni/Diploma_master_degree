@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Prusa_MK4S_enclosure_HEPA_filter_fan_wear_logic_time_rpm_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Wear.ItemWearLogicTimeRpmSO
   WearRatio: 1
-  WearPerHour: 0.025
+  WearPerHour: 6.5
   ReferenceRPM: 3000
   RPMEffect: 1

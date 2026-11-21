@@ -124,12 +124,12 @@ namespace Coursework_Master_Degree.Items.FFF
         public float FumesDensity = 1.0f;
 
         [Header("Hard-stop condition loss")]
-        [Min(0.0f)] public float HardStopNozzleBase = 0.2f;
-        [Min(0.0f)] public float HardStopNozzleScale = 0.8f;
-        [Min(0.0f)] public float HardStopHeaterBase = 0.1f;
-        [Min(0.0f)] public float HardStopHeaterScale = 0.4f;
-        [Min(0.0f)] public float HardStopBedBase = 0.1f;
-        [Min(0.0f)] public float HardStopBedScale = 0.3f;
+        [Min(0.0f)] public float HardStopNozzleBase = 3.0f;
+        [Min(0.0f)] public float HardStopNozzleScale = 7.0f;
+        [Min(0.0f)] public float HardStopHeaterBase = 1.5f;
+        [Min(0.0f)] public float HardStopHeaterScale = 3.5f;
+        [Min(0.0f)] public float HardStopBedBase = 0.5f;
+        [Min(0.0f)] public float HardStopBedScale = 1.5f;
 
         [Header("Calibration")]
         [Min(2)]

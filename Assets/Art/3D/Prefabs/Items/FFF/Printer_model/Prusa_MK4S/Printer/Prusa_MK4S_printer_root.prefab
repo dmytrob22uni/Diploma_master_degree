@@ -2021,12 +2021,12 @@ MonoBehaviour:
   AxisTravelMetersPerSecond: 0.15
   FanRPM: 3000
   FumesDensity: 1
-  HardStopNozzleBase: 0.2
-  HardStopNozzleScale: 0.8
-  HardStopHeaterBase: 0.1
-  HardStopHeaterScale: 0.4
-  HardStopBedBase: 0.1
-  HardStopBedScale: 0.3
+  HardStopNozzleBase: 3
+  HardStopNozzleScale: 7
+  HardStopHeaterBase: 1.5
+  HardStopHeaterScale: 3.5
+  HardStopBedBase: 0.5
+  HardStopBedScale: 1.5
   CalibrationGridSize: 5
   CalibrationPointDwellSeconds: 0.15
   CalibrationPaddingMeters: 0.01

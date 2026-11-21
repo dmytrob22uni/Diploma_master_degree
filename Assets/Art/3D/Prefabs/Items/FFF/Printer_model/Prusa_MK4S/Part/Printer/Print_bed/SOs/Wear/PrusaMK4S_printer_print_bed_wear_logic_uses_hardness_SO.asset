@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: PrusaMK4S_printer_print_bed_wear_logic_uses_hardness_SO
   m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Wear.ItemWearLogicUsesHardnessSO
   WearRatio: 1
-  WearPerUse: 0.05
+  WearPerUse: 16
   HardnessEffect: 1
