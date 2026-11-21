@@ -168,7 +168,7 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 2. The printer immediately stops motion and turns heaters off.
 3. Printing leaves a partial print on the bed; stopping during preheat leaves no partial print.
 4. A one-off condition penalty is applied to the nozzle/heater/bed/plate.
-5. The printer cools down and returns to `Idle` (`HasPartialPrint = true` when printing had started).
+5. The printer cools down. At ambient the unfinished print gets the capped final-material surface; the head then parks and the printer returns to `Idle` (`HasPartialPrint = true` when printing had started). The console reports an unfinished print and blocks new jobs until it is removed.
 6. No new job can start until the partial print is removed by taking it off the bed and placing it.
 
 ### 4.8 Leaving the console
@@ -988,7 +988,7 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 - `SpoolFilamentState` reads the installed spool's live `ItemWearState.CurrentCondition`; the visible child and remaining metres are derived from that same value. If a spool has unexpected wear logic, consumption falls back to direct condition loss so the wear state still moves.
 - M4 applies the spool-bound printing shader (`_reveal_height`, backface lighting) during live printing.
 - A settled pause shows a sliced capped surface with the spool's regular `FinalMaterial`; resuming removes it and restores the printing shader/reveal.
-- Hard-stopped partial prints show the same capped final-material surface after cooling and parking.
+- Hard-stopped partial prints show the same capped final-material surface as soon as cooling completes; the real-time park continues, and removal is enabled after parking.
 - Completed prints have no cap and use the regular final material.
 - Partial prints keep the capped final-material surface after removal and placement.
 - If the vertical reveal looks wrong, verify the renderer-pivot/cutoff formula before changing artwork.
@@ -1004,8 +1004,10 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 - On hard stop:
   - Freeze the reveal and supports at the partial height.
   - Keep the printing material during cooling.
-  - Wait for cooling and head parking, then build the sliced/capped partial visual and collider.
-  - Mark it as a partial print. Partial prints are removable, placed and sellable, but give no income.
+  - At ambient, build the sliced/capped partial visual with the spool's regular `FinalMaterial`.
+  - Continue the real-time home/park move; after parking, add the sliced collider, disable the original full colliders and mark the object finalized.
+  - Show `Unfinished print on the bed from a hard stop.` and block new jobs until it is removed.
+  - Partial prints are removable, placed and sellable, but give no income.
 - Removal:
   - Hover a completed or partial print and enter `GameStateItemPlace` directly, with no `Cancel` option.
   - Release the object from the printer before entering placement; it becomes a normal item.
@@ -1074,7 +1076,7 @@ Behavior:
 - `printer_state_progress_text` uses `Heating 0–100%` / `Cooling 0–100%` from the interval start temperatures. Printing and paused states use job progress.
 - `ItemHoverInfo` refreshes the five fields while the same printer collider stays hovered.
 - `Printer.FindFor` resolves only the physical printer/enclosure hierarchy. Surface placement is storage, so items placed on an enclosure shelf keep their own hover/take even while the printer is busy; hovering the enclosure surface itself still resolves the printer and shows its status.
-- While the printer is running or calibrating, `ItemHoverInteract` suppresses its prompt so it does not duplicate the status; door interactables are exempt so they can show their interlock reason.
+- While the printer is running or calibrating, `ItemHoverInteract` suppresses its prompt so it does not duplicate the status; door interactables and finalized completed/partial prints on the bed are exempt. A finalized print owns its removal interaction, not the busy printer status.
 - Once the printer is `Paused`, cooled below `SafeServiceTemperatureC` and the head is parked, `Printer.IsPausedServiceReady` / `CanOpenInteractions` become true: the name and five status fields remain visible, and `interact_root` also appears with `Parts wear`, `Parts integrity` and `Parts remove`. Individual parts can still be refused by `ServiceBlockedDuringPrint`.
 - Resuming or hard-stopping the job closes the interaction list again.
 - In `ItemsSell`, a busy or bound printer/enclosure is `Wrong`, uses the selling ghost, cannot be sold, and puts the concise reason in `item_hover_sell_description`. Busy takes priority over connected.
@@ -1722,7 +1724,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - The selected spool's printing shader drives the reveal; completion switches the object to the spool's regular material.
 - Pause and hard stop move the head smoothly to `HomePositionNormalized`.
 - Pause settled: after cooling and parking, the print shows a sliced capped surface with final material; resume removes it and restores the printing shader/reveal.
-- Hard stop freezes the partial shape; after cooling and parking, it shows the sliced capped surface with final material.
+- Hard stop freezes the partial shape; the sliced capped final-material surface appears at cooling completion, and removal is enabled after the head parks.
 - Completed prints have no cap and use the original collider.
 - Partial prints keep the sliced/capped surface and collider.
 - Completed and partial objects are fully removable only after cooling and the head is settled at home.
@@ -1741,7 +1743,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 5. Re-check the M3 spool visual at 100%, 50%, 10%, and 0% with the printed object present.
 6. Check `Auto` vs `None` supports; columns follow the print height and stay attached after completion.
 7. Pause and let the printer cool; confirm the capped final-material surface appears. Resume and confirm the cap disappears, the printing shader returns and the reveal continues.
-8. Hard stop after a few layers; after cooling and parking confirm the capped final-material surface and sliced collider. Remove and place the partial print.
+8. Hard stop after a few layers; confirm the capped final-material surface appears when cooling completes, then after parking confirm the sliced collider and removal. Remove and place the partial print.
 9. Check completed object materials, original collider, no cap, placement and sale.
 10. Confirm the head parks at `HomePositionNormalized` after cooling and before completed/partial removal.
 11. Confirm pause and hard stop park the head at home; resume returns to the print path.
@@ -2091,7 +2093,7 @@ Fill this table during M0 and update it during later milestones.
 | Multiple printers cause CPU spikes | Update budgets; no per-frame allocations; reveal at 15 Hz |
 | No save/load | Document in-memory scope; add persistence later if needed |
 | Partial print blocks the player with no way out | Completed and partial prints share the hover-to-place removal flow; no `Clear bed` action |
-| Partial sliced-surface build cost | Build it once on pause-settled or hard-stop finalization, not per layer; fall back to a box collider if slicing fails |
+| Partial sliced-surface build cost | Build it once when cooling settles (pause or hard stop), reuse it when finalization adds the collider; fall back to a box collider if slicing fails |
 | Ghosts left after selling a print | `ObjectToPrintDataHolder.DestroyGhostInstances` clears mutual references and destroys every registered ghost; destroying the object removes the cap/sliced surface |
 | Object removal races the printer busy rule | `PrintedObjectDataHolder` owns `IsOnPrintBed`; `Printer.TryReleasePrintedObject` clears the bed before placement |
 | Selling a print while it is on the bed | `ItemHoverSell` returns a wrong-state reason until the object is released and placed |
@@ -2409,6 +2411,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-20 | Filament seed is calibrated like the time seed | Editor filament packing `0.94943` (`85.36 / 89.90716`) restores the bunny `85.36 m`; Grid/Auto matches the slicer `28.53 m` |
 | 2026-11-20 | Shell diagnostics share the runtime formula | `PrintEstimates.MaterialShellShare` drives both the scale rule and the editor tool; the bunny reports `14.0%` solid shell, `44.4%` Grid material shell and `6.22x` at scale 2 |
 | 2026-11-20 | Partial prints are manually removable, not discarded | They use the same hover-to-place flow as completed prints; they expose no quality and sell with no income |
+| 2026-11-21 | Hard-stop partials settle their surface at cooling, not after parking | The capped final-material surface appears as soon as cooling finishes; parking continues and finalization enables the sliced collider/removal. The console reports the unfinished print explicitly |
 | 2026-11-20 | No `Clear bed`; selling on the bed is blocked | The player must take the object off the printer and place it before selling |
 | 2026-11-20 | Supports stay attached until M5 | Generated columns reveal with the print and remain on the finished/partial object |
 | 2026-11-20 | Finalize only after cooling and parking | Completed and partial objects become removable only when temperatures are back to ambient and the head is at home |
@@ -2702,7 +2705,7 @@ Check each row in play mode and confirm the console message:
 | Printer not calibrated | warning: `Printer is not calibrated; final quality may be 70–100% of the estimate.` |
 | Printer printing/heating/paused/cooling/calibrating | `Printer is busy (...)` |
 | Completed print still on bed | `Printer is busy (Finished).` |
-| Partial print on bed | `A partial print is still on the bed.` |
+| Unfinished print on bed | `An unfinished print is still on the bed.` |
 | Job already queued | `A job is already queued on this printer.` |
 | Selected spool slot empty | `No filament spool installed on the <label> side.` |
 | Selected slot has non-spool item | `The <label> spool slot does not contain a filament spool.` |
