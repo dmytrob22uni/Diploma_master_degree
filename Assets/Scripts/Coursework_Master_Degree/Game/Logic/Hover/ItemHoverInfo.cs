@@ -207,8 +207,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
                         objectToPrint.GetComponent<PrintedObjectDataHolder>();
 
                     if (printedObject != null &&
-                        printedObject.IsOnPrintBed &&
-                        printedObject.IsFinalized)
+                        printedObject.IsFinalizedOnPrintBed)
                     {
                         // A finished/partial print is deliberately removable
                         // while the printer reports Finished/partial. The

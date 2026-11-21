@@ -6,6 +6,7 @@ using Coursework_Master_Degree.Items.Part;
 using Coursework_Master_Degree.Items.Contracts;
 using Coursework_Master_Degree.Items.Computing;
 using Coursework_Master_Degree.Items.FFF;
+using Coursework_Master_Degree.ObjectsToPrint;
 using Coursework_Master_Degree.Game.StateMachine;
 using Coursework_Master_Degree.Game.StateMachine.State;
 using System.Numerics;
@@ -83,7 +84,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                     if (cachedPrinter != null &&
                         !cachedPrinter.CanOpenInteractions &&
-                        !AllowsBusyPrinterHover(hit.collider))
+                        !AllowsBusyPrinterHover(hit.collider) &&
+                        !AllowsFinalizedPrintHover(hit.collider))
                     {
                         if (cachedBlockedPrinter != cachedPrinter)
                         {
@@ -126,7 +128,8 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
                 if (busyPrinter != null &&
                     !busyPrinter.CanOpenInteractions &&
-                    !AllowsBusyPrinterHover(hit.collider))
+                    !AllowsBusyPrinterHover(hit.collider) &&
+                    !AllowsFinalizedPrintHover(hit.collider))
                 {
                     cachedCollider = hit.collider;
                     cachedBlockedPrinter = busyPrinter;
@@ -273,6 +276,24 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
 
             return interaction != null &&
                 interaction.AllowsPrinterBusyHover;
+        }
+
+        private static bool AllowsFinalizedPrintHover(Collider collider)
+        {
+            if (collider == null)
+            {
+                return false;
+            }
+
+            ObjectToPrintDataHolder objectToPrint =
+                collider.GetComponentInParent<ObjectToPrintDataHolder>();
+
+            PrintedObjectDataHolder printedObject = objectToPrint != null
+                ? objectToPrint.GetComponent<PrintedObjectDataHolder>()
+                : null;
+
+            return printedObject != null &&
+                printedObject.IsFinalizedOnPrintBed;
         }
 
         private void RefreshBusyInteractable()

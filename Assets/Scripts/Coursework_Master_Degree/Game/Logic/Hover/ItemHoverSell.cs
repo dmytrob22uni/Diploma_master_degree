@@ -57,7 +57,7 @@ namespace Coursework_Master_Degree.Game.Logic.Hover
         private const string OnPrintBedReason = "Remove from printer bed first";
         private const string OnPrintBedDescription =
             "Take the print off the bed and place it before selling it.";
-        private const string PartialPrintReason = "Partial print";
+        private const string PartialPrintReason = "Unfinished print";
         private const string ConnectedToPrinterReason = "Connected to a printer";
         private const string PrinterBusyReason = "Printer is on its job";
         private const string PrinterBusyDescription =
