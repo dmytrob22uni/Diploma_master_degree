@@ -245,7 +245,7 @@ M3 enclosure behavior:
   - `float ParticulateFactor`
 - `PrinterEnclosure` marks the physical enclosure and binds the printer inside its bounds.
 - `PrinterEnclosure.Doors` auto-finds child `Door` components. All doors must be closed and settled before a print starts or resumes; an animating door counts as not closed.
-- Door interactions are available while idle, paused, cooling or finished. During preheating, printing or calibration they return a clear interlock reason instead of opening. If a door is opened by another path during preheating/printing, the printer pauses automatically.
+- Door interactions are available while idle, paused, cooling or finished. During preheating, printing or calibration they return a short interlock label (`Door (Heating)`, `Door (Printing)`, `Door (Calibrating)`) instead of opening. If a door is opened by another path during preheating/printing, the printer pauses automatically.
 - `PrintJobValidator`, `Printer.TryResume` and `Printer.TryStartPendingJob` enforce the closed-door requirement. The console validation list and printer status show the warning; `TryStartPendingJob` keeps the queued job until the doors close.
 - Doors implement `IPrinterBusyInteraction`, so the busy-printer hover gate does not suppress their interaction prompt. The door itself explains whether it is locked, interlocked or ready.
 - `PrinterTemperatureModel` reads chamber temperature and slows cooling when enclosed.
@@ -1620,7 +1620,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - the print does not fail merely because it was paused.
 - Calibration with `N` grid points moves smoothly at the selected `SIM SPEED`, touches the plate at every point, and returns to the global home.
 - An uncalibrated printer starts with a warning but is not blocked; its final quality uses a random `0.7–1.0×` factor at print completion. Changing a calibration-sensitive part invalidates calibration in idle or active states and keeps the warning visible until the bed is cleared; spool/enclosure-accessory changes do not.
-- The console shows the chosen simulation multiplier and live printer status.
+- The console shows the chosen simulation multiplier and live printer status. The validation card also shows an `Enclosure:` row: `installed (+5 quality bonus)`, `not installed (no +5 bonus; -9 quality)`, or the job-specific wording when the printer was installed/removed after the job was queued or started.
 - A printer can expose zero, one, two, three or four selectable spool slots; the console hides the selector for zero/one and shows the rest dynamically.
 - A CoreXY prefab using `CoreXYPrinterMotion` reaches the same print-space positions as the Cartesian implementation; belt/motor dynamics are not simulated.
 - Switching printers preserves each printer's selected object, spool, settings and placement; switching objects preserves their settings/placement.
@@ -1630,6 +1630,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Installing a printer moves its installed spools to available enclosure sockets, up to the number of free sockets, hides `spool_holder` when mapped, and restores everything on removal. Overflow blocks the install with a reason. The console supports zero, one or up to four selectable slots.
 - Detached enclosure plugs reset to the enclosure plug locations when the enclosure is taken.
 - Raw quality tops out at `90`; the post-process state can improve the finished object later.
+- `PrintJobRequest.StartedWithEnclosure` captures the enclosure state used for the quality estimate. Removing or reinstalling the printer updates the console row but does not re-apply or remove that job's enclosure contribution.
 
 **Manual gate**
 
@@ -2285,6 +2286,8 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Print-space X calibration uses the carriage sign | MK4S horizontal X uses `Invert = 1` so the head path follows the same bed-local X as the placed object |
 | 2026-11-21 | Print-space Z calibration uses the bed-motion sign | MK4S horizontal Z uses `Invert = 1`; moving the bed toward +Z moves the nozzle toward bed-local -Z, so the bed axis must run opposite the print-space axis |
 | 2026-11-21 | Home/park moves use real time | A visible park must not be multiplied by `120×`/`240×`; resuming mid-park returns smoothly from the current position instead of snapping home |
+| 2026-11-21 | Console enclosure row follows the job start state | The row explains the `+5` / `-9` quality contribution and does not imply that removing/reinstalling re-applies a queued or running job's bonus |
+| 2026-11-21 | Door interlock prompts use short state labels | Interaction prompts need to fit the hover label; the console keeps the longer door warning |
 | 2026-11-21 | Resume reuses the printed object | Reheating after a pause must not rebuild the mesh, reset the reveal or snap the head; only the motion return is re-armed |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |

@@ -83,6 +83,8 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 ? HardwareQualityPenalty(printer)
                 : 0.0f;
 
+            result.HasEnclosure = printer != null && printer.HasEnclosure;
+
             PrintQualityEstimator.Calculate(
                 profile,
                 layerHeight,
@@ -92,9 +94,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 hardwarePenalty,
                 out result.EstimatedQualityMin,
                 out result.EstimatedQualityMax,
-                printer != null &&
-                printer.Environment != null &&
-                printer.Environment.HasEnclosure);
+                result.HasEnclosure);
 
             if (profile.PrintTimeSecondsAt100PercentInfill <= 0.0f ||
                 profile.FilamentMetersAt100PercentInfill <= 0.0f)

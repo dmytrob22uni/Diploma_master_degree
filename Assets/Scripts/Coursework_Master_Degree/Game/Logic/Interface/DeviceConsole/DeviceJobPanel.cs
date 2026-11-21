@@ -1519,6 +1519,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
 
             System.Text.StringBuilder signature = new System.Text.StringBuilder();
+            PrintJobRequest statusJob = FindStatusJobRequest(printer);
 
             if (printer != null)
             {
@@ -1543,6 +1544,13 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
                 signature.Append("CAL:")
                     .Append(printer.CalibrationWarningText)
+                    .Append('|');
+
+                signature.Append("ENCL:")
+                    .Append(printer.HasEnclosure ? '1' : '0')
+                    .Append(statusJob != null && statusJob.StartedWithEnclosure
+                        ? '1'
+                        : '0')
                     .Append('|');
 
                 if (printer.DockedEnclosure != null)
@@ -1590,13 +1598,13 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 PrinterOperationalState.Calibrating)
             {
                 CreateValidationRow(
-                    "Calibration in progress. Use Hard stop to cancel.",
+                    "Calibration in progress.",
                     DeviceConsoleStyle.TextMuted);
             }
             else if (printer != null && printer.IsPrintActive)
             {
                 CreateValidationRow(
-                    "Print in progress. Use Pause or Hard stop above.",
+                    "Print in progress.",
                     DeviceConsoleStyle.TextMuted);
                 CreateCalibrationWarningRow(printer);
             }
@@ -1659,11 +1667,56 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                     DeviceConsoleStyle.Text);
             }
 
+            if (printer != null)
+            {
+                CreateEnclosureStatusRow(printer, statusJob);
+            }
+
             if (validationScroll != null)
             {
                 Canvas.ForceUpdateCanvases();
                 validationScroll.verticalNormalizedPosition = 1.0f;
             }
+        }
+
+        private void CreateEnclosureStatusRow(
+            Printer printer,
+            PrintJobRequest job)
+        {
+            if (printer == null)
+            {
+                return;
+            }
+
+            bool installed = printer.HasEnclosure;
+            bool jobEnclosed = job != null && job.StartedWithEnclosure;
+            bool pending = job != null && printer.PendingJob == job;
+            string when = pending ? "queue" : "start";
+            float bonus = PrintQualityEstimator.EnclosureQualityBonus;
+            float penalty = PrintQualityEstimator.NoEnclosurePenalty;
+            string text;
+
+            if (job == null)
+            {
+                text = installed
+                    ? $"Enclosure: installed (+{bonus:0} quality bonus)"
+                    : $"Enclosure: not installed (no +{bonus:0} bonus; " +
+                        $"-{penalty:0} quality)";
+            }
+            else if (jobEnclosed)
+            {
+                text = installed
+                    ? $"Enclosure: installed (+{bonus:0} quality for this job)"
+                    : $"Enclosure: removed since {when} (job keeps +{bonus:0})";
+            }
+            else
+            {
+                text = installed
+                    ? $"Enclosure: installed since {when} (job has no bonus)"
+                    : "Enclosure: not installed (job has no bonus)";
+            }
+
+            CreateValidationRow(text, DeviceConsoleStyle.TextMuted);
         }
 
         private void CreateCalibrationWarningRow(Printer printer)
@@ -1677,6 +1730,33 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             CreateValidationRow(
                 $"- {printer.CalibrationWarningText}",
                 DeviceConsoleStyle.TextMuted);
+        }
+
+        private static PrintJobRequest FindStatusJobRequest(Printer printer)
+        {
+            if (printer == null)
+            {
+                return null;
+            }
+
+            if (printer.PendingJob != null)
+            {
+                return printer.PendingJob;
+            }
+
+            if (printer.ActiveJob != null)
+            {
+                return printer.ActiveJob.Request;
+            }
+
+            if (printer.PartialJob != null)
+            {
+                return printer.PartialJob.Request;
+            }
+
+            return printer.CompletedJob != null
+                ? printer.CompletedJob.Request
+                : null;
         }
 
         private void CreateValidationRow(string text, Color color)

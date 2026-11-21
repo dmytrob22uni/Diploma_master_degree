@@ -299,13 +299,11 @@ namespace Coursework_Master_Degree.Items.FFF
                 switch (OperationalState)
                 {
                     case PrinterOperationalState.Calibrating:
-                        return "Stop calibration before opening the enclosure.";
+                        return "Door (Calibrating)";
                     case PrinterOperationalState.Preheating:
-                        return "Wait for heating to finish or hard stop " +
-                            "before opening the enclosure.";
+                        return "Door (Heating)";
                     default:
-                        return "Pause or stop the print before opening the " +
-                            "enclosure.";
+                        return "Door (Printing)";
                 }
             }
         }
@@ -355,6 +353,14 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public PrinterEnclosure DockedEnclosure =>
             dockedEnclosure != null ? dockedEnclosure : FindDockedEnclosure();
+
+        /// <summary>
+        /// Whether the enclosure thermal/quality treatment is active. This is
+        /// the state the print estimator uses, so the console reports the same
+        /// source of truth for the enclosure bonus.
+        /// </summary>
+        public bool HasEnclosure =>
+            Environment != null && Environment.HasEnclosure;
 
         public IReadOnlyList<SpoolSlotDefinition> SpoolSlotDefinitions =>
             spoolSlots;

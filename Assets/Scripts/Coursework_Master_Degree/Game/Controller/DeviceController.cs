@@ -372,6 +372,7 @@ namespace Coursework_Master_Degree.Game.Controller
                 result.EstimatedFilamentMeters,
                 result.EstimatedQualityMin,
                 result.EstimatedQualityMax,
+                result.HasEnclosure,
                 spoolSlotId,
                 placement);
 

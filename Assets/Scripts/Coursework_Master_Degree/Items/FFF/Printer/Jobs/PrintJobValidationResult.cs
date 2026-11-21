@@ -15,6 +15,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         public float EstimatedFilamentMeters;
         public float EstimatedQualityMin;
         public float EstimatedQualityMax;
+        public bool HasEnclosure;
 
         public bool IsValid => Errors.Count == 0;
     }
