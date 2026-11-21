@@ -31,8 +31,7 @@ namespace Coursework_Master_Degree.Items.FFF
             new Dictionary<long, Vector3>();
         private readonly List<Vector3> supportPoints =
             new List<Vector3>();
-        private readonly MaterialPropertyBlock revealBlock =
-            new MaterialPropertyBlock();
+        private MaterialPropertyBlock revealBlock;
 
         private Material printingMaterial;
         private Material finalMaterial;
@@ -226,6 +225,14 @@ namespace Coursework_Master_Degree.Items.FFF
 
             if (material != null && material.HasProperty(RevealHeightId))
             {
+                // MaterialPropertyBlock is a Unity engine object; create it
+                // lazily after the MonoBehaviour lifecycle has started, not
+                // in the plain presenter constructor.
+                if (revealBlock == null)
+                {
+                    revealBlock = new MaterialPropertyBlock();
+                }
+
                 revealBlock.SetFloat(RevealHeightId, 1000.0f);
                 renderer.SetPropertyBlock(revealBlock);
             }
