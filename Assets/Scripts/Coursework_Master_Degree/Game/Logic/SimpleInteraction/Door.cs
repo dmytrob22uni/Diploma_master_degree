@@ -136,7 +136,11 @@ namespace Coursework_Master_Degree.Game.Logic.SimpleInteraction
 
             Printer printer = Printer.FindFor(gameObject);
 
-            if (printer != null && !printer.CanOpenEnclosureDoors)
+            // Only opening is interlocked. An already-open door may always be
+            // closed, including while the printer is hot or paused.
+            if (printer != null &&
+                !isOpened &&
+                !printer.CanOpenEnclosureDoors)
             {
                 blockedOption.Info = printer.EnclosureDoorBlockReason;
                 interactions.Add(blockedOption);

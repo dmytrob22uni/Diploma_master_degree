@@ -92,7 +92,9 @@ namespace Coursework_Master_Degree.Items.FFF
         public PartLocation[] ServiceBlockedDuringPrint;
 
         [Min(0.0f)]
-        [Tooltip("Nozzle and bed must be at or below this temperature for service.")]
+        [Tooltip(
+            "Nozzle and bed must be at or below this temperature for " +
+            "parts service and for opening enclosure doors.")]
         public float SafeServiceTemperatureC = 50.0f;
 
         [Header("Simulation")]
@@ -296,13 +298,17 @@ namespace Coursework_Master_Degree.Items.FFF
                 Temperature.Ambient);
 
         /// <summary>
-        /// Doors may be opened while idle, paused, cooling or finished. They
-        /// are interlocked during active heating, printing and calibration.
+        /// Doors may be opened while idle, paused, cooling or finished, but
+        /// only after the nozzle and bed have cooled to the same safe service
+        /// temperature used by the parts flow. Active heating, printing and
+        /// calibration are always interlocked.
         /// </summary>
         public bool CanOpenEnclosureDoors =>
             OperationalState != PrinterOperationalState.Preheating &&
             OperationalState != PrinterOperationalState.Printing &&
-            OperationalState != PrinterOperationalState.Calibrating;
+            OperationalState != PrinterOperationalState.Calibrating &&
+            !isMovingHome &&
+            IsAtSafeServiceTemperature;
 
         public string EnclosureDoorBlockReason
         {
@@ -314,8 +320,17 @@ namespace Coursework_Master_Degree.Items.FFF
                         return "Door (Calibrating)";
                     case PrinterOperationalState.Preheating:
                         return "Door (Heating)";
-                    default:
+                    case PrinterOperationalState.Printing:
                         return "Door (Printing)";
+                    default:
+                        if (isMovingHome)
+                        {
+                            return "Door (Moving)";
+                        }
+
+                        return IsAtSafeServiceTemperature
+                            ? "Door (Busy)"
+                            : "Door (Cooling)";
                 }
             }
         }
