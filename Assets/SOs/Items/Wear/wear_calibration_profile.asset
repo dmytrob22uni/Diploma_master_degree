@@ -24,4 +24,48 @@ MonoBehaviour:
   FumesDensity: 1
   AxisTravelMetersPerSecond: 0.15
   UseEnclosure: 1
-  Targets: []
+  Targets:
+  - Logic: {fileID: 11400000, guid: f1188c73bc377667caf4f81b52684bbc, type: 2}
+    TargetPrints: 10.1
+  - Logic: {fileID: 11400000, guid: c9cc1adf88c175ced9793729a295c2e0, type: 2}
+    TargetPrints: 3.4
+  - Logic: {fileID: 11400000, guid: 7e7d7bfcda468100c94b9caaa18ae4a0, type: 2}
+    TargetPrints: 3.4
+  - Logic: {fileID: 11400000, guid: b9bd475f54f8d591e97a5b6f96261bd1, type: 2}
+    TargetPrints: 6.2
+  - Logic: {fileID: 11400000, guid: a6868bbfadfbbb53aae196d35883cf4c, type: 2}
+    TargetPrints: 3.1
+  - Logic: {fileID: 11400000, guid: fcf2d87e85dd66542ba815a4bcf1a904, type: 2}
+    TargetPrints: 4
+  - Logic: {fileID: 11400000, guid: 41cac90e38957499cb42dd7b098f8301, type: 2}
+    TargetPrints: 5
+  - Logic: {fileID: 11400000, guid: 49d5244a114a33b57983d973e4817876, type: 2}
+    TargetPrints: 5.9
+  - Logic: {fileID: 11400000, guid: ab70a86d80e54351dad174f11027b08b, type: 2}
+    TargetPrints: 5
+  - Logic: {fileID: 11400000, guid: d386b30ba800cf8509c0d945b59efc16, type: 2}
+    TargetPrints: 10.1
+  - Logic: {fileID: 11400000, guid: 589576a6661c4cc7974f02fc8718d32f, type: 2}
+    TargetPrints: 11.5
+  - Logic: {fileID: 11400000, guid: 69c3b2fd5717224059dcb39e920eb396, type: 2}
+    TargetPrints: 26.9
+  - Logic: {fileID: 11400000, guid: f0d156c817a9ef5be82f236a993297a5, type: 2}
+    TargetPrints: 2.7
+  - Logic: {fileID: 11400000, guid: 1fb71c79eef3a61bfa6cb69d036f470f, type: 2}
+    TargetPrints: 3
+  - Logic: {fileID: 11400000, guid: 0847a0c2fc9894c71a5112bebdca2114, type: 2}
+    TargetPrints: 2.5
+  - Logic: {fileID: 11400000, guid: f5b87f1fcc491b74ca7aed432105b2af, type: 2}
+    TargetPrints: 1.9
+  - Logic: {fileID: 11400000, guid: 39b70561accce13c4b88ae293871b307, type: 2}
+    TargetPrints: 4
+  - Logic: {fileID: 11400000, guid: 74899a52481fb913ab0f0ddb4430e2ed, type: 2}
+    TargetPrints: 19.6
+  - Logic: {fileID: 11400000, guid: df66bfe514e14b5f86577b26a4b86bad, type: 2}
+    TargetPrints: 3.6
+  - Logic: {fileID: 11400000, guid: e4c9dbf780f1910009af81a54bde0472, type: 2}
+    TargetPrints: 3.6
+  - Logic: {fileID: 11400000, guid: 97098b721994a6ea9a9570f8c7889862, type: 2}
+    TargetPrints: 60.5
+  - Logic: {fileID: 11400000, guid: 282b72d0ec41489c961737fa350b811b, type: 2}
+    TargetPrints: 4
