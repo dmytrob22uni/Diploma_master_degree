@@ -70,6 +70,17 @@ The bed, plate and adapter prefabs each use one active wear state. Their seconda
 | Battery closet / adapter | As authored | Confirm they are not wearing unexpectedly. |
 | Hard stop | One-off nozzle/heater/bed/plate penalty | Is the damage noticeable but not catastrophic? |
 
+## Tuning workflow
+
+Use two knobs for different jobs:
+
+1. **Quick playtest offset:** `Printer.WearRateMultiplier` in the printer inspector. `1.0` is the calibrated rate; `0.75` makes printer/enclosure wear last about 33% longer and `1.5` makes it about 50% faster. It also scales completed-print use wear and hard-stop damage. Spool filament consumption is not scaled.
+2. **Authored per-part calibration:** open `Tools/Manufacturing/Wear Calibration`. Assign or create a `WearCalibrationProfileSO`, set the medium-print baseline, scan, enter target prints per part, and apply the checked rows.
+
+The editor tool only writes the coefficient field (`WearPerHour`, `WearPerKilometer`, `WearPerFilamentLength` or `WearPerUse`). It preserves reference temperatures, temperature ranges, temperature effects, abrasiveness effects, hardness effects, RPM reference/effect and wear logic type. Spool filament assets are excluded because their condition is physical filament consumption. The default profile lives at `Assets/SOs/Items/Wear/wear_calibration_profile.asset`.
+
+For final calibration, keep `WearRateMultiplier` at `1.0`; use it only as a playtest offset so the authored target table remains meaningful.
+
 ## Sign-off
 
 - [ ] Nozzle rate approved

@@ -838,7 +838,7 @@ Use the existing wear system and the correct delta types:
 | Nozzle / filament bearing | `WearDeltaFilamentTemperatureAbrasiveness` | filament length, nozzle temp, spool abrasiveness |
 | Heater / thermistors / enclosure fire tube / thermometer | `WearDeltaTimeTemperature` | simulated seconds at the temperature source authored on the wear logic |
 | Spool | `WearDeltaFilament` | consumed metres / spool length |
-| Axes / belts / rotors / bearings | `WearDeltaDistanceTemperature` | distance approximated from simulated time until M4 paths exist |
+| Axes / belts / rotors / bearings | `WearDeltaDistanceTemperature` | distance approximated from active printing time; preheat, pause and cooling are excluded |
 | Extruder fan / HEPA fan | `WearDeltaTimeRPM` | simulated seconds at `FanRPM` |
 | HEPA filter trap | `WearDeltaTimeFumes` | simulated seconds at `FumesDensity` |
 | Battery closet adapter | `WearDeltaTime` | powered/print time |
@@ -848,7 +848,9 @@ Use the existing wear system and the correct delta types:
 Rules:
 
 - `ItemWearLogicTimeTemperatureSO.TemperatureSource` selects `Nozzle`, `Bed`, `Chamber` or `EnclosureAware`; `EnclosureAware` uses chamber while the part is under a `PrinterEnclosure` and bed elsewhere. Runtime no longer infers temperature channels from GameObject names.
-- Batch wear application about once per simulated second, not every frame.
+- Batch wear application about once per simulated second, not every frame. Motion, fan and fumes wear use active printing seconds; time/temperature wear uses all active job seconds.
+- `Printer.WearRateMultiplier` is a global authoring/playtest offset for printer and enclosure part wear. It does not scale spool filament consumption.
+- The `Tools/Manufacturing/Wear Calibration` window uses `WearCalibrationProfileSO` target print lifetimes and writes the matching coefficients; see [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md).
 - Use simulated process time, not wall-clock time.
 - Enclosure parts are scanned from `PrinterEnclosure` as well as the printer assembly.
 - The selected spool rotates by `consumedMetres / (2π × EffectiveRadiusMeters) × 360°`; its visible child is chosen by nearest `SpoolWearLevelsToGameObjectsDictionary` threshold.
@@ -1763,7 +1765,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 13. Confirm no-cancel removal and bed release.
 14. Sell a placed print and confirm no printed object, cap/sliced surface, or object-to-print ghost remains; mutual references are cleared.
 15. Profile reveal updates, partial-surface generation and multiple printers; verify no per-frame material instancing or GC spikes.
-16. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed. Verify the calibrated 2–4 medium-print lifetimes and that motion/fan/fumes wear does not accrue while only heating, paused or cooling.
+16. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed. Verify the calibrated 2–4 medium-print lifetimes with `Tools/Manufacturing/Wear Calibration` and the profile target table, and confirm motion/fan/fumes wear does not accrue while only heating, paused or cooling.
 17. Pause five or more times and confirm the pause quality penalty stops at `20`. Wear a part to roughly 50% condition and confirm the worst-part quality penalty is about `10`, and that the console estimate and final value agree.
 
 **Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance and the wear-coefficient gate is approved.**
@@ -1977,6 +1979,7 @@ Fill this table during M0 and update it during later milestones.
 | Temperature tolerance | `±2 °C` | preheat completes when nozzle and bed are in tolerance |
 | Preheat timeout | `900` simulated seconds | logs a warning and enters `Fault` |
 | Safe service temperature | `50 °C` | pause parts service and enclosure-door opening gate |
+| Global wear multiplier | `Printer.WearRateMultiplier = 1.0` | Scales printer/enclosure print, use and hard-stop wear; does not scale spool filament consumption. Use `1.0` for authored calibration. |
 | Hard-stop penalty | nozzle `3 + 7 × normalized`, heater `1.5 + 3.5 × normalized`, bed/plate `0.5 + 1.5 × normalized` | conspicuous but below one medium print of normal wear |
 | Calibration grid | `5 × 5`, `0.15 s` dwell, `10 mm` padding | `CalibrationGridSize` / `CalibrationPointDwellSeconds` / `CalibrationPaddingMeters` |
 | Calibration motion | `3 cm` lift, `0.25 m/s` travel scaled by `SIM SPEED` | `CalibrationLiftHeightMeters` / `CalibrationMoveSpeedMetersPerSecond` |
@@ -2132,7 +2135,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. The M4 manual gate passed on 2026-11-21. M4 is **not marked done** because the final wear/quality pass adds two manual checks and the project-owner sign-off on the calibrated wear rates remains. The pass calibrates part wear to 2–4 medium prints for active parts, applies motion/fan/fumes wear only while printing, uses a `0..20` worst-part quality penalty, caps pause penalties at `20`, and unlocks enclosure doors only at the shared `50 °C` safe-service temperature. M5 has not started; its one-chance enclosure continuity snapshot and pause-penalty cap are implemented ahead of the rest of M5 (2026-11-21).
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. The M4 manual gate passed on 2026-11-21. M4 is **not marked done** because the final wear/quality pass adds two manual checks and the project-owner sign-off on the calibrated wear rates remains. The pass calibrates part wear to 2–4 medium prints for active parts, applies motion/fan/fumes wear only while printing, uses a `0..20` worst-part quality penalty, caps pause penalties at `20`, and unlocks enclosure doors only at the shared `50 °C` safe-service temperature. Authoring tooling now includes `Tools/Manufacturing/Wear Calibration` with a persistent `WearCalibrationProfileSO` target table; `Printer.WearRateMultiplier` remains the quick playtest offset. M5 has not started; its one-chance enclosure continuity snapshot and pause-penalty cap are implemented ahead of the rest of M5 (2026-11-21).
 
 
 M1 is code-complete:
@@ -2376,6 +2379,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Wear is calibrated to medium prints | Printer/enclosure wear rates target 2–4 medium prints for active parts, with nozzle, fans, filters and belts fastest; bearings and sensors slower; battery/adapter and fire suppression most durable. Motion, fan and fumes wear only accrue while printing. |
 | 2026-11-21 | Quality penalties are made maintenance-relevant | Worst-part wear contributes up to `20` raw points and repeated pauses are capped at `20`; no-enclosure, calibration and missing-supports penalties remain unchanged. |
 | 2026-11-21 | Enclosure doors unlock at safe service temperature | Door opening uses the same `50 °C` safe-service gate as parts service; closing is always allowed and resume still requires both doors closed. |
+| 2026-11-21 | Wear tuning is target-lifetime based | `Tools/Manufacturing/Wear Calibration` derives coefficients from target medium-print lifetimes in a `WearCalibrationProfileSO`; `Printer.WearRateMultiplier` is a global playtest offset, not the authored calibration. |
 | 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
 | 2026-11-19 | Simulation speed is a per-printer console preset | The printer owns the job; presets match existing console rows and avoid slider UI work |
 | 2026-11-19 | All wear delta types are mapped to printer/enclosure parts or print-use actions | Existing assets and SOs already define the intended wear kinds; no parallel wear model |

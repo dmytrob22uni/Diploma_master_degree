@@ -79,7 +79,7 @@ The final setup guide must cover, in order:
    - wire free-part roles and reset transforms;
    - verify dock/undock, part occupancy and free-part reset behavior;
    - add a generic `Door` component to each enclosure door; `PrinterEnclosure` auto-finds child doors, so no printer-model branch is needed;
-   - verify start/resume is blocked until all doors are closed and settled, and that door interactions are available when idle, paused, cooling or finished;
+   - verify start/resume is blocked until all doors are closed and settled; opening is available when idle, paused, cooling or finished only at/below `SafeServiceTemperatureC` (`50 °C`), closing an already-open door is always allowed, and active heating/printing/calibration remain interlocked;
    - verify opening a door during active heating/printing pauses the printer and shows the console warning;
    - do not hardcode battery-closet, adapter, spool or plug categories outside the role data.
 
@@ -97,8 +97,8 @@ The final setup guide must cover, in order:
    - enclosure socket overflow and role-based docking;
    - start, pause, resume, hard stop, paused-safe Wear/Integrity/Remove interactions, manual completed/partial removal and sale blocking;
    - heating/cooling percentages during preheat, cooling and resume-heating; occupancy status from items on enclosure shelves;
-   - closed-door start/resume, open-door console warning, door interaction while idle/paused/cooling/finished, and auto-pause when a door opens during active printing;
-   - wear-coefficient approval in `wear_coefficients_manual_gate.md`;
+   - closed-door start/resume, open-door console warning, door opening while idle/paused/cooling/finished only at/below `SafeServiceTemperatureC`, closing always allowed, and auto-pause when a door opens during active printing;
+   - wear-coefficient approval in `wear_coefficients_manual_gate.md`; use `Printer.WearRateMultiplier = 1` for final calibration and `Tools/Manufacturing/Wear Calibration` with the `WearCalibrationProfileSO` target table for per-part tuning;
    - no model-specific assumptions leaked into shared runtime code.
 
 ## Reminder
