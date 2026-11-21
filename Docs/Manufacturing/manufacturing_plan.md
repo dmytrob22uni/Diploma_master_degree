@@ -1023,7 +1023,7 @@ Layout:
 - Main area: a compact active-printer strip and a print-job card with the object list grouped by `ObjectToPrintType`, layer-height/speed/infill/supports/spool/simulation-speed selectors, estimates, raw-quality range, a scrollable validation/warnings list and `Start print`.
 - Active-printer strip: state, progress, nozzle/bed temperatures and remaining filament through `Printer.StatusSummary`.
 - Job-card controls: `Pause`/`Resume`, `Hard stop`/`Confirm stop` and `Calibrate`. Completed and partial prints are removed by hovering the object; there is no `Clear bed` button.
-- `SIM SPEED` presets `1×`, `4×`, `64×`, `120×`; the selected value is stored on the active printer.
+- `SIM SPEED` presets `1×`, `4×`, `64×`, `120×`, `240×`; the selected value is stored on the active printer. When the multiplier is above `1×`, the estimate line also shows the real elapsed time in parentheses, e.g. `3 h 53 min (real 58 s)`.
 - Validation rows show every block and warning; the list scrolls independently so the selectors and `Start print` stay fixed. The job card itself is not a scroll view. The validation block has a subtle inset background and a thin top rule to separate it from the card.
 - The printer list and object list are `ScrollRect` views with `RectMask2D`; mouse wheel and drag work over the full viewport, including empty space, and content grows with the number of entries.
 - Footer: `Q Quit` chip, `Connect printer`, `Disconnect`. The `Q Quit` chip and the screen-off `Q Quit` chip share the same bottom-left anchor (`Margin`, `Margin`) so the badge does not jump between power states.
@@ -1531,7 +1531,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 - `PrinterStateMachine` with the states and transitions in section 6.3, including `Calibrating`.
 - Simulated-time ticking with a per-printer `PrintSpeedMultiplier`.
-- Console `SIM SPEED` preset row: `1×`, `4×`, `64×`, `120×` (default `1×`). The value is stored on the printer, not globally, and can be changed while idle or printing.
+- Console `SIM SPEED` preset row: `1×`, `4×`, `64×`, `120×`, `240×` (default `1×`). The value is stored on the printer, not globally, and can be changed while idle or printing. Above `1×`, the estimate line adds `(real …)` next to the simulated duration.
 - `PrinterTemperatureModel` with ambient/chamber/nozzle/bed, linear heating, hold, exponential cooling and a preheat timeout.
 - Material targets from `FilamentMaterialProfileSO`; fallback profile by `MaterialType` because current spool assets have no profile assigned.
 - `PrinterWearIntegrator`:
@@ -1630,7 +1630,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 **Manual gate**
 
 1. Run a short job and compare condition loss to the configured wear logic; tune `WearPerHour` / `WearPerFilamentLength`.
-2. Record preheat, print, and cooling times at `1×`, `4×`, `64×` and `120×`; confirm the multiplier changes simulated speed only.
+2. Record preheat, print, and cooling times at `1×`, `4×`, `64×`, `120×` and `240×`; confirm the multiplier changes simulated speed only and the estimate line shows the matching real time.
 3. Tune the hard-stop penalty so it is noticeable but not catastrophic.
 4. Profile 2–4 printers printing simultaneously; check CPU and GC.
 5. Verify no NaN/Inf in temperatures, progress, or condition.
@@ -1914,7 +1914,7 @@ Fill this table during M0 and update it during later milestones.
 | Bunny baseline (current profile) | `85.36 m` at 100%, `36 720 s` at 100% | Both values restored to the PrusaSlicer reference; exact editor calibration is `5.88922 / 0.94943`, round defaults are `6.0 / 1.0` |
 | Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
 | Console camera idle priority | `-1` | player camera stays at implicit `0` |
-| Print speed multiplier | `1×` / `4×` / `64×` / `120×` | console `SIM SPEED`; default `1×`, stored per printer |
+| Print speed multiplier | `1×` / `4×` / `64×` / `120×` / `240×` | console `SIM SPEED`; default `1×`, stored per printer; estimates show `(real …)` above `1×` |
 | Temperature tolerance | `±2 °C` | preheat completes when nozzle and bed are in tolerance |
 | Preheat timeout | `900` simulated seconds | logs a warning and enters `Fault` |
 | Safe service temperature | `50 °C` | pause service gate |
@@ -1976,7 +1976,7 @@ Fill this table during M0 and update it during later milestones.
 ### M3
 
 - Full job cycle.
-- Simulation speeds `1×`, `4×`, `64×`, `120×`.
+- Simulation speeds `1×`, `4×`, `64×`, `120×`, `240×`; above `1×` the console also shows the real duration in parentheses.
 - Pause/resume and safe service swap.
 - Hard stop at preheat, mid-print, and near-complete.
 - Wear application per part, including enclosure parts and every delta type.
@@ -2276,6 +2276,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-16 | No job queue | Keep first pass simple |
 | 2026-11-16 | Partial print remains after hard stop | Approved default |
 | 2026-11-16 | 120× fastest simulation preset; 1× default | Real-time default with an optional fast-forward |
+| 2026-11-21 | 240× preset added | Extends the console to 1×/4×/64×/120×/240×; estimates show real duration above 1× |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |
@@ -2702,7 +2703,7 @@ Expected values below are the slicer-calibrated reference with `Auto` supports. 
 | Fine / Normal / Gyroid | `32.0 m` | `4 h 07 min` | `2.1 min` | `89–90` |
 | Fine / Slow / Gyroid | `32.0 m` | `7 h 10 min` | `3.6 min` | `90–90` |
 
-These are the values to compare against a slicer. Tune `InfillSettings`/`PrintSpeedSettings` globally rather than per object.
+These are the values to compare against a slicer. Tune `InfillSettings`/`PrintSpeedSettings` globally rather than per object. The fastest preset is now `240×`; halve the real-time column for that setting.
 
 ### F.7 Bed placement and scale (M2.5)
 

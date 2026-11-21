@@ -81,8 +81,10 @@ warning and a raw-quality cap of `55`.
 
 The reference comparison is **Normal layer / Slow speed / Grid / Auto**:
 `3 h 53 min`, matching the PrusaSlicer reference. At `120x` simulation speed
-that is about `1.95 min` of real time. `SIM SPEED` is not a print setting; it
-only divides real elapsed time and does not change time, filament or quality.
+that is about `1.95 min` of real time; at `240x` it is about `58 s`. `SIM SPEED`
+is not a print setting; it only divides real elapsed time and does not change
+time, filament or quality. Above `1x`, the console appends the real duration in
+parentheses to the simulated estimate.
 `SPOOL` only gates filament sufficiency and does not change estimates; object
 selection swaps the profile, so this matrix is bunny-specific.
 
