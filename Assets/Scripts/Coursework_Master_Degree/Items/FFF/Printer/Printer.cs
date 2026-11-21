@@ -312,11 +312,28 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public bool IsCalibrated => isCalibrated;
 
-        public string CalibrationWarningText =>
-            !isCalibrated &&
-            (activeJob != null || completedJob != null || partialJob != null)
-                ? "Printer is not calibrated; final quality may be 70–100% of the estimate."
-                : string.Empty;
+        public string CalibrationWarningText
+        {
+            get
+            {
+                bool calibrated = activeJob != null
+                    ? isCalibrated
+                    : completedJob != null
+                        ? completedJob.CalibrationApplied
+                        : partialJob != null
+                            ? partialJob.CalibrationApplied
+                            : isCalibrated;
+
+                bool hasJob = PendingJob != null ||
+                    activeJob != null ||
+                    completedJob != null ||
+                    partialJob != null;
+
+                return !calibrated && hasJob
+                    ? "Printer is not calibrated; final quality may be 70–100% of the estimate."
+                    : string.Empty;
+            }
+        }
 
         public bool IsAtSafeServiceTemperature =>
             temperatureModel.IsBelow(SafeServiceTemperatureC);
@@ -1836,6 +1853,17 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             PrinterJob finalJob = activeJob;
+            finalJob.CalibrationApplied = isCalibrated;
+
+            // Calibration is consumed by a job that actually printed. A hard
+            // stop during preheat does not consume it; the next job can still
+            // use it. The final quality above already used the live state,
+            // including any part-change invalidation during the print.
+            if (finalJob.Progress01 > 0.0f)
+            {
+                isCalibrated = false;
+            }
+
             pauseVisualSettled = false;
 
             if (PrintedObject == null || !PrintedObject.HasObject)
@@ -2150,6 +2178,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private void CompletePrint()
         {
+            activeJob.CalibrationApplied = IsCalibrated;
             activeJob.CalibrationQualityMultiplier = IsCalibrated
                 ? 1.0f
                 : UnityEngine.Random.Range(0.7f, 1.0f);

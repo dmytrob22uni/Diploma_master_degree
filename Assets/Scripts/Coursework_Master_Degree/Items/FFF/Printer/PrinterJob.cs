@@ -24,6 +24,13 @@ namespace Coursework_Master_Degree.Items.FFF
         public float CalibrationQualityMultiplier = 1.0f;
         public float FinalQuality = -1.0f;
 
+        /// <summary>
+        /// Whether this job used a calibrated printer when its final quality
+        /// was evaluated. Kept after finalization so the console warning
+        /// describes the finished/partial job instead of the next one.
+        /// </summary>
+        public bool CalibrationApplied;
+
         public bool IsPartial;
         public bool WasHardStopped;
         public bool UsesApplied;
