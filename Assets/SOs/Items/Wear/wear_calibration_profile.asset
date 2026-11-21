@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f23dc1f2cba465aac4c1016dfbd2b3f, type: 3}
+  m_Name: wear_calibration_profile
+  m_EditorClassIdentifier: Assembly-CSharp::Coursework_Master_Degree.ScriptableObjects.Items.Wear.WearCalibrationProfileSO
+  PrintHours: 2.23
+  PreheatCoolingHours: 0.25
+  FilamentMeters: 28.53
+  MaterialHardness: 0.75
+  MaterialAbrasiveness: 0.15
+  NozzleTemperature: 215
+  BedTemperature: 60
+  ChamberTemperature: 25
+  FanRPM: 3000
+  FumesDensity: 1
+  AxisTravelMetersPerSecond: 0.15
+  UseEnclosure: 1
+  Targets: []
