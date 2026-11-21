@@ -1519,7 +1519,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
 
             System.Text.StringBuilder signature = new System.Text.StringBuilder();
-            PrintJobRequest statusJob = FindStatusJobRequest(printer);
+            PrinterJob statusJob = FindStatusJob(printer);
 
             if (printer != null)
             {
@@ -1549,6 +1549,15 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 signature.Append("ENCL:")
                     .Append(printer.HasEnclosure ? '1' : '0')
                     .Append(statusJob != null && statusJob.StartedWithEnclosure
+                        ? '1'
+                        : '0')
+                    .Append(statusJob != null && statusJob.EnclosureBonusLost
+                        ? '1'
+                        : '0')
+                    .Append(statusJob != null && statusJob.EnclosureBonusRetained
+                        ? '1'
+                        : '0')
+                    .Append(statusJob != null && statusJob.EnclosureOutcomeLatched
                         ? '1'
                         : '0')
                     .Append('|');
@@ -1681,7 +1690,7 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
         private void CreateEnclosureStatusRow(
             Printer printer,
-            PrintJobRequest job)
+            PrinterJob job)
         {
             if (printer == null)
             {
@@ -1689,31 +1698,54 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             }
 
             bool installed = printer.HasEnclosure;
-            bool jobEnclosed = job != null && job.StartedWithEnclosure;
-            bool pending = job != null && printer.PendingJob == job;
-            string when = pending ? "queue" : "start";
             float bonus = PrintQualityEstimator.EnclosureQualityBonus;
             float penalty = PrintQualityEstimator.NoEnclosurePenalty;
             string text;
 
             if (job == null)
             {
-                text = installed
-                    ? $"Enclosure: installed (+{bonus:0} quality bonus)"
-                    : $"Enclosure: not installed (no +{bonus:0} bonus; " +
-                        $"-{penalty:0} quality)";
-            }
-            else if (jobEnclosed)
-            {
-                text = installed
-                    ? $"Enclosure: installed (+{bonus:0} quality for this job)"
-                    : $"Enclosure: removed since {when} (job keeps +{bonus:0})";
+                if (printer.HasPendingJob)
+                {
+                    text = installed
+                        ? $"Enclosure: installed (bonus applies if kept " +
+                            $"installed, +{bonus:0})"
+                        : $"Enclosure: not installed (job starts without " +
+                            $"bonus, -{penalty:0})";
+                }
+                else
+                {
+                    text = installed
+                        ? $"Enclosure: installed (+{bonus:0} quality bonus)"
+                        : $"Enclosure: not installed (no +{bonus:0} bonus; " +
+                            $"-{penalty:0} quality)";
+                }
             }
             else
             {
-                text = installed
-                    ? $"Enclosure: installed since {when} (job has no bonus)"
-                    : "Enclosure: not installed (job has no bonus)";
+                bool bonusKept = job.EnclosureOutcomeLatched
+                    ? job.EnclosureBonusRetained
+                    : job.StartedWithEnclosure && !job.EnclosureBonusLost;
+
+                if (bonusKept)
+                {
+                    text = $"Enclosure: bonus kept (+{bonus:0} quality for " +
+                        "this job)";
+                }
+                else if (job.StartedWithEnclosure)
+                {
+                    text = $"Enclosure: bonus lost after removal " +
+                        $"(-{penalty:0} quality)";
+                }
+                else if (installed)
+                {
+                    text = $"Enclosure: installed after start (no bonus " +
+                        $"this job, -{penalty:0})";
+                }
+                else
+                {
+                    text = $"Enclosure: not installed (no bonus this job, " +
+                        $"-{penalty:0})";
+                }
             }
 
             CreateValidationRow(text, DeviceConsoleStyle.TextMuted);
@@ -1732,31 +1764,24 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                 DeviceConsoleStyle.TextMuted);
         }
 
-        private static PrintJobRequest FindStatusJobRequest(Printer printer)
+        private static PrinterJob FindStatusJob(Printer printer)
         {
             if (printer == null)
             {
                 return null;
             }
 
-            if (printer.PendingJob != null)
-            {
-                return printer.PendingJob;
-            }
-
             if (printer.ActiveJob != null)
             {
-                return printer.ActiveJob.Request;
+                return printer.ActiveJob;
             }
 
             if (printer.PartialJob != null)
             {
-                return printer.PartialJob.Request;
+                return printer.PartialJob;
             }
 
-            return printer.CompletedJob != null
-                ? printer.CompletedJob.Request
-                : null;
+            return printer.CompletedJob;
         }
 
         private void CreateValidationRow(string text, Color color)

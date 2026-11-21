@@ -579,6 +579,8 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
+            MarkEnclosureBonusLost();
+
             PrinterEnclosure enclosure = dockedEnclosure;
             dockedEnclosure = null;
             Environment?.SetEnclosure(null, this);
@@ -1148,6 +1150,14 @@ namespace Coursework_Master_Degree.Items.FFF
                 TickHomeMove(realDelta);
             }
 
+            // One-way enclosure bonus: once a job starts enclosed, the first
+            // observed removal loses it for that job. Reinstalling never
+            // clears the flag. Jobs that start unenclosed never earn it.
+            if (!HasEnclosure)
+            {
+                MarkEnclosureBonusLost();
+            }
+
             if (OperationalState == PrinterOperationalState.Printing)
             {
                 printElapsedRealSeconds += realDelta;
@@ -1709,6 +1719,11 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             ActiveSpool = spool;
+
+            // Capture the enclosure state at the actual job start, not at
+            // queue time: a pending job may wait for doors or docking.
+            activeJob.StartedWithEnclosure = HasEnclosure;
+
             SetTargetsFromJob();
             wearIntegrator.Refresh(this);
             SetState(PrinterOperationalState.Preheating);
@@ -1857,6 +1872,18 @@ namespace Coursework_Master_Degree.Items.FFF
             PrinterJob finalJob = activeJob;
             finalJob.CalibrationApplied = isCalibrated;
 
+            // Partial/hard-stopped jobs do not run CompletePrint, so latch
+            // their enclosure outcome here for the console status. Completed
+            // jobs already latched theirs when printing finished.
+            if (!finalJob.EnclosureOutcomeLatched)
+            {
+                finalJob.EnclosureBonusRetained =
+                    finalJob.StartedWithEnclosure &&
+                    !finalJob.EnclosureBonusLost &&
+                    HasEnclosure;
+                finalJob.EnclosureOutcomeLatched = true;
+            }
+
             // Calibration is consumed by a job that actually printed. A hard
             // stop during preheat does not consume it; the next job can still
             // use it. The final quality above already used the live state,
@@ -1907,6 +1934,19 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             ActiveSpool = null;
+        }
+
+        private void MarkEnclosureBonusLost()
+        {
+            if (activeJob == null ||
+                activeJob.EnclosureOutcomeLatched ||
+                !activeJob.StartedWithEnclosure ||
+                activeJob.EnclosureBonusLost)
+            {
+                return;
+            }
+
+            activeJob.EnclosureBonusLost = true;
         }
 
         private void BeginHomeMove()
@@ -2180,6 +2220,15 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private void CompletePrint()
         {
+            // Freeze the enclosure outcome when printing finishes. Removing
+            // the printer during the later cooling/parking phase does not
+            // retroactively change the finished print's quality.
+            activeJob.EnclosureBonusRetained =
+                activeJob.StartedWithEnclosure &&
+                !activeJob.EnclosureBonusLost &&
+                HasEnclosure;
+            activeJob.EnclosureOutcomeLatched = true;
+
             activeJob.CalibrationApplied = IsCalibrated;
             activeJob.CalibrationQualityMultiplier = IsCalibrated
                 ? 1.0f

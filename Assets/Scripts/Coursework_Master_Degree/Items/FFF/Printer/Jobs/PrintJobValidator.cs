@@ -83,7 +83,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 ? HardwareQualityPenalty(printer)
                 : 0.0f;
 
-            result.HasEnclosure = printer != null && printer.HasEnclosure;
+            bool hasEnclosure = printer != null && printer.HasEnclosure;
 
             PrintQualityEstimator.Calculate(
                 profile,
@@ -92,9 +92,18 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                 supports,
                 profile.SupportsRequired,
                 hardwarePenalty,
-                out result.EstimatedQualityMin,
-                out result.EstimatedQualityMax,
-                result.HasEnclosure);
+                out result.QualityMinBase,
+                out result.QualityMaxBase,
+                out result.QualityCap);
+
+            result.EstimatedQualityMin = PrintQualityEstimator.ApplyEnclosure(
+                result.QualityMinBase,
+                result.QualityCap,
+                hasEnclosure);
+            result.EstimatedQualityMax = PrintQualityEstimator.ApplyEnclosure(
+                result.QualityMaxBase,
+                result.QualityCap,
+                hasEnclosure);
 
             if (profile.PrintTimeSecondsAt100PercentInfill <= 0.0f ||
                 profile.FilamentMetersAt100PercentInfill <= 0.0f)

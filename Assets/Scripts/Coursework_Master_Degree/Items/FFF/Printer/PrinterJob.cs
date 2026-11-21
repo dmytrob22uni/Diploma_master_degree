@@ -31,6 +31,18 @@ namespace Coursework_Master_Degree.Items.FFF
         /// </summary>
         public bool CalibrationApplied;
 
+        /// <summary>Enclosure state captured when this job actually started.</summary>
+        public bool StartedWithEnclosure;
+
+        /// <summary>One-way loss flag; reinstalling never clears it.</summary>
+        public bool EnclosureBonusLost;
+
+        /// <summary>Outcome latched when printing finishes.</summary>
+        public bool EnclosureBonusRetained;
+
+        /// <summary>True once the enclosure outcome is frozen for this job.</summary>
+        public bool EnclosureOutcomeLatched;
+
         public bool IsPartial;
         public bool WasHardStopped;
         public bool UsesApplied;
@@ -81,10 +93,19 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private float CalculateFinalQuality(float value)
         {
+            float cap = Request != null
+                ? Request.QualityCap
+                : PrintQualityEstimator.MaximumRawQuality;
+
+            float raw = PrintQualityEstimator.ApplyEnclosure(
+                value,
+                cap,
+                EnclosureBonusRetained);
+
             return Mathf.Clamp(
-                value * CalibrationQualityMultiplier - PauseQualityPenalty,
+                raw * CalibrationQualityMultiplier - PauseQualityPenalty,
                 0.0f,
-                90.0f);
+                PrintQualityEstimator.MaximumRawQuality);
         }
     }
 }

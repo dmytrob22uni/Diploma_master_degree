@@ -19,7 +19,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             float estimatedFilamentMeters,
             float qualityMin,
             float qualityMax,
-            bool startedWithEnclosure,
+            float qualityCap,
             SpoolSlotId spoolSlotId,
             PrintPlacement placement = null)
         {
@@ -33,7 +33,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
             EstimatedFilamentMeters = estimatedFilamentMeters;
             QualityMin = qualityMin;
             QualityMax = qualityMax;
-            StartedWithEnclosure = startedWithEnclosure;
+            QualityCap = qualityCap;
             SpoolSlotId = spoolSlotId;
             Placement = placement;
         }
@@ -54,16 +54,14 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
         public float EstimatedFilamentMeters { get; }
 
+        /// <summary>Base raw quality without the enclosure contribution.</summary>
         public float QualityMin { get; }
 
+        /// <summary>Base raw quality without the enclosure contribution.</summary>
         public float QualityMax { get; }
 
-        /// <summary>
-        /// Enclosure state captured when the job was validated. The quality
-        /// contribution stays fixed for this job even if the printer is later
-        /// removed from or installed into an enclosure.
-        /// </summary>
-        public bool StartedWithEnclosure { get; }
+        /// <summary>Raw cap (90, or 55 when required supports are missing).</summary>
+        public float QualityCap { get; }
 
         public SpoolSlotId SpoolSlotId { get; }
 

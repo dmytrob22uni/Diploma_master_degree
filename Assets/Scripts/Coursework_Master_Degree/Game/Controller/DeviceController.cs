@@ -370,9 +370,9 @@ namespace Coursework_Master_Degree.Game.Controller
                 speed,
                 result.EstimatedSeconds,
                 result.EstimatedFilamentMeters,
-                result.EstimatedQualityMin,
-                result.EstimatedQualityMax,
-                result.HasEnclosure,
+                result.QualityMinBase,
+                result.QualityMaxBase,
+                result.QualityCap,
                 spoolSlotId,
                 placement);
 
