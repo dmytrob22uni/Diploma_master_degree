@@ -894,6 +894,7 @@ These are one-off condition points, not `WearDelta` values. The nozzle, heater, 
 - Add a runtime `PrintedObjectDataHolder` for quality, partial/completed state and bed ownership.
 - Disable colliders and physics during printing. The object remains on the `object_to_print` layer for later hover/removal.
 - Keep live printing uncapped. The spool's printing shader supplies both the reveal cutoff and backface lighting; no cap is generated per layer.
+- Supports are separate closed columns. While live they use the spool's `PrintingMaterial`; when a pause settles, a partial finalizes or a print completes, they switch to the same `FinalMaterial` as the object. They are not part of the object cap, sliced collider or object mesh.
 - When a pause settles (cooled and head parked), build a sliced, capped surface with the spool's regular `FinalMaterial`. On resume, remove that surface and restore the printing shader and reveal.
 - On hard-stop finalization, build the same sliced, capped surface and use it as both the partial visual and partial collider. Completed prints have no cap.
 - Partial prints keep the sliced, capped surface and final material after removal and placement.
@@ -930,6 +931,7 @@ Important:
 - Update the reveal at ~15 Hz, not every frame.
 - Do not build a cap during live printing; the printing shader's backface lighting is the intended active-layer look.
 - A settled pause or finalized partial print gets a sliced, capped surface built in object-root local space so it follows the bed.
+- Support columns reveal by Y scale, not by the `_reveal_height` shader. Their material property block holds `_reveal_height` fully open when the material exposes it, and each column is a closed box with its own top face. The object cap does not include supports.
 - The sliced surface and collider are display/gameplay approximations, not a real slicer.
 
 #### Motion
@@ -998,7 +1000,7 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 - On normal completion:
   - Fully reveal the object.
   - Restore the spool's regular `FinalMaterial`.
-  - Keep generated supports attached; M5 adds support removal.
+  - Switch support columns to the same final material; keep them attached; M5 adds support removal.
   - Wait for cooling and head parking at `PrinterMotionBase.HomePositionNormalized`.
   - After both complete, enable the original colliders/surface placement and mark it as a completed print.
 - On hard stop:
@@ -1698,7 +1700,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - `PrintedObjectPresenter`: instantiate the real object prefab under `PrintBedAnchor`, apply the M2.5 placement, own the printed-object lifecycle and release it to `GameStateItemPlace`.
 - `PrintedObjectDataHolder`: runtime quality, partial/completed state, printer ownership and `IsOnPrintBed`.
 - `PrintRevealController`: per-renderer `_reveal_height` through `MaterialPropertyBlock`, quantized to layer height and updated at ~15 Hz.
-- `PrintedSupportPresenter`: sample overhang triangles for the placed object, cluster them to a capped number of points (`48`), and spawn thin vertical support columns. Columns reveal with print height and remain attached to the finished object; M5 adds support removal.
+- `PrintedSupportPresenter`: sample overhang triangles for the placed object, cluster them to a capped number of points (`48`), and spawn thin vertical support columns. Columns reveal with print height, use the printing material live, switch to the final material when the print settles, remain attached to the finished object and are separate from the object cap/collider. M5 adds support removal, colliders and advanced geometry.
+- Support visual defaults: `48` columns, `0.02 m` XZ clustering, `0.35` overhang threshold, `0.0015 m` column radius (actual width `3 mm`). `Auto` is the only mode that generates visual columns.
 - `PrinterMotionSimulator`: seeded procedural path inside precomputed per-layer bed-local bounds, with a continuous layer-to-layer path and a continuous Z-hop. Bounds are built once at job start; it never moves outside the rectangular build volume.
 - `CartesianPrinterMotion` integration through `PrinterMotionBase`; CoreXY uses the same contract when its model prefab exists.
 - Spool integration: use the selected spool's `PrintingMaterial` (the shader with `_reveal_height` and backface lighting) during live printing; completed prints apply the spool's regular `FinalMaterial`.
@@ -1717,7 +1720,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 **Acceptance criteria**
 
 - The object appears where the M2.5 placement put it: position, yaw and uniform scale.
-- With `Auto` supports, visible support columns appear under the overhangs and reveal with the print; `None` prints no supports. Supports remain attached after completion.
+- With `Auto` supports, visible support columns appear under the overhangs and reveal with the print; `None` prints no supports. Live columns use the printing material; settled pauses, partials and completed prints use the final material. Supports remain attached after completion and are not part of the object cap.
 - Reveal starts empty and grows bottom-up; live printing has no cap.
 - Reveal follows the moving bed correctly.
 - The nozzle moves inside the per-layer object bounds, not over the whole plate or the full object box on every layer.
@@ -1745,7 +1748,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 3. Check the object from several player angles; no popping, holes or z-fighting. Confirm the cap appears only for a settled pause or finalized partial print.
 4. Use a temporary multi-mesh test prefab (only Stanford bunny exists in the catalog); confirm all renderers reveal consistently and the paused/hard-stopped cap covers the cut. Remove test assets in M5.
 5. Re-check the M3 spool visual at 100%, 50%, 10%, and 0% with the printed object present.
-6. Check `Auto` vs `None` supports; columns follow the print height and stay attached after completion.
+6. Check `Auto` vs `None` supports; confirm columns follow the print height, switch with the object (printing material live, final material on settled pause/partial/completion), remain attached after completion, and do not appear in the object cap/collider. Confirm the configured radius produces the intended column width.
 7. Pause and let the printer cool; confirm the capped final-material surface appears. Resume and confirm the cap disappears, the printing shader returns and the reveal continues.
 8. Hard stop after a few layers; confirm the capped final-material surface appears when cooling completes, then after parking confirm the sliced collider and removal. Remove and place the partial print.
 9. Check completed object materials, original collider, no cap, placement and sale.
@@ -1768,7 +1771,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 **Candidate deliverables**
 
 - Advanced enclosure effects: draft, particulate filtration, warp and long-pause adhesion risk. Basic chamber temperature, cooling slowdown and enclosure quality are already in M3.
-- Support removal from completed/partial prints; M4 keeps generated supports attached.
+- Support removal from completed/partial prints, support colliders, advanced support geometry and optional cap integration; M4 keeps generated columns attached.
 - `PrintQualityModel` expanding the M2 `PrintQualityEstimator` range, and a real quality value on `IsHaveQuality`. M4 stores the numeric value on `PrintedObjectDataHolder`; M5 turns it into sale value and post-processing.
 - Failure modes:
   - filament runout
@@ -2050,7 +2053,7 @@ Fill this table during M0 and update it during later milestones.
 - Pause settled shows the capped final-material surface; resume removes it and restores the printing shader.
 - Hard-stop partial shows the capped final-material surface after cooling/parking.
 - Spool printing material during the print; regular final material for completed and partial surfaces.
-- Auto supports render as columns under overhangs, follow print height, and remain attached.
+- Auto supports render as separate closed columns under overhangs, follow print height, use the printing material live, switch to the final material when settled/partial/completed, and remain attached. They are not part of the object cap/collider.
 - No supports render when `None`.
 - Nozzle path stays inside each layer's bounds at `0.5x` / `1x` / `2x` scale and with rotation; Slow/Normal/Fast visibly change pace; layer transitions are continuous.
 - Repeat the same object on the same printer and confirm the seeded path differs without leaving the layers.
@@ -2362,6 +2365,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-18 | Placement is per-job and not persisted | Same as slicing: each print is set up fresh |
 | 2026-11-18 | Scale limits are soft, not clamped | The player sees the shader error and cannot confirm; no silent snapping |
 | 2026-11-18 | Supports visualised in M4 as simple columns | Full support generation is a slicer problem; columns make the abstract supports readable and stay attached until M5 removal |
+| 2026-11-21 | Support visuals follow the object lifecycle | Live supports use the printing material, settled/partial/completed supports use the final material, columns reveal by scale, and caps/colliders stay object-only; `SupportColumnRadiusMeters` is an actual radius (2x width) |
 | 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
 | 2026-11-19 | Simulation speed is a per-printer console preset | The printer owns the job; presets match existing console rows and avoid slider UI work |
 | 2026-11-19 | All wear delta types are mapped to printer/enclosure parts or print-use actions | Existing assets and SOs already define the intended wear kinds; no parallel wear model |
