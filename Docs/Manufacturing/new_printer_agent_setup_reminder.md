@@ -99,7 +99,7 @@ The final setup guide must cover, in order:
    - start, pause, resume, hard stop, paused-safe Wear/Integrity/Remove interactions, manual completed/partial removal and sale blocking;
    - heating/cooling percentages during preheat, cooling and resume-heating; occupancy status from items on enclosure shelves;
    - closed-door start/resume, open-door console warning, door opening while idle/paused/cooling/finished only at/below `SafeServiceTemperatureC`, closing always allowed, and auto-pause when a door opens during active printing;
-   - wear-coefficient approval in `wear_coefficients_manual_gate.md`; use `Printer.WearRateMultiplier = 1` for final calibration and `Tools/Manufacturing/Wear Calibration` with the `WearCalibrationProfileSO` target table for per-part tuning;
+   - wear-coefficient approval in `wear_coefficients_manual_gate.md`; use `Printer.WearRateMultiplier = 1` for final calibration, keep the profile target table at x1, and verify `WearWorkloadExponent` at regular and maximum-volume scales (a 3-print part should land around 2.1–2.3 maximum-volume prints); use `Tools/Manufacturing/Wear Calibration` for per-part tuning;
    - installed extruder and enclosure fans switch calm/active with printer state, removed/spare/ghost/worn-out fans stay calm, and the active child rotates around its authored axis;
    - no model-specific assumptions leaked into shared runtime code.
 

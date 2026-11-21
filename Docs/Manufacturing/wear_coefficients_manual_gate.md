@@ -75,11 +75,12 @@ The bed, plate and adapter prefabs each use one active wear state. Their seconda
 Use two knobs for different jobs:
 
 1. **Quick playtest offset:** `Printer.WearRateMultiplier` in the printer inspector. `1.0` is the calibrated rate; `0.75` makes printer/enclosure wear last about 33% longer and `1.5` makes it about 50% faster. It also scales completed-print use wear and hard-stop damage. Spool filament consumption is not scaled.
-2. **Authored per-part calibration:** open `Tools/Manufacturing/Wear Calibration`. Assign or create a `WearCalibrationProfileSO`, set the medium-print baseline, scan, enter target prints per part, and apply the checked rows.
+2. **Size/workload compression:** `Printer.WearWorkloadExponent` (default `0.15`). `1.0` applies full physical work scaling; `0` makes a job consume roughly the same wear regardless of size. Intermediate values compress large prints without changing x1. Work-driven wear and one-use bed/plate wear both use `ratio^exponent`; the implementation stores `ratio^(exponent - 1)` for time/filament/distance/fan/fumes because those deltas already include `ratio`. At the current bunny maximum-volume range (`2.1–2.3×`), the effective wear factor is about `1.34–1.39×`; a part calibrated for 3 x1 prints lasts about `2.15–2.24` maximum-scale prints. A `0.5×` print uses about `0.76×` of the x1 wear. Hard-stop damage remains a fixed event penalty.
+3. **Authored per-part calibration:** open `Tools/Manufacturing/Wear Calibration`. Assign or create a `WearCalibrationProfileSO`, set the x1 medium-print baseline, scan, enter target prints per part, and apply the checked rows.
 
 The editor tool only writes the coefficient field (`WearPerHour`, `WearPerKilometer`, `WearPerFilamentLength` or `WearPerUse`). It preserves reference temperatures, temperature ranges, temperature effects, abrasiveness effects, hardness effects, RPM reference/effect and wear logic type. Spool filament assets are excluded because their condition is physical filament consumption. The default profile lives at `Assets/SOs/Items/Wear/wear_calibration_profile.asset`.
 
-For final calibration, keep `WearRateMultiplier` at `1.0`; use it only as a playtest offset so the authored target table remains meaningful.
+For final calibration, keep `WearRateMultiplier` at `1.0`; use it only as a playtest offset so the authored target table remains meaningful. The x1 target table remains the source of truth; `WearWorkloadExponent` only changes how larger jobs consume that target budget.
 
 ## Sign-off
 
