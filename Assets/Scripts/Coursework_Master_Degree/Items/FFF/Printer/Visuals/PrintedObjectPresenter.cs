@@ -402,7 +402,15 @@ namespace Coursework_Master_Degree.Items.FFF
             isCompleted = false;
 
             float quantized = Quantize(printJob.Progress01);
-            ShowPartialSurface(quantized * localHeight, true);
+
+            if (isPartialSurfaceVisible && slicedObject != null)
+            {
+                EnsurePartialCollider();
+            }
+            else
+            {
+                ShowPartialSurface(quantized * localHeight, true);
+            }
 
             printedData?.MarkFinalized(printJob, true, -1.0f);
 
@@ -589,14 +597,31 @@ namespace Coursework_Master_Degree.Items.FFF
 
             if (enableCollider)
             {
-                MeshCollider collider = slicedObject.AddComponent<MeshCollider>();
-                collider.sharedMesh = slicedMesh;
-                collider.convex = false;
-                SetCollidersEnabled(false);
+                EnsurePartialCollider();
             }
 
             reveal.SetVisible(false);
             isPartialSurfaceVisible = true;
+        }
+
+        private void EnsurePartialCollider()
+        {
+            if (slicedObject == null || slicedMesh == null)
+            {
+                return;
+            }
+
+            MeshCollider collider =
+                slicedObject.GetComponent<MeshCollider>();
+
+            if (collider == null)
+            {
+                collider = slicedObject.AddComponent<MeshCollider>();
+            }
+
+            collider.sharedMesh = slicedMesh;
+            collider.convex = false;
+            SetCollidersEnabled(false);
         }
 
         private void BuildFallbackCollider(float printedLocalHeight)

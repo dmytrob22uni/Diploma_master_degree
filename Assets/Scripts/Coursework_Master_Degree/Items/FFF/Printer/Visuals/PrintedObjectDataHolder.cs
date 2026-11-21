@@ -27,6 +27,12 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public bool IsOnPrintBed => Printer != null && !IsReleased;
 
+        /// <summary>
+        /// A finished or hard-stopped print that is ready to be removed from
+        /// the bed. The object owns removal, not the busy printer status.
+        /// </summary>
+        public bool IsFinalizedOnPrintBed => IsOnPrintBed && IsFinalized;
+
         public void Bind(Printer printer, PrinterJob job)
         {
             Printer = printer;

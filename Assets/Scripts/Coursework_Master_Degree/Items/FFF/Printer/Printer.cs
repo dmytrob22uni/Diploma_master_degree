@@ -184,6 +184,7 @@ namespace Coursework_Master_Degree.Items.FFF
         private bool isCalibrated;
         private bool isFinalizingPrint;
         private bool pauseVisualSettled;
+        private bool coolingVisualSettled;
         private float preheatStartNozzle;
         private float preheatStartBed;
         private float coolingStartNozzle;
@@ -964,7 +965,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
                 if (HasPartialPrint)
                 {
-                    return "Partial print on the bed";
+                    return "Unfinished print on the bed";
                 }
 
                 if (HasCompletedPrint)
@@ -1354,6 +1355,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
             PrintedObject?.HardStop(activeJob);
             pauseVisualSettled = false;
+            coolingVisualSettled = false;
 
             wearIntegrator.ApplyHardStopPenalty(
                 this,
@@ -1700,6 +1702,7 @@ namespace Coursework_Master_Degree.Items.FFF
             HasPartialPrint = false;
             isFinalizingPrint = false;
             pauseVisualSettled = false;
+            coolingVisualSettled = false;
             PrintedObject?.ClearObject();
             preheatElapsedSimulated = 0.0f;
             printElapsedRealSeconds = 0.0f;
@@ -1842,6 +1845,17 @@ namespace Coursework_Master_Degree.Items.FFF
 
             FlushWear();
 
+            // Apply the capped final-material surface as soon as cooling has
+            // finished. Finalization still waits for the real-time park, but
+            // the player sees the unfinished print settle immediately.
+            if (!coolingVisualSettled &&
+                activeJob != null &&
+                activeJob.IsPartial)
+            {
+                coolingVisualSettled = true;
+                PrintedObject?.PauseSettled(activeJob);
+            }
+
             if (isFinalizingPrint)
             {
                 return;
@@ -1863,6 +1877,7 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             isFinalizingPrint = false;
+            coolingVisualSettled = false;
 
             if (activeJob == null)
             {
