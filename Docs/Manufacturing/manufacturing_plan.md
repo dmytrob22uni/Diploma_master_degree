@@ -937,7 +937,7 @@ Important:
 - Use a seeded pattern so the motion is deterministic per job.
 - Respect the rectangular build volume / soft limits.
 - Axis `Invert` flags are part of the print-space calibration: the MK4S horizontal X uses `Invert = 1` because its carriage parent maps local X to world -X, and horizontal Z uses `Invert = 1` because the bed moves the opposite way from the nozzle in print space. Keep the path bounds and motion axes on the same bed-local frame.
-- Pause and hard stop both move the head smoothly to `HomePositionNormalized`.
+- Pause and hard stop both move the head smoothly to `HomePositionNormalized`. The park move uses real frame time, not `PrintSpeedMultiplier`, so `120×`/`240×` do not teleport the head home; resuming mid-park hands the current position to the simulator instead of snapping to home.
 - After cooling, normal completion moves the head smoothly to `HomePositionNormalized`; the print becomes removable only when both cooling and parking finish. Calibration may start/lift from `CalibrationHomePrintPosition` (X/Z global, optional height). `Home()` remains the mechanical axis-home primitive for debug/mechanical use only.
 
 **Path diversity model**
@@ -955,6 +955,8 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 
 - `Home()` is the mechanical axis-home primitive: `AxisBinding.RestoreHome()` returns each node to its authored local position. It is not a configurable upper-center point and is not the gameplay start position.
 - `HomePositionNormalized` is the global gameplay home used for spawn, pause/service, post-print parking and hard-stop recovery.
+- `BeginHomeMove` / `TickHomeMove` run on real time at `CalibrationMoveSpeedMetersPerSecond`; the simulation preset never shortens the visible park. Cancelling calibration uses the same smooth park before returning to `Idle`.
+- Resuming after a reheat reuses the existing printed object, reveal state and layer bounds; only the motion simulator's return-to-path is re-armed. `BeginJob` runs only when the presenter has no printed object.
 - Calibration uses the optional `CalibrationHomePositionNormalized` only for its start/lift height; X/Z and the return position always use the global home.
 - `UseCustomHomePosition` is off by default. When off, the default top-left/3/4-forward home is used; when on, `HomeX/Y/Z` sliders define the custom pose.
 - X/Z are normalized across the build volume and Y is normalized height. On a bed-slinger the moving bed is one of those axes, so the same sliders define the bed home; fixed beds ignore that axis.
@@ -2282,6 +2284,8 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Simulation multiplier applies before the hitch clamp | Real frame delta is capped at `1 s` then multiplied; the old `0.1 s` pre-multiplier clamp silently reduced high presets at low frame rates |
 | 2026-11-21 | Print-space X calibration uses the carriage sign | MK4S horizontal X uses `Invert = 1` so the head path follows the same bed-local X as the placed object |
 | 2026-11-21 | Print-space Z calibration uses the bed-motion sign | MK4S horizontal Z uses `Invert = 1`; moving the bed toward +Z moves the nozzle toward bed-local -Z, so the bed axis must run opposite the print-space axis |
+| 2026-11-21 | Home/park moves use real time | A visible park must not be multiplied by `120×`/`240×`; resuming mid-park returns smoothly from the current position instead of snapping home |
+| 2026-11-21 | Resume reuses the printed object | Reheating after a pause must not rebuild the mesh, reset the reveal or snap the head; only the motion return is re-armed |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |

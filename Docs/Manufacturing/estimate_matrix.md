@@ -88,6 +88,8 @@ parentheses to the simulated estimate. The multiplier is applied to the real
 frame delta before the hitch clamp, so a low frame rate does not silently
 stretch the real duration away from that estimate; the completion log reports
 the simulated seconds, real seconds and effective multiplier for verification.
+The real clock accumulates only the printing intervals, so pauses and reheats
+do not skew it.
 `SPOOL` only gates filament sufficiency and does not change estimates; object
 selection swaps the profile, so this matrix is bunny-specific.
 

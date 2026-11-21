@@ -1090,11 +1090,16 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private void Update()
         {
+            // Home/park moves are a physical action the player watches, so
+            // they stay on real time instead of being multiplied by the
+            // simulation preset. Otherwise 120x/240x teleport the head home.
+            float realDelta = Mathf.Max(0.0f, Time.deltaTime);
+
             // Do not clamp the real frame delta before applying the
             // simulation multiplier: a 0.1 s clamp silently caps high-speed
             // presets when the frame rate drops. 1 s still protects against
             // editor pauses and large hitches.
-            float simulatedDelta = Mathf.Min(Time.deltaTime, 1.0f) *
+            float simulatedDelta = Mathf.Min(realDelta, 1.0f) *
                 Mathf.Max(1.0f, PrintSpeedMultiplier);
 
             PrinterEnclosure enclosure = DockedEnclosure;
@@ -1116,12 +1121,12 @@ namespace Coursework_Master_Degree.Items.FFF
 
             if (isMovingHome)
             {
-                TickHomeMove(simulatedDelta);
+                TickHomeMove(realDelta);
             }
 
             if (OperationalState == PrinterOperationalState.Printing)
             {
-                printElapsedRealSeconds += Mathf.Max(0.0f, Time.deltaTime);
+                printElapsedRealSeconds += realDelta;
             }
 
             switch (OperationalState)
@@ -1269,14 +1274,9 @@ namespace Coursework_Master_Degree.Items.FFF
                     PauseQualityPenalty);
             }
 
-            // Pause parks the head. If the player resumes before the park
-            // move finishes, snap to the finished home pose and let the
-            // simulator return to the print path smoothly.
-            if (isMovingHome)
-            {
-                isMovingHome = false;
-                Motion?.ApplyHomePosition();
-            }
+            // Let the simulator return from the current position instead of
+            // snapping the head home when the player resumes mid-park.
+            isMovingHome = false;
 
             PrintedObject?.Resume();
             pauseVisualSettled = false;
@@ -1338,7 +1338,8 @@ namespace Coursework_Master_Degree.Items.FFF
         public void EnsureHomePosition()
         {
             if (activeJob == null &&
-                OperationalState != PrinterOperationalState.Calibrating)
+                OperationalState != PrinterOperationalState.Calibrating &&
+                !isMovingHome)
             {
                 Motion?.ApplyHomePosition();
             }
@@ -1384,7 +1385,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
-            Motion?.ApplyHomePosition();
+            BeginHomeMove();
             calibrationPoints.Clear();
             calibrationIndex = 0;
             SetState(PrinterOperationalState.Idle);
@@ -1646,7 +1647,8 @@ namespace Coursework_Master_Degree.Items.FFF
         {
             if (PendingJob == null ||
                 HasPartialPrint ||
-                HasCompletedPrint)
+                HasCompletedPrint ||
+                isMovingHome)
             {
                 return;
             }
@@ -1687,6 +1689,7 @@ namespace Coursework_Master_Degree.Items.FFF
             pauseVisualSettled = false;
             PrintedObject?.ClearObject();
             preheatElapsedSimulated = 0.0f;
+            printElapsedRealSeconds = 0.0f;
             wearTimeAccumulator = 0.0f;
             wearFilamentAccumulator = 0.0f;
 
@@ -1745,9 +1748,15 @@ namespace Coursework_Master_Degree.Items.FFF
             if (temperatureModel.IsAtTarget(TemperatureToleranceC))
             {
                 preheatElapsedSimulated = 0.0f;
-                printElapsedRealSeconds = 0.0f;
                 SetState(PrinterOperationalState.Printing);
-                PrintedObject?.BeginJob(activeJob);
+
+                // Resume reuses the existing printed object; only a new job
+                // needs a fresh mesh, reveal and motion path.
+                if (PrintedObject == null || !PrintedObject.HasObject)
+                {
+                    PrintedObject?.BeginJob(activeJob);
+                }
+
                 return;
             }
 
