@@ -2022,6 +2022,7 @@ MonoBehaviour:
   FanRPM: 3000
   FumesDensity: 1
   WearRateMultiplier: 1
+  WearWorkloadExponent: 0.15
   HardStopNozzleBase: 3
   HardStopNozzleScale: 7
   HardStopHeaterBase: 1.5

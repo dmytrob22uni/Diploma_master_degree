@@ -65,8 +65,9 @@ namespace Coursework_Master_Degree.Editor
                 "WearPerHour, WearPerKilometer, WearPerFilamentLength or " +
                 "WearPerUse and leaves reference temperatures, ranges, " +
                 "effects and RPM settings untouched.\n\n" +
-                "Use Printer.WearRateMultiplier for temporary playtest " +
-                "offsets; keep this profile as the authored calibration.",
+                "Targets are x1 medium prints. Printer.WearRateMultiplier " +
+                "is a playtest offset; Printer.WearWorkloadExponent " +
+                "compresses larger jobs while keeping x1 unchanged.",
                 MessageType.None);
 
             profile = (WearCalibrationProfileSO)EditorGUILayout.ObjectField(

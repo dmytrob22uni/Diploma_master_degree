@@ -78,7 +78,8 @@ namespace Coursework_Master_Degree.Items.FFF
             float printingSeconds,
             float filamentMeters,
             float materialHardness,
-            float materialAbrasiveness)
+            float materialAbrasiveness,
+            float workloadMultiplier)
         {
             if (printer == null || simulatedSeconds <= 0.0f)
             {
@@ -91,7 +92,8 @@ namespace Coursework_Master_Degree.Items.FFF
                 simulatedSeconds);
             float wearMultiplier = Mathf.Max(
                 0.0f,
-                printer.WearRateMultiplier);
+                printer.WearRateMultiplier) *
+                Mathf.Max(0.0f, workloadMultiplier);
             PrinterTemperatureState temperature = printer.Temperature;
 
             for (int i = 0; i < targets.Count; i++)
@@ -199,7 +201,8 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public void ApplyCompletedPrintUse(
             Printer printer,
-            float materialHardness)
+            float materialHardness,
+            float useMultiplier)
         {
             if (printer == null)
             {
@@ -208,7 +211,8 @@ namespace Coursework_Master_Degree.Items.FFF
 
             float wearMultiplier = Mathf.Max(
                 0.0f,
-                printer.WearRateMultiplier);
+                printer.WearRateMultiplier) *
+                Mathf.Max(0.0f, useMultiplier);
 
             for (int i = 0; i < targets.Count; i++)
             {

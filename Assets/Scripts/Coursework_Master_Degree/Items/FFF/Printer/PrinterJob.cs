@@ -19,6 +19,20 @@ namespace Coursework_Master_Degree.Items.FFF
         public float ElapsedSeconds;
         public float ConsumedFilamentMeters;
 
+        /// <summary>
+        /// Size/workload compensation captured when the job starts. Applied
+        /// to time, filament, distance, fan and fumes wear; use wear has its
+        /// own multiplier and hard-stop damage remains fixed.
+        /// </summary>
+        public float WearWorkloadMultiplier = 1.0f;
+
+        /// <summary>
+        /// Scale factor for one-use wear (bed and plate). Uses are flat per
+        /// job, so this stores the compressed work factor directly rather
+        /// than the inverse compensation used for time/filament wear.
+        /// </summary>
+        public float WearUseMultiplier = 1.0f;
+
         public int PauseCount;
         public float PauseQualityPenalty;
 

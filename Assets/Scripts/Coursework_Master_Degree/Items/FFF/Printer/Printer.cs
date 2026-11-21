@@ -133,6 +133,14 @@ namespace Coursework_Master_Degree.Items.FFF
             "Spool filament consumption is not scaled.")]
         public float WearRateMultiplier = 1.0f;
 
+        [Range(0.0f, 1.0f)]
+        [Tooltip(
+            "Compresses size-driven wear. 1 = full physical work scaling; " +
+            "0 = size-independent per-job wear. The default keeps a " +
+            "maximum-volume print around two medium-print lifetimes for " +
+            "parts calibrated at three prints.")]
+        public float WearWorkloadExponent = 0.15f;
+
         [Header("Hard-stop condition loss")]
         [Min(0.0f)] public float HardStopNozzleBase = 3.0f;
         [Min(0.0f)] public float HardStopNozzleScale = 7.0f;
@@ -1754,6 +1762,12 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             activeJob = new PrinterJob(PendingJob);
+            CalculateWearWorkloadMultipliers(
+                activeJob.Request,
+                out float workloadMultiplier,
+                out float useMultiplier);
+            activeJob.WearWorkloadMultiplier = workloadMultiplier;
+            activeJob.WearUseMultiplier = useMultiplier;
             PendingJob = null;
             completedJob = null;
             partialJob = null;
@@ -1789,6 +1803,46 @@ namespace Coursework_Master_Degree.Items.FFF
             SetTargetsFromJob();
             wearIntegrator.Refresh(this);
             SetState(PrinterOperationalState.Preheating);
+        }
+
+        private void CalculateWearWorkloadMultipliers(
+            PrintJobRequest request,
+            out float workloadMultiplier,
+            out float useMultiplier)
+        {
+            workloadMultiplier = 1.0f;
+            useMultiplier = 1.0f;
+
+            if (request == null ||
+                request.ObjectToPrint == null ||
+                request.ObjectToPrint.PrintProfile == null ||
+                request.Placement == null)
+            {
+                return;
+            }
+
+            ObjectToPrintGeometry geometry =
+                ObjectToPrintSizing.GetGeometry(request.ObjectToPrint);
+            float reference = PrintEstimates.ScaleWorkFactor(
+                request.ObjectToPrint.PrintProfile,
+                request.Infill,
+                1.0f,
+                geometry);
+            float actual = PrintEstimates.ScaleWorkFactor(
+                request.ObjectToPrint.PrintProfile,
+                request.Infill,
+                Mathf.Max(0.0001f, request.Placement.UniformScale),
+                geometry);
+
+            if (reference <= 0.0001f || actual <= 0.0001f)
+            {
+                return;
+            }
+
+            float ratio = Mathf.Max(0.0001f, actual / reference);
+            float exponent = Mathf.Clamp01(WearWorkloadExponent);
+            workloadMultiplier = Mathf.Pow(ratio, exponent - 1.0f);
+            useMultiplier = Mathf.Pow(ratio, exponent);
         }
 
         private void SetTargetsFromJob()
@@ -2266,13 +2320,18 @@ namespace Coursework_Master_Degree.Items.FFF
                 ? ActiveSpool.Data.MaterialAbrasiveness
                 : 0.0f;
 
+            float workloadMultiplier = activeJob != null
+                ? activeJob.WearWorkloadMultiplier
+                : 1.0f;
+
             wearIntegrator.ApplyPrintWear(
                 this,
                 wearTimeAccumulator,
                 wearPrintingTimeAccumulator,
                 wearFilamentAccumulator,
                 hardness,
-                abrasiveness);
+                abrasiveness,
+                workloadMultiplier);
 
             wearTimeAccumulator = 0.0f;
             wearPrintingTimeAccumulator = 0.0f;
@@ -2300,7 +2359,8 @@ namespace Coursework_Master_Degree.Items.FFF
 
             wearIntegrator.ApplyCompletedPrintUse(
                 this,
-                ActiveSpool.Data.MaterialHardness);
+                ActiveSpool.Data.MaterialHardness,
+                activeJob.WearUseMultiplier);
         }
 
         private void CompletePrint()

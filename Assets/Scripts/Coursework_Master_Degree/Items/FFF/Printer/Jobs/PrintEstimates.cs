@@ -33,7 +33,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                     profile.SupportsRequired);
             }
 
-            return filament * ScaleFactor(profile, infill, uniformScale, geometry);
+            return filament * ScaleWorkFactor(profile, infill, uniformScale, geometry);
         }
 
         public static float TimeSeconds(
@@ -66,7 +66,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                     profile.SupportsRequired);
             }
 
-            return time * ScaleFactor(profile, infill, uniformScale, geometry);
+            return time * ScaleWorkFactor(profile, infill, uniformScale, geometry);
         }
 
         /// <summary>
@@ -124,10 +124,10 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         /// Two-term shell/infill scaling. At scale 1 this is exactly 1 so the
         /// authored/calibrated profile remains authoritative. Small objects
         /// move toward s² for their solid shell; large objects toward s³ for
-        /// their infill volume. Falls back to the old s³ rule when geometry or
-        /// wall thickness is unavailable.
+        /// their infill volume. Exposed so wear can normalize size against the
+        /// same work rule; falls back to s³ when geometry is unavailable.
         /// </summary>
-        private static float ScaleFactor(
+        public static float ScaleWorkFactor(
             ObjectToPrintPrintProfile profile,
             InfillPattern infill,
             float uniformScale,
