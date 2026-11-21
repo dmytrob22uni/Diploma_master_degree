@@ -249,7 +249,7 @@ M3 enclosure behavior:
 - `PrintJobValidator`, `Printer.TryResume` and `Printer.TryStartPendingJob` enforce the closed-door requirement. The console validation list and printer status show the warning; `TryStartPendingJob` keeps the queued job until the doors close.
 - Doors implement `IPrinterBusyInteraction`, so the busy-printer hover gate does not suppress their interaction prompt. The door itself explains whether it is locked, interlocked or ready.
 - `PrinterTemperatureModel` reads chamber temperature and slows cooling when enclosed.
-- `PrintQualityEstimator` applies an enclosure bonus / no-enclosure penalty; raw quality caps at `90`.
+- `PrintQualityEstimator` computes the base raw range without the enclosure contribution; `PrinterJob` applies `+5` / `-9` exactly once when printing finishes, from the job's one-chance enclosure outcome. Raw quality caps at `90`.
 - Enclosure parts join the printer wear scan, so fans, filters, thermometers and fire-suppression parts wear during a job.
 - Enclosure inspection keeps the enclosure interaction list and treats the printer as one part for integrity/removal. Wear inspection includes the printer's internal parts and hides the printer root so only the wear ghosts remain visible.
 - Installing a printer in the enclosure docks its accessories:
@@ -262,7 +262,7 @@ M3 enclosure behavior:
 - Enclosure spool sockets are `PrinterEnclosureSpoolSocket` data. A socket may name a specific printer slot id or accept any free slot.
 - The printer, spool, battery closet and adapter sockets are `PartLocation`s because they are installed parts. The two plug reset points remain plain transforms registered through `ItemPartsToLocationsList`, because plugs are free parts.
 - Docking updates `PrinterEnvironment` directly, so enclosure thermal/quality/wear behavior applies after a runtime install rather than relying on awake-time renderer-bounds detection.
-- The console shows live nozzle/bed temperatures and enclosure-derived quality.
+- The console shows live nozzle/bed temperatures and an enclosure row explaining the current bonus or the job's one-chance bonus outcome.
 
 M5 enclosure effects still to add:
 
@@ -382,7 +382,7 @@ This avoids fighting the prefab's diagonal rotations and makes future printer pr
 - Enclosure behavior is driven by `PrinterEnclosure` data: doors, spool sockets, docking roles, free-part reset points and critical parts. `PrinterEnvironment` receives the docked state at runtime; shared code does not branch on model names or transforms.
 - Runtime part checks use serialized `PartLocation` references and `Printer.CriticalPartLocations` / `PrinterEnclosure.CriticalPartLocations`. The only name-based binding helper is the editor-only `Auto-Assign Critical Parts` context menu (`#if UNITY_EDITOR`); remaining name switches are display labels with a generic underscore fallback and never drive validation or state.
 - Shelf storage is independent of printer ownership: `Printer.FindFor` stops at the physical printer/enclosure hierarchy. Enclosure surfaces still resolve the printer; items placed on them keep their own hover/take.
-- Calibration, quality and job state are printer-generic; enclosure quality is read through `Printer.HasEnclosure` / `PrinterEnvironment.HasEnclosure`, and each job latches `StartedWithEnclosure` at queue time. The `+5` / `-9` enclosure quality values are global balance constants; future enclosure tiers should expose their own values on `PrinterEnvironment`/`PrinterEnclosure` rather than add a printer-name branch.
+- Calibration, quality and job state are printer-generic; enclosure quality is read through `Printer.HasEnclosure` / `PrinterEnvironment.HasEnclosure`. `PrinterJob` captures the state at actual start, keeps a one-way `EnclosureBonusLost` flag, latches the outcome at completion, and stores the base range without the enclosure contribution. The `+5` / `-9` values are global balance constants; future enclosure tiers should expose their own values on `PrinterEnvironment`/`PrinterEnclosure` rather than add a printer-name branch.
 - A new printer that needs different geometry or coupled axes should add a `PrinterMotionBase` subclass or prefab data, not a special case in shared job, console or enclosure code.
 
 ### 5.4 Camera focus and screen-off behavior
@@ -525,9 +525,10 @@ PrinterJob
   - float ConsumedFilamentMeters
   - int PauseCount / float PauseQualityPenalty
   - float CalibrationQualityMultiplier / FinalQuality
-  - float QualityMin / QualityMax (after pause penalty and calibration)
-  - float QualityWithoutEnclosureMin / QualityWithoutEnclosureMax
-  - bool StartedWithEnclosure / bool EnclosureInterrupted
+  - float QualityMin / QualityMax (final calculation: base + enclosure + calibration/pause)
+  - float Request.QualityMin / QualityMax / QualityCap (base range without enclosure, raw cap)
+  - bool StartedWithEnclosure / EnclosureBonusLost
+  - bool EnclosureBonusRetained / EnclosureOutcomeLatched
   - bool IsPartial / bool WasHardStopped / bool UsesApplied
   - float Progress01 / RemainingSeconds / RemainingFilamentMeters
 
@@ -826,7 +827,7 @@ PrinterTemperatureState
 - Preheat completes when both nozzle and bed are within tolerance (default ±2 °C).
 - In M3, a preheat timeout logs a warning and enters `Fault`; full thermal-failure gameplay is M5.
 - Raw quality is capped at `90` even with an enclosure. The post-process state can polish the finished object later.
-- Calibration quality is finalized when printing completes. A calibrated printer uses `1.0×`; an uncalibrated printer uses a random `0.7–1.0×`. Calibration is consumed by a job that actually printed, so the next job starts uncalibrated until the player calibrates again; a preheat-only hard stop keeps it. A calibration-sensitive part change invalidates calibration in idle or active states, so the job finishes uncalibrated. Spool/battery/adapter/enclosure-accessory changes do not. The warning remains in the console until the bed is cleared.
+- Calibration quality is finalized when printing completes. A calibrated printer uses `1.0×`; an uncalibrated printer uses a random `0.7–1.0×`. Calibration is consumed by a job that actually printed, so the next job starts uncalibrated until the player calibrates again; a preheat-only hard stop keeps it. The enclosure contribution is likewise applied once at completion from the job's one-chance outcome; the request stores the base range without it. A calibration-sensitive part change invalidates calibration in idle or active states, so the job finishes uncalibrated. Spool/battery/adapter/enclosure-accessory changes do not. The warning remains in the console until the bed is cleared.
 
 ### 6.6 Wear and filament
 
@@ -1634,7 +1635,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
   - the print does not fail merely because it was paused.
 - Calibration with `N` grid points moves smoothly at the selected `SIM SPEED`, touches the plate at every point, and returns to the global home.
 - An uncalibrated printer starts with a warning but is not blocked; its final quality uses a random `0.7–1.0×` factor at print completion. A successful calibration applies to the next job that actually prints and is consumed when that job finalizes; a preheat-only cancellation keeps it. Changing a calibration-sensitive part invalidates calibration in idle or active states and keeps the warning visible until the bed is cleared; spool/enclosure-accessory changes do not.
-- The console shows the chosen simulation multiplier and live printer status. The validation card also shows an `Enclosure:` row: `installed (+5 quality bonus)`, `not installed (no +5 bonus; -9 quality)`, or the job-specific wording when the printer was installed/removed after the job was queued or started.
+- The console shows the chosen simulation multiplier and live printer status. The validation card also shows an `Enclosure:` row: current state for idle/pending jobs, and one-chance job wording (`bonus kept`, `bonus lost after removal`, `installed after start — no bonus`) for active/completed jobs.
 - A printer can expose zero, one, two, three or four selectable spool slots; the console hides the selector for zero/one and shows the rest dynamically.
 - A CoreXY prefab using `CoreXYPrinterMotion` reaches the same print-space positions as the Cartesian implementation; belt/motor dynamics are not simulated.
 - Switching printers preserves each printer's selected object, spool, settings and placement; switching objects preserves their settings/placement.
@@ -1644,7 +1645,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Installing a printer moves its installed spools to available enclosure sockets, up to the number of free sockets, hides `spool_holder` when mapped, and restores everything on removal. Overflow blocks the install with a reason. The console supports zero, one or up to four selectable slots.
 - Detached enclosure plugs reset to the enclosure plug locations when the enclosure is taken.
 - Raw quality tops out at `90`; the post-process state can improve the finished object later.
-- `PrintJobRequest.StartedWithEnclosure` captures the enclosure state used for the quality estimate. Removing or reinstalling the printer updates the console row but does not re-apply or remove that job's enclosure contribution.
+- `PrinterJob` captures the enclosure state at actual start and keeps a one-way bonus-lost flag. The request stores the base quality range and cap; the final `+5` / `-9` contribution is applied once at completion. Removing the printer after printing finishes does not change the calculated quality.
 
 **Manual gate**
 
@@ -1780,7 +1781,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Screen animations and notifications.
 - Save/load if desired.
 - Optional resume-from-partial-print.
-- Job-level enclosure continuity snapshot: whether the job started enclosed, whether it has been interrupted, and the quality range without the enclosure contribution.
+- Enclosure continuity snapshot: implemented (2026-11-21) with actual-start capture, a one-way bonus-lost flag, a latched completion outcome and the base quality range stored without the enclosure contribution. The remaining M5 continuity work is the pause-penalty cap.
 - A capped or diminishing pause-quality penalty so repeated pause/service cycles cannot drive quality to zero.
 - **Final documentation gate:** replace [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md) with the full agent-facing setup guide for adding new FFF printer models, and replace [`new_object_print_setup_reminder.md`](new_object_print_setup_reminder.md) with the full guide for adding printable-object prefabs, profiles, ghosts and calibration. Both must cover their prefab/data contracts, validation and verification.
 - Production cleanup:
@@ -1792,87 +1793,111 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 #### Enclosure continuity during a job
 
-The enclosure quality contribution is tied to the whole print, not just the
-state at validation. A job keeps its original time, filament, speed, layer,
-supports and placement values; only the enclosure contribution and resume
-validation can change.
+The enclosure quality contribution is tied to the whole print. A job keeps its
+original time, filament, speed, layer, supports and placement values; only the
+enclosure contribution and resume validation can change.
 
-**Quality policy**
+**One-chance quality policy**
 
-- The enclosure quality bonus is only earned if the printer is enclosed for
-  every **printing** interval. Pausing inside the enclosure does not break it.
-- Removing the printer while paused and restoring it before the next resume
-  does not break continuity; the job never printed outside.
-- If the job resumes outside the enclosure, set a one-way
-  `EnclosureInterrupted` flag for that job. Reinstalling the enclosure later
-  does not restore the bonus.
-- A job that starts unenclosed can never earn the continuous-enclosure bonus,
-  even if the enclosure is installed before a later resume.
-- Continuous enclosure: keep the existing `+5` enclosure contribution.
-- Interrupted or never enclosed: use the existing no-enclosure `-9`
-  contribution, not an additional per-toggle penalty.
-- Store the quality range **before** the enclosure contribution on the job.
-  This avoids applying `+5` or `-9` twice when the state changes.
-- The enclosure penalty is latched once. Repeated removal/installation must
-  not stack enclosure penalties.
+- Capture `StartedWithEnclosure` when the job **actually starts**, not when it
+  is queued.
+- A job earns the `+5` enclosure contribution only if it starts enclosed and
+  is never observed outside the enclosure before printing finishes.
+- The first observed removal after start sets a one-way
+  `EnclosureBonusLost` flag. Reinstalling the printer never clears it.
+- A job that starts unenclosed can never earn the bonus; installing the printer
+  during preheat, pause or printing is too late. The `-9` no-enclosure
+  contribution applies.
+- Pausing inside the enclosure does not break the bonus. Removing the printer
+  while paused does.
+- Store the base quality range **without** the enclosure contribution on the
+  request. `PrinterJob` applies `+5` or `-9` exactly once when printing
+  finishes (`CompletePrint`), then applies calibration and pause penalties.
+  Removing the printer during cooling/parking after printing is finished does
+  not retroactively change the final quality.
+- The enclosure contribution is latched once; repeated toggles never stack.
+- Enclosure-part wear follows the current docked state; removing/reinstalling
+  parts does not add another enclosure quality penalty.
+
+**Console messages**
+
+- No job / idle: `Enclosure: installed (+5 quality bonus)` or
+  `Enclosure: not installed (no +5 bonus; -9 quality)`.
+- Pending job: installed means the bonus applies if it stays installed until
+  the job starts; not installed means the job starts without the bonus.
+- Active/completed job:
+  - `Enclosure: bonus kept (+5 quality for this job)` when the job started
+    enclosed and was never removed.
+  - `Enclosure: bonus lost after removal (-9 quality)` once removed, even if
+    reinstalled.
+  - `Enclosure: installed after start (no bonus this job, -9)` for an
+    unenclosed start followed by an installation.
+  - `Enclosure: not installed (no bonus this job, -9)` for an unenclosed job.
+- The estimate line still shows the current-state raw range; the job row is
+  the authoritative explanation of the final contribution.
 
 **Pause penalty**
 
 - The existing per-resume pause penalty still applies.
 - M5 must cap or diminish it so repeated pauses cannot zero quality. Suggested
   starting rule: `min(pauseCount * PauseQualityPenalty, 20)` quality points.
-- Enclosure toggles while paused do not add extra enclosure penalties; the
-  normal pause penalty is the cost of another resume.
-- Resuming outside the enclosure adds the no-enclosure quality state, not a
-  second stack of pause penalties.
+- Enclosure toggles do not add extra pause penalties.
+- Resuming outside the enclosure uses the no-enclosure quality contribution,
+  not a second stack of pause penalties.
 
-**Resume validation and warnings**
+**Resume validation and wear**
 
-- If the enclosure is still present at resume, validate its critical parts as
+- With the enclosure still present at resume, validate its critical parts as
   today; missing required parts block resume with the existing specific errors.
-- If the printer is outside the enclosure, enclosure critical parts are not
-  required for resume, but the job is marked enclosure-interrupted and uses
-  the no-enclosure quality contribution.
-- Show one persistent job warning on the first interruption:
-  `Print resumed without enclosure. Final quality will use the no-enclosure penalty.`
-- If the enclosure is reinstalled later:
-  `Enclosure restored. This job is already marked enclosure-interrupted; the no-enclosure penalty remains.`
-- If an unenclosed job gets an enclosure before resume:
-  `Enclosure installed after printing started. This job cannot earn the continuous-enclosure bonus.`
-- Removing or reinstalling while paused before any outside resume should not
-  change quality; optionally show a transient hint that only the pause penalty
-  applies.
-- Repeated toggles must update the warning state once, not spam a new warning
-  per cycle.
-- Calibration is unaffected by enclosure movement. Time, filament, path and
-  print progress remain frozen for the active job.
-- Enclosure-part wear follows the current docked state: removed enclosure parts
-  stop accumulating wear; reinstalling resumes their wear targets. No
+- With the printer outside the enclosure, enclosure critical parts are not
+  required for resume; the job is already marked bonus-lost.
+- Enclosure-part wear follows the current docked state; removed enclosure parts
+  stop accumulating wear and reinstalling resumes their wear targets. No
   retroactive wear is applied for the paused interval.
+- Calibration, time, filament, path and print progress are unaffected by
+  enclosure movement.
 
 **Acceptance criteria**
 
-- Enclosure changes thermal behavior and quality in a visible, understandable way.
-- A job that resumes outside the enclosure loses the continuous-enclosure quality bonus exactly once; reinstalling does not restore it. Repeated toggles do not stack enclosure penalties.
-- A job that starts unenclosed cannot gain the enclosure bonus by installing an enclosure before a later resume.
-- Removing and reinstalling the enclosure while paused, before any outside resume, preserves the bonus and only incurs the normal pause penalty.
-- Removing or reinstalling the enclosure never changes the active job's estimated time, filament, speed, layer height, supports, placement or progress; only the enclosure quality contribution and resume validation change.
-- Pause quality penalties are capped or diminishing and repeated pauses cannot make the job quality estimate collapse to zero.
-- The enclosure continuity warning is persistent once interrupted and is not duplicated on every toggle.
-- Failure modes are telegraphed and recoverable.
+- Start enclosed and never remove the printer: `+5` at completion.
+- Start enclosed, pause, remove the printer, then reinstall and resume: bonus
+  lost once, `-9` at completion; reinstall does not restore it and repeated
+  toggles do not stack.
+- Start enclosed and resume outside: bonus lost, `-9`; no additional stack on
+  later toggles.
+- Start unenclosed: no bonus at completion, even if the printer is installed
+  during preheat, pause or printing.
+- Pausing inside the enclosure alone does not lose the bonus.
+- Removing the printer during cooling after printing has finished does not
+  change the already calculated final quality.
+- The console row reflects both the current installation state and the job's
+  one-chance outcome.
+- Time, filament, path, progress and calibration do not change when the
+  printer is installed or removed.
+- The pause penalty cap/diminishing rule is implemented in M5.
 - Quality affects the object's value or usability.
 - The game remains performant with multiple printers.
-- Shipped prefabs/scenes contain no active calibration-only debug components, test cubes, or debug GUI.
+- Shipped prefabs/scenes contain no active calibration-only debug components,
+  test cubes, or debug GUI.
 
 **Manual gate**
 
-1. Start enclosed, pause, remove and reinstall the enclosure before resuming: the enclosure bonus remains; only the normal pause penalty applies.
-2. Start enclosed, pause, remove the printer, resume outside: the persistent no-enclosure warning appears; final quality uses the no-enclosure contribution; time, filament and progress do not change.
-3. Reinstall the enclosure and resume again: the job stays enclosure-interrupted; the no-enclosure penalty is not restored and no additional enclosure penalty stacks.
-4. Start unenclosed, install the enclosure before resume: the job does not gain the bonus and shows the “started without enclosure” warning.
-5. Perform several pause/resume cycles: confirm the pause penalty follows the M5 cap/diminishing rule and cannot zero quality by itself.
-6. With the enclosure still present, remove a critical enclosure part and resume: resume is blocked with the specific missing-part error. With the printer outside the enclosure, resume is allowed but uses the no-enclosure quality state.
-7. Confirm enclosure wear targets follow the current docked state and calibration is unchanged by enclosure movement.
+1. Start enclosed, print to completion without removal: bonus kept, `+5`.
+2. Start enclosed, pause, remove the printer, reinstall it, then resume to
+   completion: bonus lost, `-9`; reinstalling did not restore it.
+3. Start enclosed, pause, remove the printer, resume outside to completion:
+   bonus lost, `-9`; further toggles do not add another penalty.
+4. Start unenclosed, install the printer during preheat or pause, then resume
+   or complete: no bonus, `-9`.
+5. Pause/resume repeatedly inside the enclosure: bonus kept; only the pause
+   penalty changes.
+6. Remove the printer during cooling after the print completed: final quality
+   is unchanged.
+7. With the enclosure present, remove a critical enclosure part and resume:
+   resume is blocked with the specific missing-part error. Outside the
+   enclosure, resume is allowed and keeps the bonus-lost state.
+8. Confirm enclosure wear targets follow the current docked state and
+   calibration is unchanged by enclosure movement.
 
 ---
 
@@ -1920,7 +1945,7 @@ Fill this table during M0 and update it during later milestones.
 | Infill time factor | None `0.2615`, Grid `0.3399`, Gyroid `0.3765` | `InfillSettings.TimeFactor` |
 | Layer height | `0.28` / `0.20` / `0.12` mm | `LayerHeightSettings`; time scales `reference / selected` |
 | Print speed | `80` / `160` / `240` mm/s | `PrintSpeedSettings`; `80 mm/s` is the Slow reference; time scales `(reference / selected)^0.8` |
-| Raw quality | base `82`, range width `5`, raw cap `90` | `PrintQualityEstimator`; enclosure `+5`, no enclosure `-9`; post-process can polish beyond 90 later |
+| Raw quality | base `82`, range width `5`, raw cap `90` | `PrintQualityEstimator` computes the base range; `PrinterJob` applies enclosure `+5` / `-9` once at completion; post-process can polish beyond 90 later |
 | Part wear (all installed) | block `0%`, warn `≤20%`; critical warn `20–40%` | `WornOutConditionPercent` / `LowConditionWarningPercent` / `CriticalPartWarningPercent` |
 | Job catalog | `Assets/SOs/ObjectsToPrint/object_to_print_metas_list_SO.asset` | assigned to `DeviceConsolePresenter.ObjectCatalog` |
 | Placement scale | soft limits: largest dimension ≥ `2 cm`; footprint/height within plate/`BuildVolume` | overscale/underscale is allowed but invalid; no clamp |
@@ -1928,7 +1953,7 @@ Fill this table during M0 and update it during later milestones.
 | Placement shader | `_printer_bed_placement_state` `0/1`, `_PRINTER_BED_PLACEMENT_STATE_WRONG` | ghost validity feedback |
 | Scale estimate rule | two-term shell/infill factor; at `scale = 1` it is exactly `1` | shell `s²`, infill `s³`; uses profile `WallThicknessMillimeters` |
 | Support cost | filament × `1 + 0.06 × overhang / 15.48308`, time × `1 + 0.12 × overhang / 15.48308` | bunny reference overhang is `15.48308%`; other objects use their own `SupportOverhangPercent` |
-| Support rule | required object: `None` → `-25` raw and max `55`; optional `Auto` → warning only | `PrintJobValidator` / `PrintQualityEstimator` |
+| Support rule | required object: `None` → `-25` raw and max `55`; optional `Auto` → warning only | `PrintJobValidator` / `PrintQualityEstimator`; the stored `QualityCap` keeps the 55 cap when the enclosure contribution is applied at completion |
 | Material gating | none | any spool material prints; M3/M5 use material for temperatures and quality |
 | Bunny baseline (current profile) | `85.36 m` at 100%, `36 720 s` at 100% | Both values restored to the PrusaSlicer reference; exact editor calibration is `5.88922 / 0.94943`, round defaults are `6.0 / 1.0` |
 | Console mask | `ScreenCornerRadius` / `ScreenMaskSprite` on `DeviceScreenAnchor` | smartphone starts at `0.05`; set `0` for square corners |
@@ -2038,9 +2063,9 @@ Fill this table during M0 and update it during later milestones.
 ### M5
 
 - Enclosure thermal/quality effects.
-- Enclosure continuity: pause/remove/reinstall before resume preserves the bonus; resume outside latches the no-enclosure penalty; reinstalling does not restore it; toggles do not stack.
+- Enclosure continuity: the bonus is one chance per job. Start enclosed and never remove it to keep `+5`; the first removal after start loses it permanently and applies `-9`, even after reinstalling. Start unenclosed and the bonus can never be gained; toggles do not stack.
 - Unenclosed start cannot gain an enclosure bonus later.
-- Enclosure critical parts are revalidated when the enclosure is still present; outside enclosure resumes use the no-enclosure quality contribution with a persistent warning.
+- Enclosure critical parts are revalidated when the enclosure is still present; outside enclosure resumes use the no-enclosure quality contribution and the console bonus-lost row.
 - Pause penalty cap/diminishing rule.
 - Failure modes, including wear-triggered service prompts.
 - Quality and sale value.
@@ -2070,8 +2095,8 @@ Fill this table during M0 and update it during later milestones.
 | Ghosts left after selling a print | `ObjectToPrintDataHolder.DestroyGhostInstances` clears mutual references and destroys every registered ghost; destroying the object removes the cap/sliced surface |
 | Object removal races the printer busy rule | `PrintedObjectDataHolder` owns `IsOnPrintBed`; `Printer.TryReleasePrintedObject` clears the bed before placement |
 | Selling a print while it is on the bed | `ItemHoverSell` returns a wrong-state reason until the object is released and placed |
-| Enclosure toggling during pause exploits quality | Latch `EnclosureInterrupted` once; reinstallation does not restore the bonus; pause penalties are capped/diminished |
-| Enclosure penalty applied twice | Store the quality range without the enclosure contribution and apply `+5` / `-9` once at finalization |
+| Enclosure toggling during pause exploits quality | Latch `EnclosureBonusLost` once; reinstallation does not restore the bonus; pause penalties are capped/diminished |
+| Enclosure penalty applied twice | Store the base range without the enclosure contribution and apply `+5` / `-9` once at finalization; `EnclosureOutcomeLatched` freezes the result |
 
 ---
 
@@ -2092,7 +2117,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started.
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started; its one-chance enclosure continuity snapshot is implemented ahead of the rest of M5 (2026-11-21).
 
 
 M1 is code-complete:
@@ -2306,6 +2331,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Home coefficients use the printer-front frame | `HomeX`/`HomeZ` are user-facing visual coordinates (0 = left/back, 1 = right/front); the bed-moving Z role is converted to print space inside the motion implementation, so `AxisBinding.Invert` never leaks into authored or player values |
 | 2026-11-21 | Calibration is consumed by a printed job | A successful calibration applies to the next job that actually prints; finalization returns the printer to uncalibrated for the following job. The warning and random `0.7–1.0×` factor are unchanged, and a preheat-only cancellation keeps calibration |
 | 2026-11-21 | Printer/enclosure audit keeps shared runtime model-agnostic | Axis signs, limits and bed-moving detection stay in motion data; enclosure doors, spools, docking and critical parts are serialized; the only name-based helper is editor-only |
+| 2026-11-21 | Enclosure bonus is one chance per job | Capture the state at actual start; the first removal latches a permanent loss, so reinstalling never restores it. Store the base quality range without enclosure and apply `+5` / `-9` once at completion |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |

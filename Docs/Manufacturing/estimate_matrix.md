@@ -140,6 +140,12 @@ below use `Auto` supports and no hardware penalty; `None` supports applies
 | Fine / Normal | `75-80` |
 | Fine / Fast | `65-70` |
 
+The matrix is the **current-state estimate** shown in the console. The final
+job quality applies the enclosure contribution once at completion using the
+job's one-chance outcome: start enclosed and never remove the printer → `+5`;
+the first removal → permanent `-9`, even after reinstalling; start unenclosed →
+`-9`, even if the printer is installed later.
+
 ## Sanity review
 
 **Time**
