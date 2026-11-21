@@ -7,17 +7,23 @@ namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
     /// Generates simple vertical support columns under downward-facing
-    /// triangles. Supports are separate closed columns: they follow the
-    /// printed object, grow with print progress, use the printing material
+    /// triangles. Supports are separate closed columns with a small bed
+    /// footprint, so they read as supports rather than thin lines. They follow
+    /// the printed object, grow with print progress, use the printing material
     /// while live and the final material when the print settles, and are not
     /// part of the object cap/sliced collider. M5 adds support removal.
     /// </summary>
     internal sealed class PrintedSupportPresenter
     {
+        private const float BaseWidthMeters = 0.008f;
+        private const float BaseHeightMeters = 0.0008f;
+
         private sealed class SupportColumn
         {
             public Transform Transform;
             public MeshRenderer Renderer;
+            public Transform BaseTransform;
+            public MeshRenderer BaseRenderer;
             public float Height;
         }
 
@@ -59,6 +65,15 @@ namespace Coursework_Master_Degree.Items.FFF
                 ? finishedMaterial
                 : printingMaterial;
             diameter = Mathf.Max(0.0002f, columnRadius) * 2.0f;
+
+            if (Debug.isDebugBuild)
+            {
+                Debug.Log(
+                    $"[Supports] Begin: mode={mode}, " +
+                    $"valid mesh={mesh != null && mesh.IsValid}, " +
+                    $"max columns={maxColumns}.",
+                    objectRoot);
+            }
 
             if (objectRoot == null ||
                 mesh == null ||
@@ -110,6 +125,14 @@ namespace Coursework_Master_Degree.Items.FFF
 
             if (clusters.Count == 0)
             {
+                if (Debug.isDebugBuild)
+                {
+                    Debug.LogWarning(
+                        "[Supports] Auto found no downward-facing overhang " +
+                        "clusters; no support columns will be created.",
+                        objectRoot);
+                }
+
                 return;
             }
 
@@ -119,6 +142,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
             int count = Mathf.Min(maxColumns, supportPoints.Count);
             Mesh sharedMesh = GetColumnMesh();
+            float baseWidth = Mathf.Max(BaseWidthMeters, diameter * 3.0f);
 
             for (int i = 0; i < count; i++)
             {
@@ -140,15 +164,47 @@ namespace Coursework_Master_Degree.Items.FFF
                 renderer.shadowCastingMode = ShadowCastingMode.Off;
                 renderer.receiveShadows = false;
 
+                GameObject baseObject =
+                    new GameObject("printed_support_base");
+                baseObject.layer = objectRoot.layer;
+                baseObject.transform.SetParent(objectRoot.transform, false);
+                baseObject.transform.localPosition =
+                    new Vector3(point.x, 0.0f, point.z);
+                baseObject.transform.localRotation = Quaternion.identity;
+                baseObject.transform.localScale = new Vector3(
+                    baseWidth,
+                    BaseHeightMeters,
+                    baseWidth);
+
+                MeshFilter baseFilter =
+                    baseObject.AddComponent<MeshFilter>();
+                baseFilter.sharedMesh = sharedMesh;
+
+                MeshRenderer baseRenderer =
+                    baseObject.AddComponent<MeshRenderer>();
+                baseRenderer.shadowCastingMode = ShadowCastingMode.Off;
+                baseRenderer.receiveShadows = false;
+
                 SupportColumn column = new SupportColumn
                 {
                     Transform = columnObject.transform,
                     Renderer = renderer,
+                    BaseTransform = baseObject.transform,
+                    BaseRenderer = baseRenderer,
                     Height = point.y,
                 };
 
                 ApplyMaterial(renderer, printingMaterial);
+                ApplyMaterial(baseRenderer, printingMaterial);
                 columns.Add(column);
+            }
+
+            if (Debug.isDebugBuild)
+            {
+                Debug.Log(
+                    $"[Supports] {mode}: {columns.Count} columns from " +
+                    $"{clusters.Count} clusters.",
+                    objectRoot);
             }
         }
 
@@ -169,6 +225,11 @@ namespace Coursework_Master_Degree.Items.FFF
                 bool visible = columnHeight > 0.0001f;
 
                 column.Transform.gameObject.SetActive(visible);
+
+                if (column.BaseTransform != null)
+                {
+                    column.BaseTransform.gameObject.SetActive(visible);
+                }
 
                 if (visible)
                 {
@@ -211,6 +272,7 @@ namespace Coursework_Master_Degree.Items.FFF
             for (int i = 0; i < columns.Count; i++)
             {
                 ApplyMaterial(columns[i].Renderer, material);
+                ApplyMaterial(columns[i].BaseRenderer, material);
             }
         }
 
