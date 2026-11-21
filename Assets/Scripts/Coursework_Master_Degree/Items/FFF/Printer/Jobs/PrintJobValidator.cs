@@ -152,7 +152,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
 
             if (printer.HasPartialPrint)
             {
-                result.Errors.Add("A partial print is still on the bed.");
+                result.Errors.Add("An unfinished print is still on the bed.");
             }
 
             PrinterEnclosure enclosure = printer.DockedEnclosure;

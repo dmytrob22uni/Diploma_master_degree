@@ -1620,8 +1620,12 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
             else if (printer != null && printer.HasPartialPrint)
             {
                 CreateValidationRow(
-                    "Partial print on the bed. Remove it before starting another job.",
+                    "Unfinished print on the bed from a hard stop.",
                     DeviceConsoleStyle.Text);
+                CreateValidationRow(
+                    "Remove it before starting another job. The capped " +
+                    "final-material surface is ready.",
+                    DeviceConsoleStyle.TextMuted);
                 CreateCalibrationWarningRow(printer);
             }
             else if (printer != null && printer.HasCompletedPrint)
