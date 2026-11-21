@@ -125,6 +125,14 @@ namespace Coursework_Master_Degree.Items.FFF
         [Min(0.0f)]
         public float FumesDensity = 1.0f;
 
+        [Header("Wear tuning")]
+        [Min(0.0f)]
+        [Tooltip(
+            "Global multiplier for printer and enclosure part wear. " +
+            "Values above 1 wear faster; 1 is the calibrated rate. " +
+            "Spool filament consumption is not scaled.")]
+        public float WearRateMultiplier = 1.0f;
+
         [Header("Hard-stop condition loss")]
         [Min(0.0f)] public float HardStopNozzleBase = 3.0f;
         [Min(0.0f)] public float HardStopNozzleScale = 7.0f;

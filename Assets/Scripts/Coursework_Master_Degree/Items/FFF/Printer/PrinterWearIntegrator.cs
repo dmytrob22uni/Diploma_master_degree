@@ -89,6 +89,9 @@ namespace Coursework_Master_Degree.Items.FFF
                 printingSeconds,
                 0.0f,
                 simulatedSeconds);
+            float wearMultiplier = Mathf.Max(
+                0.0f,
+                printer.WearRateMultiplier);
             PrinterTemperatureState temperature = printer.Temperature;
 
             for (int i = 0; i < targets.Count; i++)
@@ -115,7 +118,8 @@ namespace Coursework_Master_Degree.Items.FFF
                             FilamentLength = filamentMeters,
                             Temperature = temperature.Nozzle,
                             MaterialAbrasiveness = materialAbrasiveness,
-                        });
+                        },
+                        wearMultiplier);
                 }
                 else if (logic is ItemWearLogicTimeTemperatureSO
                     timeTemperatureLogic)
@@ -128,7 +132,8 @@ namespace Coursework_Master_Degree.Items.FFF
                                 wear,
                                 timeTemperatureLogic.TemperatureSource,
                                 temperature),
-                        });
+                        },
+                        wearMultiplier);
                 }
                 else if (logic is ItemWearLogicDistanceTemperatureSO)
                 {
@@ -145,7 +150,8 @@ namespace Coursework_Master_Degree.Items.FFF
                                     0.0f,
                                     printer.AxisTravelMetersPerSecond),
                             Temperature = temperature.Chamber,
-                        });
+                        },
+                        wearMultiplier);
                 }
                 else if (logic is ItemWearLogicTimeRpmSO)
                 {
@@ -159,7 +165,8 @@ namespace Coursework_Master_Degree.Items.FFF
                         {
                             DeltaTime = activePrintingSeconds,
                             RPM = Mathf.Max(0.0f, printer.FanRPM),
-                        });
+                        },
+                        wearMultiplier);
                 }
                 else if (logic is ItemWearLogicTimeFumesSO)
                 {
@@ -175,14 +182,17 @@ namespace Coursework_Master_Degree.Items.FFF
                             FumesDensity = Mathf.Max(
                                 0.0f,
                                 printer.FumesDensity),
-                        });
+                        },
+                        wearMultiplier);
                 }
                 else if (logic is ItemWearLogicTimeSO)
                 {
-                    wear.ApplyWear(new WearDeltaTime
-                    {
-                        DeltaTime = simulatedSeconds,
-                    });
+                    wear.ApplyWear(
+                        new WearDeltaTime
+                        {
+                            DeltaTime = simulatedSeconds,
+                        },
+                        wearMultiplier);
                 }
             }
         }
@@ -195,6 +205,10 @@ namespace Coursework_Master_Degree.Items.FFF
             {
                 return;
             }
+
+            float wearMultiplier = Mathf.Max(
+                0.0f,
+                printer.WearRateMultiplier);
 
             for (int i = 0; i < targets.Count; i++)
             {
@@ -209,7 +223,9 @@ namespace Coursework_Master_Degree.Items.FFF
 
                 if (logic is ItemWearLogicUsesSO)
                 {
-                    wear.ApplyWear(new WearDeltaUses { Uses = 1.0f });
+                    wear.ApplyWear(
+                        new WearDeltaUses { Uses = 1.0f },
+                        wearMultiplier);
                 }
                 else if (logic is ItemWearLogicUsesHardnessSO)
                 {
@@ -219,7 +235,8 @@ namespace Coursework_Master_Degree.Items.FFF
                             Uses = 1.0f,
                             MaterialHardness = Mathf.Clamp01(
                                 materialHardness),
-                        });
+                        },
+                        wearMultiplier);
                 }
             }
         }
@@ -239,19 +256,25 @@ namespace Coursework_Master_Degree.Items.FFF
             }
 
             PrinterTemperatureState temperature = printer.Temperature;
+            float wearMultiplier = Mathf.Max(
+                0.0f,
+                printer.WearRateMultiplier);
 
             ApplyConditionLoss(
                 printer.NozzleWearLocation,
-                nozzleBase +
-                nozzleScale * temperature.NormalizedNozzleTemperature);
+                (nozzleBase +
+                 nozzleScale * temperature.NormalizedNozzleTemperature) *
+                wearMultiplier);
 
             ApplyConditionLoss(
                 printer.HeaterWearLocation,
-                heaterBase +
-                heaterScale * temperature.NormalizedNozzleTemperature);
+                (heaterBase +
+                 heaterScale * temperature.NormalizedNozzleTemperature) *
+                wearMultiplier);
 
-            float bedLoss = bedBase +
-                bedScale * temperature.NormalizedBedTemperature;
+            float bedLoss = (bedBase +
+                bedScale * temperature.NormalizedBedTemperature) *
+                wearMultiplier;
 
             ApplyConditionLoss(printer.PrintBedWearLocation, bedLoss);
             ApplyConditionLoss(printer.PrintPlateLocation, bedLoss);

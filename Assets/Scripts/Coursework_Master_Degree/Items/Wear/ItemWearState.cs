@@ -97,14 +97,18 @@ namespace Coursework_Master_Degree.Items.Wear
             isWornOut = currentCondition <= minCondition;
         }
 
-        public void ApplyWear(WearDelta wearDelta)
+        public void ApplyWear(
+            WearDelta wearDelta,
+            float externalMultiplier = 1.0f)
         {
             if (isWornOut || ItemWearLogicSO == null)
             {
                 return;
             }
 
-            ApplyConditionLoss(ItemWearLogicSO.CalculateWearByRatio(wearDelta));
+            float amount = ItemWearLogicSO.CalculateWearByRatio(wearDelta) *
+                Mathf.Max(0.0f, externalMultiplier);
+            ApplyConditionLoss(amount);
         }
 
         /// <summary>
