@@ -273,8 +273,12 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             if (estimateText != null)
             {
+                float simulationMultiplier = printer != null
+                    ? printer.PrintSpeedMultiplier
+                    : SimulationSpeedSettings.Multiplier(simulationSpeed);
                 estimateText.text =
-                    $"{FormatDuration(seconds)}  |  {filament:0.0} m  |  " +
+                    $"{FormatEstimateTime(seconds, simulationMultiplier)}  |  " +
+                    $"{filament:0.0} m  |  " +
                     $"raw {result.EstimatedQualityMin:0}-" +
                     $"{result.EstimatedQualityMax:0}";
             }
@@ -910,7 +914,9 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
                     SimulationSpeedSettings.Label(
                         SimulationSpeedPreset.Quick),
                     SimulationSpeedSettings.Label(
-                        SimulationSpeedPreset.Turbo)
+                        SimulationSpeedPreset.Turbo),
+                    SimulationSpeedSettings.Label(
+                        SimulationSpeedPreset.Hyper)
                 },
                 SelectSimulationSpeed,
                 simulationSpeedButtons,
@@ -1689,6 +1695,48 @@ namespace Coursework_Master_Degree.Game.Logic.Interface.DeviceConsole
 
             LayoutElement layout = row.gameObject.AddComponent<LayoutElement>();
             layout.flexibleWidth = 1.0f;
+        }
+
+        private static string FormatEstimateTime(
+            float seconds,
+            float simulationMultiplier)
+        {
+            string simulated = FormatDuration(seconds);
+
+            if (seconds <= 0.0f ||
+                simulationMultiplier <= 1.001f)
+            {
+                return simulated;
+            }
+
+            float actualSeconds = seconds /
+                Mathf.Max(1.0f, simulationMultiplier);
+
+            return $"{simulated} (real {FormatActualDuration(actualSeconds)})";
+        }
+
+        private static string FormatActualDuration(float seconds)
+        {
+            if (seconds <= 0.0f)
+            {
+                return "--";
+            }
+
+            int totalSeconds = Mathf.Max(
+                1,
+                Mathf.RoundToInt(seconds));
+
+            if (totalSeconds < 60)
+            {
+                return $"{totalSeconds} s";
+            }
+
+            if (totalSeconds < 600)
+            {
+                return $"{totalSeconds / 60} min {totalSeconds % 60} s";
+            }
+
+            return FormatDuration(seconds);
         }
 
         private static string FormatDuration(float seconds)

@@ -10,7 +10,8 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         RealTime,
         Fast,
         Quick,
-        Turbo
+        Turbo,
+        Hyper
     }
 
     public static class SimulationSpeedSettings
@@ -29,8 +30,10 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                     return 4.0f;
                 case SimulationSpeedPreset.Quick:
                     return 64.0f;
-                default:
+                case SimulationSpeedPreset.Turbo:
                     return 120.0f;
+                default:
+                    return 240.0f;
             }
         }
 

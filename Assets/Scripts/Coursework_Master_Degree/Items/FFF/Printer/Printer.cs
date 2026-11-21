@@ -98,6 +98,9 @@ namespace Coursework_Master_Degree.Items.FFF
 
         [Header("Simulation")]
         [Min(1.0f)]
+        [Tooltip(
+            "Simulation speed multiplier. Console presets are " +
+            "1x, 4x, 64x, 120x and 240x.")]
         public float PrintSpeedMultiplier = SimulationSpeedSettings.DefaultMultiplier;
 
         [Min(0.1f)]
