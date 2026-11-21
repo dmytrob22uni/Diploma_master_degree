@@ -306,6 +306,31 @@ namespace Coursework_Master_Degree.Items.FFF
                 Temperature.Ambient);
 
         /// <summary>
+        /// Fans run while the printer is heating, printing, calibrating or
+        /// cooling, and while a paused job is still hot or parking. They stop
+        /// for idle, finished, maintenance and fault states.
+        /// </summary>
+        public bool AreFansActive
+        {
+            get
+            {
+                switch (OperationalState)
+                {
+                    case PrinterOperationalState.Preheating:
+                    case PrinterOperationalState.Printing:
+                    case PrinterOperationalState.Calibrating:
+                    case PrinterOperationalState.Cooling:
+                        return true;
+                    case PrinterOperationalState.Paused:
+                        return activeJob != null &&
+                            !IsPausedServiceReady;
+                    default:
+                        return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Doors may be opened while idle, paused, cooling or finished, but
         /// only after the nozzle and bed have cooled to the same safe service
         /// temperature used by the parts flow. Active heating, printing and
