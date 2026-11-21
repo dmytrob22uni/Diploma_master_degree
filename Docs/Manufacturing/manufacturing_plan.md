@@ -938,6 +938,15 @@ Important:
 - Supports are not previewed on the placement ghost. They are generated only when the print actually starts, and `None` generates no columns. Use the debug-build `[Supports]` log to confirm the selected mode, mesh validity and generated column count.
 - The sliced surface and collider are display/gameplay approximations, not a real slicer.
 
+#### Fan state presentation
+
+- Put `FanStateVisual` on the real fan-part prefab root and assign its `calmState` and `activeState` children. Do not add model-name or path checks to shared code.
+- The component resolves installation through `PartLocation` and the printer through `Printer.FindFor`, so the same component works for the extruder fan and for an enclosure HEPA fan when the enclosure is docked.
+- Active states are `Preheating`, `Printing`, `Calibrating`, `Cooling`, and `Paused` while the job is still hot or the head is parking. `Idle`, `Finished`, `Maintenance`, `Fault`, and a paused service-ready printer stay calm. `Printer.AreFansActive` owns this policy.
+- Only an installed, non-worn-out fan shows its active child. Removed, spare, ghost and wear-level fan instances stay calm; the installation check is `PartLocation.InstalledPart`, not just `Printer.FindFor`.
+- The active child rotates around its local Y axis by default (`240°/s`) because the authored fan meshes are circular in local XZ and thin along Y. The axis and speed are serialized on `FanStateVisual`.
+- The extruder fan and HEPA filter fan use the same component and state policy; enclosure fans are not a separate special case.
+
 #### Motion
 
 `PrinterMotionSimulator` generates cheap procedural print-space positions:
@@ -1744,6 +1753,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Selling a printed object removes the object, cap/sliced surface and every registered object-to-print ghost; mutual references are cleared.
 - The object's quality value comes from `CompletedJob.FinalQuality`; partial prints expose no quality value and give no income.
 - The worst installed part condition contributes up to `20` raw quality points; repeated pauses stop at a `20`-point penalty. The no-enclosure (`-9`), calibration (`0.7–1.0×`), missing-supports (`-25`, cap `55`) and enclosure (`+5`) rules remain in force.
+- Installed extruder and enclosure fans switch between calm and active children with printer state; removed, spare, ghost and worn-out fans stay calm, and the active child rotates.
 - Hovering a finalized print transitions directly to placement with no cancel path, and the printer bed is released.
 - Selling is blocked while the object is on the printer bed.
 - No per-frame material instancing or GC spikes.
@@ -1767,6 +1777,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 15. Profile reveal updates, partial-surface generation and multiple printers; verify no per-frame material instancing or GC spikes.
 16. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed. Verify the calibrated 2–4 medium-print lifetimes with `Tools/Manufacturing/Wear Calibration` and the profile target table, and confirm motion/fan/fumes wear does not accrue while only heating, paused or cooling.
 17. Pause five or more times and confirm the pause quality penalty stops at `20`. Wear a part to roughly 50% condition and confirm the worst-part quality penalty is about `10`, and that the console estimate and final value agree.
+18. With the printer installed in an enclosure, confirm the extruder fan and HEPA fan show `fan_calm` when idle/finished and `fan_active` while heating, printing, cooling or paused-hot; confirm the active child rotates. Remove each fan, confirm it stays calm while carried/placed, reinstall it and confirm it resumes. Set a fan to 0 condition and confirm it stays calm.
 
 **Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance and the wear-coefficient gate is approved.**
 
@@ -2380,6 +2391,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Quality penalties are made maintenance-relevant | Worst-part wear contributes up to `20` raw points and repeated pauses are capped at `20`; no-enclosure, calibration and missing-supports penalties remain unchanged. |
 | 2026-11-21 | Enclosure doors unlock at safe service temperature | Door opening uses the same `50 °C` safe-service gate as parts service; closing is always allowed and resume still requires both doors closed. |
 | 2026-11-21 | Wear tuning is target-lifetime based | `Tools/Manufacturing/Wear Calibration` derives coefficients from target medium-print lifetimes in a `WearCalibrationProfileSO`; `Printer.WearRateMultiplier` is a global playtest offset, not the authored calibration. |
+| 2026-11-21 | Fan visuals use authored calm/active children | `FanStateVisual` uses serialized children on each fan prefab, resolves installation through `PartLocation` and state through `Printer.FindFor`/`AreFansActive`; removed, spare, ghost and worn-out fans stay calm, and the active child rotates locally. |
 | 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
 | 2026-11-19 | Simulation speed is a per-printer console preset | The printer owns the job; presets match existing console rows and avoid slider UI work |
 | 2026-11-19 | All wear delta types are mapped to printer/enclosure parts or print-use actions | Existing assets and SOs already define the intended wear kinds; no parallel wear model |

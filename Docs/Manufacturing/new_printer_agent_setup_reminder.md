@@ -66,6 +66,7 @@ The final setup guide must cover, in order:
    - author `PartLocation`s and metadata;
    - wire `CriticalPartLocations`, `PrintPlateLocation`, wear targets and `CalibrationSensitiveLocations`;
    - author `ServiceBlockedDuringPrint`;
+   - add `FanStateVisual` to each real fan-part prefab root and assign its calm/active children plus the local rotation axis/speed; do not use model-name checks;
    - verify missing-part validation, wear, integrity and remove/install flows.
 
 5. **Spools**
@@ -99,6 +100,7 @@ The final setup guide must cover, in order:
    - heating/cooling percentages during preheat, cooling and resume-heating; occupancy status from items on enclosure shelves;
    - closed-door start/resume, open-door console warning, door opening while idle/paused/cooling/finished only at/below `SafeServiceTemperatureC`, closing always allowed, and auto-pause when a door opens during active printing;
    - wear-coefficient approval in `wear_coefficients_manual_gate.md`; use `Printer.WearRateMultiplier = 1` for final calibration and `Tools/Manufacturing/Wear Calibration` with the `WearCalibrationProfileSO` target table for per-part tuning;
+   - installed extruder and enclosure fans switch calm/active with printer state, removed/spare/ghost/worn-out fans stay calm, and the active child rotates around its authored axis;
    - no model-specific assumptions leaked into shared runtime code.
 
 ## Reminder
