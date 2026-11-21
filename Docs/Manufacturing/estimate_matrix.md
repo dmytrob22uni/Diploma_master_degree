@@ -112,6 +112,11 @@ Raw quality before calibration, pause penalties and post-processing. Values
 below use `Auto` supports and no hardware penalty; `None` supports applies
 `-25` and caps the result at `55`.
 
+The worst installed part’s condition subtracts `0..20` raw points. Each resume
+subtracts `4` more, capped at `20` total. An uncalibrated printer applies a
+random `0.7–1.0×` multiplier at completion. The enclosure contributes `+5`
+when kept for the job or `-9` when absent/lost.
+
 ### Enclosed printer
 
 | Layer / speed | Raw quality |
@@ -191,6 +196,10 @@ the first removal → permanent `-9`, even after reinstalling; start unenclosed 
 - `None` infill does not lower quality by itself. That is correct here: infill
   is a strength/material choice, while supports and surface settings drive the
   projected finish.
+- Maintenance matters: a half-worn worst part costs about `10` raw points, and
+  five or more pauses reach the `20`-point pause cap rather than zeroing the
+  print. This keeps the no-enclosure and missing-supports choices as the
+  dominant strategic penalties.
 
 **Choice coverage**
 

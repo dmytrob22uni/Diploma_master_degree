@@ -245,7 +245,7 @@ M3 enclosure behavior:
   - `float ParticulateFactor`
 - `PrinterEnclosure` marks the physical enclosure and binds the printer inside its bounds.
 - `PrinterEnclosure.Doors` auto-finds child `Door` components. All doors must be closed and settled before a print starts or resumes; an animating door counts as not closed.
-- Door interactions are available while idle, paused, cooling or finished. During preheating, printing or calibration they return a short interlock label (`Door (Heating)`, `Door (Printing)`, `Door (Calibrating)`) instead of opening. If a door is opened by another path during preheating/printing, the printer pauses automatically.
+- Door interactions are available while idle, paused, cooling or finished once nozzle and bed are at or below `SafeServiceTemperatureC` (`50 °C`), the same gate used by parts service. Opening is interlocked during preheating, printing, calibration, head motion and while hot; the prompt uses short labels (`Door (Heating)`, `Door (Printing)`, `Door (Calibrating)`, `Door (Cooling)`, `Door (Moving)`). An already-open door can always be closed. If a door is opened by another path during preheating/printing, the printer pauses automatically.
 - `PrintJobValidator`, `Printer.TryResume` and `Printer.TryStartPendingJob` enforce the closed-door requirement. The console validation list and printer status show the warning; `TryStartPendingJob` keeps the queued job until the doors close.
 - Doors implement `IPrinterBusyInteraction`, so the busy-printer hover gate does not suppress their interaction prompt. The door itself explains whether it is locked, interlocked or ready.
 - `PrinterTemperatureModel` reads chamber temperature and slows cooling when enclosed.
@@ -875,12 +875,12 @@ Refactor `ApplyWear` to use it. It must:
 - trigger `OnItemWornOut` exactly once
 - ignore further loss when already worn out
 
-Hard-stop penalty (initial values, tune in M3):
+Hard-stop penalty (calibrated with the wear pass):
 
-- Nozzle: `0.2 + 0.8 × normalizedNozzleTemperature`
-- Heater: `0.1 + 0.4 × normalizedNozzleTemperature`
-- Bed/plate: `0.1 + 0.3 × normalizedBedTemperature`
-- Axes: small optional penalty
+- Nozzle: `3 + 7 × normalizedNozzleTemperature`
+- Heater: `1.5 + 3.5 × normalizedNozzleTemperature`
+- Bed/plate: `0.5 + 1.5 × normalizedBedTemperature`
+- Axes: no direct hard-stop penalty; motion wear is distance-based
 
 These are one-off condition points, not `WearDelta` values. The nozzle, heater, bed and plate targets are serialized `PartLocation` references on `Printer` (`NozzleWearLocation`, `HeaterWearLocation`, `PrintBedWearLocation`, `PrintPlateLocation`), so a new printer model can rename its hierarchy without changing code.
 
@@ -1233,12 +1233,14 @@ Raw quality is projected from the same settings before post-processing:
 raw = 82
     + layerDelta   (Draft -10, Normal 0, Fine +4)
     + speedDelta   (Slow +4, Normal 0, Fast -10)
-    - hardwareWear (0..10 from the worst installed part condition)
+    - hardwareWear (0..20 from the worst installed part condition)
     - supportsMark (2 when Auto supports are used)
     - supportRisk (25 when supports are required but None is selected)
 
-range = clamp(raw, 20, 100) .. clamp(raw + 5, 20, 100)
+range = clamp(raw, 20, 90) .. clamp(raw + 5, 20, 90)
 ```
+
+Pause penalties are applied after the enclosure and calibration steps: `-4` per resume, capped at `-20` total. The worst installed part’s condition contributes `0..20` raw points. The enclosure contributes `+5` when kept for the job or `-9` when absent/lost.
 
 M5 replaces the deltas with the full `PrintQualityModel` (warp, chamber, draft, cooling, failures). Post-processing raises the rolled raw value; supports must be removed, and sanding cannot fix warping or layer shifts.
 
@@ -1621,7 +1623,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Cooling returns temperatures toward ambient; enclosure cooling is visibly slower.
 - Heating and cooling percentages track the actual temperature interval and update in the console and FreeWalk hover.
 - Items placed on enclosure shelves or surfaces keep their own name and take prompt while the printer is busy; the enclosure surface itself still shows the busy printer status.
-- All enclosure doors must be closed and settled before start/resume. Open doors show a console warning, remain interactable when idle/paused/cooling/finished, and interlock during preheating/printing/calibration.
+- All enclosure doors must be closed and settled before start/resume. Open doors show a console warning; opening is allowed only when idle/paused/cooling/finished and nozzle/bed are at or below `SafeServiceTemperatureC` (`50 °C`); closing an open door is always allowed; active heating/printing/calibration and head motion remain interlocked.
 - Nozzle, bed/plate/heater/thermistor, enclosure parts and selected-spool wear are applied to the correct parts.
 - Every existing wear delta type is exercised by at least one installed printer/enclosure part or by the completed-print use pass.
 - The selected spool's condition and remaining filament decrease consistently; the unselected spool is untouched.
@@ -1680,7 +1682,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 20. Instantiate a rectangular CoreXY prefab with `CoreXYPrinterMotion`; run the motion debug and calibration checks. Confirm X/Z compose onto the shared carriage, the bed/gantry Y role maps correctly, placement/validation still use the rectangular build volume, and no `Printer`/job code changes are needed.
 21. Hover printer and enclosure through preheat, printing, cooling and resume-heating; confirm the state percentage moves from 0 to 100 and matches the temperature interval rather than job progress.
 22. Place a spool, part or device on an enclosure shelf while the printer is printing; confirm hovering it shows the item's own name and take/use prompt, not the busy printer status, and that it can be taken. Hovering the enclosure surface itself should still show the printer status.
-23. Start with one door open; confirm `Start print` is blocked with the console warning. Close both doors and confirm the job starts. Pause, open both doors, confirm they open and `Resume` is blocked with the warning; close and resume.
+23. Start with one door open; confirm `Start print` is blocked with the console warning. Close both doors and confirm the job starts. Pause; while hot, confirm the door prompt reports `Door (Cooling)` and does not open. Wait until nozzle and bed are at or below `SafeServiceTemperatureC` (`50 °C`), open both doors, confirm they open and `Resume` is blocked with the warning; close both and resume. Confirm an already-open door can be closed while the printer is hot.
 24. Finish a print and wait for cooling and homing. Confirm both doors open, the finished object can be removed, and the enclosure/printer service interactions remain blocked until the object is removed. Print the same object twice and confirm the head paths differ while staying inside the layer bounds; test rotated and scaled placements.
 25. Place a part on an enclosure surface and hover it through the enclosure: confirm only the part's own hint (typically `inspect wear`) appears, with no enclosure `interact` prompt.
 26. Pause a print, wait for cooling/parking, remove the printer from its enclosure, place it, then take and place it again before resuming. Confirm the paused job is preserved and the printer remains portable; repeat with the printer on the floor (not in an enclosure).
@@ -1695,7 +1697,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 **Goal:** The print looks convincing: object reveal, nozzle/bed motion, support columns, and manual removal. Spool rotation and wear-level child sync already arrive in M3.
 
-**Status:** Implementation is in place; the manual gate and the wear-coefficient approval in §10 are pending. M4 is not marked done yet.
+**Status:** Implementation and the 2026-11-21 manual gate passed. The final wear/quality calibration is implemented; its two new checks (pause/wear quality) and project-owner sign-off on the new rates in [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) remain. M4 is not marked done until that sign-off.
 
 **Deliverables**
 
@@ -1739,6 +1741,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Completed and partial objects are fully removable only after cooling and the head is settled at home.
 - Selling a printed object removes the object, cap/sliced surface and every registered object-to-print ghost; mutual references are cleared.
 - The object's quality value comes from `CompletedJob.FinalQuality`; partial prints expose no quality value and give no income.
+- The worst installed part condition contributes up to `20` raw quality points; repeated pauses stop at a `20`-point penalty. The no-enclosure (`-9`), calibration (`0.7–1.0×`), missing-supports (`-25`, cap `55`) and enclosure (`+5`) rules remain in force.
 - Hovering a finalized print transitions directly to placement with no cancel path, and the printer bed is released.
 - Selling is blocked while the object is on the printer bed.
 - No per-frame material instancing or GC spikes.
@@ -1760,7 +1763,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 13. Confirm no-cancel removal and bed release.
 14. Sell a placed print and confirm no printed object, cap/sliced surface, or object-to-print ghost remains; mutual references are cleared.
 15. Profile reveal updates, partial-surface generation and multiple printers; verify no per-frame material instancing or GC spikes.
-16. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed.
+16. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed. Verify the calibrated 2–4 medium-print lifetimes and that motion/fan/fumes wear does not accrue while only heating, paused or cooling.
+17. Pause five or more times and confirm the pause quality penalty stops at `20`. Wear a part to roughly 50% condition and confirm the worst-part quality penalty is about `10`, and that the console estimate and final value agree.
 
 **Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance and the wear-coefficient gate is approved.**
 
@@ -1792,8 +1796,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 - Screen animations and notifications.
 - Save/load if desired.
 - Optional resume-from-partial-print.
-- Enclosure continuity snapshot: implemented (2026-11-21) with actual-start capture, a one-way bonus-lost flag, a latched completion outcome and the base quality range stored without the enclosure contribution. The remaining M5 continuity work is the pause-penalty cap.
-- A capped or diminishing pause-quality penalty so repeated pause/service cycles cannot drive quality to zero.
+- Enclosure continuity snapshot: implemented (2026-11-21) with actual-start capture, a one-way bonus-lost flag, a latched completion outcome and the base quality range stored without the enclosure contribution. The pause-penalty cap is implemented early in the final M4 quality pass.
+- The remaining M5 quality work is the full `PrintQualityModel`, post-processing and sale value; the pause cap itself is already in place.
 - **Final documentation gate:** replace [`new_printer_agent_setup_reminder.md`](new_printer_agent_setup_reminder.md) with the full agent-facing setup guide for adding new FFF printer models, and replace [`new_object_print_setup_reminder.md`](new_object_print_setup_reminder.md) with the full guide for adding printable-object prefabs, profiles, ghosts and calibration. Both must cover their prefab/data contracts, validation and verification.
 - Production cleanup:
   - remove the calibration-only `PrintBedAnchorDebug` and `PrinterMotionDebug` components from shipped prefabs, or keep them disabled and stripped from the player build;
@@ -1849,9 +1853,9 @@ enclosure contribution and resume validation can change.
 
 **Pause penalty**
 
-- The existing per-resume pause penalty still applies.
-- M5 must cap or diminish it so repeated pauses cannot zero quality. Suggested
-  starting rule: `min(pauseCount * PauseQualityPenalty, 20)` quality points.
+- The per-resume pause penalty still applies: `-4` per pause, capped at `-20`
+  total. The cap is implemented in the current quality pass so repeated service
+  cycles cannot drive quality to zero.
 - Enclosure toggles do not add extra pause penalties.
 - Resuming outside the enclosure uses the no-enclosure quality contribution,
   not a second stack of pause penalties.
@@ -1885,7 +1889,7 @@ enclosure contribution and resume validation can change.
   one-chance outcome.
 - Time, filament, path, progress and calibration do not change when the
   printer is installed or removed.
-- The pause penalty cap/diminishing rule is implemented in M5.
+- The pause penalty cap/diminishing rule is implemented in the current quality pass (`-20` cap).
 - Quality affects the object's value or usability.
 - The game remains performant with multiple printers.
 - Shipped prefabs/scenes contain no active calibration-only debug components,
@@ -1956,7 +1960,7 @@ Fill this table during M0 and update it during later milestones.
 | Infill time factor | None `0.2615`, Grid `0.3399`, Gyroid `0.3765` | `InfillSettings.TimeFactor` |
 | Layer height | `0.28` / `0.20` / `0.12` mm | `LayerHeightSettings`; time scales `reference / selected` |
 | Print speed | `80` / `160` / `240` mm/s | `PrintSpeedSettings`; `80 mm/s` is the Slow reference; time scales `(reference / selected)^0.8` |
-| Raw quality | base `82`, range width `5`, raw cap `90` | `PrintQualityEstimator` computes the base range; `PrinterJob` applies enclosure `+5` / `-9` once at completion; post-process can polish beyond 90 later |
+| Raw quality | base `82`, range width `5`, raw cap `90`, worst-part wear `0..20`, pause cap `20` | `PrintQualityEstimator` computes the base range; `PrinterJob` applies enclosure `+5` / `-9` once at completion and caps pause penalties; post-process can polish beyond 90 later |
 | Part wear (all installed) | block `0%`, warn `≤20%`; critical warn `20–40%` | `WornOutConditionPercent` / `LowConditionWarningPercent` / `CriticalPartWarningPercent` |
 | Job catalog | `Assets/SOs/ObjectsToPrint/object_to_print_metas_list_SO.asset` | assigned to `DeviceConsolePresenter.ObjectCatalog` |
 | Placement scale | soft limits: largest dimension ≥ `2 cm`; footprint/height within plate/`BuildVolume` | overscale/underscale is allowed but invalid; no clamp |
@@ -1972,8 +1976,8 @@ Fill this table during M0 and update it during later milestones.
 | Print speed multiplier | `1×` / `4×` / `64×` / `120×` / `240×` | console `SIM SPEED`; default `1×`, stored per printer; estimates show `(real …)` above `1×` |
 | Temperature tolerance | `±2 °C` | preheat completes when nozzle and bed are in tolerance |
 | Preheat timeout | `900` simulated seconds | logs a warning and enters `Fault` |
-| Safe service temperature | `50 °C` | pause service gate |
-| Hard-stop penalty | nozzle `0.2 + 0.8 × normalized`, heater `0.1 + 0.4 × normalized`, bed/plate `0.1 + 0.3 × normalized` | tune in the M3 gate |
+| Safe service temperature | `50 °C` | pause parts service and enclosure-door opening gate |
+| Hard-stop penalty | nozzle `3 + 7 × normalized`, heater `1.5 + 3.5 × normalized`, bed/plate `0.5 + 1.5 × normalized` | conspicuous but below one medium print of normal wear |
 | Calibration grid | `5 × 5`, `0.15 s` dwell, `10 mm` padding | `CalibrationGridSize` / `CalibrationPointDwellSeconds` / `CalibrationPaddingMeters` |
 | Calibration motion | `3 cm` lift, `0.25 m/s` travel scaled by `SIM SPEED` | `CalibrationLiftHeightMeters` / `CalibrationMoveSpeedMetersPerSecond` |
 | Calibration quality | calibrated `1.0×`; uncalibrated random `0.7–1.0×` at print completion | final value stored on `PrinterJob.FinalQuality`; a job that actually printed consumes the calibration at finalization; warning persists until bed clear |
@@ -2077,7 +2081,7 @@ Fill this table during M0 and update it during later milestones.
 - Enclosure continuity: the bonus is one chance per job. Start enclosed and never remove it to keep `+5`; the first removal after start loses it permanently and applies `-9`, even after reinstalling. Start unenclosed and the bonus can never be gained; toggles do not stack.
 - Unenclosed start cannot gain an enclosure bonus later.
 - Enclosure critical parts are revalidated when the enclosure is still present; outside enclosure resumes use the no-enclosure quality contribution and the console bonus-lost row.
-- Pause penalty cap/diminishing rule.
+- Pause penalty cap/diminishing rule is implemented early (`-20` cap); M5 keeps only the broader quality model.
 - Failure modes, including wear-triggered service prompts.
 - Quality and sale value.
 - Infill gameplay effect (strength, durability or sale value) so `None`/`Grid`/`Gyroid` are not only cost tiers; `Gyroid` is currently dominated by `Grid`.
@@ -2128,7 +2132,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. M4 is **not marked done**: its manual gate and the wear-coefficient approval remain pending. M5 has not started; its one-chance enclosure continuity snapshot is implemented ahead of the rest of M5 (2026-11-21).
+**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. The M4 manual gate passed on 2026-11-21. M4 is **not marked done** because the final wear/quality pass adds two manual checks and the project-owner sign-off on the calibrated wear rates remains. The pass calibrates part wear to 2–4 medium prints for active parts, applies motion/fan/fumes wear only while printing, uses a `0..20` worst-part quality penalty, caps pause penalties at `20`, and unlocks enclosure doors only at the shared `50 °C` safe-service temperature. M5 has not started; its one-chance enclosure continuity snapshot and pause-penalty cap are implemented ahead of the rest of M5 (2026-11-21).
 
 
 M1 is code-complete:
@@ -2369,6 +2373,9 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-18 | Supports visualised in M4 as simple columns | Full support generation is a slicer problem; columns make the abstract supports readable and stay attached until M5 removal |
 | 2026-11-21 | Support visuals follow the object lifecycle | Live supports use the printing material, settled/partial/completed supports use the final material, columns reveal by scale, and caps/colliders stay object-only; `SupportColumnRadiusMeters` is an actual radius (2x width) |
 | 2026-11-21 | Supports get a visible bed footprint | Each generated support column now gets an `8 mm` footprint at the object bottom plane so it visibly stems from the print surface instead of reading as a hairline. A debug-build log reports the generated column count. |
+| 2026-11-21 | Wear is calibrated to medium prints | Printer/enclosure wear rates target 2–4 medium prints for active parts, with nozzle, fans, filters and belts fastest; bearings and sensors slower; battery/adapter and fire suppression most durable. Motion, fan and fumes wear only accrue while printing. |
+| 2026-11-21 | Quality penalties are made maintenance-relevant | Worst-part wear contributes up to `20` raw points and repeated pauses are capped at `20`; no-enclosure, calibration and missing-supports penalties remain unchanged. |
+| 2026-11-21 | Enclosure doors unlock at safe service temperature | Door opening uses the same `50 °C` safe-service gate as parts service; closing is always allowed and resume still requires both doors closed. |
 | 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
 | 2026-11-19 | Simulation speed is a per-printer console preset | The printer owns the job; presets match existing console rows and avoid slider UI work |
 | 2026-11-19 | All wear delta types are mapped to printer/enclosure parts or print-use actions | Existing assets and SOs already define the intended wear kinds; no parallel wear model |
@@ -2418,7 +2425,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Editor seed defaults are round | Reference flow `12 x 0.5 = 6.0 mm3/s` and packing `1.0`; exact bunny calibration `5.88922 / 0.94943` stays available |
 | 2026-11-21 | Nozzle path uses per-layer bounds and a continuous layer parameter | Bounds precomputed once from the mesh through the actual object-to-bed matrix; X/Z phase and Z-hop stay continuous across layers; SPEED stays duration-driven and is not scaled again |
 | 2026-11-21 | Head path varies per job | Object/printer hash plus a random salt seeds Lissajous frequencies, a secondary harmonic and low-frequency Perlin drift; layer bounds remain authoritative |
-| 2026-11-21 | Enclosure doors are a shared interlock | `PrinterEnclosure.Doors` auto-finds generic `Door` components; closed doors are required for start/resume and opening during active printing pauses the job |
+| 2026-11-21 | Enclosure doors are a shared interlock | `PrinterEnclosure.Doors` auto-finds generic `Door` components; closed doors are required for start/resume and opening during active printing pauses the job. Opening also waits for the shared 50 °C safe-service temperature; closing an already-open door is always allowed |
 | 2026-11-21 | Thermal percentages are interval-based | Heating/cooling progress is measured from the temperatures captured at the state transition, not from job progress |
 | 2026-11-21 | Shelf storage is independent of the printer | `Printer.FindFor` stops at the physical printer/enclosure hierarchy; items placed on a surface keep their own hover/take even when the printer is busy, while the enclosure surface itself still shows the busy status |
 | 2026-11-20 | Filament seed is calibrated like the time seed | Editor filament packing `0.94943` (`85.36 / 89.90716`) restores the bunny `85.36 m`; Grid/Auto matches the slicer `28.53 m` |
@@ -2651,7 +2658,7 @@ Model consistency:
 | Layer height | Draft / Normal / Fine | `-10 / 0 / +4` |
 | Print speed | Slow / Normal / Fast | `+4 / 0 / -10` |
 
-Raw quality starts at `82`, subtracts up to `10` for the worst installed part condition, subtracts `2` for `Auto` supports, and subtracts `25` (cap `55`) when a model that needs supports is printed with `None`. It is shown as a `min..min+5` range.
+Raw quality starts at `82`, subtracts up to `20` for the worst installed part condition, subtracts `2` for `Auto` supports, and subtracts `25` (cap `55`) when a model that needs supports is printed with `None`. It is shown as a `min..min+5` range; pauses subtract `4` each, capped at `20`.
 
 Do not tune per object; calibrate the 100% profile and the global coefficients.
 
