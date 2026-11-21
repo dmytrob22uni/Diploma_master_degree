@@ -190,7 +190,7 @@ M1 ships only the binding and power controls; the job controls arrive in M2. M2.
 4. Calibration returns smoothly to the global `HomePositionNormalized` and marks the printer calibrated. `Hard stop` cancels it and also moves to the global home. Calibration travel and dwell follow the printer's `PrintSpeedMultiplier`; use `1×` when visually inspecting the grid.
 5. Calibration does not consume a job and is blocked while a print is queued, partial or finished.
 6. Calibration quality is evaluated when printing ends. A calibrated printer applies `1.0×`; an uncalibrated printer applies a random `0.7–1.0×` at the end. Changing a **calibration-sensitive** part (nozzle, heater, extruder thermistor, print bed/thermistor/plate, axis belts, rotors or bearings) invalidates calibration in both idle and active states. Spool, battery closet/adapter and enclosure-accessory changes do not invalidate calibration. A job whose calibration is invalidated finishes with the random factor; the console warning stays visible until the finished/partial print is removed.
-6. `HomePositionNormalized` lives on `PrinterMotionBase` and is drawn as an orange gizmo. By default it is top-left with the moving bed 3/4 forward (`0, 1, 0.75`). Enable `UseCustomHomePosition` to reveal the `0..1` X/Y/Z sliders (`HomeX`, `HomeY`, `HomeZ`). X/Z map across the usable build volume; Y maps from the plate to the build-volume top. The same position also sets the bed home on bed-slinger printers because the bed is one of those print-space axes; fixed-bed printers simply do not use a bed axis. This is preferred over manually posing a head transform on the prefab because it stays valid across axis mappings, printer variants and build volumes. A child marker transform can feed the same normalized value later if visual authoring is needed.
+6. `HomePositionNormalized` lives on `PrinterMotionBase` and is drawn as an orange gizmo. It uses the printer-front frame: X `0` = left, `1` = right; Z `0` = back, `1` = front; the default is top-left with the build volume 3/4 forward. `CartesianPrinterMotion` converts the bed-moving Z role to print space internally, so `AxisBinding.Invert` never appears in authored or player-facing values. Enable `UseCustomHomePosition` to reveal the `0..1` X/Y/Z sliders (`HomeX`, `HomeY`, `HomeZ`). Y maps from the plate to the build-volume top. This is preferred over manually posing a head transform on the prefab because it stays valid across axis mappings, printer variants and build volumes. A child marker transform can feed the same normalized value later if visual authoring is needed.
 7. Calibration has an optional height-only override: enable `UseCustomCalibrationHomeHeight` and set `CalibrationHomeY`. X/Z always follow the global home; after calibration the head returns to the full global home. The height override is drawn as a green gizmo and does not change spawn, pause, hard-stop or post-print home.
 
 ---
@@ -958,7 +958,7 @@ The motion layer only talks to `PrinterMotionBase`; it never touches the MK4S tr
 - `BeginHomeMove` / `TickHomeMove` run on real time at `CalibrationMoveSpeedMetersPerSecond`; the simulation preset never shortens the visible park. Cancelling calibration uses the same smooth park before returning to `Idle`.
 - Resuming after a reheat reuses the existing printed object, reveal state and layer bounds; only the motion simulator's return-to-path is re-armed. `BeginJob` runs only when the presenter has no printed object.
 - Calibration uses the optional `CalibrationHomePositionNormalized` only for its start/lift height; X/Z and the return position always use the global home.
-- `UseCustomHomePosition` is off by default. When off, the default top-left/3/4-forward home is used; when on, `HomeX/Y/Z` sliders define the custom pose.
+- `UseCustomHomePosition` is off by default; the default is the visual top-left / 3/4-forward home. When on, `HomeX/Y/Z` use the same printer-front frame (X `0` = left, Z `0` = back). `CartesianPrinterMotion` detects whether the horizontal Z role moves the bed and applies the print-space conversion internally; do not compensate for `AxisBinding.Invert` in the home values.
 - X/Z are normalized across the build volume and Y is normalized height. On a bed-slinger the moving bed is one of those axes, so the same sliders define the bed home; fixed beds ignore that axis.
 - Do not add separate service/park/bed-home positions unless a future printer proves it needs an independent pose.
 
@@ -1927,7 +1927,7 @@ Fill this table during M0 and update it during later milestones.
 | Calibration grid | `5 × 5`, `0.15 s` dwell, `10 mm` padding | `CalibrationGridSize` / `CalibrationPointDwellSeconds` / `CalibrationPaddingMeters` |
 | Calibration motion | `3 cm` lift, `0.25 m/s` travel scaled by `SIM SPEED` | `CalibrationLiftHeightMeters` / `CalibrationMoveSpeedMetersPerSecond` |
 | Calibration quality | calibrated `1.0×`; uncalibrated random `0.7–1.0×` at print completion | final value stored on `PrinterJob.FinalQuality`; warning persists until bed clear |
-| Global home / start | default `(0, 1, 0.75)` normalized | top-left head, moving bed about 3/4 forward; `UseCustomHomePosition` + `HomeX/Y/Z`; orange gizmo |
+| Global home / start | default `(0, 1, 0.75)` visual | top-left head, build volume/bed about 3/4 forward; X `0` = left, Z `0` = back; `UseCustomHomePosition` + `HomeX/Y/Z`; orange gizmo |
 | Calibration height | global home height by default | `UseCustomCalibrationHomeHeight` + `CalibrationHomeY`; green gizmo; calibration returns to global home |
 | Spool rotation | root local `-Y`, `degrees = metres / (2π × 0.1 m) × 360` | `EffectiveRadiusMeters`, `RotationAxis`, `InvertRotation` on `ItemFFFSpoolDataHolder` |
 
@@ -2289,6 +2289,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Console enclosure row follows the job start state | The row explains the `+5` / `-9` quality contribution and does not imply that removing/reinstalling re-applies a queued or running job's bonus |
 | 2026-11-21 | Door interlock prompts use short state labels | Interaction prompts need to fit the hover label; the console keeps the longer door warning |
 | 2026-11-21 | Resume reuses the printed object | Reheating after a pause must not rebuild the mesh, reset the reveal or snap the head; only the motion return is re-armed |
+| 2026-11-21 | Home coefficients use the printer-front frame | `HomeX`/`HomeZ` are user-facing visual coordinates (0 = left/back, 1 = right/front); the bed-moving Z role is converted to print space inside the motion implementation, so `AxisBinding.Invert` never leaks into authored or player values |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |
@@ -2480,7 +2481,7 @@ Calibrate to the **usable print volume**, not the mechanical travel extremes. `A
    - Offsets are **signed** and measured from the authored local position. `MinLocal` may be numerically greater than `MaxLocal`.
    - Use `Invert` to make positive print-space coordinates follow positive bed-local coordinates; do not use it to hide an unknown direction.
 6. Set `BuildVolume.x` and `BuildVolume.z` to the measured plate spans, and `BuildVolume.y` to the measured full height. The calibrated span on each axis must equal its matching `BuildVolume` component, or the print is rescaled.
-7. Re-enter play mode. Enable `Test calibrated range`. Move X/Z to 0.5 and confirm the nozzle sits over the bed centre. Move Y to 0 and 1 and confirm the first-layer gap and full height.
+7. Re-enter play mode. Enable `Test calibrated range`. Move X/Z to 0.5 and confirm the nozzle sits over the bed centre. Move Y to 0 and 1 and confirm the first-layer gap and full height. Return to the home pose and confirm the physical top-left / bed-3/4-forward corner; adjust `HomeX` / `HomeZ` under `UseCustomHomePosition` if the desired visual pose differs.
 8. Confirm the test cube is flush, centred, and upright. Remove the cube or disable `SpawnOnStart` before saving.
 
 ### E.4 Reveal

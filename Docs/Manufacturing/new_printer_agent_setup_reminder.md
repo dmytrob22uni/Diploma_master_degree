@@ -44,6 +44,8 @@ The final setup guide must cover, in order:
    - create a new `PrinterMotionBase` subclass for a different XYZ mapping;
    - wire `BuildVolume`, axis directions/ranges, `BedAnchor`, `HomePositionNormalized`, calibration height and gizmos;
    - set each `AxisBinding.Invert` so positive print-space axes match the bed axes; the MK4S horizontal X uses `Invert = 1` because its carriage local X maps world -X, and horizontal Z uses `Invert = 1` because moving the bed in +Z moves the nozzle toward bed-local -Z;
+   - author `HomeX/Y/Z` in the printer-front frame: X `0` = left / `1` = right, Y `0` = plate / `1` = top, Z `0` = back / `1` = front. Do not compensate the home values for `AxisBinding.Invert`;
+   - parent the `PrintBedAnchor` under the bed carriage so `CartesianPrinterMotion` can detect a bed-moving horizontal Z role and convert the visual home to print space internally;
    - verify print-space X/Z/Y maps correctly before wiring the FSM.
 
 3. **Printed-object visuals**

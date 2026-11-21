@@ -12,21 +12,30 @@ namespace Coursework_Master_Degree.Items.FFF
     /// - X: metres, centred on the bed.
     /// - Y: metres above the bed surface, 0..BuildVolume.y.
     /// - Z: metres, centred on the bed.
+    ///
+    /// Player-facing home values use the printer-front frame instead; the
+    /// concrete motion converts them to print space and handles axis signs.
     /// </summary>
     public abstract class PrinterMotionBase : MonoBehaviour
     {
+        /// <summary>
+        /// Default visual home: top-left head with the build volume 3/4
+        /// forward. Axis signs are handled inside each motion implementation.
+        /// </summary>
         public static readonly Vector3 DefaultHomeNormalized =
             new Vector3(0.0f, 1.0f, 0.75f);
 
         [Header("Home / start position")]
         [Tooltip(
-            "Off = default top-left head with the moving bed 3/4 forward. " +
+            "Off = default top-left head with the build volume 3/4 forward. " +
             "On = use the custom normalized X/Y/Z below.")]
         public bool UseCustomHomePosition;
 
         [ShowIf("UseCustomHomePosition")]
         [Range(0.0f, 1.0f)]
-        [Tooltip("Normalized X across the usable build volume. 0 = left edge, 1 = right.")]
+        [Tooltip(
+            "Normalized X from the printer-front view. " +
+            "0 = left edge, 1 = right edge.")]
         public float HomeX = 0.0f;
 
         [ShowIf("UseCustomHomePosition")]
@@ -36,12 +45,24 @@ namespace Coursework_Master_Degree.Items.FFF
 
         [ShowIf("UseCustomHomePosition")]
         [Range(0.0f, 1.0f)]
-        [Tooltip("Normalized Z across the usable build volume; the moving bed sits about 3/4 forward.")]
+        [Tooltip(
+            "Normalized Z from the printer-front view. 0 = back, 1 = front. " +
+            "If the horizontal Z role moves the bed, this is the bed position; " +
+            "otherwise it is the nozzle position.")]
         public float HomeZ = 0.75f;
 
+        /// <summary>
+        /// Player-facing normalized home in the printer-front bed frame:
+        /// X 0 = left to 1 = right, Y 0 = plate to 1 = top, Z 0 = back to
+        /// 1 = front. Motion implementations convert a bed-moving Z role to
+        /// print space internally, so no axis-inversion knowledge is exposed.
+        /// </summary>
         public Vector3 HomePositionNormalized => UseCustomHomePosition
             ? new Vector3(HomeX, HomeY, HomeZ)
             : DefaultHomeNormalized;
+
+        /// <summary>True when the horizontal Z role moves the bed, not the nozzle.</summary>
+        protected virtual bool HorizontalZMovesBed => false;
 
         [Header("Calibration height override")]
         [Tooltip(
@@ -73,16 +94,27 @@ namespace Coursework_Master_Degree.Items.FFF
         {
             Vector3 volume = BuildVolume;
 
+            // X is the head's left/right position over the bed. Z is the
+            // bed's physical travel on a bed-slinger (0 = back, 1 = front)
+            // and the nozzle's position on a fixed-bed printer. Flip the Z
+            // intermediate only for a bed-moving role; AxisBinding.Invert
+            // stays an implementation detail.
+            float printX = 1.0f - normalized.x;
+
+            float printZ = HorizontalZMovesBed
+                ? 1.0f - normalized.z
+                : normalized.z;
+
             return new Vector3(
                 Mathf.Lerp(
                     -volume.x * 0.5f,
                     volume.x * 0.5f,
-                    normalized.x),
+                    printX),
                 volume.y * normalized.y,
                 Mathf.Lerp(
                     -volume.z * 0.5f,
                     volume.z * 0.5f,
-                    normalized.z));
+                    printZ));
         }
 
         /// <summary>Usable build volume in metres (X width, Y height, Z depth).</summary>

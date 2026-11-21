@@ -51,6 +51,8 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public override PrintBedAnchor BedAnchor => bedAnchor;
 
+        protected override bool HorizontalZMovesBed => MovesBed(horizontalZ);
+
         public AxisBinding HorizontalX => horizontalX;
 
         public AxisBinding HorizontalZ => horizontalZ;
@@ -119,6 +121,26 @@ namespace Coursework_Master_Degree.Items.FFF
             horizontalX.RestoreHome();
             horizontalZ.RestoreHome();
             verticalY.RestoreHome();
+        }
+
+        /// <summary>
+        /// True when the bed anchor lives under the axis node, meaning that
+        /// axis moves the bed instead of the nozzle. The home API stays in the
+        /// printer-front frame; this is only the internal sign selection.
+        /// </summary>
+        private bool MovesBed(AxisBinding binding)
+        {
+            if (bedAnchor == null ||
+                binding == null ||
+                binding.Node == null)
+            {
+                return false;
+            }
+
+            Transform anchor = bedAnchor.transform;
+
+            return anchor == binding.Node ||
+                anchor.IsChildOf(binding.Node);
         }
 
         public override void ApplyNozzlePosition(Vector3 printSpacePosition)
