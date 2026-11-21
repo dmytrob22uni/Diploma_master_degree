@@ -66,9 +66,16 @@ namespace Coursework_Master_Degree.Items.FFF
             }
         }
 
+        /// <summary>
+        /// Applies user-authored wear for the elapsed active job time.
+        /// Heating/cooling/paused time contributes to thermal wear, while
+        /// distance, fan, and fumes wear only accrue while the printer is
+        /// actually printing.
+        /// </summary>
         public void ApplyPrintWear(
             Printer printer,
             float simulatedSeconds,
+            float printingSeconds,
             float filamentMeters,
             float materialHardness,
             float materialAbrasiveness)
@@ -78,6 +85,10 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
+            float activePrintingSeconds = Mathf.Clamp(
+                printingSeconds,
+                0.0f,
+                simulatedSeconds);
             PrinterTemperatureState temperature = printer.Temperature;
 
             for (int i = 0; i < targets.Count; i++)
@@ -121,10 +132,15 @@ namespace Coursework_Master_Degree.Items.FFF
                 }
                 else if (logic is ItemWearLogicDistanceTemperatureSO)
                 {
+                    if (activePrintingSeconds <= 0.0f)
+                    {
+                        continue;
+                    }
+
                     wear.ApplyWear(
                         new WearDeltaDistanceTemperature
                         {
-                            DistanceTravelled = simulatedSeconds *
+                            DistanceTravelled = activePrintingSeconds *
                                 Mathf.Max(
                                     0.0f,
                                     printer.AxisTravelMetersPerSecond),
@@ -133,19 +149,29 @@ namespace Coursework_Master_Degree.Items.FFF
                 }
                 else if (logic is ItemWearLogicTimeRpmSO)
                 {
+                    if (activePrintingSeconds <= 0.0f)
+                    {
+                        continue;
+                    }
+
                     wear.ApplyWear(
                         new WearDeltaTimeRPM
                         {
-                            DeltaTime = simulatedSeconds,
+                            DeltaTime = activePrintingSeconds,
                             RPM = Mathf.Max(0.0f, printer.FanRPM),
                         });
                 }
                 else if (logic is ItemWearLogicTimeFumesSO)
                 {
+                    if (activePrintingSeconds <= 0.0f)
+                    {
+                        continue;
+                    }
+
                     wear.ApplyWear(
                         new WearDeltaTimeFumes
                         {
-                            DeltaTime = simulatedSeconds,
+                            DeltaTime = activePrintingSeconds,
                             FumesDensity = Mathf.Max(
                                 0.0f,
                                 printer.FumesDensity),
@@ -242,11 +268,14 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
-            ItemWearState wear =
-                location.InstalledPart.GetComponentInChildren<ItemWearState>(
+            ItemWearState[] states =
+                location.InstalledPart.GetComponentsInChildren<ItemWearState>(
                     true);
 
-            wear?.ApplyConditionLoss(amount);
+            for (int i = 0; i < states.Length; i++)
+            {
+                states[i]?.ApplyConditionLoss(amount);
+            }
         }
 
         private static float PartTemperature(

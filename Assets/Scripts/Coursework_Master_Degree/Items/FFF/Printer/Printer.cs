@@ -112,7 +112,9 @@ namespace Coursework_Master_Degree.Items.FFF
         public float PauseQualityPenalty = 4.0f;
 
         [Min(0.0f)]
-        [Tooltip("Approximate axis travel used by distance-based wear until M4 paths exist.")]
+        [Tooltip(
+            "Approximate axis travel used by distance-based wear while " +
+            "the printer is actively printing.")]
         public float AxisTravelMetersPerSecond = 0.15f;
 
         [Min(0.0f)]
@@ -172,6 +174,7 @@ namespace Coursework_Master_Degree.Items.FFF
         private float preheatElapsedSimulated;
         private float printElapsedRealSeconds;
         private float wearTimeAccumulator;
+        private float wearPrintingTimeAccumulator;
         private float wearFilamentAccumulator;
         private int calibrationIndex;
         private float calibrationTimer;
@@ -1714,6 +1717,7 @@ namespace Coursework_Master_Degree.Items.FFF
             preheatElapsedSimulated = 0.0f;
             printElapsedRealSeconds = 0.0f;
             wearTimeAccumulator = 0.0f;
+            wearPrintingTimeAccumulator = 0.0f;
             wearFilamentAccumulator = 0.0f;
 
             if (!SpoolFilamentState.TryCreate(
@@ -1769,7 +1773,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 Environment,
                 true,
                 true);
-            AccumulateWear(simulatedDelta, 0.0f);
+            AccumulateWear(simulatedDelta, 0.0f, false);
 
             preheatElapsedSimulated += simulatedDelta;
 
@@ -1822,7 +1826,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 Environment,
                 false,
                 true);
-            AccumulateWear(simulatedDelta, 0.0f);
+            AccumulateWear(simulatedDelta, 0.0f, false);
 
             if (!pauseVisualSettled &&
                 !isMovingHome &&
@@ -1842,7 +1846,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 false,
                 activeJob != null);
 
-            AccumulateWear(simulatedDelta, 0.0f);
+            AccumulateWear(simulatedDelta, 0.0f, false);
 
             if (!temperatureModel.IsBelow(
                     Temperature.Ambient + TemperatureToleranceC))
@@ -2175,12 +2179,21 @@ namespace Coursework_Master_Degree.Items.FFF
                 ActiveSpool.ApplyConsumed(deltaFilament);
             }
 
-            AccumulateWear(simulatedDelta, deltaFilament);
+            AccumulateWear(simulatedDelta, deltaFilament, true);
         }
 
-        private void AccumulateWear(float simulatedDelta, float filamentMeters)
+        private void AccumulateWear(
+            float simulatedDelta,
+            float filamentMeters,
+            bool printing)
         {
             wearTimeAccumulator += simulatedDelta;
+
+            if (printing)
+            {
+                wearPrintingTimeAccumulator += simulatedDelta;
+            }
+
             wearFilamentAccumulator += filamentMeters;
 
             if (wearTimeAccumulator < 1.0f)
@@ -2208,11 +2221,13 @@ namespace Coursework_Master_Degree.Items.FFF
             wearIntegrator.ApplyPrintWear(
                 this,
                 wearTimeAccumulator,
+                wearPrintingTimeAccumulator,
                 wearFilamentAccumulator,
                 hardness,
                 abrasiveness);
 
             wearTimeAccumulator = 0.0f;
+            wearPrintingTimeAccumulator = 0.0f;
             wearFilamentAccumulator = 0.0f;
         }
 

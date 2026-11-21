@@ -37,7 +37,15 @@ namespace Coursework_Master_Degree.Items.Wear
 
         private void OnValidate()
         {
-            GenerateInitialCondition();
+            // Do not randomize here. OnValidate runs during editing and asset
+            // reimports, so randomizing would overwrite authored/debug values
+            // and make wear appear to reset. Awake still generates the initial
+            // random condition for a spawned item.
+            currentCondition = Mathf.Clamp(
+                currentCondition,
+                minCondition,
+                maxCondition);
+            isWornOut = currentCondition <= minCondition;
         }
 
         private void Awake()
