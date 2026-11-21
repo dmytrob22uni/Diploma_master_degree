@@ -22,15 +22,21 @@ namespace Coursework_Master_Degree.Items.FFF
         [SerializeField] private float RevealUpdatesPerSecond = 15.0f;
 
         [Header("Supports")]
+        [Tooltip("Maximum visual support columns; this is cosmetic, not a slicer.")]
         [Min(0)]
         [SerializeField] private int MaxSupportColumns = 48;
 
+        [Tooltip("XZ clustering size for visual support columns, in metres.")]
         [Min(0.001f)]
         [SerializeField] private float SupportClusterSizeMeters = 0.02f;
 
+        [Tooltip("Downward-normal threshold for a triangle to receive a column.")]
         [Range(0.0f, 1.0f)]
         [SerializeField] private float SupportOverhangThreshold = 0.35f;
 
+        [Tooltip(
+            "Actual support column radius in metres. The column is twice " +
+            "this width.")]
         [Min(0.0001f)]
         [SerializeField] private float SupportColumnRadiusMeters = 0.0015f;
 
@@ -221,6 +227,7 @@ namespace Coursework_Master_Degree.Items.FFF
             supports.Begin(
                 printedObject,
                 meshData,
+                printingMaterial,
                 partialMaterial,
                 printJob.Request.Supports,
                 MaxSupportColumns,
@@ -288,6 +295,7 @@ namespace Coursework_Master_Degree.Items.FFF
             reveal.SetVisible(true);
             reveal.SetFull();
             reveal.SetFinalMaterial(finalMaterial);
+            supports.SetFinalMaterial();
             supports.Tick(localHeight);
         }
 
@@ -307,6 +315,7 @@ namespace Coursework_Master_Degree.Items.FFF
             ClearPartialSurface();
             reveal.SetVisible(true);
             reveal.SetPrintingMaterial(printingMaterial);
+            supports.SetPrintingMaterial();
 
             float quantized = Quantize(printJob != null
                 ? printJob.Progress01
@@ -332,9 +341,12 @@ namespace Coursework_Master_Degree.Items.FFF
                 return;
             }
 
+            supports.SetFinalMaterial();
+
             float quantized = Quantize(printJob != null
                 ? printJob.Progress01
                 : 0.0f);
+            supports.Tick(quantized * localHeight);
             ShowPartialSurface(quantized * localHeight, false);
         }
 
@@ -348,6 +360,7 @@ namespace Coursework_Master_Degree.Items.FFF
             ClearPartialSurface();
             reveal.SetVisible(true);
             reveal.SetPrintingMaterial(printingMaterial);
+            supports.SetPrintingMaterial();
 
             float quantized = Quantize(job != null
                 ? job.Progress01
@@ -372,6 +385,7 @@ namespace Coursework_Master_Degree.Items.FFF
             reveal.SetVisible(true);
             reveal.SetFull();
             reveal.SetFinalMaterial(finalMaterial);
+            supports.SetFinalMaterial();
             supports.Tick(localHeight);
 
             SetCollidersEnabled(true);
@@ -401,7 +415,10 @@ namespace Coursework_Master_Degree.Items.FFF
             isPartial = true;
             isCompleted = false;
 
+            supports.SetFinalMaterial();
+
             float quantized = Quantize(printJob.Progress01);
+            supports.Tick(quantized * localHeight);
 
             if (isPartialSurfaceVisible && slicedObject != null)
             {
@@ -440,6 +457,7 @@ namespace Coursework_Master_Degree.Items.FFF
             printedData?.Release();
             printedObject.transform.SetParent(null, true);
 
+            supports.Clear();
             printedObject = null;
             printedData = null;
             job = null;
@@ -462,6 +480,7 @@ namespace Coursework_Master_Degree.Items.FFF
                 Destroy(printedObject);
             }
 
+            supports.Clear();
             printedObject = null;
             printedData = null;
             job = null;

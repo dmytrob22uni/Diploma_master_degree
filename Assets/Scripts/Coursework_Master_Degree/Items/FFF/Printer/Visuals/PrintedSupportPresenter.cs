@@ -7,14 +7,17 @@ namespace Coursework_Master_Degree.Items.FFF
 {
     /// <summary>
     /// Generates simple vertical support columns under downward-facing
-    /// triangles. Supports are children of the printed object, so they follow
-    /// the bed and survive until M5 adds support removal.
+    /// triangles. Supports are separate closed columns: they follow the
+    /// printed object, grow with print progress, use the printing material
+    /// while live and the final material when the print settles, and are not
+    /// part of the object cap/sliced collider. M5 adds support removal.
     /// </summary>
     internal sealed class PrintedSupportPresenter
     {
         private sealed class SupportColumn
         {
             public Transform Transform;
+            public MeshRenderer Renderer;
             public float Height;
         }
 
@@ -28,13 +31,18 @@ namespace Coursework_Master_Degree.Items.FFF
             new Dictionary<long, Vector3>();
         private readonly List<Vector3> supportPoints =
             new List<Vector3>();
+        private readonly MaterialPropertyBlock revealBlock =
+            new MaterialPropertyBlock();
 
-        private float radius;
+        private Material printingMaterial;
+        private Material finalMaterial;
+        private float diameter;
 
         public void Begin(
             GameObject objectRoot,
             PrintedMeshData mesh,
-            Material material,
+            Material liveMaterial,
+            Material finishedMaterial,
             SupportsMode mode,
             int maxColumns,
             float clusterSize,
@@ -45,7 +53,13 @@ namespace Coursework_Master_Degree.Items.FFF
             columns.Clear();
             clusters.Clear();
             supportPoints.Clear();
-            radius = Mathf.Max(0.0002f, columnRadius);
+            printingMaterial = liveMaterial != null
+                ? liveMaterial
+                : finishedMaterial;
+            finalMaterial = finishedMaterial != null
+                ? finishedMaterial
+                : printingMaterial;
+            diameter = Mathf.Max(0.0002f, columnRadius) * 2.0f;
 
             if (objectRoot == null ||
                 mesh == null ||
@@ -117,31 +131,25 @@ namespace Coursework_Master_Degree.Items.FFF
                     new Vector3(point.x, 0.0f, point.z);
                 columnObject.transform.localRotation = Quaternion.identity;
                 columnObject.transform.localScale =
-                    new Vector3(radius, 0.0f, radius);
+                    new Vector3(diameter, 0.0f, diameter);
 
                 MeshFilter filter = columnObject.AddComponent<MeshFilter>();
                 filter.sharedMesh = sharedMesh;
 
                 MeshRenderer renderer =
                     columnObject.AddComponent<MeshRenderer>();
-                renderer.sharedMaterial = material;
                 renderer.shadowCastingMode = ShadowCastingMode.Off;
                 renderer.receiveShadows = false;
 
-                if (material != null &&
-                    material.HasProperty(RevealHeightId))
-                {
-                    MaterialPropertyBlock block =
-                        new MaterialPropertyBlock();
-                    block.SetFloat(RevealHeightId, 1000.0f);
-                    renderer.SetPropertyBlock(block);
-                }
-
-                columns.Add(new SupportColumn
+                SupportColumn column = new SupportColumn
                 {
                     Transform = columnObject.transform,
+                    Renderer = renderer,
                     Height = point.y,
-                });
+                };
+
+                ApplyMaterial(renderer, printingMaterial);
+                columns.Add(column);
             }
         }
 
@@ -166,10 +174,64 @@ namespace Coursework_Master_Degree.Items.FFF
                 if (visible)
                 {
                     column.Transform.localScale = new Vector3(
-                        radius,
+                        diameter,
                         columnHeight,
-                        radius);
+                        diameter);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Uses the spool's printing shader while the object is live. The
+        /// columns reveal by scaling, while `_reveal_height` is kept fully
+        /// open so the shader does not clip the support boxes.
+        /// </summary>
+        public void SetPrintingMaterial()
+        {
+            ApplyMaterialToColumns(printingMaterial);
+        }
+
+        /// <summary>Switches supports to the settled/completed final look.</summary>
+        public void SetFinalMaterial()
+        {
+            ApplyMaterialToColumns(finalMaterial);
+        }
+
+        /// <summary>Drops support references after release or object clearing.</summary>
+        public void Clear()
+        {
+            columns.Clear();
+            clusters.Clear();
+            supportPoints.Clear();
+            printingMaterial = null;
+            finalMaterial = null;
+        }
+
+        private void ApplyMaterialToColumns(Material material)
+        {
+            for (int i = 0; i < columns.Count; i++)
+            {
+                ApplyMaterial(columns[i].Renderer, material);
+            }
+        }
+
+        private void ApplyMaterial(MeshRenderer renderer, Material material)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            renderer.sharedMaterial = material;
+
+            if (material != null && material.HasProperty(RevealHeightId))
+            {
+                revealBlock.SetFloat(RevealHeightId, 1000.0f);
+                renderer.SetPropertyBlock(revealBlock);
+            }
+            else
+            {
+                renderer.SetPropertyBlock(null);
             }
         }
 
