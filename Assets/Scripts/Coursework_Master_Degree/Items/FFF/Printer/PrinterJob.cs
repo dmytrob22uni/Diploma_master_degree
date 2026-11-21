@@ -21,6 +21,17 @@ namespace Coursework_Master_Degree.Items.FFF
 
         public int PauseCount;
         public float PauseQualityPenalty;
+
+        /// <summary>
+        /// Repeated pauses are capped so a service-heavy job cannot drive a
+        /// print to zero quality. The raw penalty is still retained for UI
+        /// diagnostics.
+        /// </summary>
+        public float EffectivePauseQualityPenalty =>
+            Mathf.Min(
+                PauseQualityPenalty,
+                PrintQualityEstimator.MaximumPauseQualityPenalty);
+
         public float CalibrationQualityMultiplier = 1.0f;
         public float FinalQuality = -1.0f;
 
@@ -103,7 +114,8 @@ namespace Coursework_Master_Degree.Items.FFF
                 EnclosureBonusRetained);
 
             return Mathf.Clamp(
-                raw * CalibrationQualityMultiplier - PauseQualityPenalty,
+                raw * CalibrationQualityMultiplier -
+                EffectivePauseQualityPenalty,
                 0.0f,
                 PrintQualityEstimator.MaximumRawQuality);
         }

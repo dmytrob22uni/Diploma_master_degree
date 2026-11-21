@@ -459,20 +459,30 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
                     continue;
                 }
 
-                ItemWearState wear =
-                    location.InstalledPart.GetComponentInChildren<ItemWearState>(true);
+                ItemWearState[] states =
+                    location.InstalledPart.GetComponentsInChildren<
+                        ItemWearState>(true);
+                float partPenalty = 0.0f;
 
-                if (wear == null)
+                for (int i = 0; i < states.Length; i++)
                 {
-                    continue;
+                    ItemWearState wear = states[i];
+
+                    if (wear == null)
+                    {
+                        continue;
+                    }
+
+                    float condition = Mathf.Clamp(
+                        wear.CurrentCondition,
+                        0.0f,
+                        wear.MaxCondition);
+                    float penalty =
+                        (1.0f - condition / 100.0f) * 20.0f;
+                    partPenalty = Mathf.Max(partPenalty, penalty);
                 }
 
-                float condition = Mathf.Clamp(
-                    wear.CurrentCondition,
-                    0.0f,
-                    wear.MaxCondition);
-                float penalty = (1.0f - condition / 100.0f) * 10.0f;
-                worst = Mathf.Max(worst, penalty);
+                worst = Mathf.Max(worst, partPenalty);
             }
 
             return worst;

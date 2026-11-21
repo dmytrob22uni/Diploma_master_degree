@@ -24,6 +24,7 @@ namespace Coursework_Master_Degree.Items.FFF.Jobs
         public const float MaximumRawQuality = 90.0f;
         public const float EnclosureQualityBonus = 5.0f;
         public const float NoEnclosurePenalty = 9.0f;
+        public const float MaximumPauseQualityPenalty = 20.0f;
 
         public static void Calculate(
             ObjectToPrintPrintProfile profile,

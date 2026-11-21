@@ -999,8 +999,8 @@ namespace Coursework_Master_Degree.Items.FFF
                 : string.Empty;
 
         public string PausePenaltyText =>
-            activeJob != null && activeJob.PauseQualityPenalty > 0.0f
-                ? $"pause -{activeJob.PauseQualityPenalty:0}"
+            activeJob != null && activeJob.EffectivePauseQualityPenalty > 0.0f
+                ? $"pause -{activeJob.EffectivePauseQualityPenalty:0}"
                 : string.Empty;
 
         public string StatusSummary
