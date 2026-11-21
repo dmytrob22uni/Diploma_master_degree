@@ -1077,6 +1077,7 @@ Behavior:
 - `ItemHoverInfo` refreshes the five fields while the same printer collider stays hovered.
 - `Printer.FindFor` resolves only the physical printer/enclosure hierarchy. Surface placement is storage, so items placed on an enclosure shelf keep their own hover/take even while the printer is busy; hovering the enclosure surface itself still resolves the printer and shows its status.
 - While the printer is running or calibrating, `ItemHoverInteract` suppresses its prompt so it does not duplicate the status; door interactables and finalized completed/partial prints on the bed are exempt. A finalized print owns its removal interaction, not the busy printer status.
+- The interaction raycast includes the `part` layer as well as `computing`, `surface` and `item`, so a directly hovered part in front of an enclosure surface wins over the enclosure behind it. Hovering a part therefore shows only its own hint (usually `inspect wear`), not an enclosure `interact` hint.
 - Once the printer is `Paused`, cooled below `SafeServiceTemperatureC` and the head is parked, `Printer.IsPausedServiceReady` / `CanOpenInteractions` become true: the name and five status fields remain visible, and `interact_root` also appears with `Parts wear`, `Parts integrity` and `Parts remove`. Individual parts can still be refused by `ServiceBlockedDuringPrint`.
 - Resuming or hard-stopping the job closes the interaction list again.
 - In `ItemsSell`, a busy or bound printer/enclosure is `Wrong`, uses the selling ghost, cannot be sold, and puts the concise reason in `item_hover_sell_description`. Busy takes priority over connected.
@@ -1676,6 +1677,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 22. Place a spool, part or device on an enclosure shelf while the printer is printing; confirm hovering it shows the item's own name and take/use prompt, not the busy printer status, and that it can be taken. Hovering the enclosure surface itself should still show the printer status.
 23. Start with one door open; confirm `Start print` is blocked with the console warning. Close both doors and confirm the job starts. Pause, open both doors, confirm they open and `Resume` is blocked with the warning; close and resume.
 24. Finish a print and wait for cooling and homing. Confirm both doors open, the finished object can be removed, and the enclosure/printer service interactions remain blocked until the object is removed. Print the same object twice and confirm the head paths differ while staying inside the layer bounds; test rotated and scaled placements.
+25. Place a part on an enclosure surface and hover it through the enclosure: confirm only the part's own hint (typically `inspect wear`) appears, with no enclosure `interact` prompt.
 
 **Sign-off (2026-11-20):** The MK4S M3 manual gate passed, including the calibration-sensitive part check. The 2026-11-21 thermal/door/head-path checks were added afterward and remain pending. Deferred until the relevant assets exist: CoreXY play-mode validation (no CoreXY model/prefab) and 3/4-slot console presentation (no authored printer with that configuration).
 
@@ -2334,6 +2336,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Calibration is consumed by a printed job | A successful calibration applies to the next job that actually prints; finalization returns the printer to uncalibrated for the following job. The warning and random `0.7–1.0×` factor are unchanged, and a preheat-only cancellation keeps calibration |
 | 2026-11-21 | Printer/enclosure audit keeps shared runtime model-agnostic | Axis signs, limits and bed-moving detection stay in motion data; enclosure doors, spools, docking and critical parts are serialized; the only name-based helper is editor-only |
 | 2026-11-21 | Enclosure bonus is one chance per job | Capture the state at actual start; the first removal latches a permanent loss, so reinstalling never restores it. Store the base quality range without enclosure and apply `+5` / `-9` once at completion |
+| 2026-11-21 | Direct part hover wins over enclosure prompts | `ItemHoverInteract` uses the same item/part mask as `ItemHoverInfo`; the closest part gets the hint and the enclosure behind it does not |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |
 | 2026-11-17 | No MonoBehaviours under `states/...` | State folders are markers/data; controllers and targeting persist and belong under `controllers/...` |
 | 2026-11-17 | Bind targeting ray starts at the player camera | The first-person camera is the eyes; a separate eye anchor would drift from the view |
