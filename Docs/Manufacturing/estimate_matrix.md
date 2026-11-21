@@ -84,7 +84,10 @@ The reference comparison is **Normal layer / Slow speed / Grid / Auto**:
 that is about `1.95 min` of real time; at `240x` it is about `58 s`. `SIM SPEED`
 is not a print setting; it only divides real elapsed time and does not change
 time, filament or quality. Above `1x`, the console appends the real duration in
-parentheses to the simulated estimate.
+parentheses to the simulated estimate. The multiplier is applied to the real
+frame delta before the hitch clamp, so a low frame rate does not silently
+stretch the real duration away from that estimate; the completion log reports
+the simulated seconds, real seconds and effective multiplier for verification.
 `SPOOL` only gates filament sufficiency and does not change estimates; object
 selection swaps the profile, so this matrix is bunny-specific.
 

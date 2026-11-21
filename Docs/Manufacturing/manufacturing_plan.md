@@ -930,6 +930,7 @@ Important:
 - Add a continuous Z-hop bump that is zero at both layer boundaries.
 - Visual pace follows `EstimatedSeconds`, which already includes the console SPEED preset (`80 / 160 / 240`); do not scale it again in the path.
 - Per-frame work is O(1): no mesh reads, capping or allocations during `Tick`.
+- The printer applies the multiplier to real frame delta, with a `1 s` real-time clamp for hitches. Do not clamp the real delta to `0.1 s` before multiplying: that silently caps high-speed presets when the frame rate drops.
 - `ApplyNozzlePosition` takes X/Z in bed-local metres and Y as nozzle height above the bed.
 - MK4S implements X on the extruder, Z on the bed carriage, and Y on the gantry. A dropping-bed printer implements the same roles differently.
 - Do not attempt real perimeter/infill geometry.
@@ -2278,6 +2279,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-16 | Partial print remains after hard stop | Approved default |
 | 2026-11-16 | 120× fastest simulation preset; 1× default | Real-time default with an optional fast-forward |
 | 2026-11-21 | 240× preset added | Extends the console to 1×/4×/64×/120×/240×; estimates show real duration above 1× |
+| 2026-11-21 | Simulation multiplier applies before the hitch clamp | Real frame delta is capped at `1 s` then multiplied; the old `0.1 s` pre-multiplier clamp silently reduced high presets at low frame rates |
 | 2026-11-21 | Print-space X calibration uses the carriage sign | MK4S horizontal X uses `Invert = 1` so the head path follows the same bed-local X as the placed object |
 | 2026-11-21 | Print-space Z calibration uses the bed-motion sign | MK4S horizontal Z uses `Invert = 1`; moving the bed toward +Z moves the nozzle toward bed-local -Z, so the bed axis must run opposite the print-space axis |
 | 2026-11-16 | MK4S axes: X on extruder, Z on bed carriage, Y on gantry | `base` is rotated 180° about `(0,1,1)/√2`; node-local axes do not match their names |

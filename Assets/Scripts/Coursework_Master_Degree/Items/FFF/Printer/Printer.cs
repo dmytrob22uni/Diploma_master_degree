@@ -171,6 +171,7 @@ namespace Coursework_Master_Degree.Items.FFF
         private PrinterJob partialJob;
 
         private float preheatElapsedSimulated;
+        private float printElapsedRealSeconds;
         private float wearTimeAccumulator;
         private float wearFilamentAccumulator;
         private int calibrationIndex;
@@ -1089,7 +1090,11 @@ namespace Coursework_Master_Degree.Items.FFF
 
         private void Update()
         {
-            float simulatedDelta = Mathf.Min(Time.deltaTime, 0.1f) *
+            // Do not clamp the real frame delta before applying the
+            // simulation multiplier: a 0.1 s clamp silently caps high-speed
+            // presets when the frame rate drops. 1 s still protects against
+            // editor pauses and large hitches.
+            float simulatedDelta = Mathf.Min(Time.deltaTime, 1.0f) *
                 Mathf.Max(1.0f, PrintSpeedMultiplier);
 
             PrinterEnclosure enclosure = DockedEnclosure;
@@ -1112,6 +1117,11 @@ namespace Coursework_Master_Degree.Items.FFF
             if (isMovingHome)
             {
                 TickHomeMove(simulatedDelta);
+            }
+
+            if (OperationalState == PrinterOperationalState.Printing)
+            {
+                printElapsedRealSeconds += Mathf.Max(0.0f, Time.deltaTime);
             }
 
             switch (OperationalState)
@@ -1735,6 +1745,7 @@ namespace Coursework_Master_Degree.Items.FFF
             if (temperatureModel.IsAtTarget(TemperatureToleranceC))
             {
                 preheatElapsedSimulated = 0.0f;
+                printElapsedRealSeconds = 0.0f;
                 SetState(PrinterOperationalState.Printing);
                 PrintedObject?.BeginJob(activeJob);
                 return;
@@ -2152,6 +2163,18 @@ namespace Coursework_Master_Degree.Items.FFF
             activeJob.FinalQuality = UnityEngine.Random.Range(
                 activeJob.QualityMin,
                 activeJob.QualityMax);
+
+            float simulatedSeconds = activeJob.Request.EstimatedSeconds;
+            float effectiveMultiplier = printElapsedRealSeconds > 0.001f
+                ? simulatedSeconds / printElapsedRealSeconds
+                : 0.0f;
+
+            Debug.Log(
+                $"[Printer] {DisplayName} finished {simulatedSeconds:0} " +
+                $"simulated s in {printElapsedRealSeconds:0.0} s real " +
+                $"(effective {effectiveMultiplier:0.#}x, preset " +
+                $"{Mathf.Max(1.0f, PrintSpeedMultiplier):0}x).",
+                this);
 
             FlushWear();
             activeJob.ElapsedSeconds = activeJob.Request.EstimatedSeconds;
