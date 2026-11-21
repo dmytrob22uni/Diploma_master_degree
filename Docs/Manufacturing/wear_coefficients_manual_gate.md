@@ -1,6 +1,6 @@
 # Wear Coefficients — Manual Approval Gate
 
-**Status:** Rates calibrated 2026-11-21; project-owner sign-off for the new rates is pending before M4 is marked done.
+**Status:** Approved 2026-11-21 for the calibrated x1 rates and workload policy. M4 is closed.
 **Owner:** Project owner.
 **Related systems:** `PrinterWearIntegrator`, `ItemWearState`, `ItemWearLogicSO` variants, `Printer.AxisTravelMetersPerSecond`, `SpoolFilamentState`.
 
@@ -84,15 +84,15 @@ For final calibration, keep `WearRateMultiplier` at `1.0`; use it only as a play
 
 ## Sign-off
 
-- [ ] Nozzle rate approved
-- [ ] Heater/thermistor/fire/thermometer rates approved
-- [ ] Bed/plate use rates approved
-- [ ] Belt/rotor/bearing rates approved
-- [ ] Spool/filament consumption approved
-- [ ] Enclosure-part rates approved
-- [ ] Hard-stop penalties approved
-- [ ] Pause/home behaviour does not add unintended wear
+- [x] Nozzle rate approved
+- [x] Heater/thermistor/fire/thermometer rates approved
+- [x] Bed/plate use rates approved
+- [x] Belt/rotor/bearing rates approved
+- [x] Spool/filament consumption approved
+- [x] Enclosure-part rates approved
+- [x] Hard-stop penalties approved
+- [x] Pause/home behaviour does not add unintended wear
 
-**Approved by:** ____________________  **Date:** __________
+**Approved by:** Project owner  **Date:** 2026-11-21
 
 If any value is changed after this sign-off, re-run the relevant row and update this file.

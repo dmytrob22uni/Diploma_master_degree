@@ -1551,7 +1551,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 1. **Done:** push the ghost to each plate corner and beyond; the wrong state appears and confirm is blocked.
 2. **Done:** go below the dynamic min (`2 cm` largest dimension) and above the max (`BuildVolume`/plate fit); the wrong state appears and confirm is blocked.
-3. **Re-check required after the estimate refinement:** recalculated estimates match the shell/infill scale rule at the minimum, `1.0` and the maximum scale, and support cost follows each object's overhang percentage.
+3. **Done (owner-confirmed 2026-11-21):** recalculated estimates match the shell/infill scale rule at the minimum, `1.0` and the maximum scale, and support cost follows each object's overhang percentage.
 4. **Done:** cancel restores the previous placement and confirm survives console close/reopen.
 5. **Done:** the editor generator reproduces the bunny `36 720 s` / `85.36 m` with the exact calibration (`5.88922 mm3/s`, `0.94943`); the round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. The full matrix review is in [`estimate_matrix.md`](estimate_matrix.md).
 6. **Done:** confirm and cancel return with the same blend duration as entering.
@@ -1699,7 +1699,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 25. Place a part on an enclosure surface and hover it through the enclosure: confirm only the part's own hint (typically `inspect wear`) appears, with no enclosure `interact` prompt.
 26. Pause a print, wait for cooling/parking, remove the printer from its enclosure, place it, then take and place it again before resuming. Confirm the paused job is preserved and the printer remains portable; repeat with the printer on the floor (not in an enclosure).
 
-**Sign-off (2026-11-20):** The MK4S M3 manual gate passed, including the calibration-sensitive part check. The 2026-11-21 thermal/door/head-path checks were added afterward and remain pending. Deferred until the relevant assets exist: CoreXY play-mode validation (no CoreXY model/prefab) and 3/4-slot console presentation (no authored printer with that configuration).
+**Sign-off (2026-11-20):** The MK4S M3 manual gate passed, including the calibration-sensitive part check. The 2026-11-21 thermal/door/head-path checks also passed (owner-confirmed 2026-11-21). Deferred until the relevant assets exist: CoreXY play-mode validation (no CoreXY model/prefab) and 3/4-slot console presentation (no authored printer with that configuration).
 
 **M3 gate passed; M4 may proceed. The deferred variant checks remain acceptance items for when those printer configurations are authored.**
 
@@ -1709,7 +1709,7 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 
 **Goal:** The print looks convincing: object reveal, nozzle/bed motion, support columns, and manual removal. Spool rotation and wear-level child sync already arrive in M3.
 
-**Status:** Implementation and the 2026-11-21 manual gate passed. The final wear/quality calibration is implemented; its three new checks (wear timing/rates, pause/wear quality and fan states) and project-owner sign-off on the new rates in [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) remain. M4 is not marked done until that sign-off.
+**Status:** Done (2026-11-21). Implementation, the manual gate, the final wear/workload calibration, pause/wear quality checks, fan states and the wear-coefficient sign-off all passed.
 
 **Deliverables**
 
@@ -1779,6 +1779,8 @@ Each milestone has a **goal**, **deliverables**, **acceptance criteria**, and a 
 16. **Wear-coefficient approval:** complete [`wear_coefficients_manual_gate.md`](wear_coefficients_manual_gate.md) and have the project owner approve every wear path's speed. Verify the calibrated 2–4 medium-print lifetimes with `Tools/Manufacturing/Wear Calibration` and the profile target table, confirm a 3-print part lasts about 2.1–2.3 prints at maximum volume with `WearWorkloadExponent = 0.15`, and confirm motion/fan/fumes wear does not accrue while only heating, paused or cooling.
 17. Pause five or more times and confirm the pause quality penalty stops at `20`. Wear a part to roughly 50% condition and confirm the worst-part quality penalty is about `10`, and that the console estimate and final value agree.
 18. With the printer installed in an enclosure, confirm the extruder fan and HEPA fan show `fan_calm` when idle/finished and `fan_active` while heating, printing, cooling or paused-hot; confirm the active child rotates. Remove each fan, confirm it stays calm while carried/placed, reinstall it and confirm it resumes. Set a fan to 0 condition and confirm it stays calm.
+
+**Sign-off (2026-11-21):** All M4 manual checks passed, including the final wear/workload, quality, fan-state and wear-coefficient checks. M4 is done.
 
 **Do not proceed to M5 until the print reads clearly as a print from the player's normal viewing distance and the wear-coefficient gate is approved.**
 
@@ -2148,7 +2150,7 @@ Fill this table during M0 and update it during later milestones.
 
 ## 13. Current status and next step
 
-**Status:** M0–M3 are complete. M1's device-type/aspect checks remain carried forward. M2 and M2.5 are committed, calibrated and play-mode gated; the post-M2.5 estimate refinement still needs its scale/support re-check, and the new 80/160/240 speed presets need a fresh M2 time spot-check. The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. The M4 manual gate passed on 2026-11-21. M4 is **not marked done** because the final wear/quality/fan pass adds three manual checks and the project-owner sign-off on the calibrated wear rates remains. The pass calibrates part wear to 2–4 medium prints for active parts, applies motion/fan/fumes wear only while printing, uses a `0..20` worst-part quality penalty, caps pause penalties at `20`, and unlocks enclosure doors only at the shared `50 °C` safe-service temperature. Size-driven wear is compressed by `Printer.WearWorkloadExponent = 0.15`, keeping a 3-print part around 2.15–2.24 maximum-volume prints while smaller prints wear less. Authoring tooling now includes `Tools/Manufacturing/Wear Calibration` with a persistent `WearCalibrationProfileSO` target table; `Printer.WearRateMultiplier` remains the quick playtest offset. M5 has not started; its one-chance enclosure continuity snapshot and pause-penalty cap are implemented ahead of the rest of M5 (2026-11-21).
+**Status:** M0–M4 are complete. M1 device-type/aspect checks, the post-M2.5 scale/support estimate re-check and the M2 80/160/240 speed spot-checks are owner-confirmed (2026-11-21). The bunny profile is restored to the PrusaSlicer reference (`85.36 m`, `36 720 s`); the editor exposes the exact seed calibration (`5.88922 mm3/s`, `0.94943`), while its round defaults (`6.0 mm3/s`, `1.0`) are approximate seeds. M3 is marked done on 2026-11-20. M4's implementation is now in place: the printer owns a printed-object presenter, spool-bound live reveal material, pause-settled and hard-stopped capped partial surfaces, sliced partial colliders, support columns, per-layer object-following nozzle motion, parking/finalization, and manual completed/partial removal. The M4 manual gate passed on 2026-11-21. M4 is **done** as of 2026-11-21: the final wear/workload, quality and fan checks passed, and the wear-coefficient gate is signed. The pass calibrates part wear to 2–4 medium prints for active parts, applies motion/fan/fumes wear only while printing, uses a `0..20` worst-part quality penalty, caps pause penalties at `20`, and unlocks enclosure doors only at the shared `50 °C` safe-service temperature. Size-driven wear is compressed by `Printer.WearWorkloadExponent = 0.15`, keeping a 3-print part around 2.15–2.24 maximum-volume prints while smaller prints wear less. Authoring tooling now includes `Tools/Manufacturing/Wear Calibration` with a persistent `WearCalibrationProfileSO` target table; `Printer.WearRateMultiplier` remains the quick playtest offset. M5 has not started; its one-chance enclosure continuity snapshot and pause-penalty cap are implemented ahead of the rest of M5 (2026-11-21).
 
 
 M1 is code-complete:
@@ -2171,7 +2173,7 @@ M1 is the highest-leverage gate after M0 because it proves the player-facing loo
 - A printer never stops because its device stopped listening.
 - One console serves every device type.
 
-Remaining M1 work (manual gate):
+M1 manual gate (owner-confirmed 2026-11-21):
 
 1. Open `MainScene`; confirm `F` focuses the laptop screen and enables console interaction.
 2. Confirm the console stays visible on the screen after `Q`, from free walk, and after walking away.
@@ -2195,7 +2197,7 @@ M2 is implemented:
 Remaining M2 work (manual gate):
 
 1. **Calibration:** `85.36 m` and `36 720 s` at 100% infill (`0.2 mm`, `80 mm/s`; now Slow). Both values are restored to the PrusaSlicer reference; the exact editor seed calibration is `5.88922 mm3/s` / `0.94943`, while the tool defaults are round seeds.
-2. **Original check:** Grid / Normal / Normal compared with PrusaSlicer (`28.53 m`, `3 h 53 min`) and matched by the console (`28.5 m`, `3 h 53 min`). With the new presets, old Normal is Slow; the reference point now matches in both time and filament. Normal/Fast presets and scale/support still need a fresh spot-check.
+2. **Done:** Grid / Normal / Normal compared with PrusaSlicer (`28.53 m`, `3 h 53 min`) and matched by the console (`28.5 m`, `3 h 53 min`). With the new presets, old Normal is Slow; the reference point now matches in both time and filament. Normal/Fast preset and scale/support spot-checks are owner-confirmed (2026-11-21).
 3. **Done:** Draft and Fine spot checks confirmed time and raw quality move in the expected direction.
 4. **Done:** validation matrix verified, including the oversized-object rejection.
 5. **Done:** `Start print` queues `Printer.PendingJob` only when valid; M3 consumes it on the next printer tick.
@@ -2394,6 +2396,7 @@ Assets/Scripts/Coursework_Master_Degree/
 | 2026-11-21 | Enclosure doors unlock at safe service temperature | Door opening uses the same `50 °C` safe-service gate as parts service; closing is always allowed and resume still requires both doors closed. |
 | 2026-11-21 | Wear tuning is target-lifetime based | `Tools/Manufacturing/Wear Calibration` derives coefficients from target medium-print lifetimes in a `WearCalibrationProfileSO`; `Printer.WearRateMultiplier` is a global playtest offset, not the authored calibration. |
 | 2026-11-21 | Large prints use compressed workload wear | `WearWorkloadExponent = 0.15` applies `ratio^(exponent - 1)` to print/use wear. x1 is unchanged, smaller prints wear less, and 3-print parts last about 2.15–2.24 maximum-volume prints; hard-stop damage stays fixed. |
+| 2026-11-21 | M4 is complete | Manual gate, wear/workload calibration, quality, fan-state and sign-off checks passed; M0–M4 are closed and M5 is next. |
 | 2026-11-21 | Fan visuals use authored calm/active children | `FanStateVisual` uses serialized children on each fan prefab, resolves installation through `PartLocation` and state through `Printer.FindFor`/`AreFansActive`; removed, spare, ghost and worn-out fans stay calm, and the active child rotates locally. |
 | 2026-11-18 | Placement UI authored by owner | Keeps the game-feel/UI design with the project owner |
 | 2026-11-19 | Simulation speed is a per-printer console preset | The printer owns the job; presets match existing console rows and avoid slider UI work |
