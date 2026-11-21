@@ -43,7 +43,7 @@ namespace Coursework_Master_Degree.Items.FFF
 
         [Header("Bed")]
         [SerializeField]
-        private PrintBedAnchor bedAnchor;
+        private PrintBedAnchor bedAnchor = null;
 
         public override Vector3 BuildVolume => buildVolume;
 
