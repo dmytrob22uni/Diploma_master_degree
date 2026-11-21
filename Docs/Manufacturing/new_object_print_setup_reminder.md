@@ -59,7 +59,7 @@ The final setup guide must cover, in order:
    - settled pause and hard-stopped partial print use a sliced capped surface with the spool’s `FinalMaterial`;
    - resume removes the pause cap and restores the printing shader;
    - completed print has no cap; partial print keeps the capped surface/collider;
-   - `Auto` supports generate separate closed columns from the object mesh; they use the printing material live, switch to the final material on settled pause/partial/completion, reveal by scale, and remain attached until M5. They are not part of the object cap/sliced collider;
+   - `Auto` supports generate separate closed columns with `8 mm` bed footprints from the object mesh; they start at the object bottom plane, use the printing material live, switch to the final material on settled pause/partial/completion, reveal by scale, and remain attached until M5. They are not part of the object cap/sliced collider. Verify the `[Supports] Auto: N columns` debug log;
    - completed/partial removal clears the bed and uses no-cancel placement;
    - selling removes the object, cap/sliced surface, supports and every registered ghost;
    - selling on the bed is blocked; partials sell without income.
